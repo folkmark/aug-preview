@@ -1,0 +1,30 @@
+/* Iconography.
+   The source uses the `relume-icons` React package (Material-Symbols-derived names:
+   Check, ChevronRight, KeyboardArrowDown, CircleFull, XLogo…). The package binaries are
+   NOT in the export, so this system substitutes Material Symbols Rounded from Google Fonts
+   — closest match in stroke weight and geometry. Brand/social marks come from Simple Icons
+   (https://cdn.simpleicons.org/<slug>/<hex>) as <img>, since Material Symbols has none. */
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block");
+
+:root {
+  --font-icon: "Material Symbols Rounded"; /* @kind font */
+  --icon-size-sm: 1rem;
+  --icon-size: 1.5rem;
+  --icon-size-lg: 2rem;
+}
+
+.ds-icon {
+  font-family: var(--font-icon);
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
