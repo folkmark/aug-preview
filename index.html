@@ -388,124 +388,13 @@
   <sc-if value="{{ isChallenge }}" hint-placeholder-val="{{ false }}">
   <main data-screen-label="The Challenge">
 
-    <svg aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
-      <defs>
-        <pattern id="bondA" width="104" height="26" patternUnits="userSpaceOnUse">
-          <rect width="104" height="26" fill="#255799"></rect>
-          <path d="M0.5,0 V26" fill="none" stroke="#fdfcfa" stroke-opacity="0.34" stroke-width="1.1"></path>
-        </pattern>
-        <pattern id="bondB" x="52" width="104" height="26" patternUnits="userSpaceOnUse">
-          <rect width="104" height="26" fill="#255799"></rect>
-          <path d="M0.5,0 V26" fill="none" stroke="#fdfcfa" stroke-opacity="0.34" stroke-width="1.1"></path>
-        </pattern>
-        <pattern id="bondRoad" x="26" width="104" height="26" patternUnits="userSpaceOnUse">
-          <rect width="104" height="26" fill="#d9c093"></rect>
-          <path d="M0.5,0 V26" fill="none" stroke="#020408" stroke-opacity="0.22" stroke-width="1.1"></path>
-        </pattern>
-        <g id="bankTops">
-          <g fill="#f8f5ee" stroke="#020408" stroke-opacity="0.14" stroke-width="1.2">
-            <polygon points="-480,-130 -104,-130 -29.1,-191.7 -405.1,-191.7"></polygon>
-            <polygon points="104,-130 260,-130 334.9,-191.7 178.9,-191.7"></polygon>
-            <polygon points="-104,0 -78,0 -3.1,-61.7 -29.1,-61.7"></polygon>
-          </g>
-          <g fill="#c4c1b9" stroke="#020408" stroke-opacity="0.16" stroke-width="1.2">
-            <polygon points="-104,-130 -104,0 -29.1,-61.7 -29.1,-191.7"></polygon>
-            <polygon points="-78,0 -78,208 -3.1,146.3 -3.1,-61.7"></polygon>
-            <polygon points="260,-130 260,208 334.9,146.3 334.9,-191.7"></polygon>
-          </g>
-        </g>
-        <g id="bankFronts" fill="#f6f2e8" stroke="#020408" stroke-opacity="0.16" stroke-width="1.2">
-          <path d="M-480,-130 L-104,-130 L-104,0 L-78,0 L-78,208 L-480,208 Z"></path>
-          <path d="M260,-130 L104,-130 L104,0 L78,0 L78,208 L260,208 Z"></path>
-        </g>
-        <g id="archBlockBack" style="opacity:clamp(0,(var(--p,1) - 0.06) * 9,1)">
-          <polygon points="-104,-130 104,-130 178.9,-191.7 -29.1,-191.7" fill="#a9c199" stroke="#4f6845" stroke-opacity="0.45" stroke-width="1.2"></polygon>
-          <path d="M78,0 A78 78 0 0 0 -78,0 L-3.1,-61.7 A78 78 0 0 1 152.9,-61.7 Z" fill="#6b8560" stroke="#4f6845" stroke-opacity="0.5" stroke-width="1.2"></path>
-        </g>
-        <path id="archBlockFront" d="M-104,0 L-104,-130 L104,-130 L104,0 L78,0 A78 78 0 0 0 -78,0 Z" fill="#8faa80" stroke="#4f6845" stroke-opacity="0.55" stroke-width="1.4" stroke-linejoin="round" style="opacity:clamp(0,(var(--p,1) - 0.06) * 9,1)"></path>
-        <g id="courses3d">
-          <polygon points="-480,-182 260,-182 334.9,-243.7 -405.1,-243.7" fill="#6689b7" stroke="#1d457a" stroke-opacity="0.5" stroke-width="1.2"></polygon>
-          <path d="M-364,-182 l74.9,-61.7 M-260,-182 l74.9,-61.7 M-156,-182 l74.9,-61.7 M-52,-182 l74.9,-61.7 M52,-182 l74.9,-61.7 M156,-182 l74.9,-61.7" fill="none" stroke="#1d457a" stroke-opacity="0.45" stroke-width="1.1"></path>
-          <polygon points="260,-182 260,-130 334.9,-191.7 334.9,-243.7" fill="#1d457a" stroke="#0e223d" stroke-opacity="0.4" stroke-width="1.2"></polygon>
-          <rect x="-480" y="-156" width="740" height="26" fill="url(#bondA)" stroke="#1d457a" stroke-opacity="0.6" stroke-width="1.2"></rect>
-          <rect x="-480" y="-182" width="740" height="26" fill="url(#bondB)" stroke="#1d457a" stroke-opacity="0.6" stroke-width="1.2"></rect>
-        </g>
-        <g id="coursesGhost" fill="var(--color-neutral-darkest-5)" stroke="#020408" stroke-opacity="0.32" stroke-width="1.4" stroke-dasharray="6 6">
-          <polygon points="-480,-182 260,-182 334.9,-243.7 -405.1,-243.7"></polygon>
-          <rect x="-480" y="-182" width="740" height="52"></rect>
-        </g>
-        <g id="worldLabs">
-          <polygon points="-320,-286 -268,-286 -193.1,-347.7 -245.1,-347.7" fill="#a9c199" stroke="#4f6845" stroke-opacity="0.45" stroke-width="1.2"></polygon>
-          <polygon points="-268,-286 -268,-208 -193.1,-269.7 -193.1,-347.7" fill="#6b8560" stroke="#4f6845" stroke-opacity="0.45" stroke-width="1.2"></polygon>
-          <rect x="-320" y="-286" width="52" height="78" fill="#8faa80" stroke="#4f6845" stroke-opacity="0.5" stroke-width="1.2"></rect>
-          <polygon points="-260,-312 -208,-312 -133.1,-373.7 -185.1,-373.7" fill="#a9c199" stroke="#4f6845" stroke-opacity="0.45" stroke-width="1.2"></polygon>
-          <polygon points="-208,-312 -208,-208 -133.1,-269.7 -133.1,-373.7" fill="#6b8560" stroke="#4f6845" stroke-opacity="0.45" stroke-width="1.2"></polygon>
-          <rect x="-260" y="-312" width="52" height="104" fill="#8faa80" stroke="#4f6845" stroke-opacity="0.5" stroke-width="1.2"></rect>
-          <polygon points="-200,-260 -148,-260 -73.1,-321.7 -125.1,-321.7" fill="#a9c199" stroke="#4f6845" stroke-opacity="0.45" stroke-width="1.2"></polygon>
-          <polygon points="-148,-260 -148,-208 -73.1,-269.7 -73.1,-321.7" fill="#6b8560" stroke="#4f6845" stroke-opacity="0.45" stroke-width="1.2"></polygon>
-          <rect x="-200" y="-260" width="52" height="52" fill="#8faa80" stroke="#4f6845" stroke-opacity="0.5" stroke-width="1.2"></rect>
-        </g>
-        <g id="worldSchool" stroke="#8a7550" stroke-opacity="0.45" stroke-width="1.2">
-          <polygon points="260,-286 260,-208 334.9,-269.7 334.9,-347.7" fill="#cdb489"></polygon>
-          <rect x="130" y="-286" width="130" height="78" fill="#e5d3ae"></rect>
-          <polygon points="118,-286 195,-338 269.9,-399.7 192.9,-347.7" fill="#cdb489"></polygon>
-          <polygon points="195,-338 272,-286 346.9,-347.7 269.9,-399.7" fill="#b89c72"></polygon>
-          <polygon points="118,-286 195,-338 272,-286" fill="#d9c093"></polygon>
-          <polygon points="204,-364 204,-338 222.7,-353.4 222.7,-379.4" fill="#cdb489"></polygon>
-          <polygon points="186,-364 204,-364 222.7,-379.4 204.7,-379.4" fill="#f2e3c6"></polygon>
-          <rect x="186" y="-364" width="18" height="26" fill="#e5d3ae"></rect>
-        </g>
-        <g id="road3d">
-          <polygon points="-480,-208 260,-208 334.9,-269.7 -405.1,-269.7" fill="#eddcb4" stroke="#8a7550" stroke-opacity="0.4" stroke-width="1.2"></polygon>
-          <path d="M-390,-208 l74.9,-61.7 M-286,-208 l74.9,-61.7 M-182,-208 l74.9,-61.7 M-78,-208 l74.9,-61.7 M26,-208 l74.9,-61.7 M130,-208 l74.9,-61.7 M234,-208 l74.9,-61.7" fill="none" stroke="#8a7550" stroke-opacity="0.4" stroke-width="1.1"></path>
-          <polygon points="260,-208 260,-182 334.9,-243.7 334.9,-269.7" fill="#c9b088" stroke="#8a7550" stroke-opacity="0.4" stroke-width="1.2"></polygon>
-          <rect x="-480" y="-208" width="740" height="26" fill="url(#bondRoad)" stroke="#8a7550" stroke-opacity="0.5" stroke-width="1.2"></rect>
-        </g>
-
-      </defs>
-    </svg>
-
     <section style="padding:clamp(4rem,7vw,7rem) 5%">
       <div style="margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:5rem;row-gap:3rem;align-items:center">
         <div>
           <h1 style="font-size:var(--text-h1);line-height:1.1;letter-spacing:-0.01em;font-weight:700;margin:0 0 1.5rem;text-wrap:pretty">The gap between what AI can do and what students need.</h1>
           <p style="font-size:var(--text-medium);line-height:1.5;font-weight:300;margin:0;text-wrap:pretty">AI is arriving in classrooms whether schools are ready or not. The danger is that some are rushing in without asking what AI can do well, what teachers uniquely bring, or what students actually need.</p>
         </div>
-        <figure style="margin:0">
-          <div style="position:relative;width:100%">
-            <svg viewBox="-340 -440 700 640" role="img" aria-label="A block-built roadway running from a cluster of sage lab towers on one side and a maple schoolhouse on the other, stopping at the edge of a chasm. A dashed outline shows the arch bridge that is not there." style="display:block;width:100%;height:auto">
-              <g transform="matrix(1,0.24,0,1,0,0)">
-                <use href="#bankTops"></use>
-                <use href="#bankFronts"></use>
-                <polygon points="-480,-182 -104,-182 -29.1,-243.7 -405.1,-243.7" fill="#6689b7" stroke="#1d457a" stroke-opacity="0.5" stroke-width="1.2"></polygon>
-                <polygon points="104,-182 260,-182 334.9,-243.7 178.9,-243.7" fill="#6689b7" stroke="#1d457a" stroke-opacity="0.5" stroke-width="1.2"></polygon>
-                <path d="M-364,-182 l74.9,-61.7 M-260,-182 l74.9,-61.7 M-156,-182 l74.9,-61.7 M156,-182 l74.9,-61.7" fill="none" stroke="#1d457a" stroke-opacity="0.45" stroke-width="1.1"></path>
-                <polygon points="260,-182 260,-130 334.9,-191.7 334.9,-243.7" fill="#1d457a" stroke="#0e223d" stroke-opacity="0.4" stroke-width="1.2"></polygon>
-                <rect x="-480" y="-156" width="376" height="26" fill="url(#bondA)" stroke="#1d457a" stroke-opacity="0.6" stroke-width="1.2"></rect>
-                <rect x="-480" y="-182" width="376" height="26" fill="url(#bondB)" stroke="#1d457a" stroke-opacity="0.6" stroke-width="1.2"></rect>
-                <rect x="104" y="-156" width="156" height="26" fill="url(#bondA)" stroke="#1d457a" stroke-opacity="0.6" stroke-width="1.2"></rect>
-                <rect x="104" y="-182" width="156" height="26" fill="url(#bondB)" stroke="#1d457a" stroke-opacity="0.6" stroke-width="1.2"></rect>
-                <polygon points="-480,-208 -104,-208 -29.1,-269.7 -405.1,-269.7" fill="#eddcb4" stroke="#8a7550" stroke-opacity="0.4" stroke-width="1.2"></polygon>
-                <polygon points="104,-208 260,-208 334.9,-269.7 178.9,-269.7" fill="#eddcb4" stroke="#8a7550" stroke-opacity="0.4" stroke-width="1.2"></polygon>
-                <path d="M-390,-208 l74.9,-61.7 M-286,-208 l74.9,-61.7 M-182,-208 l74.9,-61.7 M130,-208 l74.9,-61.7 M234,-208 l74.9,-61.7" fill="none" stroke="#8a7550" stroke-opacity="0.4" stroke-width="1.1"></path>
-                <polygon points="260,-208 260,-182 334.9,-243.7 334.9,-269.7" fill="#c9b088" stroke="#8a7550" stroke-opacity="0.4" stroke-width="1.2"></polygon>
-                <rect x="-480" y="-208" width="376" height="26" fill="url(#bondRoad)" stroke="#8a7550" stroke-opacity="0.5" stroke-width="1.2"></rect>
-                <rect x="104" y="-208" width="156" height="26" fill="url(#bondRoad)" stroke="#8a7550" stroke-opacity="0.5" stroke-width="1.2"></rect>
-                <g fill="var(--color-neutral-darkest-5)" stroke="#020408" stroke-opacity="0.3" stroke-width="1.4" stroke-dasharray="6 6">
-                  <polygon points="-104,-208 104,-208 178.9,-269.7 -29.1,-269.7"></polygon>
-                  <path d="M-104,-208 L104,-208 L104,0 L78,0 A78 78 0 0 0 -78,0 L-104,0 Z"></path>
-                </g>
-                <use href="#worldLabs"></use>
-                <use href="#worldSchool"></use>
-              </g>
-            </svg>
-            <span style="position:absolute;left:49%;top:75%;transform:translate(-50%,-50%);font-size:var(--text-small);font-weight:600;color:var(--brand-accent);white-space:nowrap">The gap</span>
-          </div>
-          <figcaption style="display:flex;justify-content:space-between;gap:1rem;margin-top:1.25rem;padding-top:0.75rem;border-top:1px solid var(--color-neutral-darkest-15)">
-            <span style="font-size:var(--text-small);font-weight:600">What AI can do</span>
-            <span style="font-size:var(--text-small);font-weight:600">What students need</span>
-          </figcaption>
-        </figure>
+        <div role="img" aria-label="Photography to supply: a teacher and students working together in a classroom" style="aspect-ratio:1/1;width:100%;border-radius:var(--radius-image);display:flex;align-items:center;justify-content:center;padding:1.5rem;background:var(--color-ecru-white);text-align:center"><p style="font-weight:600;font-size:var(--text-small);line-height:1.5;margin:0;color:var(--text-muted);text-wrap:pretty">Photography to supply — a teacher and students working together in a classroom</p></div>
       </div>
     </section>
 
@@ -520,51 +409,12 @@
     </section>
 
     <section style="padding:clamp(4rem,7vw,7rem) 5%">
-      <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:80rem">
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:5rem;row-gap:2rem">
-          <h2 style="font-size:var(--text-h2);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0;text-wrap:pretty">And the technology to support it is lacking.</h2>
+      <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:5rem;row-gap:3rem;align-items:center">
+        <div>
+          <h2 style="font-size:var(--text-h2);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1.5rem;text-wrap:pretty">And the technology to support it is lacking.</h2>
           <p style="font-size:var(--text-medium);line-height:1.5;font-weight:300;margin:0;text-wrap:pretty">Ed tech companies build the apps teachers and students use. The big AI labs build the underlying models that power these apps. What's missing is the layer in between: the foundational capabilities that let AI understand what a student knows, measure skills as complex as critical thinking, and adapt to what's happening in a real classroom.</p>
         </div>
-        <div data-build="" style="margin-top:clamp(3rem,6vw,5rem);display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:4rem;row-gap:3rem;align-items:center">
-          <svg viewBox="-340 -502 700 702" role="img" aria-label="An exploded axonometric of an arch bridge built from unit blocks: the sage arch block at the base, the spandrel course lifted away above it as an empty dashed outline, and the roadway deck floating on top." style="display:block;width:100%;height:auto">
-            <g transform="matrix(1,0.24,0,1,0,0)">
-              <use href="#bankTops"></use>
-              <use href="#archBlockBack"></use>
-              <use href="#bankFronts"></use>
-              <use href="#archBlockFront"></use>
-              <g transform="translate(0,-52)" style="opacity:clamp(0,(var(--p,1) - 0.58) * 9,1)"><use href="#coursesGhost"></use></g>
-              <g transform="translate(0,-130)" style="opacity:clamp(0,(var(--p,1) - 0.4) * 9,1)"><use href="#road3d"></use></g>
-            </g>
-            <g font-size="19" font-weight="600" text-anchor="middle" dominant-baseline="central">
-              <g style="opacity:clamp(0,(var(--p,1) - 0.7) * 9,1)">
-                <circle cx="98" cy="-345" r="18" fill="var(--surface-page)" stroke="#020408" stroke-opacity="0.25" stroke-width="1.2"></circle>
-                <text x="98" y="-345" fill="#020408">01</text>
-              </g>
-              <g style="opacity:clamp(0,(var(--p,1) - 0.78) * 9,1)">
-                <circle cx="37" cy="-250" r="18" fill="var(--surface-page)" stroke="#020408" stroke-opacity="0.25" stroke-width="1.2"></circle>
-                <text x="37" y="-250" fill="#255799">02</text>
-              </g>
-              <g style="opacity:clamp(0,(var(--p,1) - 0.86) * 9,1)">
-                <circle cx="0" cy="-104" r="18" fill="#fdfcfa" stroke="#4f6845" stroke-opacity="0.5" stroke-width="1.2"></circle>
-                <text x="0" y="-104" fill="#020408">03</text>
-              </g>
-            </g>
-          </svg>
-          <div style="display:flex;flex-direction:column;gap:2.5rem">
-            <div style="border-top:1px solid var(--color-neutral-darkest-15);padding-top:1.25rem">
-              <p style="font-weight:600;font-size:var(--text-regular);margin:0 0 0.5rem"><span style="color:var(--brand-accent)">01</span>&nbsp;&nbsp;Applications</p>
-              <p style="font-size:var(--text-small);line-height:1.5;margin:0;text-wrap:pretty">The roadway. The tools teachers and students travel on every day, built by ed tech companies.</p>
-            </div>
-            <div style="border-top:1px solid var(--color-neutral-darkest-15);padding-top:1.25rem">
-              <p style="font-weight:600;font-size:var(--text-regular);margin:0 0 0.5rem"><span style="color:var(--brand-accent)">02</span>&nbsp;&nbsp;The missing layer</p>
-              <p style="font-size:var(--text-small);line-height:1.5;margin:0;text-wrap:pretty">The spandrel blocks. Education-specific capabilities that carry a flat, usable surface over a general-purpose span. Most of them don't exist yet.</p>
-            </div>
-            <div style="border-top:1px solid var(--color-neutral-darkest-15);padding-top:1.25rem">
-              <p style="font-weight:600;font-size:var(--text-regular);margin:0 0 0.5rem"><span style="color:var(--brand-accent)">03</span>&nbsp;&nbsp;Frontier models</p>
-              <p style="font-size:var(--text-small);line-height:1.5;margin:0;text-wrap:pretty">The arch. The span the large AI labs build — strong, general, and on its own, impossible to walk across.</p>
-            </div>
-          </div>
-        </div>
+        <div role="img" aria-label="Photography to supply: a researcher and engineer reviewing a prototype" style="aspect-ratio:3/2;width:100%;border-radius:var(--radius-image);display:flex;align-items:center;justify-content:center;padding:1.5rem;background:var(--color-ecru-white);text-align:center"><p style="font-weight:600;font-size:var(--text-small);line-height:1.5;margin:0;color:var(--text-muted);text-wrap:pretty">Photography to supply — a researcher and engineer reviewing a prototype</p></div>
       </div>
     </section>
 
@@ -594,23 +444,7 @@
           </div>
         </div>
       </div>
-      <div data-reveal="" data-build="" style="opacity:0;transition:opacity 400ms ease-in-out;margin:clamp(3rem,7vw,6rem) auto 0;max-width:44rem;position:relative">
-        <svg viewBox="-340 -440 700 630" role="img" aria-label="The finished arch bridge in axonometric, joining the lab towers to the schoolhouse: the sage arch block springs across the chasm, the spandrel course fills above it, and the roadway deck runs level from one side to the other." style="display:block;width:100%;height:auto">
-          <g transform="matrix(1,0.24,0,1,0,0)">
-            <use href="#bankTops"></use>
-            <use href="#archBlockBack"></use>
-            <use href="#bankFronts"></use>
-            <use href="#archBlockFront"></use>
-            <g style="opacity:clamp(0,(var(--p,1) - 0.4) * 20,1);transform:translate(0px,calc(clamp(0,(var(--p,1) - 0.4) * 4,1) * 45px - 45px))"><use href="#courses3d"></use></g>
-            <g style="opacity:clamp(0,(var(--p,1) - 0.58) * 20,1);transform:translate(0px,calc(clamp(0,(var(--p,1) - 0.58) * 4,1) * 70px - 70px))"><use href="#road3d"></use></g>
-            <g style="opacity:clamp(0,(var(--p,1) - 0.72) * 20,1)">
-              <use href="#worldLabs"></use>
-              <use href="#worldSchool"></use>
-            </g>
-          </g>
-        </svg>
-        <p style="margin:1.5rem auto 0;max-width:36rem;text-align:center;font-size:var(--text-small);line-height:1.5;text-wrap:pretty">The spandrel blocks are the layer we build: the education-specific capabilities that carry a road teachers and students can travel on over a span that was never shaped for a classroom.</p>
-      </div>
+      <div role="img" aria-label="Photography to supply: a wide shot of a classroom in session" data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-top:clamp(3rem,7vw,6rem);aspect-ratio:2/1;width:100%;border-radius:var(--radius-image);display:flex;align-items:center;justify-content:center;padding:1.5rem;background:var(--color-ecru-white);text-align:center"><p style="font-weight:600;font-size:var(--text-small);line-height:1.5;margin:0;color:var(--text-muted);text-wrap:pretty">Photography to supply — a wide shot of a classroom in session</p></div>
     </section>
 
   </main>
