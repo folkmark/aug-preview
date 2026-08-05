@@ -31,21 +31,51 @@ npx http-server . -p 8000 -c-1
 React and Babel load from unpkg at runtime, so the first paint needs network
 access.
 
+## Pages and URLs
+
+Each page has its own URL:
+
+| Page              | URL                 |
+| ----------------- | ------------------- |
+| Home              | `/`                 |
+| The Challenge     | `/the-challenge/`   |
+| Our Approach      | `/our-approach/`    |
+| Who We Are        | `/who-we-are/`      |
+| Follow Our Work   | `/follow-our-work/` |
+
+They all render from `index.html`, but the build writes a real file per route,
+so a direct link, a refresh, or a crawler gets that page from the server with a
+200 and its own `<title>` and description. In the browser the nav links are real
+`<a href>` elements — they open in a new tab, and back and forward work — and the
+router swaps pages client-side without a reload. `readRoute()` in `index.html`
+derives the site base from the path at load, so the same build works under the
+`/aug-preview/` project subpath and at a domain root.
+
+Route slugs live in two places that must agree: `ROUTES` and `TITLES` in
+`index.html`, and `PAGES` in `tools/build-site.mjs`.
+
+## Building
+
+```sh
+node tools/build-site.mjs _site           # site root
+node tools/build-site.mjs _site /aug-preview   # served under a subpath
+```
+
+The script assembles `_site`, then checks that every relative reference on every
+emitted page resolves inside the artifact and exits non-zero if one does not.
+`project/` is left out, which keeps the deploy at ~59 MB instead of ~290 MB.
+
 ## Publishing to GitHub Pages
 
-Either option serves the home page at the root of the Pages URL.
+`.github/workflows/pages.yml` builds and deploys on every push to `main`, and
+runs the build as a check on pull requests without deploying.
 
-**GitHub Actions (recommended).** In **Settings → Pages**, set **Source** to
-**GitHub Actions**. `.github/workflows/pages.yml` then builds and deploys on
-every push to `main`. It copies `index.html`, `support.js`, `scroll-world.js`,
-`assets/` and `_ds/` into the published site, adds a `404.html` fallback for the
-client-side routes, and fails the build if the page references a file that is
-not in the artifact. `project/` is excluded, which keeps the deploy at ~59 MB
-instead of ~290 MB.
-
-**Deploy from a branch.** In **Settings → Pages**, set **Source** to **Deploy
-from a branch**, branch `main`, folder `/ (root)`. This publishes the repository
-as-is, `project/` included.
+The repository's Pages **Source** must be **GitHub Actions** (Settings → Pages).
+The workflow sets that itself via `actions/configure-pages` with
+`enablement: true`. That also matters because the alternative — *Deploy from a
+branch* — publishes the repository as-is: no per-page route files, so every URL
+except `/` would 404, and its built-in `pages-build-deployment` run races this
+workflow for whichever finishes last.
 
 ### `.nojekyll` is load-bearing
 
