@@ -1,13 +1,13 @@
 name: Deploy site to GitHub Pages
 
-# Publishes the AugmentED site so the Pages URL opens straight onto the home
-# page. index.html and the files it references (assets/, _ds/, support.js) live
-# at the repository root; this job copies just those into the published site,
-# leaving the working material under project/ out of the deploy.
+# Builds and publishes the AugmentED site. tools/build-site.mjs assembles the
+# site — a file per page, the assets, .nojekyll and a 404.html — and fails if
+# the pages reference anything the artifact does not contain.
 
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -15,9 +15,10 @@ permissions:
   pages: write
   id-token: write
 
-# Let an in-flight deploy finish rather than cancelling it mid-publish.
+# Deploys all come off main, so they still serialise; pull request builds get
+# their own group rather than queueing behind a deploy.
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -26,47 +27,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Assemble site
-        run: |
-          set -euo pipefail
-          mkdir -p _site
-          cp index.html support.js scroll-world.js _site/
-          cp -R assets _site/assets
-          cp -R _ds _site/_ds
+      # The repository's Pages source has to be "GitHub Actions" for this deploy
+      # to be the one that serves. enablement switches it over, which also stops
+      # the built-in branch build from racing this workflow — and that build
+      # publishes the repository as-is, without the per-page route files.
+      - name: Configure Pages
+        id: pages
+        if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
-          # Pages runs Jekyll unless this marker is present, and Jekyll drops
-          # every directory whose name starts with an underscore — which would
-          # take _ds/ (the design tokens and component bundle) with it.
-          touch _site/.nojekyll
-
-          # The site routes client-side, so unknown paths should land on the
-          # home page rather than the default Pages 404.
-          cp _site/index.html _site/404.html
-
-      - name: Verify the assembled site
-        run: |
-          set -euo pipefail
-          test -s _site/index.html
-          test -f _site/.nojekyll
-          test -s _site/support.js
-          test -d _site/_ds
-          # Every relative src/href in the page must exist in the artifact.
-          missing=0
-          while read -r ref; do
-            [ -e "_site/$ref" ] || { echo "missing: $ref"; missing=1; }
-          done < <(grep -oE '(src|href)="[^"#][^":]*"' _site/index.html \
-                   | sed -E 's/^(src|href)="//; s/"$//' \
-                   | grep -vE '^(https?:|//|mailto:|data:)' \
-                   | sed 's|^\./||' | sort -u)
-          [ "$missing" -eq 0 ] || { echo "::error::assembled site has broken relative references"; exit 1; }
-          du -sh _site
+      # base_path is only needed for 404.html, which is served from arbitrary
+      # URLs and so cannot use relative references. On pull requests it is empty
+      # and the build falls back to "/" — enough to verify the pages resolve.
+      - name: Build site
+        run: node tools/build-site.mjs _site "${{ steps.pages.outputs.base_path }}"
 
       - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
         with:
           path: _site
 
   deploy:
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
