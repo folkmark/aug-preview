@@ -125,11 +125,11 @@
 
   <header style="position: sticky; top: 0; z-index: 900; display: flex; min-height: 4.5rem; width: 100%; align-items: center; padding-inline: 5%; background: var(--surface-page); border-bottom: 1px solid var(--color-neutral-darkest-15); border-style: none; border-color: #FAF9F500">
     <div style="margin-inline:auto;display:flex;width:100%;max-width:80rem;align-items:center;justify-content:space-between;gap:2rem">
-      <a href="#" onClick="{{ goHome }}" style="display:block;flex-shrink:0"><img src="assets/logo/logo-light.png" alt="augment^ed" style="width:168px;display:block"></a>
+      <a href="{{ hrefHome }}" onClick="{{ goHome }}" style="display:block;flex-shrink:0"><img src="assets/logo/logo-light.png" alt="augment^ed" style="width:168px;display:block"></a>
       <nav class="at-desktop" style="display:flex;align-items:center;gap:2.5rem">
-        <a href="#" onClick="{{ goChallenge }}">The Challenge</a>
-        <a href="#" onClick="{{ goApproach }}">Our Approach</a>
-        <a href="#" onClick="{{ goTeam }}">Who We Are</a>
+        <a href="{{ hrefChallenge }}" onClick="{{ goChallenge }}">The Challenge</a>
+        <a href="{{ hrefApproach }}" onClick="{{ goApproach }}">Our Approach</a>
+        <a href="{{ hrefTeam }}" onClick="{{ goTeam }}">Who We Are</a>
         <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" onClick="{{ goInvolved }}" size="sm" data-btn-size="sm" hint-size="150px,36px">Follow Our Work</x-import>
       </nav>
       <button class="at-mobile" onClick="{{ toggleNav }}" aria-label="Menu" style="display:flex;flex-direction:column;justify-content:center;gap:6px;width:44px;height:44px;padding:0;border:0;background:transparent;cursor:pointer">
@@ -141,10 +141,10 @@
 
   <sc-if value="{{ navOpen }}" hint-placeholder-val="{{ false }}">
     <div class="scheme-1 at-mobile" style="position:fixed;inset:4.5rem 0 0 0;z-index:800;background:var(--surface-page);padding:3rem 5%;display:flex;flex-direction:column;gap:2rem">
-      <a href="#" onClick="{{ goChallenge }}" style="font-size:var(--text-h4);font-weight:700;letter-spacing:-0.01em">The Challenge</a>
-      <a href="#" onClick="{{ goApproach }}" style="font-size:var(--text-h4);font-weight:700;letter-spacing:-0.01em">Our Approach</a>
-      <a href="#" onClick="{{ goTeam }}" style="font-size:var(--text-h4);font-weight:700;letter-spacing:-0.01em">Who We Are</a>
-      <a href="#" onClick="{{ goInvolved }}" style="font-size:var(--text-h4);font-weight:700;letter-spacing:-0.01em">Follow Our Work</a>
+      <a href="{{ hrefChallenge }}" onClick="{{ goChallenge }}" style="font-size:var(--text-h4);font-weight:700;letter-spacing:-0.01em">The Challenge</a>
+      <a href="{{ hrefApproach }}" onClick="{{ goApproach }}" style="font-size:var(--text-h4);font-weight:700;letter-spacing:-0.01em">Our Approach</a>
+      <a href="{{ hrefTeam }}" onClick="{{ goTeam }}" style="font-size:var(--text-h4);font-weight:700;letter-spacing:-0.01em">Who We Are</a>
+      <a href="{{ hrefInvolved }}" onClick="{{ goInvolved }}" style="font-size:var(--text-h4);font-weight:700;letter-spacing:-0.01em">Follow Our Work</a>
     </div>
   </sc-if>
 
@@ -1144,11 +1144,11 @@
         </div>
         <div style="display:flex;flex-direction:column;gap:0.75rem">
           <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.25rem">Explore</p>
-          <a href="#" onClick="{{ goChallenge }}" style="font-size:var(--text-small)">The Challenge</a>
-          <a href="#" onClick="{{ goApproach }}" style="font-size:var(--text-small)">Our Approach</a>
-          <a href="#" onClick="{{ goTeam }}" style="font-size:var(--text-small)">Who We Are</a>
+          <a href="{{ hrefChallenge }}" onClick="{{ goChallenge }}" style="font-size:var(--text-small)">The Challenge</a>
+          <a href="{{ hrefApproach }}" onClick="{{ goApproach }}" style="font-size:var(--text-small)">Our Approach</a>
+          <a href="{{ hrefTeam }}" onClick="{{ goTeam }}" style="font-size:var(--text-small)">Who We Are</a>
           <a href="#" style="font-size:var(--text-small)">Research</a>
-          <a href="#" onClick="{{ goInvolved }}" style="font-size:var(--text-small)">Get Involved</a>
+          <a href="{{ hrefInvolved }}" onClick="{{ goInvolved }}" style="font-size:var(--text-small)">Get Involved</a>
         </div>
         <div style="display:flex;flex-direction:column;gap:0.75rem">
           <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.25rem">AERDF</p>
@@ -1186,11 +1186,54 @@ const BAR = {
   transformOrigin: "center"
 };
 
+// Every page has its own URL. The pages still render from one bundle, but the
+// build emits a real file per route, so a direct link or a refresh loads that
+// page from the server rather than dropping the visitor on the home page.
+const ROUTES = [
+  ["challenge", "the-challenge"],
+  ["approach", "our-approach"],
+  ["team", "who-we-are"],
+  ["involved", "follow-our-work"]
+];
+
+const TITLES = {
+  home: "AugmentED | Bridging frontier AI and the classroom",
+  challenge: "The Challenge | AugmentED",
+  approach: "Our Approach | AugmentED",
+  team: "Who We Are | AugmentED",
+  involved: "Follow Our Work | AugmentED"
+};
+
+// The site sits under a repo subpath on GitHub Pages (/aug-preview/) but at the
+// root on a custom domain, so read the base off the current path by stripping a
+// known slug rather than hard-coding a prefix that would only hold in one place.
+function readRoute() {
+  // 404.html is served from whatever URL was missed, so the build states the
+  // real base there — otherwise the miss path would masquerade as one and every
+  // link on the page would hang off it.
+  const forced = typeof window.__siteBase === "string" ? window.__siteBase : null;
+  let p = location.pathname.replace(/[^/]*\.html$/, "");
+  if (p.charAt(p.length - 1) !== "/") p += "/";
+  for (let i = 0; i < ROUTES.length; i++) {
+    const tail = "/" + ROUTES[i][1] + "/";
+    if (p.length > tail.length - 1 && p.slice(-tail.length) === tail) {
+      return { base: forced || p.slice(0, p.length - (tail.length - 1)), page: ROUTES[i][0] };
+    }
+  }
+  return { base: forced || p, page: "home" };
+}
+
 class Component extends DCLogic {
-  state = { page: "home", navOpen: false, cycleStep: null };
-  lastPage = "home";
+  route = readRoute();
+  state = { page: this.route.page, navOpen: false, cycleStep: null };
+  lastPage = this.route.page;
 
   componentDidMount() {
+    document.title = TITLES[this.state.page] || TITLES.home;
+    // Back and forward move between pages the way they would on a normal site.
+    this.onPopState = () => this.show(readRoute().page);
+    window.addEventListener("popstate", this.onPopState);
+
     this.sweep = () => {
       const h = window.innerHeight || 800;
       document.querySelectorAll("[data-reveal]").forEach((el) => {
@@ -1406,6 +1449,7 @@ class Component extends DCLogic {
 
   componentWillUnmount() {
     if (this.heroRaf) cancelAnimationFrame(this.heroRaf);
+    window.removeEventListener("popstate", this.onPopState);
     window.removeEventListener("scroll", this.onScroll);
     window.removeEventListener("resize", this.onScroll);
     clearInterval(this.sweepTimer);
@@ -1425,14 +1469,36 @@ class Component extends DCLogic {
     if (this.arch) requestAnimationFrame(this.arch);
   }
 
+  // The URL a page lives at, relative to wherever the site is mounted.
+  href(page) {
+    for (let i = 0; i < ROUTES.length; i++) {
+      if (ROUTES[i][0] === page) return this.route.base + ROUTES[i][1] + "/";
+    }
+    return this.route.base;
+  }
+
+  // Render a page without touching history — used on boot, on back/forward,
+  // and by go() once it has pushed the new URL.
+  show(page) {
+    document.title = TITLES[page] || TITLES.home;
+    window.scrollTo(0, 0);
+    this.setState({ page: page, navOpen: false, cycleStep: null }, () => {
+      window.scrollTo(0, 0);
+      if (this.sweep) requestAnimationFrame(this.sweep);
+    });
+  }
+
   go(page) {
     return (e) => {
+      // The nav items are real links now, so leave modified clicks to the
+      // browser — "open in new tab" should open the page, not swap it here.
+      const link = e && e.currentTarget && e.currentTarget.tagName === "A";
+      if (link && (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button > 0)) return;
       if (e && e.preventDefault) e.preventDefault();
-      window.scrollTo(0, 0);
-      this.setState({ page: page, navOpen: false, cycleStep: null }, () => {
-        window.scrollTo(0, 0);
-        if (this.sweep) requestAnimationFrame(this.sweep);
-      });
+      if (window.history && window.history.pushState) {
+        try { window.history.pushState({ page: page }, "", this.href(page)); } catch (err) {}
+      }
+      this.show(page);
     };
   }
 
@@ -1546,6 +1612,11 @@ class Component extends DCLogic {
       isInvolved: this.state.page === "involved",
       goTeam: this.go("team"),
       goInvolved: this.go("involved"),
+      hrefHome: this.href("home"),
+      hrefChallenge: this.href("challenge"),
+      hrefApproach: this.href("approach"),
+      hrefTeam: this.href("team"),
+      hrefInvolved: this.href("involved"),
       navInvolvedStyle: this.navStyle("involved"),
       navTeamStyle: this.navStyle("team"),
       navOpen: open,
