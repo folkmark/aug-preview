@@ -1,0 +1,30 @@
+/* AugmentED type — Avenir LT Pro, self-hosted (the source's `globals.css` notes it must be).
+   Six graded faces mapped onto the four weights the system uses:
+     300 Light · 400 Book · 500 Roman · 600 Medium · 700 Heavy · 900 Black
+   Body copy is 400 (Book), button labels 500, eyebrows/meta 600 (Medium), headings 700 (Heavy). */
+
+@font-face { font-family: "Avenir\00ae"; font-style: normal; font-weight: 300; font-display: swap; src: url("../assets/fonts/AvenirLTPro-Light.otf") format("opentype") }
+@font-face { font-family: "Avenir\00ae"; font-style: italic; font-weight: 300; font-display: swap; src: url("../assets/fonts/AvenirLTPro-LightOblique.otf") format("opentype") }
+@font-face { font-family: "Avenir\00ae"; font-style: normal; font-weight: 400; font-display: swap; src: url("../assets/fonts/AvenirLTPro-Book.otf") format("opentype") }
+@font-face { font-family: "Avenir\00ae"; font-style: italic; font-weight: 400; font-display: swap; src: url("../assets/fonts/AvenirLTPro-BookOblique.otf") format("opentype") }
+@font-face { font-family: "Avenir\00ae"; font-style: normal; font-weight: 500; font-display: swap; src: url("../assets/fonts/AvenirLTPro-Roman.otf") format("opentype") }
+@font-face { font-family: "Avenir\00ae"; font-style: italic; font-weight: 500; font-display: swap; src: url("../assets/fonts/AvenirLTPro-Oblique.otf") format("opentype") }
+@font-face { font-family: "Avenir\00ae"; font-style: normal; font-weight: 600; font-display: swap; src: url("../assets/fonts/AvenirLTPro-Medium.otf") format("opentype") }
+@font-face { font-family: "Avenir\00ae"; font-style: italic; font-weight: 600; font-display: swap; src: url("../assets/fonts/AvenirLTPro-MediumOblique.otf") format("opentype") }
+@font-face { font-family: "Avenir\00ae"; font-style: normal; font-weight: 700; font-display: swap; src: url("../assets/fonts/AvenirLTPro-Heavy.otf") format("opentype") }
+@font-face { font-family: "Avenir\00ae"; font-style: italic; font-weight: 700; font-display: swap; src: url("../assets/fonts/AvenirLTPro-HeavyOblique.otf") format("opentype") }
+@font-face { font-family: "Avenir\00ae"; font-style: normal; font-weight: 900; font-display: swap; src: url("../assets/fonts/AvenirLTPro-Black.otf") format("opentype") }
+@font-face { font-family: "Avenir\00ae"; font-style: italic; font-weight: 900; font-display: swap; src: url("../assets/fonts/AvenirLTPro-BlackOblique.otf") format("opentype") }
+
+:root {
+  --font-core: "Avenir\00ae", "Avenir Next", -apple-system, "Segoe UI", sans-serif;
+  --font-heading: var(--font-core);
+  --font-body: var(--font-core);
+
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+}

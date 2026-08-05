@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+<rect width="1600" height="900" fill="#fdfcfa"></rect>
+<g transform="translate(240 60)">
+<circle cx="560" cy="390" r="192" fill="none" stroke="#020408" stroke-opacity="0.15" stroke-dasharray="2 7"></circle>
+<path d="M 757.1 333.5 A 205 205 0 0 0 630.1 197.4" fill="none" stroke="#020408" stroke-opacity="0.3" stroke-width="1.5" stroke-dasharray="5 6"></path>
+<polygon points="630.1,197.4 640.6,194.8 636.5,206.1" fill="#020408" fill-opacity="0.4"></polygon>
+<path d="M 616.5 587.1 A 205 205 0 0 0 752.6 460.1" fill="none" stroke="#020408" stroke-opacity="0.3" stroke-width="1.5" stroke-dasharray="5 6"></path>
+<polygon points="752.6,460.1 755.2,470.6 743.9,466.5" fill="#020408" fill-opacity="0.4"></polygon>
+<path d="M 362.9 446.5 A 205 205 0 0 0 489.9 582.6" fill="none" stroke="#020408" stroke-opacity="0.3" stroke-width="1.5" stroke-dasharray="5 6"></path>
+<polygon points="489.9,582.6 479.4,585.2 483.5,573.9" fill="#020408" fill-opacity="0.4"></polygon>
+<path d="M 503.5 192.9 A 205 205 0 0 0 367.4 319.9" fill="none" stroke="#020408" stroke-opacity="0.3" stroke-width="1.5" stroke-dasharray="5 6"></path>
+<polygon points="367.4,319.9 364.8,309.4 376.1,313.5" fill="#020408" fill-opacity="0.4"></polygon>
+<path d="M 628.9 149.7 A 250 250 0 0 1 800.3 321.1" fill="none" stroke="#255799" stroke-opacity="0.55" stroke-width="2"></path>
+<polygon points="800.3,321.1 790.1,312.6 804.5,308.4" fill="#255799"></polygon>
+<path d="M 800.3 458.9 A 250 250 0 0 1 628.9 630.3" fill="none" stroke="#255799" stroke-opacity="0.55" stroke-width="2"></path>
+<polygon points="628.9,630.3 637.4,620.1 641.6,634.5" fill="#255799"></polygon>
+<path d="M 491.1 630.3 A 250 250 0 0 1 319.7 458.9" fill="none" stroke="#255799" stroke-opacity="0.55" stroke-width="2"></path>
+<polygon points="319.7,458.9 329.9,467.4 315.5,471.6" fill="#255799"></polygon>
+<path d="M 319.7 321.1 A 250 250 0 0 1 491.1 149.7" fill="none" stroke="#255799" stroke-opacity="0.55" stroke-width="2"></path>
+<polygon points="491.1,149.7 482.6,159.9 478.4,145.5" fill="#255799"></polygon>
+<circle cx="560" cy="140" r="60" fill="#fefdfc" stroke="#020408" stroke-opacity="0.15"></circle>
+<g transform="translate(560.0 140.0) scale(1.632) translate(0.0 -9.5)"><polygon points="-17.0,0.0 0.0,9.5 0.0,28.5 -17.0,19.0" fill="#6689b7"></polygon><polygon points="0.0,9.5 17.0,0.0 17.0,19.0 0.0,28.5" fill="#255799"></polygon><polygon points="0.0,-9.5 17.0,0.0 0.0,9.5 -17.0,0.0" fill="#d3ddea"></polygon></g>
+<circle cx="810" cy="390" r="60" fill="#fefdfc" stroke="#020408" stroke-opacity="0.15"></circle>
+<g transform="translate(810.0 390.0) scale(0.912) translate(-17.0 -19.0)"><polygon points="-17.0,0.0 0.0,9.5 0.0,28.5 -17.0,19.0" fill="#6689b7"></polygon><polygon points="0.0,9.5 17.0,0.0 17.0,19.0 0.0,28.5" fill="#255799"></polygon><polygon points="0.0,-9.5 17.0,0.0 0.0,9.5 -17.0,0.0" fill="#d3ddea"></polygon><polygon points="0.0,9.5 17.0,19.0 17.0,38.0 0.0,28.5" fill="#255799"></polygon><polygon points="17.0,19.0 34.0,9.5 34.0,28.5 17.0,38.0" fill="#1d457a"></polygon><polygon points="17.0,0.0 34.0,9.5 17.0,19.0 0.0,9.5" fill="#e9eef4"></polygon><polygon points="17.0,19.0 34.0,28.5 34.0,47.5 17.0,38.0" fill="#6689b7"></polygon><polygon points="34.0,28.5 51.0,19.0 51.0,38.0 34.0,47.5" fill="#255799"></polygon><polygon points="34.0,9.5 51.0,19.0 34.0,28.5 17.0,19.0" fill="#d3ddea"></polygon></g>
+<circle cx="560" cy="640" r="60" fill="#fefdfc" stroke="#020408" stroke-opacity="0.15"></circle>
+<g transform="translate(560.0 640.0) scale(0.912) translate(0.0 -14.3)"><polygon points="-17.0,0.0 0.0,9.5 0.0,28.5 -17.0,19.0" fill="#6689b7"></polygon><polygon points="0.0,9.5 17.0,0.0 17.0,19.0 0.0,28.5" fill="#255799"></polygon><polygon points="0.0,-9.5 17.0,0.0 0.0,9.5 -17.0,0.0" fill="#d3ddea"></polygon><polygon points="0.0,9.5 17.0,19.0 17.0,38.0 0.0,28.5" fill="#255799"></polygon><polygon points="17.0,19.0 34.0,9.5 34.0,28.5 17.0,38.0" fill="#1d457a"></polygon><polygon points="17.0,0.0 34.0,9.5 17.0,19.0 0.0,9.5" fill="#e9eef4"></polygon><polygon points="-34.0,9.5 -17.0,19.0 -17.0,38.0 -34.0,28.5" fill="#6689b7"></polygon><polygon points="-17.0,19.0 0.0,9.5 0.0,28.5 -17.0,38.0" fill="#255799"></polygon><polygon points="-17.0,0.0 0.0,9.5 -17.0,19.0 -34.0,9.5" fill="#d3ddea"></polygon><polygon points="-17.0,-9.5 0.0,0.0 0.0,19.0 -17.0,9.5" fill="#255799"></polygon><polygon points="0.0,0.0 17.0,-9.5 17.0,9.5 0.0,19.0" fill="#1d457a"></polygon><polygon points="0.0,-19.0 17.0,-9.5 0.0,0.0 -17.0,-9.5" fill="#e9eef4"></polygon><polygon points="-17.0,19.0 0.0,28.5 0.0,47.5 -17.0,38.0" fill="#6689b7"></polygon><polygon points="0.0,28.5 17.0,19.0 17.0,38.0 0.0,47.5" fill="#255799"></polygon><polygon points="0.0,9.5 17.0,19.0 0.0,28.5 -17.0,19.0" fill="#d3ddea"></polygon></g>
+<circle cx="310" cy="390" r="60" fill="#fefdfc" stroke="#020408" stroke-opacity="0.15"></circle>
+<g transform="translate(310.0 390.0) scale(0.919) translate(-8.5 -4.3)"><polygon points="-17.0,0.0 0.0,9.5 0.0,28.5 -17.0,19.0" fill="#6689b7"></polygon><polygon points="0.0,9.5 17.0,0.0 17.0,19.0 0.0,28.5" fill="#255799"></polygon><polygon points="0.0,-9.5 17.0,0.0 0.0,9.5 -17.0,0.0" fill="#d3ddea"></polygon><polygon points="0.0,9.5 17.0,19.0 17.0,38.0 0.0,28.5" fill="#255799"></polygon><polygon points="17.0,19.0 34.0,9.5 34.0,28.5 17.0,38.0" fill="#1d457a"></polygon><polygon points="17.0,0.0 34.0,9.5 17.0,19.0 0.0,9.5" fill="#e9eef4"></polygon><polygon points="-17.0,-19.9 0.0,-10.4 0.0,8.6 -17.0,-0.9" fill="#6689b7"></polygon><polygon points="0.0,-10.4 17.0,-19.9 17.0,-0.9 0.0,8.6" fill="#255799"></polygon><polygon points="0.0,-29.4 17.0,-19.9 0.0,-10.4 -17.0,-19.9" fill="#d3ddea"></polygon></g>
+<text x="560" y="24" font-family="Avenir®, Avenir Next, Avenir, Helvetica, sans-serif" font-size="13" font-weight="600" letter-spacing="1.3" text-anchor="middle" fill="#255799" fill-opacity="1">01</text>
+<text x="560" y="48" font-family="Avenir®, Avenir Next, Avenir, Helvetica, sans-serif" font-size="24" font-weight="700" letter-spacing="-0.24" text-anchor="middle" fill="#020408" fill-opacity="1">Define the role</text>
+<text x="890" y="372" font-family="Avenir®, Avenir Next, Avenir, Helvetica, sans-serif" font-size="13" font-weight="600" letter-spacing="1.3" text-anchor="start" fill="#255799" fill-opacity="1">02</text>
+<text x="890" y="396" font-family="Avenir®, Avenir Next, Avenir, Helvetica, sans-serif" font-size="24" font-weight="700" letter-spacing="-0.24" text-anchor="start" fill="#020408" fill-opacity="1">Build the</text>
+<text x="890" y="425" font-family="Avenir®, Avenir Next, Avenir, Helvetica, sans-serif" font-size="24" font-weight="700" letter-spacing="-0.24" text-anchor="start" fill="#020408" fill-opacity="1">capabilities</text>
+<text x="560" y="740" font-family="Avenir®, Avenir Next, Avenir, Helvetica, sans-serif" font-size="13" font-weight="600" letter-spacing="1.3" text-anchor="middle" fill="#255799" fill-opacity="1">03</text>
+<text x="560" y="764" font-family="Avenir®, Avenir Next, Avenir, Helvetica, sans-serif" font-size="24" font-weight="700" letter-spacing="-0.24" text-anchor="middle" fill="#020408" fill-opacity="1">Co-design the applications</text>
+<text x="230" y="372" font-family="Avenir®, Avenir Next, Avenir, Helvetica, sans-serif" font-size="13" font-weight="600" letter-spacing="1.3" text-anchor="end" fill="#255799" fill-opacity="1">04</text>
+<text x="230" y="396" font-family="Avenir®, Avenir Next, Avenir, Helvetica, sans-serif" font-size="24" font-weight="700" letter-spacing="-0.24" text-anchor="end" fill="#020408" fill-opacity="1">Test, learn,</text>
+<text x="230" y="425" font-family="Avenir®, Avenir Next, Avenir, Helvetica, sans-serif" font-size="24" font-weight="700" letter-spacing="-0.24" text-anchor="end" fill="#020408" fill-opacity="1">begin again.</text>
+<text x="560" y="322" font-family="Avenir®, Avenir Next, Avenir, Helvetica, sans-serif" font-size="16" font-weight="600" letter-spacing="0" text-anchor="middle" fill="#255799" fill-opacity="1">Our Approach</text>
+<text x="560" y="372" font-family="Avenir®, Avenir Next, Avenir, Helvetica, sans-serif" font-size="40" font-weight="700" letter-spacing="-0.24" text-anchor="middle" fill="#020408" fill-opacity="1">The Co-Design</text>
+<text x="560" y="418" font-family="Avenir®, Avenir Next, Avenir, Helvetica, sans-serif" font-size="40" font-weight="700" letter-spacing="-0.24" text-anchor="middle" fill="#020408" fill-opacity="1">Cycle</text>
+<line x1="540" y1="446" x2="580" y2="446" stroke="#020408" stroke-opacity="0.15"></line>
+<text x="560" y="476" font-family="Avenir®, Avenir Next, Avenir, Helvetica, sans-serif" font-size="15" font-weight="400" letter-spacing="0" text-anchor="middle" fill="#020408" fill-opacity="0.7">What we learn informs the</text>
+<text x="560" y="498" font-family="Avenir®, Avenir Next, Avenir, Helvetica, sans-serif" font-size="15" font-weight="400" letter-spacing="0" text-anchor="middle" fill="#020408" fill-opacity="0.7">next turn of the cycle.</text>
+<line x1="0" y1="734" x2="26" y2="734" stroke="#255799" stroke-width="2"></line><polygon points="34,734 26,730 26,738" fill="#255799"></polygon>
+<text x="46" y="739" font-family="Avenir®, Avenir Next, Avenir, Helvetica, sans-serif" font-size="14" font-weight="400" letter-spacing="0" text-anchor="start" fill="#020408" fill-opacity="0.7">Each stage feeds the next.</text>
+<line x1="8" y1="762" x2="34" y2="762" stroke="#020408" stroke-opacity="0.3" stroke-width="1.5" stroke-dasharray="5 6"></line><polygon points="0,762 8,758 8,766" fill="#020408" fill-opacity="0.4"></polygon>
+<text x="46" y="767" font-family="Avenir®, Avenir Next, Avenir, Helvetica, sans-serif" font-size="14" font-weight="400" letter-spacing="0" text-anchor="start" fill="#020408" fill-opacity="0.7">And reshapes the one before it.</text>
+</g>
+</svg>
