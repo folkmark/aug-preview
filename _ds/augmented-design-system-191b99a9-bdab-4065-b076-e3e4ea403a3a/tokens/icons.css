@@ -4,7 +4,27 @@
    NOT in the export, so this system substitutes Material Symbols Rounded from Google Fonts
    — closest match in stroke weight and geometry. Brand/social marks come from Simple Icons
    (https://cdn.simpleicons.org/<slug>/<hex>) as <img>, since Material Symbols has none. */
-@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block");
+/* Self-hosted and subsetted to the five glyphs this site can render. The full
+   variable font Google serves for this family is 5,348,916 bytes — every page was
+   fetching all ~3,600 icons, render-blocking under font-display:block, to draw a
+   chevron. The subset below is 6,144 bytes.
+
+   Frozen by construction: a new icon name needs a new subset. Regenerate with
+
+     curl -sS "https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded\
+   :opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200\
+   &icon_names=check,chevron_right,image,keyboard_arrow_down,language&display=block"
+
+   then download the .woff2 it points at. The name list must cover both the icons
+   named in index.html (language, chevron_right, check) and the ones _ds_bundle.js
+   emits on its own (keyboard_arrow_down in Select, image in the media placeholder). */
+@font-face {
+  font-family: "Material Symbols Rounded";
+  font-style: normal;
+  font-weight: 100 700;
+  font-display: swap;
+  src: url("../assets/fonts/material-symbols-rounded-subset.woff2") format("woff2");
+}
 
 :root {
   --font-icon: "Material Symbols Rounded"; /* @kind font */

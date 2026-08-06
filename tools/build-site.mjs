@@ -46,7 +46,7 @@ const PAGES = [
   },
 ];
 
-const COPY_FILES = ['support.js', 'scroll-world.js'];
+const COPY_FILES = ['support.js'];
 const COPY_DIRS = ['assets', '_ds'];
 
 const escapeAttr = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
@@ -97,6 +97,13 @@ fs.writeFileSync(path.join(outDir, 'index.html'), home);
 for (const file of COPY_FILES) fs.copyFileSync(path.join(root, file), path.join(outDir, file));
 for (const dir of COPY_DIRS) copyDir(path.join(root, dir), path.join(outDir, dir));
 
+// Pages reads the custom domain from a CNAME in the published artifact, not from the
+// repository, so leaving it behind here silently drops the site back to its
+// github.io address on the next deploy. Optional: the repo builds fine without one.
+if (fs.existsSync(path.join(root, 'CNAME'))) {
+  fs.copyFileSync(path.join(root, 'CNAME'), path.join(outDir, 'CNAME'));
+}
+
 for (const page of PAGES) {
   const dir = path.join(outDir, page.slug);
   fs.mkdirSync(dir, { recursive: true });
@@ -125,9 +132,27 @@ function refsIn(html) {
   const out = new Set();
   for (const m of html.matchAll(/(?:src|href)="([^"]+)"/g)) out.add(m[1]);
   for (const m of html.matchAll(/<meta property="og:image" content="([^"]+)"/g)) out.add(m[1]);
-  // Frames the approach sequence builds by string concatenation, so no literal
-  // reference to them exists for the scan above to find.
-  for (const m of html.matchAll(/"((?:\.\.\/|\/)?[\w./-]*assets\/approach\/a)"/g)) out.add(m[1] + '000.webp');
+  // The approach frames are built by string concatenation from ARCH_FRAMES, so no
+  // literal reference to them exists for the scan above to find. Read the list off
+  // the page and check every frame in it: a sequence that ships half-encoded has to
+  // fail the build here rather than 404 in the browser. Both halves are required —
+  // a rename that leaves one behind checks nothing at all, silently.
+  // Every frame exists in each cut of the plate — the full one and the mobile crop —
+  // so check the cross product. Shipping one cut without the other is the failure a
+  // phone would hit and a desktop would not.
+  const stem = html.match(/"((?:\.\.\/|\/)?[\w./-]*assets\/approach\/ap)"/);
+  const list = html.match(/ARCH_FRAMES\s*=\s*\[([\d,\s]*)\]/);
+  const cuts = html.match(/ARCH_CROP\s*=\s*\{([^}]*\}[^}]*)\}/);
+  if (!stem || !list || !cuts) {
+    problems.push('approach frame references are no longer readable — check the ARCH_FRAMES scan');
+  } else {
+    const variants = [...cuts[1].matchAll(/(?:^|,)\s*"?([a-z]*)"?\s*:\s*\{/g)].map((m) => m[1]);
+    for (const n of list[1].split(',')) {
+      const f = n.trim();
+      if (!f) continue;
+      for (const v of variants) out.add(stem[1] + f.padStart(4, '0') + v + '.webp');
+    }
+  }
   return [...out].filter(
     (r) =>
       r &&

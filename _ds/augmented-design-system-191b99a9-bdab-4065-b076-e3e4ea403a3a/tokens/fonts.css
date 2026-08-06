@@ -1,21 +1,21 @@
-/* AugmentED type — Avenir LT Pro, self-hosted (the source's `globals.css` notes it must be).
-   Six graded faces mapped onto the four weights the system uses:
+/* AugmentED type — Avenir LT Pro, self-hosted (the source globals.css notes it must be).
+   Six graded faces mapped onto the weights the system uses:
      300 Light · 400 Book · 500 Roman · 600 Medium · 700 Heavy · 900 Black
-   Body copy is 400 (Book), button labels 500, eyebrows/meta 600 (Medium), headings 700 (Heavy). */
+   Body copy is 400 (Book), button labels 500, eyebrows/meta 600 (Medium), headings 700 (Heavy).
 
-@font-face { font-family: "Avenir\00ae"; font-style: normal; font-weight: 300; font-display: swap; src: url("../assets/fonts/AvenirLTPro-Light.otf") format("opentype") }
-@font-face { font-family: "Avenir\00ae"; font-style: italic; font-weight: 300; font-display: swap; src: url("../assets/fonts/AvenirLTPro-LightOblique.otf") format("opentype") }
-@font-face { font-family: "Avenir\00ae"; font-style: normal; font-weight: 400; font-display: swap; src: url("../assets/fonts/AvenirLTPro-Book.otf") format("opentype") }
-@font-face { font-family: "Avenir\00ae"; font-style: italic; font-weight: 400; font-display: swap; src: url("../assets/fonts/AvenirLTPro-BookOblique.otf") format("opentype") }
-@font-face { font-family: "Avenir\00ae"; font-style: normal; font-weight: 500; font-display: swap; src: url("../assets/fonts/AvenirLTPro-Roman.otf") format("opentype") }
-@font-face { font-family: "Avenir\00ae"; font-style: italic; font-weight: 500; font-display: swap; src: url("../assets/fonts/AvenirLTPro-Oblique.otf") format("opentype") }
-@font-face { font-family: "Avenir\00ae"; font-style: normal; font-weight: 600; font-display: swap; src: url("../assets/fonts/AvenirLTPro-Medium.otf") format("opentype") }
-@font-face { font-family: "Avenir\00ae"; font-style: italic; font-weight: 600; font-display: swap; src: url("../assets/fonts/AvenirLTPro-MediumOblique.otf") format("opentype") }
-@font-face { font-family: "Avenir\00ae"; font-style: normal; font-weight: 700; font-display: swap; src: url("../assets/fonts/AvenirLTPro-Heavy.otf") format("opentype") }
-@font-face { font-family: "Avenir\00ae"; font-style: italic; font-weight: 700; font-display: swap; src: url("../assets/fonts/AvenirLTPro-HeavyOblique.otf") format("opentype") }
-@font-face { font-family: "Avenir\00ae"; font-style: normal; font-weight: 900; font-display: swap; src: url("../assets/fonts/AvenirLTPro-Black.otf") format("opentype") }
-@font-face { font-family: "Avenir\00ae"; font-style: italic; font-weight: 900; font-display: swap; src: url("../assets/fonts/AvenirLTPro-BlackOblique.otf") format("opentype") }
+   WOFF2 rather than the OTFs these were delivered as: the same CFF outlines wrapped in
+   Brotli, losslessly, at half the bytes — and the four faces a page actually matches are
+   fetched before it can paint text. Regenerate with tools/encode-fonts.mjs.
 
+   The italic faces are gone rather than converted. The site renders no italic text at
+   all, so no browser ever matched them; the originals are in project/renders/sources. */
+
+@font-face { font-family: "Avenir\00ae"; font-style: normal; font-weight: 300; font-display: swap; src: url("../assets/fonts/AvenirLTPro-Light.woff2") format("woff2") }
+@font-face { font-family: "Avenir\00ae"; font-style: normal; font-weight: 400; font-display: swap; src: url("../assets/fonts/AvenirLTPro-Book.woff2") format("woff2") }
+@font-face { font-family: "Avenir\00ae"; font-style: normal; font-weight: 500; font-display: swap; src: url("../assets/fonts/AvenirLTPro-Roman.woff2") format("woff2") }
+@font-face { font-family: "Avenir\00ae"; font-style: normal; font-weight: 600; font-display: swap; src: url("../assets/fonts/AvenirLTPro-Medium.woff2") format("woff2") }
+@font-face { font-family: "Avenir\00ae"; font-style: normal; font-weight: 700; font-display: swap; src: url("../assets/fonts/AvenirLTPro-Heavy.woff2") format("woff2") }
+@font-face { font-family: "Avenir\00ae"; font-style: normal; font-weight: 900; font-display: swap; src: url("../assets/fonts/AvenirLTPro-Black.woff2") format("woff2") }
 :root {
   --font-core: "Avenir\00ae", "Avenir Next", -apple-system, "Segoe UI", sans-serif;
   --font-heading: var(--font-core);
