@@ -85,7 +85,17 @@ const LAYERS = [
 // 37.5MiB, so a 256MiB budget holds three of them per plate and the nearest-frame
 // substitution would fire constantly. The 2560 masters stay as the PNGs in
 // "Falling Blocks", which is the archive.
-const WIDTHS = [1440];
+// 720 is the phone tier, and it was chosen by the window arithmetic, not by eye. A
+// frame pair decodes to width x height x 8 bytes whatever the WebP weighs, so at 1440
+// the default 128 MB budget holds five frames of the forty-eight-frame loop — measured
+// on a throttled phone, every draw of a scroll-through wanted a frame that was not
+// decoded yet. At 720 the same budget holds twenty-one and each decode costs a
+// quarter, and the drawn frame tracked the wanted one within 0.6 frames on average.
+// 960 was encoded and measured too and sat in between on every axis; at the ~2000
+// device pixels a DPR-3 phone gives the plate, the three tiers are indistinguishable
+// in a screenshot, so the cheapest one that tracks wins. Which tier a viewport gets
+// is the stylesheet's decision — --fb-tier in assets/falling-blocks.css.
+const WIDTHS = [1440, 720];
 
 const MASTER = { w: 2560, h: 3840 };
 const ENCODER = { quality: 82, alphaQuality: 100, effort: 6, smartSubsample: true };

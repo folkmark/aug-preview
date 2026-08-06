@@ -35,6 +35,10 @@
      frames        frame count                        (48)
      layers        comma list, back to front           ("bottom,top")
      width         encoded width to load               (1440)
+                   — the fallback only. The stylesheet names the width each viewport
+                   actually scrubs via the --fb-tier custom property, re-read every
+                   frame, so the breakpoint that changes the layout is also the one
+                   that picks the file. See assets/falling-blocks.css.
      revolutions   tumbles across the section          (0.6)
      budget-mb     resident decoded-bitmap ceiling     (128)
      min-width     below this the still is shown       (901)
@@ -132,7 +136,7 @@
       this.base = this.getAttribute('base') || '';
       this.N = Math.max(1, num(this, 'frames', 48) | 0);
       this.layers = names;
-      this.tier = num(this, 'width', 1440) | 0;
+      this.tier = this.tierWanted();
       this.revolutions = num(this, 'revolutions', 0.6);
       this.budget = num(this, 'budget-mb', 128) * 1048576;
       this.minWidth = num(this, 'min-width', 901);
@@ -220,11 +224,23 @@
       else if (mq.removeListener) mq.removeListener(this._gate);
     }
 
+    // Which encoded width this viewport should be scrubbing. From the stylesheet, not
+    // from a media query kept here: the breakpoint that changes the page's layout is
+    // the one that picks the file, and a second copy of it in JS is free to drift.
+    // The attribute is the fallback for a host whose stylesheet sets nothing — and for
+    // the moment at boot before the stylesheet has been applied, which frame()'s
+    // re-read then corrects on the first tick.
+    tierWanted() {
+      var v = parseFloat(getComputedStyle(this).getPropertyValue('--fb-tier'));
+      return (isFinite(v) && v > 0 ? v : num(this, 'width', 1440)) | 0;
+    }
+
     // Bandwidth is the one signal with no media query behind it. It never reaches the
-    // motion decision on its own account — with a single encoded width there is no
-    // smaller tier to drop to, and decoding a 1280 file at 640 saves no bytes at all,
-    // so the only thing that honours the preference is not fetching 96 frames. When a
-    // second tier is added this becomes a width change and stops touching motion.
+    // motion decision on its own account. There is a smaller tier now, but save-data
+    // and a metered connection still get the still rather than the cheap animation:
+    // the small tier exists to make the motion affordable to decode, not to make it
+    // affordable to download, and someone who asked for less data has asked for less
+    // data — a megabyte of frames is not an answer to that.
     thin() {
       var c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
       if (!c) return false;
@@ -425,6 +441,24 @@
     frame() {
       if (!this.offsetHeight) return false;
       var stage = this.stage;
+
+      // A tier flip is a different file for the same frame, so everything held is the
+      // wrong picture. free() bumps the generation, which strands every in-flight
+      // decode of the old width, and the canvases keep their last frame — the tags
+      // they carry name the old tier, so the first new-width bitmap to land redraws
+      // them. Between the two there is never a blank plate, just a briefly stale one.
+      // Checked here rather than behind its own media query because a resize is
+      // already what wakes this loop, and the stylesheet owns where the line is.
+      var tier = this.tierWanted();
+      if (tier !== this.tier) {
+        this.tier = tier;
+        this.free(-1);
+        // drawn must reopen too: draw() returns early on "same index already drawn",
+        // and after a flip the same index is a different picture. The per-canvas tag
+        // alone cannot save this — the early return is upstream of the tag check.
+        this.drawn = -1;
+        this.plan();
+      }
 
       // The sticky offset comes from the stylesheet rather than a second copy of the
       // header height here: the value that pins the stage and the value the progress
