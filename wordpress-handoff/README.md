@@ -103,7 +103,8 @@ Roughly 150 custom properties on `:root`. The ones product code should use:
   Every section carries exactly one. `schemes.css` says not to invent new ones.
 
 **Fonts are self-hosted Avenir LT Pro** (WOFF2 in `_ds/.../assets/fonts/`, OTF originals
-in `project/uploads/`). Avenir is licensed, not free — confirm the licence covers the new
+originals are no longer in the repository — see below). Avenir is licensed, not free — the
+WOFF2 here are a conversion of a licensed original, so confirm the licence covers the new
 host before deploying. `--font-heading` and `--font-body` both resolve to it.
 
 ---
@@ -118,15 +119,19 @@ host before deploying. `--font-heading` and `--font-body` both resolve to it.
 | `assets/approach/ap*.webp` | the Approach sequence, every frame in two cuts | filenames load-bearing — see §6 |
 | `assets/approach/manifest.json` | what the encoder produced | frame list, beats, cut sizes |
 | `assets/approach.js` / `.css` | the Approach scrub | portable, see §6 |
-| `assets/blocks/*.webp` | 6 wooden-block cutouts | **now unused** — the hero that showed them was replaced. Keep only if a future section wants them |
 | `assets/images/`, `assets/team/`, `assets/icons/`, `assets/logo/` | photography, headshots, marks | plain images |
 
-`project/` is the working directory — Blender plates, source PNGs, notes, an abandoned
-video experiment. It is deliberately excluded from the deploy (~330 MB) and is not needed
-in WordPress, but `project/scratch/approach-render-map.md` is worth reading if anyone
-touches the Approach animation: it maps every Blender frame number to the beat and the
-message it carries, and is the source of the frame numbers in
-[`sections/approach.md`](sections/approach.md).
+**Master material is not in the repository.** The Blender plates, source PNGs, the frame
+archive, the original Webflow export and the Avenir OTFs used to live under `project/` and
+`Falling Blocks/`. They were 692 MB of a 702 MB checkout and the site serves none of them —
+each is an *input* to a tool in `tools/`, and every output those tools produce is committed.
+They are now kept off the repository, so **nothing in this handoff depends on them**: every
+file listed above is present and final.
+
+The render notes did stay, because they are worth reading if anyone touches the Approach
+animation: [`docs/approach-render-map.md`](../docs/approach-render-map.md) maps every Blender
+frame number to the beat and the message it carries, and is the source of the frame numbers
+in [`sections/approach.md`](sections/approach.md).
 
 ---
 
@@ -355,7 +360,7 @@ phone, both in `approach.css`. Longer means slower; the beats divide it between 
   the page's `data-reveal` sweeper — see §7.1. **Port that or strip the inline opacity, or
   the reduced-motion fallback renders invisible.**
 
-`project/scratch/approach-render-map.md` maps frames to beats to messages and is the
+`docs/approach-render-map.md` maps frames to beats to messages and is the
 authority for the numbers. The full markup contract and every attribute are documented at
 the top of `assets/approach.js`.
 
@@ -418,13 +423,16 @@ editable fields versus staying in templates:
 | command | what it does |
 |---|---|
 | `node tools/export-static.mjs` | re-renders `pages/` from the current site (needs `npm i --no-save playwright`) |
-| `node tools/encode-falling-blocks.mjs` | re-encodes the hero frames from the master PNGs in `Falling Blocks/` (needs `npm i --no-save sharp`) |
+| `node tools/encode-falling-blocks.mjs` | re-encodes the hero frames (needs `npm i --no-save sharp`) |
 | `node tools/encode-approach.mjs` | re-encodes the Approach frames and rewrites their manifest |
-| `node tools/encode-images.mjs` | re-encodes photography and headshots from `project/renders/sources` |
+| `node tools/encode-images.mjs` | re-encodes photography and headshots |
 | `node tools/build-site.mjs _site` | builds the current static site — useful for comparison while rebuilding |
 
-The encoders write the committed files directly and CI never runs them; the
-originals they read from live in `Falling Blocks/` and `project/renders/`.
+The encoders write the committed files directly and CI never runs them. **None of them is
+needed to rebuild the site in WordPress** — every file they produce is already committed and
+listed in §4. They only matter if the artwork itself is being re-rendered, and they read from
+masters that are no longer in the repository; each one prints the exact path to restore if
+you run it without them. The root `README.md` lists those paths.
 
 To change the hero's resolution, edit `WIDTHS` at the top of
 `tools/encode-falling-blocks.mjs` and re-run — it rewrites the frame directory and the

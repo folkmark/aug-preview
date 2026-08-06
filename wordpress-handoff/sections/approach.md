@@ -5,7 +5,7 @@ so it can be rebuilt in another stack without reading the original source. Every
 is read from the files that ship — `assets/approach.js`, `assets/approach.css`,
 `assets/approach/manifest.json`, `tools/encode-approach.mjs` — not estimated.
 
-**Read this with `project/scratch/approach-render-map.md`.** That document maps Blender frame
+**Read this with [`docs/approach-render-map.md`](../../docs/approach-render-map.md).** That document maps Blender frame
 numbers to the beats and messages they carry, and is the source of every frame number below.
 This one describes what the page does with them.
 
