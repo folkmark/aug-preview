@@ -10,7 +10,6 @@
 // device pixels per CSS pixel, which is what a phone at DPR 3 can resolve and no
 // more. The approach frames have their own encoder, tools/encode-approach.mjs.
 
-import sharp from 'sharp';
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -19,17 +18,26 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = path.join(root, 'project/renders/sources');
 const OUT = path.join(root, 'assets');
 
+// The source photography and renders are kept off the repository — see .gitignore. The
+// sized WebP under assets/ are committed, so the site builds without any of this.
+if (!fs.existsSync(SRC)) {
+  console.error(`No source images at ${path.relative(root, SRC)}/
+
+Restore the originals to that path to re-encode. Each job below names the file it
+wants, relative to it — for example images/classroom-morning.png and team/<name>.jpg.`);
+  process.exit(1);
+}
+
+// Imported here rather than at the top so the missing-masters message above wins: sharp
+// is not a repo dependency, and a bare ERR_MODULE_NOT_FOUND is a worse first thing to
+// read than "restore the masters".
+const sharp = await import('sharp').then((m) => m.default).catch(() => {
+  console.error('sharp is not installed. Run:\n\n  npm i --no-save sharp\n');
+  process.exit(1);
+});
+
 // width: the target in real pixels. The comment on each is the box it renders into.
 const JOBS = [
-  // Hero kit, decorative and aria-hidden, drifting behind the headline at 5-22% of
-  // the viewport — 86 CSS px at the very widest on a phone.
-  { in: 'blocks/arc-sage.png',      out: 'blocks/arc-sage.webp',      width: 512, alpha: true },
-  { in: 'blocks/arch-blue.png',     out: 'blocks/arch-blue.webp',     width: 512, alpha: true },
-  { in: 'blocks/brick-sage.png',    out: 'blocks/brick-sage.webp',    width: 384, alpha: true },
-  { in: 'blocks/column-maple.png',  out: 'blocks/column-maple.webp',  width: 256, alpha: true },
-  { in: 'blocks/quarter-maple.png', out: 'blocks/quarter-maple.webp', width: 320, alpha: true },
-  { in: 'blocks/ramp-maple.png',    out: 'blocks/ramp-maple.webp',    width: 448, alpha: true },
-
   // Full-width photography in a 3/2 box: 351 CSS px on a phone, ~640 on desktop.
   { in: 'images/classroom-morning.png', out: 'images/classroom-morning.webp', width: 1264 },
   { in: 'images/student-notes.png',     out: 'images/student-notes.webp',     width: 1264 },

@@ -1,0 +1,52 @@
+    <section data-anatomy="" onMouseLeave="{{ partClear }}" style="padding:clamp(4rem,7vw,7rem) 5% clamp(2rem,4vw,4rem)">
+      <div style="margin-inline:auto;max-width:80rem">
+        <div style="max-width:44rem;margin-bottom:clamp(2.5rem,5vw,4rem)">
+          <p style="font-weight:600;font-size:var(--text-regular);margin:0 0 1rem">The Metaphor</p>
+          <h2 style="font-size:var(--text-h2);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0;text-wrap:pretty">An arch stands only once every piece is in place.</h2>
+        </div>
+
+        <div class="anatomy-grid" style="display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);column-gap:clamp(2rem,5vw,4.5rem);align-items:center">
+          <div data-plate="" onMouseOver="{{ partHover }}" onFocusCapture="{{ partHover }}" style="position:relative;width:100%;aspect-ratio:1280/720">
+            <img src="assets/hero-frames/H6b_f0635.png" alt="The finished wooden voussoir arch spanning two school desks, its book keystone settled in place" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain">
+
+            <button data-part="1" type="button" aria-label="Springers" style="position:absolute;left:20.7%;top:72%"><span data-hit=""></span><span data-num="">01</span></button>
+            <button data-part="2" type="button" aria-label="Voussoirs" style="position:absolute;left:36.5%;top:40%"><span data-hit=""></span><span data-num="">02</span></button>
+            <button data-part="3" type="button" aria-label="Keystone" style="position:absolute;left:48%;top:22%"><span data-hit=""></span><span data-num="">03</span></button>
+            <button data-part="4" type="button" aria-label="The deck" style="position:absolute;left:68.5%;top:32.5%"><span data-hit=""></span><span data-num="">04</span></button>
+            <button data-part="5" type="button" aria-label="The gap" style="position:absolute;left:52%;top:83%"><span data-hit=""></span><span data-num="">05</span></button>
+          </div>
+
+          <div class="anatomy-copy" style="display:grid">
+            <div data-part-copy="0" style="grid-area:1/1;transition:opacity 200ms ease-in-out">
+              <p style="font-size:var(--text-medium);line-height:1.5;margin:0;text-wrap:pretty">It holds by compression: every wedge pushes against its neighbours, and none of them carries anything alone. That is the shape of the work — and the reason a missing piece is not a detail.</p>
+              <p style="font-weight:600;font-size:var(--text-small);margin:1.5rem 0 0;opacity:0.55">Hover a marker to read its part.</p>
+            </div>
+            <div data-part-copy="1" style="grid-area:1/1;opacity:0;transition:opacity 200ms ease-in-out">
+              <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">01 · Springers</p>
+              <h3 style="font-size:var(--text-h5);line-height:1.25;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.75rem;text-wrap:pretty">Frontier models and classrooms.</h3>
+              <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">The two banks the span rests on. General-purpose AI on one side, real teaching on the other. Both already exist; neither reaches the other.</p>
+            </div>
+            <div data-part-copy="2" style="grid-area:1/1;opacity:0;transition:opacity 200ms ease-in-out">
+              <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">02 · Voussoirs</p>
+              <h3 style="font-size:var(--text-h5);line-height:1.25;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.75rem;text-wrap:pretty">The capabilities.</h3>
+              <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">No single wedge holds anything. They carry load only as a set — validated methods that measure skill, track how concepts connect, and hold a standard. Most don't exist yet.</p>
+            </div>
+            <div data-part-copy="3" style="grid-area:1/1;opacity:0;transition:opacity 200ms ease-in-out">
+              <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">03 · Keystone</p>
+              <h3 style="font-size:var(--text-h5);line-height:1.25;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.75rem;text-wrap:pretty">Evidence.</h3>
+              <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Cut last, set last, and until it is in, nothing bears weight. Classroom data is what locks the rest of the structure — or tells us to take it apart.</p>
+            </div>
+            <div data-part-copy="4" style="grid-area:1/1;opacity:0;transition:opacity 200ms ease-in-out">
+              <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">04 · The deck</p>
+              <h3 style="font-size:var(--text-h5);line-height:1.25;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.75rem;text-wrap:pretty">Classroom applications.</h3>
+              <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">The surface teachers and students actually cross. It is the visible part, and the last part — it cannot be laid until the arch beneath it stands on its own.</p>
+            </div>
+            <div data-part-copy="5" style="grid-area:1/1;opacity:0;transition:opacity 200ms ease-in-out">
+              <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">05 · The gap</p>
+              <h3 style="font-size:var(--text-h5);line-height:1.25;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.75rem;text-wrap:pretty">What nobody has crossed yet.</h3>
+              <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Ed tech builds on one bank, the AI labs on the other, and the span between them is unbuilt. Our work is the span, not either bank.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
