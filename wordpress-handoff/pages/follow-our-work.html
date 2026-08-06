@@ -214,12 +214,11 @@
     [data-arch-beats] h3 { font-size: var(--text-h5) !important; }
     [data-arch-more] { display: none; }
   }
-  /* The two knobs assets/falling-blocks.css leaves to the host. Set here rather than
-     inline on the element because the x-dc compiler parses style attributes into an
-     object before React sees them, and React drops custom properties that arrive that
-     way — a --fb-sticky-top written inline would silently resolve to its 0px default
-     and the stage would pin under the header instead of below it. */
-  falling-blocks { --fb-sticky-top: 4.5rem; --fb-scrim: var(--surface-page); }
+  /* The header is sticky and 4.5rem tall, so the hero is a screen minus the header
+     rather than a whole one — otherwise it overhangs the fold by exactly the header
+     and the next section starts just off-screen. This doubles as the animation's
+     scroll budget, which the element reads off the rendered height. */
+  falling-blocks { height: calc(100vh - 4.5rem); height: calc(100svh - 4.5rem); }
 
   [data-slot="button"]:not([data-variant^="link"]) { padding-left: 2.25rem !important; padding-right: 2.25rem !important; }
   [data-slot="button"][data-btn-size="sm"] { padding-left: 1.875rem !important; padding-right: 1.875rem !important; }
