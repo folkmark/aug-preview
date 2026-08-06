@@ -60,7 +60,7 @@
      paint the brand page colour up front rather than flashing white first. -->
 <style>html, body { margin: 0; background: #fdfcfa; }</style>
 
-<link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/fonts.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/colors.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/typography.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/layout.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/icons.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/schemes.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/base.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/styles.css"><link rel="stylesheet" href="../../assets/falling-blocks.css"><script src="../../assets/falling-blocks.js" defer=""></script><style>body { margin: 0; background: var(--surface-page); }
+<link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/fonts.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/colors.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/typography.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/layout.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/icons.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/schemes.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/base.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/styles.css"><link rel="stylesheet" href="../../assets/falling-blocks.css"><script src="../../assets/falling-blocks.js" defer=""></script><link rel="stylesheet" href="../../assets/approach.css"><script src="../../assets/approach.js" defer=""></script><style>body { margin: 0; background: var(--surface-page); }
   /* The intrinsic width/height attributes are there to reserve the box before the
      bytes arrive, not to size the image: every one of these is sized by CSS, and
      without this the height attribute would fight a CSS width and squash it. Where
@@ -111,8 +111,6 @@
   [data-note] { position: absolute; inset: 0; opacity: 0; will-change: opacity; }
   [data-leader] { position: absolute; width: 1px; background: var(--color-neutral-darkest); opacity: 0.28; transform-origin: top center; transform: scaleY(0); }
   [data-dot] { position: absolute; width: 7px; height: 7px; border-radius: 100px; border: 1.5px solid var(--brand-accent); background: var(--surface-page); transform: translate(-50%, -50%); }
-  [data-arch-layer], [data-arch-copy] { will-change: opacity; }
-  [data-arch-tick]:hover { opacity: 0.7 !important; }
   /* The kit stage: the blocks hold still and selection changes which pieces a tool
      draws on. Structures are not faked in CSS — the cut-outs disagree on perspective,
      so assembly waits for renders of each arrangement built in 3D. */
@@ -157,63 +155,14 @@
      beneath it. The phone presentation is a band cut to its own aspect and has no
      such problem, which is why this is scoped to the width that uses the tall stage. */
   @media (min-width: 992px) and (max-aspect-ratio: 5/4) {
-    .hero-animated-rig { display: none !important; }
+    approach-scrub { display: none !important; }
     main .hero-static-block { display: grid !important; }
   }
-  [data-hero-static-mode="reduced"] .hero-animated-rig { display: none !important; }
+  /* The component hides itself under reduced motion — see assets/approach.css — so
+     only the stack it falls back to needs saying here. */
   [data-hero-static-mode="reduced"] .hero-static-block { display: grid !important; }
 
-  /* The phone gets the same act, cut to a band. The plate is 1.43 landscape, so a
-     full-height pinned stage on a 390x844 phone would spend a third of its height on
-     artwork and the rest on nothing — a band is the honest shape, with the copy under
-     it on the page rather than over it.
 
-     The sticky stage carries no viewport unit at all on mobile: it is auto-height, so
-     a retracting URL bar cannot reflow it. Only the rig's scroll budget is in svh, and
-     svh rather than dvh because dvh changes as the chrome hides, and arch() derives its
-     progress from rig.offsetHeight — a budget that moved mid-scroll would snap the
-     scrub. The plain-vh line before it is the fallback for engines without svh. */
-  .hero-animated-rig { height: 880vh; --arch-variant: ""; }
-  [data-arch-stage] { height: calc(100vh - 4.5rem); }
-  [data-arch-box] { position: absolute; inset: 0; overflow: hidden; }
-  [data-arch-cam] { aspect-ratio: 2048 / 1432; }
-  /* Styled here rather than inline so the mobile rules below can reach them — an
-     inline declaration outranks any stylesheet rule short of !important. */
-  [data-arch-beats] { position: absolute; left: 5%; bottom: clamp(3.5rem, 8vh, 6rem); width: min(30rem, 34vw); display: grid; }
-  [data-arch-ticks] { position: absolute; right: 5%; bottom: clamp(3.5rem, 8vh, 6rem); width: min(19rem, 24vw); display: grid; gap: 0.25rem; }
-  /* Page-coloured, not dark: the plates are alpha over cream, so this is invisible
-     wherever the frame is empty and only hazes the artwork where it is not. Two
-     corner wedges rather than one full-width band — the copy sits in the bottom
-     corners, and a band dense enough to carry it there would fog the arch. Sized by
-     measurement against short viewports, which scale the plate up until the dark
-     desk cubby lands behind the text. */
-  [data-arch-scrim] { position: absolute; inset: 0; pointer-events: none; opacity: 0.97;
-    background:
-      radial-gradient(ellipse 92% 118% at 0% 108%, var(--surface-page) 0%, var(--surface-page) 48%, transparent 78%),
-      radial-gradient(ellipse 92% 118% at 100% 108%, var(--surface-page) 0%, var(--surface-page) 48%, transparent 78%),
-      linear-gradient(0deg, var(--surface-page) 0%, transparent 26%); }
-
-  @media (max-width: 991px), (max-aspect-ratio: 5/4) {
-    .hero-animated-rig { height: 520vh; height: 520svh; --arch-variant: "m"; }
-    [data-arch-stage] { height: auto; padding-bottom: 1.25rem; }
-    [data-arch-box] { position: relative; inset: auto; width: 100%; aspect-ratio: 1147 / 888; }
-    [data-arch-cam] { height: 100%; aspect-ratio: auto; }
-    /* The copy is on the page now, not over the artwork, so the corner wedges have
-       nothing left to carry — all that remains is softening the cut leg stubs. */
-    [data-arch-scrim] { background: linear-gradient(0deg, var(--surface-page) 0%, transparent 15%); opacity: 1; }
-    [data-arch-ticks] { position: static; width: auto; display: flex; gap: 0.375rem; padding: 1.125rem 5% 0; }
-    [data-arch-tick] { flex: 1; justify-content: center; padding: 0.75rem 0 0.875rem !important; }
-    [data-arch-tick] > span:last-child { display: none; }
-    [data-arch-beats] { position: static; width: auto; padding: 1rem 5% 0; }
-    [data-arch-beats] h3 { font-size: var(--text-h4) !important; }
-  }
-  /* Only where the copy genuinely will not fit under the band: the claim carries the
-     beat and the elaboration steps aside. One source of copy, not a second mobile
-     set — taller phones still get the whole paragraph. */
-  @media (max-width: 991px) and (max-height: 700px), (max-aspect-ratio: 5/4) and (max-height: 700px) {
-    [data-arch-beats] h3 { font-size: var(--text-h5) !important; }
-    [data-arch-more] { display: none; }
-  }
   /* The header is sticky and 4.5rem tall, so the stage is a screen minus the header and
      the rig is that plus the pin. The difference between the two is the scroll budget
      the element measures, so 290 minus 100 is the 190svh over which the blocks rise —
@@ -230,7 +179,6 @@
      24px, and they get it from padding rather than from a bigger glyph. */
   @media (max-width: 991px) {
     [data-slot="button"] { min-height: 2.75rem !important; }
-    [data-arch-tick] { min-height: 2.75rem; }
     footer a, footer [data-slot="button"][data-variant^="link"] { display: inline-flex; align-items: center; min-height: 2.75rem; }
     /* The wordmark is a 168x33 link. min-height rather than a display change, so the
        header's own flex layout is left alone. */
@@ -359,14 +307,14 @@
 
 
     
-    <div class="hero-animated-rig" data-arch-rig="" style="position: relative;">
-      <div data-arch-stage="" style="position: sticky; top: 4.5rem;">
+    <approach-scrub base="../../assets/approach/">
+      <div data-arch-stage="">
 
         <div data-arch-box="">
-        <div data-arch-cam="" role="img" aria-label="Two school desks, a gap between them, and a wooden arch assembled across it — the load then travelling down through every block" style="position: absolute; left: 0px; top: 0px; width: 100%; transform-origin: 50% 0%; isolation: isolate; will-change: transform; transform: translateY(0%) scale(0.8223);">
+        <div data-arch-cam="" role="img" aria-label="Two school desks, a gap between them, and a wooden arch assembled across it — the load then travelling down through every block" style="transform: translateY(0%) scale(0.8223);">
           
-          <canvas data-arch-layer="0" aria-hidden="true" width="2048" height="1432" style="position: absolute; inset: 0px; width: 100%; height: 100%; display: block; opacity: 1;"></canvas>
-          <canvas data-arch-layer="1" aria-hidden="true" width="2048" height="1432" style="position: absolute; inset: 0px; width: 100%; height: 100%; display: block; opacity: 0; mix-blend-mode: plus-lighter;"></canvas>
+          <canvas data-arch-layer="0" aria-hidden="true" width="2048" height="1432"></canvas>
+          <canvas data-arch-layer="1" aria-hidden="true" width="2048" height="1432"></canvas>
         </div>
 
         
@@ -374,29 +322,29 @@
         </div>
 
         <div data-arch-ticks="">
-          <button data-arch-tick="0" type="button" style="display: flex; align-items: baseline; gap: 0.625rem; padding: 0.75rem 0px 0px; border-top: 1px solid var(--border-hairline); border-right: 0px; border-bottom: 0px; border-left: 0px; border-image: initial; background: none; cursor: pointer; font-family: inherit; color: inherit; text-align: left; opacity: 0.4; transition: opacity 200ms ease-in-out;"><span style="font-weight: 600; font-size: var(--text-tiny,0.75rem);">01</span><span style="font-weight: 600; font-size: var(--text-small); letter-spacing: -0.01em;">Define the role</span></button>
-          <button data-arch-tick="1" type="button" style="display: flex; align-items: baseline; gap: 0.625rem; padding: 0.75rem 0px 0px; border-top: 1px solid var(--border-hairline); border-right: 0px; border-bottom: 0px; border-left: 0px; border-image: initial; background: none; cursor: pointer; font-family: inherit; color: inherit; text-align: left; opacity: 0.4; transition: opacity 200ms ease-in-out;"><span style="font-weight: 600; font-size: var(--text-tiny,0.75rem);">02</span><span style="font-weight: 600; font-size: var(--text-small); letter-spacing: -0.01em;">Build the capabilities</span></button>
-          <button data-arch-tick="2" type="button" style="display: flex; align-items: baseline; gap: 0.625rem; padding: 0.75rem 0px 0px; border-top: 1px solid var(--border-hairline); border-right: 0px; border-bottom: 0px; border-left: 0px; border-image: initial; background: none; cursor: pointer; font-family: inherit; color: inherit; text-align: left; opacity: 0.4; transition: opacity 200ms ease-in-out;"><span style="font-weight: 600; font-size: var(--text-tiny,0.75rem);">03</span><span style="font-weight: 600; font-size: var(--text-small); letter-spacing: -0.01em;">Co-design the applications</span></button>
-          <button data-arch-tick="3" type="button" style="display: flex; align-items: baseline; gap: 0.625rem; padding: 0.75rem 0px 0px; border-top: 1px solid var(--border-hairline); border-right: 0px; border-bottom: 0px; border-left: 0px; border-image: initial; background: none; cursor: pointer; font-family: inherit; color: inherit; text-align: left; opacity: 0.4; transition: opacity 200ms ease-in-out;"><span style="font-weight: 600; font-size: var(--text-tiny,0.75rem);">04</span><span style="font-weight: 600; font-size: var(--text-small); letter-spacing: -0.01em;">Test, learn, begin again</span></button>
+          <button data-arch-tick="0" type="button"><span style="font-weight: 600; font-size: var(--text-tiny,0.75rem);">01</span><span style="font-weight: 600; font-size: var(--text-small); letter-spacing: -0.01em;">Define the role</span></button>
+          <button data-arch-tick="1" type="button"><span style="font-weight: 600; font-size: var(--text-tiny,0.75rem);">02</span><span style="font-weight: 600; font-size: var(--text-small); letter-spacing: -0.01em;">Build the capabilities</span></button>
+          <button data-arch-tick="2" type="button"><span style="font-weight: 600; font-size: var(--text-tiny,0.75rem);">03</span><span style="font-weight: 600; font-size: var(--text-small); letter-spacing: -0.01em;">Co-design the applications</span></button>
+          <button data-arch-tick="3" type="button"><span style="font-weight: 600; font-size: var(--text-tiny,0.75rem);">04</span><span style="font-weight: 600; font-size: var(--text-small); letter-spacing: -0.01em;">Test, learn, begin again</span></button>
         </div>
 
         <div data-arch-beats="" style="display: grid;">
-          <div data-arch-copy="0" style="grid-area: 1 / 1; opacity: 0; transform: translateY(8px); pointer-events: none;">
+          <div data-arch-copy="0">
             <p style="font-weight: 600; font-size: var(--text-small); margin: 0px 0px 0.75rem; color: var(--brand-accent);">01</p>
             <h3 style="font-size: min(var(--text-h3),5vh); line-height: 1.2; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 1rem; text-wrap: pretty;">Define the role.</h3>
             <p style="font-size: var(--text-regular); line-height: 1.5; margin: 0px; text-wrap: pretty;">AI can play many distinct roles in a classroom, and each requires its own standards, evidence, and safeguards.<span data-arch-more=""> With each group of teachers and students, we identify a specific role AI could play to meet a real need — and what teachers uniquely bring alongside it.</span></p>
           </div>
-          <div data-arch-copy="1" style="grid-area: 1 / 1; opacity: 0; transform: translateY(8px); pointer-events: none;">
+          <div data-arch-copy="1">
             <p style="font-weight: 600; font-size: var(--text-small); margin: 0px 0px 0.75rem; color: var(--brand-accent);">02</p>
             <h3 style="font-size: min(var(--text-h3),5vh); line-height: 1.2; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 1rem; text-wrap: pretty;">Build the capabilities.</h3>
             <p style="font-size: var(--text-regular); line-height: 1.5; margin: 0px; text-wrap: pretty;">Much of the technology needed for AI to play these roles well doesn’t exist off the shelf.<span data-arch-more=""> We build the missing layer between frontier AI models and classroom apps: validated capabilities that tools can build on.</span></p>
           </div>
-          <div data-arch-copy="2" style="grid-area: 1 / 1; opacity: 0; transform: translateY(8px); pointer-events: none;">
+          <div data-arch-copy="2">
             <p style="font-weight: 600; font-size: var(--text-small); margin: 0px 0px 0.75rem; color: var(--brand-accent);">03</p>
             <h3 style="font-size: min(var(--text-h3),5vh); line-height: 1.2; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 1rem; text-wrap: pretty;">Co-design the applications.</h3>
             <p style="font-size: var(--text-regular); line-height: 1.5; margin: 0px; text-wrap: pretty;">Teachers, researchers, engineers, and designers build classroom tools on those capabilities, along with new ways of teaching alongside them.<span data-arch-more=""> Then they test the work where it counts: in real classrooms.</span></p>
           </div>
-          <div data-arch-copy="3" style="grid-area: 1 / 1; opacity: 0; transform: translateY(8px); pointer-events: none;">
+          <div data-arch-copy="3">
             <p style="font-weight: 600; font-size: var(--text-small); margin: 0px 0px 0.75rem; color: var(--brand-accent);">04</p>
             <h3 style="font-size: min(var(--text-h3),5vh); line-height: 1.2; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 1rem; text-wrap: pretty;">Test, learn, begin again.</h3>
             <p style="font-size: var(--text-regular); line-height: 1.5; margin: 0px; text-wrap: pretty;">Classroom data tells us whether the role we chose and the capabilities we built actually helped.<span data-arch-more=""> Those lessons sharpen our hypotheses and inform the next turn of the cycle.</span></p>
@@ -404,7 +352,7 @@
         </div>
 
       </div>
-    </div>
+    </approach-scrub>
 
     <section style="padding: clamp(4rem, 7vw, 7rem) 5%;">
       <div style="margin-inline: auto; max-width: 80rem;">

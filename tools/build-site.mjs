@@ -150,29 +150,49 @@ const fallManifest = (() => {
   }
 })();
 
+const archManifest = (() => {
+  const p = path.join(root, "assets/approach/manifest.json");
+  if (!fs.existsSync(p)) {
+    problems.push("assets/approach/manifest.json is missing — run tools/encode-approach.mjs");
+    return null;
+  }
+  try {
+    return JSON.parse(fs.readFileSync(p, "utf8"));
+  } catch {
+    problems.push("assets/approach/manifest.json is not readable JSON");
+    return null;
+  }
+})();
+
 function refsIn(html) {
   const out = new Set();
   for (const m of html.matchAll(/(?:src|href)="([^"]+)"/g)) out.add(m[1]);
   for (const m of html.matchAll(/<meta property="og:image" content="([^"]+)"/g)) out.add(m[1]);
-  // The approach frames are built by string concatenation from ARCH_FRAMES, so no
-  // literal reference to them exists for the scan above to find. Read the list off
-  // the page and check every frame in it: a sequence that ships half-encoded has to
-  // fail the build here rather than 404 in the browser. Both halves are required —
-  // a rename that leaves one behind checks nothing at all, silently.
-  // Every frame exists in each cut of the plate — the full one and the mobile crop —
-  // so check the cross product. Shipping one cut without the other is the failure a
-  // phone would hit and a desktop would not.
-  const stem = html.match(/"((?:\.\.\/|\/)?[\w./-]*assets\/approach\/ap)"/);
-  const list = html.match(/ARCH_FRAMES\s*=\s*\[([\d,\s]*)\]/);
-  const cuts = html.match(/ARCH_CROP\s*=\s*\{([^}]*\}[^}]*)\}/);
-  if (!stem || !list || !cuts) {
-    problems.push('approach frame references are no longer readable — check the ARCH_FRAMES scan');
+  // The approach frames are addressed by string concatenation inside
+  // assets/approach.js, from a base the page carries as an attribute and a frame list
+  // the encoder wrote to a manifest — so, exactly like the falling-blocks frames, no
+  // literal reference to any of them exists for the scan above to find. Check the cross
+  // product of every frame and every cut: shipping one cut without the other is the
+  // failure a phone would hit and a desktop would not, and a sequence that ships
+  // half-encoded has to fail here rather than 404 mid-scroll.
+  //
+  // The base is captured off the page rather than assumed, because reparent() rewrites
+  // it differently on every route file and 404.html carries an absolute one.
+  const arch = html.match(/<approach-scrub\b([^>]*)>/);
+  if (!arch || !archManifest) {
+    problems.push("the approach-scrub element is no longer readable — check this scan");
   } else {
-    const variants = [...cuts[1].matchAll(/(?:^|,)\s*"?([a-z]*)"?\s*:\s*\{/g)].map((m) => m[1]);
-    for (const n of list[1].split(',')) {
-      const f = n.trim();
-      if (!f) continue;
-      for (const v of variants) out.add(stem[1] + f.padStart(4, '0') + v + '.webp');
+    const base = (arch[1].match(/base="([^"]*)"/) || [, ""])[1];
+    const m = archManifest;
+    if (!base) {
+      problems.push("approach-scrub has no base attribute");
+    } else {
+      for (const n of m.frames) {
+        for (const v of Object.keys(m.cuts)) {
+          out.add(base + m.stem + String(n).padStart(m.pad, "0") + v + "." + m.ext);
+        }
+      }
+      out.add(base + "manifest.json");
     }
   }
   // The base is captured off the page rather than assumed, because reparent() has
