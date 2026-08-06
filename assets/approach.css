@@ -12,14 +12,15 @@ approach-scrub {
   /* The section's own height is the scroll budget: how far the page scrolls while the
      stage is pinned. svh, never dvh — progress is derived from this height, so a budget
      that changed as a mobile URL bar retracted would snap the scrub mid-scroll. The
-     plain-vh line before it is the fallback for engines without svh. */
-  display: block;
-  position: relative;
-  /* The budget is divided among the moves in proportion to the render frames each
+     plain-vh line before it is the fallback for engines without svh.
+
+     The budget is divided among the moves in proportion to the render frames each
      covers, so this height and the length of the encoded sequence are one setting in
      two places: adding the opening's 76 frames to the 505 that were already here would
      have sped the whole piece up by 12% at the old 880vh. Raised to hold the rate at
      about 7.4px per render frame, which is what the scrub was retimed to. */
+  display: block;
+  position: relative;
   height: 1000vh;
   --arch-variant: "";
   /* Where the stage pins. One number drives the sticky offset and the stage's height,
@@ -62,24 +63,34 @@ approach-scrub *, approach-scrub *::before, approach-scrub *::after { box-sizing
 /* Page-coloured, not dark: the plates are alpha over the page, so this is invisible
    wherever the frame is empty and only hazes the artwork where it is not. Two corner
    wedges rather than one full-width band — the copy sits in the bottom corners, and a
-   band dense enough to carry it there would fog the arch. Sized by measurement against
-   short viewports, which scale the plate up until the dark desk cubby lands behind the
-   text: worst-case contrast behind the copy goes from 1.9:1 to 7.6:1 at 1280. */
+   band dense enough to carry it there would fog the arch.
+
+   The vertical extent is the part that was wrong and is now measured. The desks' cubbies
+   are modelled in detail — notebooks, pencils, a phone — and they occupy 46-58% of the
+   stage, while the copy they exist to carry starts at 59%. The first version reached from
+   the bottom to about 45%, so it washed the whole cubby band flat to carry text that sits
+   entirely below it. These wedges are sized to fade out by 60%, which leaves the cubbies
+   untouched and still puts a solid wash under every line of copy.
+
+   Keep that relationship if you move the copy: dense under the text, nothing above it. */
 [data-arch-scrim] {
   position: absolute;
   inset: 0;
   pointer-events: none;
   opacity: 0.97;
   background:
-    radial-gradient(ellipse 92% 118% at 0% 108%, var(--arch-page) 0%, var(--arch-page) 48%, transparent 78%),
-    radial-gradient(ellipse 92% 118% at 100% 108%, var(--arch-page) 0%, var(--arch-page) 48%, transparent 78%),
-    linear-gradient(0deg, var(--arch-page) 0%, transparent 26%);
+    radial-gradient(ellipse 64% 50% at 4% 104%, var(--arch-page) 0%, var(--arch-page) 88%, transparent 100%),
+    radial-gradient(ellipse 46% 42% at 100% 104%, var(--arch-page) 0%, var(--arch-page) 86%, transparent 100%),
+    linear-gradient(0deg, var(--arch-page) 0%, transparent 14%);
 }
 
-[data-arch-beats] { position: absolute; left: 5%; bottom: clamp(3.5rem, 8vh, 6rem); width: min(30rem, 34vw); display: grid; }
+/* Sat higher once, which put the top of the block over the desks' cubbies and forced a
+   scrim tall enough to wash them out. Dropped into the band of legs and floor below them:
+   there is nothing there to obscure, and the scrim above only has to reach the text. */
+[data-arch-beats] { position: absolute; left: 5%; bottom: clamp(1.75rem, 4.5vh, 3.25rem); width: min(30rem, 34vw); display: grid; }
 [data-arch-copy] { grid-area: 1/1; opacity: 0; will-change: opacity; }
 
-[data-arch-ticks] { position: absolute; right: 5%; bottom: clamp(3.5rem, 8vh, 6rem); width: min(19rem, 24vw); display: grid; gap: 0.25rem; }
+[data-arch-ticks] { position: absolute; right: 5%; bottom: clamp(1.75rem, 4.5vh, 3.25rem); width: min(19rem, 24vw); display: grid; gap: 0.25rem; }
 [data-arch-tick] {
   display: flex;
   align-items: baseline;
