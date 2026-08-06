@@ -77,20 +77,20 @@ approach-scrub *, approach-scrub *::before, approach-scrub *::after { box-sizing
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.97;
+  opacity: 0.94;
   background:
-    radial-gradient(ellipse 64% 50% at 4% 104%, var(--arch-page) 0%, var(--arch-page) 88%, transparent 100%),
-    radial-gradient(ellipse 46% 42% at 100% 104%, var(--arch-page) 0%, var(--arch-page) 86%, transparent 100%),
-    linear-gradient(0deg, var(--arch-page) 0%, transparent 14%);
+    radial-gradient(ellipse 96% 112% at 0% 118%, var(--arch-page) 0%, var(--arch-page) 33%, transparent 75%),
+    radial-gradient(ellipse 96% 112% at 100% 118%, var(--arch-page) 0%, var(--arch-page) 33%, transparent 75%),
+    linear-gradient(0deg, var(--arch-page) 0%, transparent 20%);
 }
 
 /* Sat higher once, which put the top of the block over the desks' cubbies and forced a
    scrim tall enough to wash them out. Dropped into the band of legs and floor below them:
    there is nothing there to obscure, and the scrim above only has to reach the text. */
-[data-arch-beats] { position: absolute; left: 5%; bottom: clamp(1.75rem, 4.5vh, 3.25rem); width: min(30rem, 34vw); display: grid; }
+[data-arch-beats] { position: absolute; left: 5%; bottom: clamp(3.5rem, 8vh, 6rem); width: min(30rem, 34vw); display: grid; }
 [data-arch-copy] { grid-area: 1/1; opacity: 0; will-change: opacity; }
 
-[data-arch-ticks] { position: absolute; right: 5%; bottom: clamp(1.75rem, 4.5vh, 3.25rem); width: min(19rem, 24vw); display: grid; gap: 0.25rem; }
+[data-arch-ticks] { position: absolute; right: 5%; bottom: clamp(3.5rem, 8vh, 6rem); width: min(19rem, 24vw); display: grid; gap: 0.25rem; }
 [data-arch-tick] {
   display: flex;
   align-items: baseline;
