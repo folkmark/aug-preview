@@ -33,8 +33,15 @@
 <script src="_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/_ds_bundle.js"></script>
 <style>
   body { margin: 0; background: var(--surface-page); }
+  /* The intrinsic width/height attributes are there to reserve the box before the
+     bytes arrive, not to size the image: every one of these is sized by CSS, and
+     without this the height attribute would fight a CSS width and squash it. Where
+     an aspect-ratio is set, that still wins and computes the height. */
+  img[width][height] { height: auto; }
   a { color: var(--color-neutral-darkest); text-decoration: none; transition: opacity 200ms ease-in-out; }
-  a:hover { opacity: 0.7; }
+  /* Guarded: a touch device has no hover to leave, so an unguarded rule sticks the
+     tapped link at 0.7 until something else is tapped. */
+  @media (hover: hover) { a:hover { opacity: 0.7; } }
   @media (max-width: 991px) { .at-desktop { display: none !important; } }
   @media (min-width: 992px) { .at-mobile { display: none !important; } }
   @media (min-width: 992px) {
@@ -42,7 +49,7 @@
     .team-grid-2 { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; column-gap: 1.25rem !important; }
   }
   @media (max-width: 991px) {
-    .team-grid-2, .team-grid-3 { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important; column-gap: 1.25rem !important; }
+    .team-grid-2, .team-grid-3 { grid-template-columns: repeat(auto-fit, minmax(min(150px,100%),1fr)) !important; column-gap: 1.25rem !important; }
   }
   .team-grid-2 h3, .team-grid-3 h3 { font-size: var(--text-regular) !important; line-height: 1.35 !important; }
   .team-grid-2 p, .team-grid-3 p { font-size: var(--text-small) !important; }
@@ -112,34 +119,108 @@
   @media (max-width: 991px) {
     .kit-grid { grid-template-columns: 1fr !important; row-gap: 2rem; }
   }
-  /* The pinned rig hangs a 1.43 plate from the top of its stage, so a portrait or
-     squarish window leaves a dead band under the artwork. Those windows get the
-     stacked stills instead — the same swap reduced motion asks for. Scoped to the
-     rig rather than .at-desktop because this is about the plate's shape, not the
-     viewport's width: the nav keeps its own breakpoint. */
-  @media (max-aspect-ratio: 5/4) {
+  /* The Approach act runs everywhere; the stacked stills are its fallback, not the
+     mobile layout. The two are swapped by specificity rather than source order —
+     .at-mobile and .hero-static-block were both (0,1,0) with !important, so moving
+     either block would have silently handed squarish windows an empty section. */
+  .hero-static-block { display: none !important; }
+  /* The desktop presentation hangs a full-width 1.43 plate from the top of a
+     full-height stage, so a portrait or squarish desktop window leaves a dead band
+     beneath it. The phone presentation is a band cut to its own aspect and has no
+     such problem, which is why this is scoped to the width that uses the tall stage. */
+  @media (min-width: 992px) and (max-aspect-ratio: 5/4) {
     .hero-animated-rig { display: none !important; }
-    .hero-static-block { display: grid !important; }
+    main .hero-static-block { display: grid !important; }
   }
   [data-hero-static-mode="reduced"] .hero-animated-rig { display: none !important; }
   [data-hero-static-mode="reduced"] .hero-static-block { display: grid !important; }
+
+  /* The phone gets the same act, cut to a band. The plate is 1.43 landscape, so a
+     full-height pinned stage on a 390x844 phone would spend a third of its height on
+     artwork and the rest on nothing — a band is the honest shape, with the copy under
+     it on the page rather than over it.
+
+     The sticky stage carries no viewport unit at all on mobile: it is auto-height, so
+     a retracting URL bar cannot reflow it. Only the rig's scroll budget is in svh, and
+     svh rather than dvh because dvh changes as the chrome hides, and arch() derives its
+     progress from rig.offsetHeight — a budget that moved mid-scroll would snap the
+     scrub. The plain-vh line before it is the fallback for engines without svh. */
+  .hero-animated-rig { height: 880vh; --arch-variant: ""; }
+  [data-arch-stage] { height: calc(100vh - 4.5rem); }
+  [data-arch-box] { position: absolute; inset: 0; overflow: hidden; }
+  [data-arch-cam] { aspect-ratio: 2048 / 1432; }
+  /* Styled here rather than inline so the mobile rules below can reach them — an
+     inline declaration outranks any stylesheet rule short of !important. */
+  [data-arch-beats] { position: absolute; left: 5%; bottom: clamp(3.5rem, 8vh, 6rem); width: min(30rem, 34vw); display: grid; }
+  [data-arch-ticks] { position: absolute; right: 5%; bottom: clamp(3.5rem, 8vh, 6rem); width: min(19rem, 24vw); display: grid; gap: 0.25rem; }
+  /* Page-coloured, not dark: the plates are alpha over cream, so this is invisible
+     wherever the frame is empty and only hazes the artwork where it is not. Two
+     corner wedges rather than one full-width band — the copy sits in the bottom
+     corners, and a band dense enough to carry it there would fog the arch. Sized by
+     measurement against short viewports, which scale the plate up until the dark
+     desk cubby lands behind the text. */
+  [data-arch-scrim] { position: absolute; inset: 0; pointer-events: none; opacity: 0.97;
+    background:
+      radial-gradient(ellipse 92% 118% at 0% 108%, var(--surface-page) 0%, var(--surface-page) 48%, transparent 78%),
+      radial-gradient(ellipse 92% 118% at 100% 108%, var(--surface-page) 0%, var(--surface-page) 48%, transparent 78%),
+      linear-gradient(0deg, var(--surface-page) 0%, transparent 26%); }
+
+  @media (max-width: 991px), (max-aspect-ratio: 5/4) {
+    .hero-animated-rig { height: 520vh; height: 520svh; --arch-variant: "m"; }
+    [data-arch-stage] { height: auto; padding-bottom: 1.25rem; }
+    [data-arch-box] { position: relative; inset: auto; width: 100%; aspect-ratio: 1147 / 888; }
+    [data-arch-cam] { height: 100%; aspect-ratio: auto; }
+    /* The copy is on the page now, not over the artwork, so the corner wedges have
+       nothing left to carry — all that remains is softening the cut leg stubs. */
+    [data-arch-scrim] { background: linear-gradient(0deg, var(--surface-page) 0%, transparent 15%); opacity: 1; }
+    [data-arch-ticks] { position: static; width: auto; display: flex; gap: 0.375rem; padding: 1.125rem 5% 0; }
+    [data-arch-tick] { flex: 1; justify-content: center; padding: 0.75rem 0 0.875rem !important; }
+    [data-arch-tick] > span:last-child { display: none; }
+    [data-arch-beats] { position: static; width: auto; padding: 1rem 5% 0; }
+    [data-arch-beats] h3 { font-size: var(--text-h4) !important; }
+  }
+  /* Only where the copy genuinely will not fit under the band: the claim carries the
+     beat and the elaboration steps aside. One source of copy, not a second mobile
+     set — taller phones still get the whole paragraph. */
+  @media (max-width: 991px) and (max-height: 700px), (max-aspect-ratio: 5/4) and (max-height: 700px) {
+    [data-arch-beats] h3 { font-size: var(--text-h5) !important; }
+    [data-arch-more] { display: none; }
+  }
   [data-slot="button"]:not([data-variant^="link"]) { padding-left: 2.25rem !important; padding-right: 2.25rem !important; }
   [data-slot="button"][data-btn-size="sm"] { padding-left: 1.875rem !important; padding-right: 1.875rem !important; }
+  /* Touch targets. The hint-size attributes in the markup are preview annotations and
+     set nothing, so buttons render at their text height — about 35px, and 31px at the
+     small size. Below the desktop breakpoint every control gets the 44px a fingertip
+     needs; the footer and the team's social icons are the worst offenders at 18 and
+     24px, and they get it from padding rather than from a bigger glyph. */
+  @media (max-width: 991px) {
+    [data-slot="button"] { min-height: 2.75rem !important; }
+    [data-arch-tick] { min-height: 2.75rem; }
+    footer a, footer [data-slot="button"][data-variant^="link"] { display: inline-flex; align-items: center; min-height: 2.75rem; }
+    /* The wordmark is a 168x33 link. min-height rather than a display change, so the
+       header's own flex layout is left alone. */
+    header a, footer a:has(img) { min-height: 2.75rem; }
+    .team-grid-2 a[aria-label], .team-grid-3 a[aria-label] { width: 44px !important; height: 44px !important; margin: -10px; }
+    /* Radios and checkboxes are wrapped in their label, so the row is what a finger
+       hits — the 18px control is only the mark. Give the row the height. Not a
+       direct-child selector: the design system nests the control in a wrapper. */
+    label:has(button) { min-height: 2.75rem; }
+  }
 </style>
 </helmet>
 
-<div class="scheme-1" style="min-height:100vh;font-family:var(--font-body);color:var(--text-body);background:var(--surface-page)">
+<div class="scheme-1" style="min-height:100vh;overflow-x:clip;font-family:var(--font-body);color:var(--text-body);background:var(--surface-page)">
 
   <header style="position: sticky; top: 0; z-index: 900; display: flex; min-height: 4.5rem; width: 100%; align-items: center; padding-inline: 5%; background: var(--surface-page); border-bottom: 1px solid var(--color-neutral-darkest-15); border-style: none; border-color: #FAF9F500">
     <div style="margin-inline:auto;display:flex;width:100%;max-width:80rem;align-items:center;justify-content:space-between;gap:2rem">
-      <a href="{{ hrefHome }}" onClick="{{ goHome }}" style="display:block;flex-shrink:0"><img src="assets/logo/logo-light.png" alt="augment^ed" style="width:168px;display:block"></a>
+      <a href="{{ hrefHome }}" onClick="{{ goHome }}" style="display:block;flex-shrink:0"><img src="assets/logo/logo-light.png" alt="augment^ed" style="width:168px;display:block" width="768" height="149" decoding="async"></a>
       <nav class="at-desktop" style="display:flex;align-items:center;gap:2.5rem">
         <a href="{{ hrefChallenge }}" onClick="{{ goChallenge }}">The Challenge</a>
         <a href="{{ hrefApproach }}" onClick="{{ goApproach }}">Our Approach</a>
         <a href="{{ hrefTeam }}" onClick="{{ goTeam }}">Who We Are</a>
         <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" onClick="{{ goInvolved }}" size="sm" data-btn-size="sm" hint-size="150px,36px">Follow Our Work</x-import>
       </nav>
-      <button class="at-mobile" onClick="{{ toggleNav }}" aria-label="Menu" style="display:flex;flex-direction:column;justify-content:center;gap:6px;width:44px;height:44px;padding:0;border:0;background:transparent;cursor:pointer">
+      <button class="at-mobile" onClick="{{ toggleNav }}" aria-label="{{ navLabel }}" aria-expanded="{{ navExpanded }}" aria-controls="site-menu" style="display:flex;flex-direction:column;justify-content:center;gap:6px;width:44px;height:44px;padding:0;border:0;background:transparent;cursor:pointer">
         <span style="{{ barTopStyle }}"></span>
         <span style="{{ barBottomStyle }}"></span>
       </button>
@@ -147,7 +228,7 @@
   </header>
 
   <sc-if value="{{ navOpen }}" hint-placeholder-val="{{ false }}">
-    <div class="scheme-1 at-mobile" style="position:fixed;inset:4.5rem 0 0 0;z-index:800;background:var(--surface-page);padding:3rem 5%;display:flex;flex-direction:column;gap:2rem">
+    <div id="site-menu" class="scheme-1 at-mobile" style="position:fixed;inset:4.5rem 0 0 0;z-index:800;overflow-y:auto;overscroll-behavior:contain;background:var(--surface-page);padding:3rem 5%;display:flex;flex-direction:column;gap:2rem">
       <a href="{{ hrefChallenge }}" onClick="{{ goChallenge }}" style="font-size:var(--text-h4);font-weight:700;letter-spacing:-0.01em">The Challenge</a>
       <a href="{{ hrefApproach }}" onClick="{{ goApproach }}" style="font-size:var(--text-h4);font-weight:700;letter-spacing:-0.01em">Our Approach</a>
       <a href="{{ hrefTeam }}" onClick="{{ goTeam }}" style="font-size:var(--text-h4);font-weight:700;letter-spacing:-0.01em">Who We Are</a>
@@ -160,12 +241,12 @@
 
     <section style="position:relative;min-height:min(94vh,900px);overflow:hidden;display:flex;align-items:center;justify-content:center;padding:clamp(3rem,8vh,6rem) 5% clamp(5rem,12vh,9rem)">
       <div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none">
-        <img data-parallax="-0.6" src="assets/blocks/brick-sage.png" alt="" style="position:absolute;left:7%;top:78%;width:11%;opacity:0.75">
-        <img data-parallax="-0.6" src="assets/blocks/quarter-maple.png" alt="" style="position:absolute;left:38%;top:92%;width:7%;opacity:0.75">
-        <img data-parallax="-0.6" src="assets/blocks/column-maple.png" alt="" style="position:absolute;left:88%;top:74%;width:5%;opacity:0.75">
-        <img data-parallax="-0.85" src="assets/blocks/arc-sage.png" alt="" style="position:absolute;left:16%;top:104%;width:19%">
-        <img data-parallax="-0.85" src="assets/blocks/ramp-maple.png" alt="" style="position:absolute;left:66%;top:110%;width:17%">
-        <img data-parallax="-0.85" src="assets/blocks/arch-blue.png" alt="" style="position:absolute;left:40%;top:126%;width:22%">
+        <img data-parallax="-0.6" src="assets/blocks/brick-sage.webp" alt="" style="position:absolute;left:7%;top:78%;width:11%;opacity:0.75" width="384" height="288" decoding="async">
+        <img data-parallax="-0.6" src="assets/blocks/quarter-maple.webp" alt="" style="position:absolute;left:38%;top:92%;width:7%;opacity:0.75" width="320" height="403" decoding="async">
+        <img data-parallax="-0.6" src="assets/blocks/column-maple.webp" alt="" style="position:absolute;left:88%;top:74%;width:5%;opacity:0.75" width="256" height="596" decoding="async">
+        <img data-parallax="-0.85" src="assets/blocks/arc-sage.webp" alt="" style="position:absolute;left:16%;top:104%;width:19%" width="512" height="328" decoding="async">
+        <img data-parallax="-0.85" src="assets/blocks/ramp-maple.webp" alt="" style="position:absolute;left:66%;top:110%;width:17%" width="448" height="373" decoding="async">
+        <img data-parallax="-0.85" src="assets/blocks/arch-blue.webp" alt="" style="position:absolute;left:40%;top:126%;width:22%" width="512" height="397" decoding="async">
       </div>
       <div style="position:relative;max-width:48rem;text-align:center">
         <h1 style="font-size:var(--text-h1);line-height:1.1;letter-spacing:-0.01em;font-weight:700;margin:0 0 1.5rem;text-wrap:pretty">Bridging frontier AI and the classroom.</h1>
@@ -189,12 +270,12 @@
 
     <section style="padding:clamp(4rem,7vw,7rem) 5%">
       <div style="margin-inline:auto;max-width:80rem">
-        <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:5rem;row-gap:2rem;margin-bottom:clamp(3rem,7vw,7.5rem)">
-          <div data-approach-heading="" style="grid-column:1;grid-row:1">
+        <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));column-gap:5rem;row-gap:2rem;margin-bottom:clamp(3rem,7vw,7.5rem)">
+          <div data-approach-heading="" style="">
             <p style="font-weight:600;font-size:var(--text-regular);margin:0 0 1rem">Our Approach</p>
             <h2 style="font-size:var(--text-h2);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0;text-wrap:pretty">We treat AI in education as a science, not a gold rush.</h2>
           </div>
-          <div data-approach-text="" style="grid-column:2;grid-row:1;margin-top:6rem">
+          <div data-approach-text="" style="">
             <p style="font-size:var(--text-medium);line-height:1.5;margin:0;text-wrap:pretty">We run an iterative research and development cycle, with educators, researchers, and engineers as equal partners at every step. We don't start by asking what AI can do. We start by asking what teachers and students need. Then educators, researchers, and engineers work together to identify what's missing, build it, and test it in real classrooms. What we learn informs the next turn of the cycle.</p>
             <div style="margin-top:2rem;display:flex">
               <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" onClick="{{ goApproach }}" hint-size="120px,28px">Learn More<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm" hint-size="20px,20px"></x-import></x-import>
@@ -202,16 +283,16 @@
           </div>
         </div>
 
-        <div class="at-mobile hero-static-block" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));column-gap:clamp(2rem,4vw,4rem);row-gap:clamp(3rem,6vw,6rem)">
+        <div class="hero-static-block" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));column-gap:clamp(2rem,4vw,4rem);row-gap:clamp(3rem,6vw,6rem)">
           <div style="display:flex;flex-direction:column;gap:clamp(3rem,6vw,6rem)">
             <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
-              <img src="assets/approach/ap0235s.webp" alt="A blueprint arch drawn in wireframe across the gap between two school desks" style="aspect-ratio:3/2;width:100%;object-fit:contain;background:var(--color-ecru-white);border-radius:var(--radius-image);margin-bottom:2rem;display:block">
+              <picture><source media="(max-width:1200px)" srcset="assets/approach/ap0235m.webp" width="1147" height="888"><img src="assets/approach/ap0235.webp" alt="A blueprint arch drawn in wireframe across the gap between two school desks" loading="lazy" decoding="async" width="2048" height="1432" style="width:100%;height:auto;object-fit:contain;background:var(--color-ecru-white);border-radius:var(--radius-image);margin-bottom:2rem;display:block"></picture>
               <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">01</p>
               <h3 style="font-size:var(--text-h4);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem">Define the role</h3>
               <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">AI can play many distinct roles in a classroom, and each requires its own standards, evidence, and safeguards. With each group of teachers and students, we identify a specific role AI could play to meet a real need, and what teachers uniquely bring alongside it. Then we study what that role requires, where its limits are, and what bar it must meet.</p>
             </div>
             <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
-              <img src="assets/approach/ap0477s.webp" alt="The arch complete across the gap, every block set and the blueprint retired" style="aspect-ratio:3/2;width:100%;object-fit:contain;background:var(--color-ecru-white);border-radius:var(--radius-image);margin-bottom:2rem;display:block">
+              <picture><source media="(max-width:1200px)" srcset="assets/approach/ap0477m.webp" width="1147" height="888"><img src="assets/approach/ap0477.webp" alt="The arch complete across the gap, every block set and the blueprint retired" loading="lazy" decoding="async" width="2048" height="1432" style="width:100%;height:auto;object-fit:contain;background:var(--color-ecru-white);border-radius:var(--radius-image);margin-bottom:2rem;display:block"></picture>
               <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">03</p>
               <h3 style="font-size:var(--text-h4);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem">Co-design the applications</h3>
               <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Teachers, researchers, engineers, and designers build classroom tools on those capabilities, along with new ways of teaching alongside them. They then test our work where it counts: in real classrooms.</p>
@@ -219,13 +300,13 @@
           </div>
           <div style="display:flex;flex-direction:column;gap:clamp(3rem,6vw,6rem);margin-top:clamp(0rem,7vw,7rem)">
             <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
-              <img src="assets/approach/ap0353s.webp" alt="Wooden blocks part-way through building the arch along the blueprint" style="aspect-ratio:3/2;width:100%;object-fit:contain;background:var(--color-ecru-white);border-radius:var(--radius-image);margin-bottom:2rem;display:block">
+              <picture><source media="(max-width:1200px)" srcset="assets/approach/ap0353m.webp" width="1147" height="888"><img src="assets/approach/ap0353.webp" alt="Wooden blocks part-way through building the arch along the blueprint" loading="lazy" decoding="async" width="2048" height="1432" style="width:100%;height:auto;object-fit:contain;background:var(--color-ecru-white);border-radius:var(--radius-image);margin-bottom:2rem;display:block"></picture>
               <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">02</p>
               <h3 style="font-size:var(--text-h4);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem">Build the capabilities</h3>
               <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Much of the technology needed for AI to play these roles well doesn’t exist off the shelf. We build the missing layer between frontier AI models and classroom apps — validated capabilities that tools can build on, like computational methods that help AI measure student skills or track how concepts connect across a semester.</p>
             </div>
             <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
-              <img src="assets/approach/ap0598s.webp" alt="The finished arch carrying its load, the force travelling down through every block" style="aspect-ratio:3/2;width:100%;object-fit:contain;background:var(--color-ecru-white);border-radius:var(--radius-image);margin-bottom:2rem;display:block">
+              <picture><source media="(max-width:1200px)" srcset="assets/approach/ap0598m.webp" width="1147" height="888"><img src="assets/approach/ap0598.webp" alt="The finished arch carrying its load, the force travelling down through every block" loading="lazy" decoding="async" width="2048" height="1432" style="width:100%;height:auto;object-fit:contain;background:var(--color-ecru-white);border-radius:var(--radius-image);margin-bottom:2rem;display:block"></picture>
               <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">04</p>
               <h3 style="font-size:var(--text-h4);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem">Test, learn, begin again</h3>
               <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Classroom data tells us whether the AI roles we selected and the capabilities and tools we built actually helped. Those lessons sharpen our hypotheses, strengthen our capabilities and tools, and inform our next cycle of R&amp;D.</p>
@@ -241,10 +322,11 @@
          two books come to rest on the keystone thirteen thousandths of a plate-height
          from its top edge. Copy sits in the lower third, over the one band of the frame
          that is legs and cream in every frame. -->
-    <div class="at-desktop hero-animated-rig" data-arch-rig="" style="position:relative;height:880vh">
-      <div data-arch-stage="" style="position:sticky;top:4.5rem;height:calc(100vh - 4.5rem);overflow:hidden">
+    <div class="hero-animated-rig" data-arch-rig="" style="position:relative">
+      <div data-arch-stage="" style="position:sticky;top:4.5rem">
 
-        <div data-arch-cam="" role="img" aria-label="Two school desks, a gap between them, and a wooden arch assembled across it — the load then travelling down through every block" style="position:absolute;left:0;top:0;width:100%;aspect-ratio:2048/1432;transform-origin:50% 0%;isolation:isolate;will-change:transform">
+        <div data-arch-box="">
+        <div data-arch-cam="" role="img" aria-label="Two school desks, a gap between them, and a wooden arch assembled across it — the load then travelling down through every block" style="position:absolute;left:0;top:0;width:100%;transform-origin:50% 0%;isolation:isolate;will-change:transform">
           <!-- Two layers cross-faded by CSS, not one canvas blended in JS: plus-lighter over
                an isolated group is an exact linear dissolve, where drawing both into a single
                canvas at partial alpha washes out everything the two frames share — here, both
@@ -261,58 +343,56 @@
              shallow third gradient just grounds the desks so the legs do not end in a
              hard line. Short viewports are what this is sized for: they scale the plate
              up until the dark desk cubby sits behind the copy. -->
-        <div data-arch-scrim="" aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 92% 118% at 0% 108%,var(--surface-page) 0%,var(--surface-page) 48%,transparent 78%),radial-gradient(ellipse 92% 118% at 100% 108%,var(--surface-page) 0%,var(--surface-page) 48%,transparent 78%),linear-gradient(0deg,var(--surface-page) 0%,transparent 26%);opacity:0.97"></div>
-
-        <div data-arch-beats="" style="position:absolute;left:5%;bottom:clamp(3.5rem,8vh,6rem);width:min(30rem,34vw);display:grid">
-          <div data-arch-copy="0" style="grid-area:1/1;opacity:0">
-            <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">01</p>
-            <h3 style="font-size:min(var(--text-h3),5vh);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem;text-wrap:pretty">Define the role.</h3>
-            <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">AI can play many distinct roles in a classroom, and each requires its own standards, evidence, and safeguards. With each group of teachers and students, we identify a specific role AI could play to meet a real need — and what teachers uniquely bring alongside it.</p>
-          </div>
-          <div data-arch-copy="1" style="grid-area:1/1;opacity:0">
-            <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">02</p>
-            <h3 style="font-size:min(var(--text-h3),5vh);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem;text-wrap:pretty">Build the capabilities.</h3>
-            <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Much of the technology needed for AI to play these roles well doesn’t exist off the shelf. We build the missing layer between frontier AI models and classroom apps: validated capabilities that tools can build on.</p>
-          </div>
-          <div data-arch-copy="2" style="grid-area:1/1;opacity:0">
-            <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">03</p>
-            <h3 style="font-size:min(var(--text-h3),5vh);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem;text-wrap:pretty">Co-design the applications.</h3>
-            <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Teachers, researchers, engineers, and designers build classroom tools on those capabilities, along with new ways of teaching alongside them. Then they test the work where it counts: in real classrooms.</p>
-          </div>
-          <div data-arch-copy="3" style="grid-area:1/1;opacity:0">
-            <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">04</p>
-            <h3 style="font-size:min(var(--text-h3),5vh);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem;text-wrap:pretty">Test, learn, begin again.</h3>
-            <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Classroom data tells us whether the role we chose and the capabilities we built actually helped. Those lessons sharpen our hypotheses and inform the next turn of the cycle.</p>
-          </div>
+        <div data-arch-scrim="" aria-hidden="true"></div>
         </div>
 
-        <div data-arch-ticks="" style="position:absolute;right:5%;bottom:clamp(3.5rem,8vh,6rem);width:min(19rem,24vw);display:grid;gap:0.25rem">
+        <div data-arch-ticks="">
           <button data-arch-tick="0" type="button" onClick="{{ archJump }}" style="display:flex;align-items:baseline;gap:0.625rem;padding:0.75rem 0 0;border:0;border-top:1px solid var(--border-hairline);background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left;opacity:0.4;transition:opacity 200ms ease-in-out"><span style="font-weight:600;font-size:var(--text-tiny,0.75rem)">01</span><span style="font-weight:600;font-size:var(--text-small);letter-spacing:-0.01em">Define the role</span></button>
           <button data-arch-tick="1" type="button" onClick="{{ archJump }}" style="display:flex;align-items:baseline;gap:0.625rem;padding:0.75rem 0 0;border:0;border-top:1px solid var(--border-hairline);background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left;opacity:0.4;transition:opacity 200ms ease-in-out"><span style="font-weight:600;font-size:var(--text-tiny,0.75rem)">02</span><span style="font-weight:600;font-size:var(--text-small);letter-spacing:-0.01em">Build the capabilities</span></button>
           <button data-arch-tick="2" type="button" onClick="{{ archJump }}" style="display:flex;align-items:baseline;gap:0.625rem;padding:0.75rem 0 0;border:0;border-top:1px solid var(--border-hairline);background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left;opacity:0.4;transition:opacity 200ms ease-in-out"><span style="font-weight:600;font-size:var(--text-tiny,0.75rem)">03</span><span style="font-weight:600;font-size:var(--text-small);letter-spacing:-0.01em">Co-design the applications</span></button>
           <button data-arch-tick="3" type="button" onClick="{{ archJump }}" style="display:flex;align-items:baseline;gap:0.625rem;padding:0.75rem 0 0;border:0;border-top:1px solid var(--border-hairline);background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left;opacity:0.4;transition:opacity 200ms ease-in-out"><span style="font-weight:600;font-size:var(--text-tiny,0.75rem)">04</span><span style="font-weight:600;font-size:var(--text-small);letter-spacing:-0.01em">Test, learn, begin again</span></button>
         </div>
 
-        <div style="position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--color-neutral-darkest-10,rgba(2,4,8,0.1))">
-          <div data-arch-prog="" style="height:1px;width:0%;background:var(--brand-accent)"></div>
+        <div data-arch-beats="" style="display:grid">
+          <div data-arch-copy="0" style="grid-area:1/1;opacity:0">
+            <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">01</p>
+            <h3 style="font-size:min(var(--text-h3),5vh);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem;text-wrap:pretty">Define the role.</h3>
+            <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">AI can play many distinct roles in a classroom, and each requires its own standards, evidence, and safeguards.<span data-arch-more=""> With each group of teachers and students, we identify a specific role AI could play to meet a real need — and what teachers uniquely bring alongside it.</span></p>
+          </div>
+          <div data-arch-copy="1" style="grid-area:1/1;opacity:0">
+            <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">02</p>
+            <h3 style="font-size:min(var(--text-h3),5vh);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem;text-wrap:pretty">Build the capabilities.</h3>
+            <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Much of the technology needed for AI to play these roles well doesn’t exist off the shelf.<span data-arch-more=""> We build the missing layer between frontier AI models and classroom apps: validated capabilities that tools can build on.</span></p>
+          </div>
+          <div data-arch-copy="2" style="grid-area:1/1;opacity:0">
+            <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">03</p>
+            <h3 style="font-size:min(var(--text-h3),5vh);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem;text-wrap:pretty">Co-design the applications.</h3>
+            <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Teachers, researchers, engineers, and designers build classroom tools on those capabilities, along with new ways of teaching alongside them.<span data-arch-more=""> Then they test the work where it counts: in real classrooms.</span></p>
+          </div>
+          <div data-arch-copy="3" style="grid-area:1/1;opacity:0">
+            <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">04</p>
+            <h3 style="font-size:min(var(--text-h3),5vh);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem;text-wrap:pretty">Test, learn, begin again.</h3>
+            <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Classroom data tells us whether the role we chose and the capabilities we built actually helped.<span data-arch-more=""> Those lessons sharpen our hypotheses and inform the next turn of the cycle.</span></p>
+          </div>
         </div>
+
       </div>
     </div>
 
     <section style="padding:clamp(4rem,7vw,7rem) 5%">
       <div style="margin-inline:auto;max-width:80rem">
-        <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:5rem;row-gap:2rem;margin-bottom:clamp(3rem,6vw,5rem)">
+        <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));column-gap:5rem;row-gap:2rem;margin-bottom:clamp(3rem,6vw,5rem)">
           <h2 style="font-size:var(--text-h2);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0;text-wrap:pretty">Turning classroom experiments into reusable infrastructure.</h2>
           <p style="font-size:var(--text-medium);line-height:1.5;margin:0;text-wrap:pretty">Each co-design cycle produces more than prototypes. It creates evidence about what students need, what AI can do reliably, and what teachers need to use it well. AugmentED turns those lessons into research and technical foundations the field can trust and build on.</p>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));column-gap:2rem;row-gap:3rem">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));column-gap:2rem;row-gap:3rem">
           <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
-            <img src="assets/images/classroom-morning.png" alt="An empty classroom in early morning light" style="aspect-ratio:3/2;width:100%;object-fit:cover;border-radius:var(--radius-image);margin-bottom:2rem;display:block">
+            <img src="assets/images/classroom-morning.webp" alt="An empty classroom in early morning light" style="aspect-ratio:3/2;width:100%;object-fit:cover;border-radius:var(--radius-image);margin-bottom:2rem;display:block" width="1264" height="848" decoding="async" loading="lazy">
             <h3 style="font-size:var(--text-h4);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem">Better ways of thinking.</h3>
             <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Ideas and evidence that help the field reason about AI in education: research insights on the roles AI should (and shouldn’t) play, methods for evaluating AI, and tested models for teaching and learning alongside it.</p>
           </div>
           <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
-            <img src="assets/images/student-notes.png" alt="A student taking notes beside a laptop" style="aspect-ratio:3/2;width:100%;object-fit:cover;border-radius:var(--radius-image);margin-bottom:2rem;display:block">
+            <img src="assets/images/student-notes.webp" alt="A student taking notes beside a laptop" style="aspect-ratio:3/2;width:100%;object-fit:cover;border-radius:var(--radius-image);margin-bottom:2rem;display:block" width="1264" height="848" decoding="async" loading="lazy">
             <h3 style="font-size:var(--text-h4);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem">Better foundations for AI tools.</h3>
             <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Reusable infrastructure that future classroom tools can be built on, from validated AI capabilities to the datasets that power them. We build these to generalize and recombine to serve many subjects and types of schools.</p>
           </div>
@@ -333,7 +413,7 @@
           <p style="font-size:var(--text-medium);line-height:1.5;margin:0 0 1.5rem;text-wrap:pretty">In our first cohort, teachers from several pioneering high schools worked with researchers and engineers to co-design AI-powered tools. Each project below is a work in progress—and each one feeds reusable capabilities back into a foundation that others can build on.</p>
           <p style="font-size:var(--text-medium);line-height:1.5;margin:0;text-wrap:pretty">All three put the same AI role—AI as cognitive extender—to work. For teachers and students, the AI surfaces patterns hidden in more information than any person could track alone.</p>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));column-gap:2rem;row-gap:3rem">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));column-gap:2rem;row-gap:3rem">
           <article data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
             <div role="img" aria-label="Photography to supply: a student recording a spoken reflection" style="aspect-ratio:3/2;width:100%;border-radius:var(--radius-image);margin-bottom:1.5rem;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:var(--color-ecru-white);text-align:center"><p style="font-weight:600;font-size:var(--text-small);line-height:1.5;margin:0;color:var(--text-muted);text-wrap:pretty">Photography to supply — a student recording a spoken reflection</p></div>
             <p style="font-weight:600;font-size:var(--text-small);margin:0 0 1rem">Museum High School</p>
@@ -370,21 +450,21 @@
           <p style="font-size:var(--text-medium);line-height:1.5;margin:0;text-wrap:pretty">With our research partners, we study what each role AI can play in a classroom makes possible, where it falls short, and what we can build to push those limits. Three of our recent papers:</p>
         </div>
         <div style="display:flex;flex-direction:column">
-          <article data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;padding:2.5rem 0;border-bottom:1px solid var(--color-neutral-darkest-15);display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:5rem;row-gap:1rem">
+          <article data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;padding:2.5rem 0;border-bottom:1px solid var(--color-neutral-darkest-15);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));column-gap:5rem;row-gap:1rem">
             <h3 style="font-size:var(--text-h4);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0">Measuring critical thinking with AI</h3>
             <div>
               <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Can AI assess a skill as complex as critical thinking? We find that carefully scaffolded language models can measure some critical-thinking subskills in student writing, and we map where they still fall short.</p>
               <div style="margin-top:1.5rem;display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" as="a" href="https://educationaldatamining.org/wp-content/uploads/2026/proceedings/2026.EDM.full-papers/2026.EDM.full-papers.174.pdf" target="_blank" rel="noopener" hint-size="120px,28px">Read more<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm" hint-size="20px,20px"></x-import></x-import></div>
             </div>
           </article>
-          <article data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;padding:2.5rem 0;border-bottom:1px solid var(--color-neutral-darkest-15);display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:5rem;row-gap:1rem">
+          <article data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;padding:2.5rem 0;border-bottom:1px solid var(--color-neutral-darkest-15);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));column-gap:5rem;row-gap:1rem">
             <h3 style="font-size:var(--text-h4);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0">A repeatable method for measuring durable skills</h3>
             <div>
               <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">We share a standardized, step-by-step process for improving and validating the capacity of AI systems to detect complex skills like critical thinking, so the field can build measurement tools without starting from scratch each time.</p>
               <div style="margin-top:1.5rem;display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" as="a" href="https://educationaldatamining.org/wp-content/uploads/2026/proceedings/2026.EDM.full-papers/2026.EDM.full-papers.174.pdf" target="_blank" rel="noopener" hint-size="120px,28px">Read more<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm" hint-size="20px,20px"></x-import></x-import></div>
             </div>
           </article>
-          <article data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;padding:2.5rem 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:5rem;row-gap:1rem">
+          <article data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;padding:2.5rem 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));column-gap:5rem;row-gap:1rem">
             <h3 style="font-size:var(--text-h4);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0">The AI Roles for Education framework</h3>
             <div>
               <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">We define five distinct roles AI can play in the classroom, and show how a tool's role shapes what it should do, how to judge whether it works, and what safeguards it needs.</p>
@@ -416,7 +496,7 @@
   <main data-screen-label="The Challenge">
 
     <section style="padding:clamp(4rem,7vw,7rem) 5%">
-      <div style="margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:5rem;row-gap:3rem;align-items:center">
+      <div style="margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));column-gap:5rem;row-gap:3rem;align-items:center">
         <div>
           <h1 style="font-size:var(--text-h1);line-height:1.1;letter-spacing:-0.01em;font-weight:700;margin:0 0 1.5rem;text-wrap:pretty">The gap between what AI can do and what students need.</h1>
           <p style="font-size:var(--text-medium);line-height:1.5;font-weight:300;margin:0;text-wrap:pretty">AI is arriving in classrooms whether schools are ready or not. The danger is that some are rushing in without asking what AI can do well, what teachers uniquely bring, or what students actually need.</p>
@@ -426,7 +506,7 @@
     </section>
 
     <section style="padding:clamp(4rem,7vw,7rem) 5%">
-      <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:5rem;row-gap:2rem">
+      <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));column-gap:5rem;row-gap:2rem">
         <h2 style="font-size:var(--text-h2);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0;text-wrap:pretty">Nobody knows the right way for AI to enter the classroom.</h2>
         <div style="display:flex;flex-direction:column;gap:1.5rem">
           <p style="font-size:var(--text-medium);line-height:1.5;font-weight:300;margin:0;text-wrap:pretty">Most of us built our critical thinking, writing ability, and judgment without AI, which is what allows us to use it well now. We direct it rather than defer to it. Students who lean on AI too early can short-circuit those skills before they form.</p>
@@ -436,7 +516,7 @@
     </section>
 
     <section style="padding:clamp(4rem,7vw,7rem) 5%">
-      <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:5rem;row-gap:3rem;align-items:center">
+      <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));column-gap:5rem;row-gap:3rem;align-items:center">
         <div>
           <h2 style="font-size:var(--text-h2);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1.5rem;text-wrap:pretty">And the technology to support it is lacking.</h2>
           <p style="font-size:var(--text-medium);line-height:1.5;font-weight:300;margin:0;text-wrap:pretty">Ed tech companies build the apps teachers and students use. The big AI labs build the underlying models that power these apps. What's missing is the layer in between: the foundational capabilities that let AI understand what a student knows, measure skills as complex as critical thinking, and adapt to what's happening in a real classroom.</p>
@@ -446,7 +526,7 @@
     </section>
 
     <section style="padding:clamp(4rem,7vw,7rem) 5%">
-      <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:5rem;row-gap:3rem;align-items:center">
+      <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));column-gap:5rem;row-gap:3rem;align-items:center">
         <div role="img" aria-label="Photography to supply: a teacher working alongside two students" style="width:100%;aspect-ratio:3/2;border-radius:var(--radius-image);display:flex;align-items:center;justify-content:center;padding:1.5rem;background:var(--color-ecru-white);text-align:center"><p style="font-weight:600;font-size:var(--text-small);line-height:1.5;margin:0;color:var(--text-muted);text-wrap:pretty">Photography to supply — a teacher working alongside two students</p></div>
         <div>
           <h2 style="font-size:var(--text-h2);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1.5rem;text-wrap:pretty">Fear is fueling a backlash that could leave students worse off</h2>
@@ -456,7 +536,7 @@
     </section>
 
     <section style="padding:clamp(4rem,7vw,7rem) 5% clamp(5rem,9vw,9rem)">
-      <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:5rem;row-gap:2rem">
+      <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));column-gap:5rem;row-gap:2rem">
         <h2 style="font-size:var(--text-h2);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0;text-wrap:pretty">We're on a mission to bridge this gap.</h2>
         <div>
           <p style="font-size:var(--text-medium);line-height:1.5;font-weight:300;margin:0 0 2rem;text-wrap:pretty">The gap exists because frontier AI and classroom learning operate on different timelines and constraints. Our work closes that gap by creating the infrastructure that lets them work together—safely, effectively, and in service of what students actually need to learn.</p>
@@ -494,18 +574,18 @@
 
 
     <section data-step="0" style="padding:clamp(5rem,8vw,8rem) 5% clamp(7rem,15vh,10rem)">
-      <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:5rem;row-gap:3rem;align-items:center">
+      <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));column-gap:5rem;row-gap:3rem;align-items:center">
         <div>
           <p style="font-weight:600;font-size:var(--text-regular);margin:0 0 1rem"><span style="color:var(--brand-accent)">01</span>&nbsp;&nbsp;Define the role</p>
           <h2 style="font-size:var(--text-h2);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1.5rem;text-wrap:pretty">We begin by asking what role classrooms need AI to play.</h2>
           <p style="font-size:var(--text-medium);line-height:1.5;font-weight:300;margin:0;text-wrap:pretty">We start by asking, not what AI can do, but what teachers and students need. At the start of each co-design cycle, our teacher and research partners define a role AI can play to meet a real classroom need, such as enhancing a teacher's understanding of her students' prior experiences and interests, assessing complex skills, or facilitating feedback. That role becomes the North Star for everything that follows.</p>
         </div>
-        <img src="assets/images/student-notes.png" alt="A student taking notes beside a laptop" style="width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:var(--radius-image);display:block">
+        <img src="assets/images/student-notes.webp" alt="A student taking notes beside a laptop" style="width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:var(--radius-image);display:block" width="1264" height="848" decoding="async" loading="lazy">
       </div>
     </section>
 
     <section data-step="1" style="padding:clamp(7rem,15vh,10rem) 5% clamp(7rem,15vh,10rem);border-top:1px solid var(--color-neutral-darkest-15)">
-      <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:5rem;row-gap:3rem;align-items:center">
+      <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));column-gap:5rem;row-gap:3rem;align-items:center">
         <div role="img" aria-label="Photography to supply: an engineer and a teacher reviewing a tool together" style="width:100%;aspect-ratio:3/2;border-radius:var(--radius-image);display:flex;align-items:center;justify-content:center;padding:1.5rem;background:var(--color-ecru-white);text-align:center"><p style="font-weight:600;font-size:var(--text-small);line-height:1.5;margin:0;color:var(--text-muted);text-wrap:pretty">Photography to supply — an engineer and a teacher reviewing a tool together</p></div>
         <div>
           <p style="font-weight:600;font-size:var(--text-regular);margin:0 0 1rem"><span style="color:var(--brand-accent)">02</span>&nbsp;&nbsp;Build the capabilities</p>
@@ -516,7 +596,7 @@
     </section>
 
     <section data-step="2" style="padding:clamp(7rem,15vh,10rem) 5% clamp(7rem,15vh,10rem);border-top:1px solid var(--color-neutral-darkest-15)">
-      <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:5rem;row-gap:3rem;align-items:center">
+      <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));column-gap:5rem;row-gap:3rem;align-items:center">
         <div>
           <p style="font-weight:600;font-size:var(--text-regular);margin:0 0 1rem"><span style="color:var(--brand-accent)">03</span>&nbsp;&nbsp;Co-design the applications</p>
           <h2 style="font-size:var(--text-h2);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1.5rem;text-wrap:pretty">We build tools that bring the role to life.</h2>
@@ -532,7 +612,7 @@
           <p style="font-weight:600;font-size:var(--text-regular);margin:0 0 1rem"><span style="color:var(--brand-accent)">04</span>&nbsp;&nbsp;Test, learn, begin again.</p>
           <h2 style="font-size:var(--text-h3);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0;text-wrap:pretty">Through this process, we produce three things the field needs:</h2>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));column-gap:2rem;row-gap:3rem">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));column-gap:2rem;row-gap:3rem">
           <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;border-top:1px solid var(--color-neutral-darkest-15);padding-top:1.5rem">
             <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem">Research</h3>
             <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Every co-design cycle generates evidence about what AI should do in education, when it works, and why. We openly share our research findings, evaluation methods, and models for teaching and learning alongside AI, so the field can build from evidence instead of assumptions.</p>
@@ -723,7 +803,7 @@
   <main data-screen-label="Who We Are">
 
     <section style="padding:clamp(4rem,7vw,7rem) 5%">
-      <div style="margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:5rem;row-gap:2rem">
+      <div style="margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));column-gap:5rem;row-gap:2rem">
         <h1 style="font-size:var(--text-h1);line-height:1.1;letter-spacing:-0.01em;font-weight:700;margin:0">Our Team</h1>
         <p style="font-size:var(--text-medium);line-height:1.5;font-weight:300;margin:0;text-wrap:pretty">AugmentED brings together people from classrooms, research labs, and engineering teams who share a conviction that AI should augment human teaching, not replace it. We build the infrastructure that lets teachers and students work alongside frontier AI in ways that deepen their thinking, learning, and relationships rather than short-circuit them.</p>
       </div>
@@ -732,13 +812,13 @@
     <section style="padding:clamp(3rem,6vw,5rem) 5%">
       <div style="margin-inline:auto;max-width:80rem">
         <h2 data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;font-size:var(--text-h2);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 clamp(3rem,6vw,5rem)">Leadership</h2>
-        <div class="team-grid-2" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));column-gap:2rem;row-gap:3rem">
+        <div class="team-grid-2" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));column-gap:2rem;row-gap:3rem">
           <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
             <div style="aspect-ratio:1/1;width:100%;background:var(--color-neutral-lightest);border-radius:var(--radius-image);margin-bottom:1.5rem"></div>
             <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Sherry Lachman</h3>
             <p style="font-weight:600;font-size:var(--text-regular);margin:0">Founder &amp; Executive Director</p>
             <div style="margin-top:1.25rem;display:flex;align-items:center;gap:1rem">
-              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="https://unpkg.com/simple-icons@11.14.0/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block"></a>
+              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="assets/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block" width="24" height="24" decoding="async" loading="lazy"></a>
               <a href="#" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language" hint-size="24px,24px"></x-import></a>
             </div>
           </div>
@@ -747,16 +827,16 @@
             <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Caitlin Mills</h3>
             <p style="font-weight:600;font-size:var(--text-regular);margin:0">Co-Founder &amp; Chief of Research and Impact</p>
             <div style="margin-top:1.25rem;display:flex;align-items:center;gap:1rem">
-              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="https://unpkg.com/simple-icons@11.14.0/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block"></a>
+              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="assets/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block" width="24" height="24" decoding="async" loading="lazy"></a>
               <a href="#" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language" hint-size="24px,24px"></x-import></a>
             </div>
           </div>
           <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
-            <img src="assets/team/raquel-romano.png" alt="Raquel Romano" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 5%;border-radius:var(--radius-image);margin-bottom:1.5rem;display:block">
+            <img src="assets/team/raquel-romano.webp" alt="Raquel Romano" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 5%;border-radius:var(--radius-image);margin-bottom:1.5rem;display:block" width="512" height="512" decoding="async" loading="lazy">
             <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Raquel Romano</h3>
             <p style="font-weight:600;font-size:var(--text-regular);margin:0">Chief Technology Officer</p>
             <div style="margin-top:1.25rem;display:flex;align-items:center;gap:1rem">
-              <a href="https://www.linkedin.com/in/romano" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="https://unpkg.com/simple-icons@11.14.0/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block"></a>
+              <a href="https://www.linkedin.com/in/romano" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="assets/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block" width="24" height="24" decoding="async" loading="lazy"></a>
             </div>
           </div>
           <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
@@ -764,7 +844,7 @@
             <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Jenny Bradbury</h3>
             <p style="font-weight:600;font-size:var(--text-regular);margin:0">Vice President of Education Innovation and Partnerships</p>
             <div style="margin-top:1.25rem;display:flex;align-items:center;gap:1rem">
-              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="https://unpkg.com/simple-icons@11.14.0/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block"></a>
+              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="assets/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block" width="24" height="24" decoding="async" loading="lazy"></a>
               <a href="#" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language" hint-size="24px,24px"></x-import></a>
             </div>
           </div>
@@ -773,7 +853,7 @@
             <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Brandon Bodnar</h3>
             <p style="font-weight:600;font-size:var(--text-regular);margin:0">Principal Engineer</p>
             <div style="margin-top:1.25rem;display:flex;align-items:center;gap:1rem">
-              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="https://unpkg.com/simple-icons@11.14.0/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block"></a>
+              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="assets/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block" width="24" height="24" decoding="async" loading="lazy"></a>
               <a href="#" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language" hint-size="24px,24px"></x-import></a>
             </div>
           </div>
@@ -784,22 +864,22 @@
     <section style="padding:clamp(4rem,7vw,7rem) 5%">
       <div style="margin-inline:auto;max-width:80rem">
         <h2 data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;font-size:var(--text-h2);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 clamp(3rem,6vw,5rem)">Research Partners</h2>
-        <div class="team-grid-3" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));column-gap:2rem;row-gap:3rem">
+        <div class="team-grid-3" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));column-gap:2rem;row-gap:3rem">
           <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
             <div style="aspect-ratio:1/1;width:100%;background:var(--color-neutral-lightest);border-radius:var(--radius-image);margin-bottom:1.5rem"></div>
             <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Andrew Lan</h3>
             <p style="font-weight:600;font-size:var(--text-small);margin:0">Associate Professor of Computer Science, University of Massachusetts Amherst</p>
             <div style="margin-top:1.25rem;display:flex;align-items:center;gap:1rem">
-              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="https://unpkg.com/simple-icons@11.14.0/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block"></a>
+              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="assets/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block" width="24" height="24" decoding="async" loading="lazy"></a>
               <a href="#" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language" hint-size="24px,24px"></x-import></a>
             </div>
           </div>
           <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
-            <img src="assets/team/ryan-baker.png" alt="Ryan Baker" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 0%;border-radius:var(--radius-image);margin-bottom:1.5rem;display:block">
+            <img src="assets/team/ryan-baker.webp" alt="Ryan Baker" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 0%;border-radius:var(--radius-image);margin-bottom:1.5rem;display:block" width="190" height="213" decoding="async" loading="lazy">
             <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Ryan Baker</h3>
             <p style="font-weight:600;font-size:var(--text-small);margin:0">Professor of Artificial Intelligence and Education, Adelaide University</p>
             <div style="margin-top:1.25rem;display:flex;align-items:center;gap:1rem">
-              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="https://unpkg.com/simple-icons@11.14.0/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block"></a>
+              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="assets/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block" width="24" height="24" decoding="async" loading="lazy"></a>
               <a href="#" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language" hint-size="24px,24px"></x-import></a>
             </div>
           </div>
@@ -808,25 +888,25 @@
             <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Angela E.B. Stewart</h3>
             <p style="font-weight:600;font-size:var(--text-small);margin:0">Assistant Professor, University of Pittsburgh</p>
             <div style="margin-top:1.25rem;display:flex;align-items:center;gap:1rem">
-              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="https://unpkg.com/simple-icons@11.14.0/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block"></a>
+              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="assets/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block" width="24" height="24" decoding="async" loading="lazy"></a>
               <a href="#" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language" hint-size="24px,24px"></x-import></a>
             </div>
           </div>
           <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
-            <img src="assets/team/laura-allen.jpeg" alt="Laura Allen" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 5%;border-radius:var(--radius-image);margin-bottom:1.5rem;display:block">
+            <img src="assets/team/laura-allen.webp" alt="Laura Allen" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 5%;border-radius:var(--radius-image);margin-bottom:1.5rem;display:block" width="365" height="512" decoding="async" loading="lazy">
             <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Laura Allen</h3>
             <p style="font-weight:600;font-size:var(--text-small);margin:0">Associate Professor, University of Minnesota</p>
             <div style="margin-top:1.25rem;display:flex;align-items:center;gap:1rem">
-              <a href="https://www.linkedin.com/in/laura-allen-37344528/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="https://unpkg.com/simple-icons@11.14.0/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block"></a>
+              <a href="https://www.linkedin.com/in/laura-allen-37344528/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="assets/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block" width="24" height="24" decoding="async" loading="lazy"></a>
               <a href="https://edpsych.umn.edu/laura-allen" target="_blank" rel="noopener" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language" hint-size="24px,24px"></x-import></a>
             </div>
           </div>
           <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
-            <img src="assets/team/blair-lehman.jpeg" alt="Blair Lehman" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 20%;border-radius:var(--radius-image);margin-bottom:1.5rem;display:block">
+            <img src="assets/team/blair-lehman.webp" alt="Blair Lehman" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 20%;border-radius:var(--radius-image);margin-bottom:1.5rem;display:block" width="200" height="200" decoding="async" loading="lazy">
             <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Blair Lehman</h3>
             <p style="font-weight:600;font-size:var(--text-small);margin:0">Senior Scientist, Brighter Research</p>
             <div style="margin-top:1.25rem;display:flex;align-items:center;gap:1rem">
-              <a href="https://www.linkedin.com/in/blair-lehman-bb043b11" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="https://unpkg.com/simple-icons@11.14.0/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block"></a>
+              <a href="https://www.linkedin.com/in/blair-lehman-bb043b11" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="assets/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block" width="24" height="24" decoding="async" loading="lazy"></a>
               <a href="https://sites.google.com/site/blairlehman/home" target="_blank" rel="noopener" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language" hint-size="24px,24px"></x-import></a>
             </div>
           </div>
@@ -835,7 +915,7 @@
             <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Isa Peczuh</h3>
             <p style="font-weight:600;font-size:var(--text-small);margin:0">PhD Candidate, University of Minnesota</p>
             <div style="margin-top:1.25rem;display:flex;align-items:center;gap:1rem">
-              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="https://unpkg.com/simple-icons@11.14.0/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block"></a>
+              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="assets/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block" width="24" height="24" decoding="async" loading="lazy"></a>
               <a href="#" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language" hint-size="24px,24px"></x-import></a>
             </div>
           </div>
@@ -849,22 +929,22 @@
           <h2 style="font-size:var(--text-h2);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem">Technology Partners</h2>
           <p style="font-size:var(--text-medium);line-height:1.5;margin:0;text-wrap:pretty">People who believe AI amplifies rather than replaces human thinking.</p>
         </div>
-        <div class="team-grid-3" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));column-gap:2rem;row-gap:3rem">
+        <div class="team-grid-3" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));column-gap:2rem;row-gap:3rem">
           <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
             <div style="aspect-ratio:1/1;width:100%;background:var(--color-neutral-lightest);border-radius:var(--radius-image);margin-bottom:1.5rem"></div>
             <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Sarah Zaner</h3>
             <p style="font-weight:600;font-size:var(--text-small);margin:0">Co-founder, Bendable Labs</p>
             <div style="margin-top:1.25rem;display:flex;align-items:center;gap:1rem">
-              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="https://unpkg.com/simple-icons@11.14.0/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block"></a>
+              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="assets/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block" width="24" height="24" decoding="async" loading="lazy"></a>
               <a href="#" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language" hint-size="24px,24px"></x-import></a>
             </div>
           </div>
           <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
-            <img src="assets/team/lisa-peterson.png" alt="Lisa Peterson" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 30%;border-radius:var(--radius-image);margin-bottom:1.5rem;display:block">
+            <img src="assets/team/lisa-peterson.webp" alt="Lisa Peterson" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 30%;border-radius:var(--radius-image);margin-bottom:1.5rem;display:block" width="512" height="512" decoding="async" loading="lazy">
             <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Lisa Peterson</h3>
             <p style="font-weight:600;font-size:var(--text-small);margin:0">Product Design Consultant</p>
             <div style="margin-top:1.25rem;display:flex;align-items:center;gap:1rem">
-              <a href="https://www.linkedin.com/in/lisa-peterson/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="https://unpkg.com/simple-icons@11.14.0/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block"></a>
+              <a href="https://www.linkedin.com/in/lisa-peterson/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="assets/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block" width="24" height="24" decoding="async" loading="lazy"></a>
             </div>
           </div>
           <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
@@ -872,7 +952,7 @@
             <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Suzanna Smith</h3>
             <p style="font-weight:600;font-size:var(--text-small);margin:0">Product Design Consultant</p>
             <div style="margin-top:1.25rem;display:flex;align-items:center;gap:1rem">
-              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="https://unpkg.com/simple-icons@11.14.0/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block"></a>
+              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="assets/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block" width="24" height="24" decoding="async" loading="lazy"></a>
               <a href="#" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language" hint-size="24px,24px"></x-import></a>
             </div>
           </div>
@@ -881,7 +961,7 @@
             <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Adam Bachman</h3>
             <p style="font-weight:600;font-size:var(--text-small);margin:0">Engineering Consultant</p>
             <div style="margin-top:1.25rem;display:flex;align-items:center;gap:1rem">
-              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="https://unpkg.com/simple-icons@11.14.0/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block"></a>
+              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="assets/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block" width="24" height="24" decoding="async" loading="lazy"></a>
               <a href="#" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language" hint-size="24px,24px"></x-import></a>
             </div>
           </div>
@@ -890,16 +970,16 @@
             <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Neil Sharma</h3>
             <p style="font-weight:600;font-size:var(--text-small);margin:0">Engineering Consultant</p>
             <div style="margin-top:1.25rem;display:flex;align-items:center;gap:1rem">
-              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="https://unpkg.com/simple-icons@11.14.0/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block"></a>
+              <a href="#" aria-label="LinkedIn" style="display:flex"><img src="assets/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block" width="24" height="24" decoding="async" loading="lazy"></a>
               <a href="#" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language" hint-size="24px,24px"></x-import></a>
             </div>
           </div>
           <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
-            <img src="assets/team/joan-lee.jpg" alt="Joan Lee" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 4%;border-radius:var(--radius-image);margin-bottom:1.5rem;display:block">
+            <img src="assets/team/joan-lee.webp" alt="Joan Lee" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 4%;border-radius:var(--radius-image);margin-bottom:1.5rem;display:block" width="512" height="512" decoding="async" loading="lazy">
             <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Joan Lee</h3>
             <p style="font-weight:600;font-size:var(--text-small);margin:0">Project Manager</p>
             <div style="margin-top:1.25rem;display:flex;align-items:center;gap:1rem">
-              <a href="https://www.linkedin.com/in/about-joan-lee" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="https://unpkg.com/simple-icons@11.14.0/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block"></a>
+              <a href="https://www.linkedin.com/in/about-joan-lee" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="assets/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block" width="24" height="24" decoding="async" loading="lazy"></a>
             </div>
           </div>
         </div>
@@ -907,7 +987,7 @@
     </section>
 
     <section style="padding:clamp(4rem,7vw,7rem) 5%">
-      <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:5rem;row-gap:2rem;border-top:1px solid var(--color-neutral-darkest-15);padding-top:clamp(2.5rem,5vw,4rem)">
+      <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:80rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));column-gap:5rem;row-gap:2rem;border-top:1px solid var(--color-neutral-darkest-15);padding-top:clamp(2.5rem,5vw,4rem)">
         <h2 style="font-size:var(--text-h2);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0;text-wrap:pretty">Education Partnerships</h2>
         <p style="font-size:var(--text-medium);line-height:1.5;font-weight:300;margin:0;text-wrap:pretty">We collaborated with XQ and High Tech High to identify exceptional educators for our first co-design teams. Our inaugural AugmentED Education Fellowship cohort includes teachers from Crosstown High School (Memphis, TN), Grand Rapids Public Museum High School (Grand Rapids, MI), Thomas A. Edison Career and Technical Education High School (Queens, NY), and several High Tech High campuses in the San Diego region. We've selected these schools for their commitment to transforming the high school experience for students—the majority of whom are students of color and economically disadvantaged—by making learning meaningful and engaging, and preparing them with the critical skills they need to thrive in the age of AI.</p>
       </div>
@@ -938,7 +1018,7 @@
       </div>
 
       <form onSubmit="{{ onInvolvedSubmit }}" data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:40rem;display:flex;flex-direction:column;gap:2rem">
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:1.5rem">
           <div>
             <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Label" hint-size="auto,20px">First name</x-import>
             <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Input" type="text" required="" hint-size="100%,44px"></x-import>
@@ -948,7 +1028,7 @@
             <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Input" type="text" required="" hint-size="100%,44px"></x-import>
           </div>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:1.5rem">
           <div>
             <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Label" hint-size="auto,20px">Email</x-import>
             <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Input" type="email" required="" hint-size="100%,44px"></x-import>
@@ -960,7 +1040,7 @@
         </div>
         <div>
           <p style="font-size:var(--text-regular);margin:0 0 0.75rem">Which best describes you?</p>
-          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.RadioGroup" default-value="educator" hint-size="100%,auto" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.75rem">
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.RadioGroup" default-value="educator" hint-size="100%,auto" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(160px,100%),1fr));gap:0.75rem">
             <label style="display:flex;align-items:center;gap:0.75rem"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.RadioGroupItem" value="educator" hint-size="18px,18px"></x-import>Educator</label>
             <label style="display:flex;align-items:center;gap:0.75rem"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.RadioGroupItem" value="researcher" hint-size="18px,18px"></x-import>Researcher</label>
             <label style="display:flex;align-items:center;gap:0.75rem"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.RadioGroupItem" value="engineer" hint-size="18px,18px"></x-import>Engineer</label>
@@ -991,9 +1071,9 @@
 
   <footer style="padding:clamp(3rem,6vw,5rem) 5% 3rem">
     <div style="margin-inline:auto;max-width:80rem">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));column-gap:3rem;row-gap:3rem;margin-bottom:4rem">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));column-gap:3rem;row-gap:3rem;margin-bottom:4rem">
         <div>
-          <img src="assets/logo/logo-light.png" alt="augment^ed" style="width:168px;display:block;margin-bottom:1.5rem">
+          <img src="assets/logo/logo-light.png" alt="augment^ed" style="width:168px;display:block;margin-bottom:1.5rem" width="768" height="149" decoding="async">
           <p style="font-size:var(--text-regular);line-height:1.5;margin:0 0 1.5rem">Get updates on AugmentED research and tools.</p>
           <form onSubmit="{{ onSubscribe }}" style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:1rem;margin-bottom:1rem">
             <div style="flex:1 1 12rem">
@@ -1019,8 +1099,8 @@
         </div>
         <div style="display:flex;flex-direction:column;gap:0.75rem">
           <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.25rem">Follow Us</p>
-          <a href="#" style="font-size:var(--text-small);display:flex;align-items:center;gap:0.75rem"><img src="https://unpkg.com/simple-icons@11.14.0/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block">LinkedIn</a>
-          <a href="#" style="font-size:var(--text-small);display:flex;align-items:center;gap:0.75rem"><img src="https://unpkg.com/simple-icons@11.14.0/icons/youtube.svg" alt="" style="width:24px;height:24px;display:block">Youtube</a>
+          <a href="#" style="font-size:var(--text-small);display:flex;align-items:center;gap:0.75rem"><img src="assets/icons/linkedin.svg" alt="" style="width:24px;height:24px;display:block" width="24" height="24" decoding="async" loading="lazy">LinkedIn</a>
+          <a href="#" style="font-size:var(--text-small);display:flex;align-items:center;gap:0.75rem"><img src="assets/icons/youtube.svg" alt="" style="width:24px;height:24px;display:block" width="24" height="24" decoding="async" loading="lazy">Youtube</a>
         </div>
       </div>
       <div style="height:1px;width:100%;background:var(--color-neutral-darkest-15);margin-bottom:1.5rem"></div>
@@ -1060,6 +1140,11 @@ const ROUTES = [
 const clamp = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
 const smooth = (t) => { const c = clamp(t); return c * c * (3 - 2 * c); };
 
+// Read at module scope, not in componentDidMount: heroStaticMode is a render value,
+// so it is computed before mount, and a preference read afterwards would report
+// "responsive" on the first paint — handing a reduced-motion visitor the rig.
+const REDUCED = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
 const TITLES = {
   home: "AugmentED | Bridging frontier AI and the classroom",
   challenge: "The Challenge | AugmentED",
@@ -1098,6 +1183,12 @@ class Component extends DCLogic {
     this.onPopState = () => this.show(readRoute().page);
     window.addEventListener("popstate", this.onPopState);
 
+    // Escape closes the menu, the way every other overlay on the web does.
+    this.onKeyDown = (e) => {
+      if (e.key === "Escape" && this.state.navOpen) this.setState({ navOpen: false });
+    };
+    window.addEventListener("keydown", this.onKeyDown);
+
     this.sweep = () => {
       const h = window.innerHeight || 800;
       document.querySelectorAll("[data-reveal]").forEach((el) => {
@@ -1113,15 +1204,19 @@ class Component extends DCLogic {
     };
     this.sweepTimer = setInterval(this.sweep, 250);
 
+    // Drops the body copy to sit against the middle of the heading beside it. That
+    // is a two-column idea: below 992px the pair stacks, and the same offset becomes
+    // a gap the height of half a wrapped headline.
     this.syncApproachOffset = () => {
       const h = document.querySelector("[data-approach-heading]");
       const t = document.querySelector("[data-approach-text]");
-      if (h && t) t.style.marginTop = (h.offsetHeight / 2) + "px";
+      if (!h || !t) return;
+      t.style.marginTop = window.innerWidth >= 992 ? (h.offsetHeight / 2) + "px" : "";
     };
     this.syncApproachOffset();
     this.approachTimer = setInterval(this.syncApproachOffset, 250);
 
-    this.reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    this.reduced = REDUCED;
 
     // The Approach act: the arch built across two desks, scrubbed by scroll.
     // The section's clock is the Blender timeline, not an array index, so it
@@ -1142,29 +1237,50 @@ class Component extends DCLogic {
     // move is a dissolve between two different angles and ghosts. Keep it brief until
     // the in-between frames land and it becomes a real scrub that can breathe.
     this.ARCH_MOVE = this.ARCH_FRAMES.length > this.ARCH_BEATS.length ? 0.42 : 0.14;
-    this.archImgs = new Array(this.ARCH_FRAMES.length);
+    // The mobile band is a tighter frame cut from the same plate — see
+    // tools/encode-approach.mjs, which must agree with the aspect-ratio on
+    // [data-arch-box]. Keyed by variant suffix, "" being the full plate.
+    this.ARCH_CROP = { "": { w: 2048, h: 1432 }, m: { w: 1147, h: 888 } };
+    this.archImgs = {};
+    this.archLoading = {};
+
+    // Which cut of the plate this layout wants. Read from the stylesheet rather than
+    // re-tested against innerWidth here: a second copy of the breakpoint is free to
+    // drift from the one that sizes the band, and a band cut to 1147x888 fed the full
+    // 2048-wide plate is a silent, invisible bug. getComputedStyle works on a
+    // display:none element, so this is valid even where the rig never renders.
+    this.archVariant = () => {
+      const rig = document.querySelector("[data-arch-rig]");
+      if (!rig) return "";
+      const v = getComputedStyle(rig).getPropertyValue("--arch-variant").trim().replace(/["']/g, "");
+      return v === "m" ? "m" : "";
+    };
 
     const pad4 = (n) => String(n).padStart(4, "0");
-    const loadFrame = (k) => new Promise((res) => {
+    const loadFrame = (v, k) => new Promise((res) => {
       const im = new Image();
-      im.onload = () => { this.archImgs[k] = im; this.archDraw(); res(); };
+      im.onload = () => { this.archImgs[v][k] = im; this.archDraw(); res(); };
       im.onerror = () => res();
-      im.src = "assets/approach/ap" + pad4(this.ARCH_FRAMES[k]) + ".webp";
+      im.src = "assets/approach/ap" + pad4(this.ARCH_FRAMES[k]) + v + ".webp";
     });
     // Resting frames first, so every beat reads correctly even mid-download and the
     // moves between them fill in behind. The frames are only ever fetched where the
-    // stage actually renders: not on phones, not under reduced motion, and not
-    // until the rig is near the viewport.
-    this.archLoading = false;
+    // stage actually renders: not under reduced motion, not where the layout falls
+    // back to the stacked stills, and not until the rig is near the viewport. The
+    // offsetHeight test covers the fallbacks on its own — CSS display:none is what
+    // hides the rig in both cases.
     this.archPrime = () => {
-      if (this.archLoading || this.reduced) return;
+      if (this.reduced) return;
       const rig = document.querySelector("[data-arch-rig]");
       if (!rig || !rig.offsetHeight) return;
       if (rig.getBoundingClientRect().top > (window.innerHeight || 800) * 3) return;
-      this.archLoading = true;
+      const v = this.archVariant();
+      if (this.archLoading[v]) return;
+      this.archLoading[v] = true;
+      this.archImgs[v] = this.archImgs[v] || new Array(this.ARCH_FRAMES.length);
       const rest = [], between = [];
       this.ARCH_FRAMES.forEach((f, k) => (this.ARCH_BEATS.indexOf(f) > -1 ? rest : between).push(k));
-      (async () => { for (const k of rest.concat(between)) await loadFrame(k); })();
+      (async () => { for (const k of rest.concat(between)) await loadFrame(v, k); })();
     };
 
     // The dissolve is CSS, not arithmetic on one canvas: drawing two frames into a
@@ -1175,6 +1291,8 @@ class Component extends DCLogic {
     // the pair changes rather than on every scroll event.
     this.archDraw = () => {
       const F = this.ARCH_FRAMES;
+      const v = this.archVariant();
+      const imgs = this.archImgs[v] || [];
       const want = typeof this.archWant === "number" ? this.archWant : F[0];
       let i = 0;
       while (i < F.length - 2 && F[i + 1] <= want) i++;
@@ -1182,22 +1300,28 @@ class Component extends DCLogic {
       const b = F[j] > F[i] ? (want - F[i]) / (F[j] - F[i]) : 0;
       // Track what each layer holds on the element, not on the component: the
       // runtime can re-render the canvas out from under us, and a stale index here
-      // would leave the layer blank forever.
+      // would leave the layer blank forever. The tag carries the variant too — the
+      // same index is a different picture in the mobile crop, and a raster left over
+      // from the other cut would sit there looking almost right.
       const put = (n, k) => {
         const cv = document.querySelector('[data-arch-layer="' + n + '"]');
         if (!cv) return null;
-        const im = this.archImgs[k];
-        if (im && cv.dataset.f !== String(k)) {
+        const im = imgs[k];
+        const tag = v + ":" + k;
+        if (im && cv.dataset.f !== tag) {
+          // Size the backing store from the image rather than a constant, so the
+          // file and the canvas can never disagree. Assigning width also clears it.
+          if (cv.width !== im.naturalWidth) { cv.width = im.naturalWidth; cv.height = im.naturalHeight; }
           const ctx = cv.getContext("2d");
           ctx.clearRect(0, 0, cv.width, cv.height);
           ctx.drawImage(im, 0, 0, cv.width, cv.height);
-          cv.dataset.f = String(k);
+          cv.dataset.f = tag;
         }
         return cv;
       };
       const lower = put(0, i), upper = put(1, j);
-      if (lower) lower.style.opacity = (this.archImgs[j] ? 1 - b : 1).toFixed(3);
-      if (upper) upper.style.opacity = (this.archImgs[j] ? b : 0).toFixed(3);
+      if (lower) lower.style.opacity = (imgs[j] ? 1 - b : 1).toFixed(3);
+      if (upper) upper.style.opacity = (imgs[j] ? b : 0).toFixed(3);
     };
 
     this.arch = () => {
@@ -1220,22 +1344,27 @@ class Component extends DCLogic {
       this.archWant = seg === 0 ? B[0] : B[seg - 1] + (B[seg] - B[seg - 1]) * smooth(t / this.ARCH_MOVE);
       this.archDraw();
 
-      // Camera. The plate hangs from the top of the stage at its own aspect, so at
+      // Camera. The plate hangs from the top of the box at its own aspect, so at
       // scale 1 it fills the width and the overflow that gets clipped is the desk
       // legs. The opening pulls back far enough to hold the whole plate, the piece
       // pushes in to full bleed, and a hair of creep continues the whole way down so
       // a frozen frame is never a dead frame. Origin is the top edge: that is what
       // keeps the two books that come to rest on the arch inside the frame.
+      //
+      // The box is the frame the plate is fitted into — the whole stage on desktop,
+      // the band on a phone. Measuring the box rather than the stage is what lets one
+      // camera serve both: on mobile the band is cut to the same aspect as the plate
+      // it holds, so the fit works out to exactly 1 and the formula reports "already
+      // fits" rather than needing a special case.
       const cam = rig.querySelector("[data-arch-cam]");
+      const box = rig.querySelector("[data-arch-box]") || stage;
       if (cam) {
-        const sMin = Math.min(1, 1.4302 * stage.clientHeight / (stage.clientWidth || 1));
+        const crop = this.ARCH_CROP[this.archVariant()] || this.ARCH_CROP[""];
+        const sMin = Math.min(1, (crop.w / crop.h) * box.clientHeight / (box.clientWidth || 1));
         const open = smooth(p / 0.24);
         const sc = sMin + (1 - sMin) * open + 0.028 * p;
         cam.style.transform = "translateY(" + (1.2 * open).toFixed(2) + "%) scale(" + sc.toFixed(4) + ")";
       }
-
-      const prog = rig.querySelector("[data-arch-prog]");
-      if (prog) prog.style.width = (p * 100).toFixed(2) + "%";
 
       for (let i = 0; i < 4; i++) {
         // Copy blocks 0-3 belong to segments 1-4. The opening carries none, and the
@@ -1283,6 +1412,8 @@ class Component extends DCLogic {
 
   componentWillUnmount() {
     window.removeEventListener("popstate", this.onPopState);
+    window.removeEventListener("keydown", this.onKeyDown);
+    document.body.style.overflow = "";
     window.removeEventListener("scroll", this.onScroll);
     window.removeEventListener("resize", this.onScroll);
     clearInterval(this.sweepTimer);
@@ -1290,6 +1421,7 @@ class Component extends DCLogic {
   }
 
   componentDidUpdate(prevProps, prevState) {
+    document.body.style.overflow = this.state.navOpen ? "hidden" : "";
     // The runtime invokes this with prevProps only, so prevState is undefined —
     // reading it threw on every update and swallowed the three ticks below.
     // go() already scrolls to the top, so track the page change ourselves.
@@ -1442,6 +1574,8 @@ class Component extends DCLogic {
       navInvolvedStyle: this.navStyle("involved"),
       navTeamStyle: this.navStyle("team"),
       navOpen: open,
+      navLabel: open ? "Close menu" : "Menu",
+      navExpanded: open ? "true" : "false",
       goHome: this.go("home"),
       goChallenge: this.go("challenge"),
       goApproach: this.go("approach"),

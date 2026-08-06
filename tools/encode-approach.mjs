@@ -25,6 +25,12 @@ const OUT = path.join(root, 'assets/approach');
 const BEATS = [167, 235, 353, 477, 598, 672];
 const FRAMES = [167, 235, 353, 477, 598, 672];
 
+// The mobile band's frame, in master pixels. Aspect 1147/888 = 1.2917; keep this in
+// step with the aspect-ratio on [data-arch-box] in index.html or the band will
+// letterbox. Top is 0 because the books come to rest 1.3% from the plate's top edge
+// in the last beat; the bottom cut lands on the leg stubs, which nothing needs.
+const CROP = { left: 426, top: 0, width: 1147, height: 888 };
+
 const pad4 = (n) => String(n).padStart(4, '0');
 
 for (const n of FRAMES) {
@@ -45,14 +51,24 @@ for (const n of FRAMES) {
   if (!meta.hasAlpha) throw new Error(`${out} lost its alpha channel`);
   console.log(`ap${pad4(n)}.webp  ${info.width}x${info.height}  ${(info.size / 1024).toFixed(0)}KB${beat ? '  (beat)' : ''}`);
 
-  // Beat frames double as the phone and reduced-motion stills, where the section
-  // is read as a stack of images rather than scrubbed.
+  // The phone gets a tighter frame on the same plate. At phone width the arch
+  // covers about a third of the full plate, which is why the four beats read as
+  // four near-identical pictures of two desks — the blueprint, the half-built arch
+  // and the loaded one are all too small to tell apart. This crop keeps the arch
+  // and the inner edge of each desk, so it still reads as two desks with a gap.
+  //
+  // Centred on the arch (x 0.488), not on the plate: the plate's own centre would
+  // slice the left desk's book stack. Cut at native size and never resized — the
+  // master is 2048 wide, so 1147 is every real pixel there is, and an upscale here
+  // would fray the alpha edges that alphaQuality:100 exists to keep clean.
   if (beat) {
-    const sOut = path.join(OUT, `ap${pad4(n)}s.webp`);
-    const sInfo = await sharp(src)
-      .resize({ width: 1200, kernel: 'lanczos3' })
-      .webp({ quality: 78, alphaQuality: 100, effort: 6 })
-      .toFile(sOut);
-    console.log(`ap${pad4(n)}s.webp ${sInfo.width}x${sInfo.height}  ${(sInfo.size / 1024).toFixed(0)}KB  (still)`);
+    const mOut = path.join(OUT, `ap${pad4(n)}m.webp`);
+    const mInfo = await sharp(src)
+      .extract({ left: CROP.left, top: CROP.top, width: CROP.width, height: CROP.height })
+      .webp({ quality: 80, alphaQuality: 100, effort: 6, smartSubsample: true })
+      .toFile(mOut);
+    const mMeta = await sharp(mOut).metadata();
+    if (!mMeta.hasAlpha) throw new Error(`${mOut} lost its alpha channel`);
+    console.log(`ap${pad4(n)}m.webp ${mInfo.width}x${mInfo.height}  ${(mInfo.size / 1024).toFixed(0)}KB  (mobile crop)`);
   }
 }
