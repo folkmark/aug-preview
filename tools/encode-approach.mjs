@@ -84,7 +84,13 @@ const OPEN = 91;
 // archive back to f 77 would rewrite all 120 filenames for no change in content.
 const STRIDE = 5;
 const FRAMES = (() => {
-  const out = new Set(BEATS);
+  // OPEN itself, then the grid. The in-point is a fixed frame like a beat is, so it is
+  // added rather than rounded to: anchoring the grid on the first beat lands the lowest
+  // grid frame on 92, and starting the section one frame late means the first thing the
+  // visitor sees is a desk that has already begun. The gap from 91 to 92 is the same
+  // kind of short step the beats already make (232, 235, 237) and the scrub reads it
+  // from the manifest, so nothing downstream needs to know.
+  const out = new Set([...BEATS, OPEN]);
   for (let n = BEATS[0]; n <= BEATS[BEATS.length - 1]; n += STRIDE) out.add(n);
   for (let n = BEATS[0] - STRIDE; n >= OPEN; n -= STRIDE) out.add(n);
   return [...out].sort((a, b) => a - b);
