@@ -15,7 +15,12 @@ approach-scrub {
      plain-vh line before it is the fallback for engines without svh. */
   display: block;
   position: relative;
-  height: 880vh;
+  /* The budget is divided among the moves in proportion to the render frames each
+     covers, so this height and the length of the encoded sequence are one setting in
+     two places: adding the opening's 76 frames to the 505 that were already here would
+     have sped the whole piece up by 12% at the old 880vh. Raised to hold the rate at
+     about 7.4px per render frame, which is what the scrub was retimed to. */
+  height: 1000vh;
   --arch-variant: "";
   /* Where the stage pins. One number drives the sticky offset and the stage's height,
      and the element reads it back off the stage — so a host with a taller header, or
@@ -100,7 +105,7 @@ approach-scrub *, approach-scrub *::before, approach-scrub *::after { box-sizing
    on the page rather than over it. The sticky stage carries no viewport unit here at
    all: it is auto-height, so a retracting URL bar cannot reflow it. */
 @media (max-width: 991px), (max-aspect-ratio: 5/4) {
-  approach-scrub { height: 520vh; height: 520svh; --arch-variant: "m"; }
+  approach-scrub { height: 600vh; height: 600svh; --arch-variant: "m"; }
   [data-arch-stage] { height: auto; padding-bottom: 1.25rem; }
   [data-arch-box] { position: relative; inset: auto; width: 100%; aspect-ratio: 1147 / 888; }
   [data-arch-cam] { height: 100%; aspect-ratio: auto; }
