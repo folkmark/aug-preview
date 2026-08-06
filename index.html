@@ -252,7 +252,12 @@
   <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
   <main data-screen-label="Home" data-hero-static-mode="{{ heroStaticMode }}">
 
-    <!-- The falling-blocks hero. Two depth plates of one camera view sandwich the
+    <!-- The falling-blocks hero. stage-fill 0.93 is not a round number: it is the
+         share of the viewport the desks occupy in the Approach act further down, so
+         the blocks are held to the same measure as the artwork they belong to instead
+         of running off both edges of the screen.
+
+         Two depth plates of one camera view sandwich the
          copy: "bottom" is the far and mid planes and sits behind the words, "top" is
          the near plane and passes in front of them. They are not halves of a taller
          image — both are the full 2560x3840 frame and they register 1:1, which is why
@@ -267,12 +272,12 @@
          so the runtime owns these nodes and the element only drives them. With the
          script absent or the element unsupported this is a static hero of two stills
          and readable copy. -->
-    <falling-blocks base="assets/falling-blocks/" width="1920" frames="48" layers="bottom,top" revolutions="1" budget-mb="320" min-width="901" travel-bottom="0,0.42" travel-top="0,1">
+    <falling-blocks base="assets/falling-blocks/" width="1440" frames="48" layers="bottom,top" revolutions="0.6" budget-mb="128" min-width="901" stage-fill="0.93" travel-bottom="0.35,0.77" travel-top="0,1">
       <div data-fb-stage="">
 
         <div data-fb-layer="bottom" aria-hidden="true">
           <canvas></canvas>
-          <img src="assets/falling-blocks/w1920/bottom/fb0001.webp" alt="" width="1920" height="2880" loading="lazy" decoding="async">
+          <img src="assets/falling-blocks/w1440/bottom/fb0001.webp" alt="" width="1440" height="2160" loading="lazy" decoding="async">
         </div>
 
         <!-- The heading is the only thing the near plate crosses. The body and the
@@ -296,7 +301,7 @@
              viewport and loads it at once. -->
         <div data-fb-layer="top" aria-hidden="true">
           <canvas></canvas>
-          <img src="assets/falling-blocks/w1920/top/fb0001.webp" alt="" width="1920" height="2880" loading="lazy" decoding="async">
+          <img src="assets/falling-blocks/w1440/top/fb0001.webp" alt="" width="1440" height="2160" loading="lazy" decoding="async">
         </div>
 
       </div>
