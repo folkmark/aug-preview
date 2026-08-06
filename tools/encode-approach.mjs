@@ -42,14 +42,34 @@ const OUT = path.join(root, 'assets/approach');
 // Where the six beats come to rest. Fixed by the render, not by us.
 const BEATS = [167, 235, 353, 477, 598, 672];
 
-// Every frame that ships. Stride 5 across the beat span: the section never reaches
-// outside 167-672, so frames either side of it are rendered but not encoded. At this
-// stride a beat-to-beat move is 14-24 frames, which reads as motion rather than as a
-// dissolve, and the whole sequence stays inside the byte budget below.
+// Where the sequence opens, which is before the first beat rather than on it. Frames
+// 91-167 are the books and blocks falling onto the desks — the "before" the whole rest
+// of the section is a consequence of — and encoding from 167 meant the page opened on
+// a still of the aftermath and the fall was never seen at all. The page plays this as
+// its opening run; see the segment-0 note in assets/approach.js.
+//
+// 91 is the first frame the WebP archive holds, not a chosen in-point: the render map
+// puts the books landing from f 77, so the first fourteen frames of the fall are in the
+// Blender scene but not in the archive this encodes from. At 91 the desks are still
+// bare, so nothing of the fall itself is missing — restore the archive further back and
+// this can simply move.
+const OPEN = 91;
+
+// Every frame that ships. Stride 5 from the opening to the last beat: the section never
+// reaches outside 91-672, so frames either side of it are rendered but not encoded. At
+// this stride a beat-to-beat move is 14-24 frames, which reads as motion rather than as
+// a dissolve, and the whole sequence stays inside the byte budget below. The fall is no
+// faster than the rest — it changes 2.0 grey levels per stride-5 step against the arch
+// build's 2.6 — so it takes the same stride and needs no special case.
+// The grid is anchored on the first beat and grown outward in both directions, rather
+// than counted up from OPEN. Both give the same spacing, but counting up from OPEN
+// renumbers every frame in the sequence the moment the in-point moves — restoring the
+// archive back to f 77 would rewrite all 120 filenames for no change in content.
 const STRIDE = 5;
 const FRAMES = (() => {
   const out = new Set(BEATS);
   for (let n = BEATS[0]; n <= BEATS[BEATS.length - 1]; n += STRIDE) out.add(n);
+  for (let n = BEATS[0] - STRIDE; n >= OPEN; n -= STRIDE) out.add(n);
   return [...out].sort((a, b) => a - b);
 })();
 
@@ -68,15 +88,27 @@ const MASTER = { w: 2048, h: 1432 };
 // the left desk's book stack.
 const CROP = { left: 426, top: 0, width: 1147, height: 888 };
 
-// Beats keep every real pixel there is. Moves are only seen while moving, so they go out
-// smaller and cheaper — this, plus the alpha split above, is what keeps a hundred-frame
-// sequence inside a couple of megabytes per cut.
+// Beats keep every real pixel there is. Moves go out smaller, because they are seen in
+// passing — but only a little smaller, and the earlier 896/512 was too little by a wide
+// margin. A move frame is displayed at the same size as a beat, so at 896 it was carrying
+// 44% of the beat's linear resolution into the same box: the section snapped between a
+// sharp hold and a soft move every time it stopped, and the softness read as a property
+// of the motion rather than of the file. That is the wrong thing to economise on in the
+// one piece of artwork the whole site is built around.
 //
-// The mobile figure looks aggressive and is not: the band renders about 390 CSS pixels
-// wide, so 512 is still supersampling it, and the frames a phone actually dwells on are
-// the beats, which are cut at native 1147 and never resized.
-const FULL_MOVE_W = 896;
-const CROP_MOVE_W = 512;
+// 1600 is the knee. Against the 2048 master, encoding a move at 896/1152/1280/1440/1600
+// costs 23/31/35/42/47 KB, and by eye the difference from native closes at about 1600
+// while 2048 doubles the decoded cost (11.2 MiB a frame against 6.8) for a difference
+// that needs a crop tool to see.
+//
+// The mobile figure moves far less, and deliberately. The band renders about 390 CSS
+// pixels wide, so 768 is 1:1 on a 2x phone and a 1.5x upscale on a 3x one — where 512
+// was 2.3x — and that is most of the gain for a third of the bytes: at this width the
+// mobile cut totals 3.6 MB against 4.9 at 896 and 2.5 at 512. Bandwidth is the scarce
+// thing on the device with the smallest picture, and a phone is the one visitor who
+// might be paying for these frames by the megabyte.
+const FULL_MOVE_W = 1600;
+const CROP_MOVE_W = 768;
 
 // Applied to move frames only; beats take quality 82/80 at alphaQuality 100 below.
 const MOVE_Q = 70;

@@ -319,8 +319,11 @@ That one value drives the sticky offset, the stage's height, and the scroll math
 element reads it back off the rendered stage rather than measuring a page header, so
 there is nothing to keep in step and a WordPress admin bar cannot throw it off.
 
-The element's own height is the scroll budget: `880vh` on a wide screen, `520svh` on a
-phone, both in `approach.css`. Longer means slower; the beats divide it between them.
+The element's own height is the scroll budget: `1000vh` on a wide screen, `600svh` on a
+phone, both in `approach.css`. Longer means slower; the beats divide it between them in
+proportion to the frames each covers, so the height and the length of the encoded
+sequence are one setting in two files — encode more frames without raising the height and
+the whole section plays faster. See §3 and §5 of the build spec.
 
 ### Things that will bite
 
@@ -351,10 +354,12 @@ phone, both in `approach.css`. Longer means slower; the beats divide it between 
   serialises the rendered DOM would bake that in and the next visitor would get an empty
   canvas claiming to be drawn. The element clears those on boot. Do not optimise it away.
 - `budget-mb` (default 96) is a decoded-bitmap ceiling, not a preference. A frame costs
-  width × height × 4 bytes however small the WebP is on disk, so the full cut is 11.7 MiB
-  a frame and the phone's crop is 3.9. The resident window is derived from the budget, so
-  encoding larger shrinks the window automatically instead of silently multiplying what
-  is held.
+  width × height × 4 bytes however small the WebP is on disk: on the full cut a beat is
+  11.7 MB and a move 7.2, on the phone's crop 4.1 and 1.8. The resident set is derived
+  from the budget, so encoding larger shrinks it automatically instead of silently
+  multiplying what is held — at the sizes that ship, the full cut holds 12 frames. That
+  is fewer than one move spans and still measures as enough; §6.8 of the build spec has
+  the measurement and how to repeat it before reaching for a bigger number.
 - Under `prefers-reduced-motion` the element hides itself and the stacked stills in
   `.hero-static-block` show instead. Those stills carry `opacity: 0` inline and depend on
   the page's `data-reveal` sweeper — see §7.1. **Port that or strip the inline opacity, or

@@ -50,7 +50,7 @@
      base        URL prefix ending in "/"                    (required)
      manifest    manifest URL                     (base + "manifest.json")
      budget-mb   resident decoded-bitmap ceiling             (96)
-     move        fraction of a beat spent moving       (from frame density)
+     move        share of the whole scroll spent moving (from frame density)
      near        viewport-heights of lead before loading     (1.25)
 */
 (function () {
@@ -64,6 +64,14 @@
   // making the whole machine slow.
   var MAX_INFLIGHT = 4;
   var IDLE_FRAMES = 6;
+
+  // What the scroll budget buys besides motion, as relative weights: the settle after
+  // the opening run, each copy beat's reading hold, and the coda. They are weights
+  // rather than fractions because the motion's share is set separately — see load() —
+  // and whatever is left over is divided among these in proportion. The lead is a
+  // little longer than a beat's hold because the camera is still pulling in through it,
+  // and the coda a little shorter because its copy is already up and being read out.
+  var LEAD_W = 1.05, HOLD_W = 1, TAIL_W = 0.7;
 
   function num(el, name, dflt) {
     var v = parseFloat(el.getAttribute(name));
@@ -177,26 +185,79 @@
           self.FRAMES = m.frames || [];
           self.BEATS = m.beats || [];
           self.cuts = m.cuts || { '': m.master, m: m.crop };
+          // N is what everything downstream gates on, so it is set only once there is
+          // something to scrub. A manifest with frames but no beats has no segments to
+          // cut, and half-adopting it would leave frame() reading bounds that plot()
+          // never wrote.
+          if (!self.FRAMES.length || !self.BEATS.length) return;
           self.N = self.FRAMES.length;
-          // A beat moves for its first stretch and is dead still for the rest. Copy
-          // lands on the still part, never on the move, so nothing is animating while
-          // there are words to read. How long the move gets depends on what there is
-          // to show: with only the resting frames encoded, a move is a dissolve
-          // between two camera angles and ghosts, so it is kept brief; with the
-          // in-between frames it is a real scrub and can breathe.
-          self.MOVE = self.moveAttr !== null ? parseFloat(self.moveAttr)
-            : (self.N > self.BEATS.length ? 0.42 : 0.14);
-          // One bound per beat plus the ends. The opening and the coda are shorter
-          // than the beats that carry copy, which get equal weight so no step reads as
-          // bigger than another.
-          var inner = self.BEATS.length - 1;
-          self.bounds = [0];
-          var lead = 0.128, tail = 0.103, span = (1 - lead - tail) / (inner - 1);
-          for (var i = 0; i < inner; i++) self.bounds.push(lead + i * span);
-          self.bounds.push(1);
+          self.plot();
           self.wake();
         })
         .catch(function () { /* no manifest: the still markup is what shows */ });
+    }
+
+    // Cuts the scroll budget into segments: one per beat, plus the opening. A segment
+    // moves for its first stretch and is dead still for the rest, and copy lands on the
+    // still part — nothing animates while there are words to read.
+    //
+    // Every move is given scroll in proportion to how many render frames it covers, so
+    // the animation plays at one speed the whole way down. Equal spans with a fixed
+    // move fraction, which is what this replaces, do not: the beats are 68, 118, 124,
+    // 121 and 74 frames apart and the coda is the shortest segment, so the last move ran
+    // at twice the rate of the first and the piece visibly sped up beat by beat, worst
+    // exactly where the books land on the arch and there is most to see. Rate is the
+    // thing that has to be constant here; the spans follow from it.
+    //
+    // Segment 0 runs from the first encoded frame to the first beat. That is the blocks
+    // and books falling onto the desks, and it plays if — and only if — the encoder put
+    // frames in front of the first beat. Where the sequence starts on its first beat, as
+    // it does with the manifest this ships with, the travel is zero and the opening is
+    // the still hold it has always been. So the fix for a missing opening is entirely an
+    // encode: extend the manifest's `frames` back over the fall, leave `beats` alone,
+    // and this plays it at the same rate as everything else with no change here.
+    //
+    // The budget being divided is the section's height, so frames and height move
+    // together: adding the fall's frames without adding height speeds the whole piece
+    // up in proportion, because there is more to show and no more scroll to show it in.
+    plot() {
+      var B = this.BEATS, K = B.length - 1, k;
+
+      // What each segment travels, in render frames.
+      var travel = [], sum = 0;
+      for (k = 0; k <= K; k++) {
+        travel[k] = k ? B[k] - B[k - 1] : B[0] - this.FRAMES[0];
+        sum += travel[k];
+      }
+
+      // The motion's share of the whole scroll. With the in-between frames encoded a
+      // move is a real scrub and is worth better than half the section; with only the
+      // resting frames it is a dissolve between two camera angles and ghosts, so it is
+      // kept brief. A sequence with nothing to travel spends everything on holds.
+      var moveTotal = this.moveAttr !== null ? parseFloat(this.moveAttr)
+        : (this.N > B.length ? 0.53 : 0.12);
+      if (!sum) moveTotal = 0;
+
+      var wSum = LEAD_W + Math.max(0, K - 1) * HOLD_W + TAIL_W;
+      var unit = (1 - moveTotal) / wSum;
+      var rate = sum ? moveTotal / sum : 0;
+
+      this.bounds = [0];
+      this.moves = [];
+      var at = 0;
+      for (k = 0; k <= K; k++) {
+        var mv = rate * travel[k];
+        var hd = unit * (k === 0 ? LEAD_W : k === K ? TAIL_W : HOLD_W);
+        // Per segment rather than one number for all of them, because the segments are
+        // no longer the same length: the fraction of *this* segment spent moving is
+        // what the scrub, the copy and the tick jumps all have to agree on.
+        this.moves[k] = (mv + hd) > 0 ? mv / (mv + hd) : 0;
+        at += mv + hd;
+        // The last bound is written as 1 rather than accumulated to it: the segment
+        // search treats the final entry as the end of the scroll, and a rounding error
+        // there would leave a sliver of the section past the last segment.
+        this.bounds.push(k === K ? 1 : at);
+      }
     }
 
     // What one frame costs decoded, which is its pixel count times four however small the
@@ -352,10 +413,13 @@
         for (i = 0; i < b.length - 1; i++) { if (p < b[i + 1] || i === b.length - 2) { seg = i; break; } }
         var t = clamp01((p - b[seg]) / ((b[seg + 1] - b[seg]) || 1));
 
-        // Segment 0 rests on the opening frame; every later one travels from the
-        // previous beat's frame to its own over the move, then holds.
-        var B = this.BEATS;
-        var want = seg === 0 ? B[0] : B[seg - 1] + (B[seg] - B[seg - 1]) * smooth(t / this.MOVE);
+        // Every segment travels from where the one before it left off to its own beat
+        // over the move, then holds. Segment 0's "where it left off" is the first
+        // encoded frame, which is what plays the fall onto the desks when there are
+        // frames in front of the first beat and rests on it when there are not.
+        var B = this.BEATS, mv = this.moves[seg] || 0;
+        var from = seg === 0 ? this.FRAMES[0] : B[seg - 1];
+        var want = mv > 0 ? from + (B[seg] - from) * smooth(t / mv) : B[seg];
         var idx = 0;
         while (idx < this.N - 1 && this.FRAMES[idx + 1] <= want) idx++;
         var j = Math.min(idx + 1, this.N - 1);
@@ -431,10 +495,15 @@
     // that line's payoff, not a separate thought.
     chrome(seg, t) {
       var last = this.copies.length - 1, coda = this.bounds.length - 2;
+      // The rise starts where this segment's move ends. Capped against what is left of
+      // the segment rather than fixed at 0.14, so a `move` attribute long enough to
+      // crowd the hold shortens the fade instead of leaving the copy stranded part-way
+      // up when the segment runs out.
+      var mv = this.moves[seg] || 0, fade = Math.min(0.14, (1 - mv) * 0.4);
       for (var i = 0; i < this.copies.length; i++) {
         var own = seg === i + 1, held = i === last && seg === coda;
         var o = 0;
-        if (own) o = smooth((t - this.MOVE) / 0.14) * (i === last ? 1 : 1 - smooth((t - 0.92) / 0.08));
+        if (own) o = smooth((t - mv) / fade) * (i === last ? 1 : 1 - smooth((t - 0.92) / 0.08));
         else if (held) o = 1 - smooth((t - 0.86) / 0.14);
         o = clamp01(o);
         var el = this.copies[i];
@@ -454,7 +523,12 @@
       var seg = parseInt(btn.dataset.archTick, 10) + 1;
       var b = this.bounds;
       if (!(seg > 0 && seg < b.length - 1)) return;
-      var at = b[seg] + (b[seg + 1] - b[seg]) * 0.6;
+      // Halfway into this segment's hold, not a fixed 0.6 of the segment: the segments
+      // are no longer the same length or the same shape, and a fixed fraction now lands
+      // mid-move on the longer beats — which is a tick that jumps you to a moving frame
+      // with its own copy still fading up.
+      var mv = this.moves[seg] || 0;
+      var at = b[seg] + (b[seg + 1] - b[seg]) * (mv + (1 - mv) * 0.5);
       var span = this.offsetHeight - this.stage.offsetHeight;
       scrollTo({ top: this.getBoundingClientRect().top + scrollY - this.pin() + at * span, behavior: 'smooth' });
     }
