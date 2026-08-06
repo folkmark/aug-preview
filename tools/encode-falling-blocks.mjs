@@ -49,7 +49,7 @@ const LAYERS = [
 // 37.5MiB, so a 256MiB budget holds three of them per plate and the nearest-frame
 // substitution would fire constantly. The 2560 masters stay as the PNGs in
 // "Falling Blocks", which is the archive.
-const WIDTHS = [1280];
+const WIDTHS = [1920];
 
 const MASTER = { w: 2560, h: 3840 };
 const ENCODER = { quality: 82, alphaQuality: 100, effort: 6, smartSubsample: true };

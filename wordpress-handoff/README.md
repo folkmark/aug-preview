@@ -94,7 +94,7 @@ host before deploying. `--font-heading` and `--font-body` both resolve to it.
 
 | path | what | notes |
 |---|---|---|
-| `assets/falling-blocks/w1280/{bottom,top}/fb0001…0048.webp` | 96 hero frames, 3.3 MB | filenames are load-bearing — see §5 |
+| `assets/falling-blocks/w1920/{bottom,top}/fb0001…0048.webp` | 96 hero frames, 5.6 MB | filenames are load-bearing — see §5 |
 | `assets/falling-blocks/manifest.json` | what the encoder produced | frame count, padding, widths |
 | `assets/falling-blocks.js` / `.css` | the hero component | portable, see §5 |
 | `assets/approach/ap*.webp` | 12 frames for the Approach scrub (6 beats x 2 cuts) | see §6.1 |
@@ -132,34 +132,47 @@ or block editor does can leave it half-constructed:
 
 ```php
 <falling-blocks base="<?php echo esc_url(get_template_directory_uri() . '/falling-blocks/'); ?>"
-                width="1280" frames="48" layers="bottom,top"
-                revolutions="2" budget-mb="160" min-width="901">
+                width="1920" frames="48" layers="bottom,top"
+                revolutions="1" budget-mb="320" min-width="901"
+                travel-bottom="0,0.42" travel-top="0,1">
   <div data-fb-stage>
     <div data-fb-layer="bottom" aria-hidden="true">
       <canvas></canvas>
-      <img src="…/falling-blocks/w1280/bottom/fb0001.webp" alt="" width="1280" height="1920" loading="lazy" decoding="async">
+      <img src="…/falling-blocks/w1920/bottom/fb0001.webp" alt="" width="1920" height="2880" loading="lazy" decoding="async">
     </div>
-    <div data-fb-scrim aria-hidden="true"></div>
     <div data-fb-copy>
       <h1>Bridging frontier AI and the classroom.</h1>
-      <p>…</p>
+      <div data-fb-front>
+        <p>…</p>
+        <!-- buttons -->
+      </div>
     </div>
     <div data-fb-layer="top" aria-hidden="true">
       <canvas></canvas>
-      <img src="…/falling-blocks/w1280/top/fb0001.webp" alt="" width="1280" height="1920" loading="lazy" decoding="async">
+      <img src="…/falling-blocks/w1920/top/fb0001.webp" alt="" width="1920" height="2880" loading="lazy" decoding="async">
     </div>
   </div>
 </falling-blocks>
 ```
 
-**4. Set two custom properties** if the theme has a fixed header:
+The `data-fb-front` wrapper is load-bearing, not cosmetic: the near plate passes **in
+front of the `h1` and behind everything inside `data-fb-front`**. A headline reads fine
+with a block crossing it; body copy and buttons do not. Do not add a `z-index` to
+`data-fb-copy` itself — that makes it a stacking context and collapses the copy back
+into one layer, putting the plate over all of it.
+
+**4. Set the height** if the theme has a fixed header, so the hero is a screen minus
+the header rather than a whole one:
 
 ```css
-falling-blocks { --fb-sticky-top: 4.5rem; --fb-scrim: var(--surface-page); }
+falling-blocks { height: calc(100svh - 4.5rem); }
 ```
 
-`--fb-sticky-top` must equal the header height — the element reads it back to work out
-scroll progress, so one value drives both the pinning and the maths. Default is `0px`.
+That height is also the animation's scroll budget — the element reads it off the
+rendered element, so one value drives both. Nothing is pinned: the copy scrolls away
+with the page while the plates spin and rise. Making the element *taller than its
+stage* pins the stage instead and holds the copy still, if that is ever wanted; the
+same code covers both, so it is a CSS decision.
 
 ### Things that will bite
 
