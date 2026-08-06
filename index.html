@@ -31,6 +31,13 @@
 <link rel="stylesheet" href="_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/base.css">
 <link rel="stylesheet" href="_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/styles.css">
 <script src="_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/_ds_bundle.js"></script>
+<!-- The falling-blocks hero. Deliberately a standalone custom element with its own
+     stylesheet rather than page CSS and a method on the component below: it drives
+     markup it does not build and touches no runtime API, so the same two files and
+     the same markup work in any host. Nothing else on the page depends on it, and it
+     degrades to the still <img> in its markup if this script never runs. -->
+<link rel="stylesheet" href="assets/falling-blocks.css">
+<script src="assets/falling-blocks.js" defer></script>
 <style>
   body { margin: 0; background: var(--surface-page); }
   /* The intrinsic width/height attributes are there to reserve the box before the
@@ -186,6 +193,13 @@
     [data-arch-beats] h3 { font-size: var(--text-h5) !important; }
     [data-arch-more] { display: none; }
   }
+  /* The two knobs assets/falling-blocks.css leaves to the host. Set here rather than
+     inline on the element because the x-dc compiler parses style attributes into an
+     object before React sees them, and React drops custom properties that arrive that
+     way — a --fb-sticky-top written inline would silently resolve to its 0px default
+     and the stage would pin under the header instead of below it. */
+  falling-blocks { --fb-sticky-top: 4.5rem; --fb-scrim: var(--surface-page); }
+
   [data-slot="button"]:not([data-variant^="link"]) { padding-left: 2.25rem !important; padding-right: 2.25rem !important; }
   [data-slot="button"][data-btn-size="sm"] { padding-left: 1.875rem !important; padding-right: 1.875rem !important; }
   /* Touch targets. The hint-size attributes in the markup are preview annotations and
@@ -239,24 +253,51 @@
   <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
   <main data-screen-label="Home" data-hero-static-mode="{{ heroStaticMode }}">
 
-    <section style="position:relative;min-height:min(94vh,900px);overflow:hidden;display:flex;align-items:center;justify-content:center;padding:clamp(3rem,8vh,6rem) 5% clamp(5rem,12vh,9rem)">
-      <div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none">
-        <img data-parallax="-0.6" src="assets/blocks/brick-sage.webp" alt="" style="position:absolute;left:7%;top:78%;width:11%;opacity:0.75" width="384" height="288" decoding="async">
-        <img data-parallax="-0.6" src="assets/blocks/quarter-maple.webp" alt="" style="position:absolute;left:38%;top:92%;width:7%;opacity:0.75" width="320" height="403" decoding="async">
-        <img data-parallax="-0.6" src="assets/blocks/column-maple.webp" alt="" style="position:absolute;left:88%;top:74%;width:5%;opacity:0.75" width="256" height="596" decoding="async">
-        <img data-parallax="-0.85" src="assets/blocks/arc-sage.webp" alt="" style="position:absolute;left:16%;top:104%;width:19%" width="512" height="328" decoding="async">
-        <img data-parallax="-0.85" src="assets/blocks/ramp-maple.webp" alt="" style="position:absolute;left:66%;top:110%;width:17%" width="448" height="373" decoding="async">
-        <img data-parallax="-0.85" src="assets/blocks/arch-blue.webp" alt="" style="position:absolute;left:40%;top:126%;width:22%" width="512" height="397" decoding="async">
-      </div>
-      <div style="position:relative;max-width:48rem;text-align:center">
-        <h1 style="font-size:var(--text-h1);line-height:1.1;letter-spacing:-0.01em;font-weight:700;margin:0 0 1.5rem;text-wrap:pretty">Bridging frontier AI and the classroom.</h1>
-        <p style="font-size:var(--text-medium);line-height:1.5;margin:0;text-wrap:pretty">AugmentED is an R&amp;D organization closing the gap between what AI can do and what students need. We are teachers, researchers, and engineers working together to build and test the missing technology, and the evidence to trust it.</p>
-        <div style="margin-top:2.5rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1rem">
-          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" hint-size="160px,44px">Follow our work</x-import>
-          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary" onClick="{{ goApproach }}" hint-size="190px,44px">Explore our approach</x-import>
+    <!-- The falling-blocks hero. Two depth plates of one camera view sandwich the
+         copy: "bottom" is the far and mid planes and sits behind the words, "top" is
+         the near plane and passes in front of them. They are not halves of a taller
+         image — both are the full 2560x3840 frame and they register 1:1, which is why
+         one cover-fit box drives both and they differ only in how far they travel.
+
+         The blocks in the plates only rotate; across the whole loop their centre of
+         mass drifts under 90px on a 3840-tall plate. Every bit of falling on screen is
+         the transform, and the 48 frames wrap seamlessly (48 -> 1 is 0.99x the size of
+         a normal step) so there is no crossfade and no special case at the seam.
+
+         Every canvas and every still is authored here rather than built by the script,
+         so the runtime owns these nodes and the element only drives them. With the
+         script absent or the element unsupported this is a static hero of two stills
+         and readable copy. -->
+    <falling-blocks base="assets/falling-blocks/" width="1280" frames="48" layers="bottom,top" revolutions="2" budget-mb="160" min-width="901">
+      <div data-fb-stage="">
+
+        <div data-fb-layer="bottom" aria-hidden="true">
+          <canvas></canvas>
+          <img src="assets/falling-blocks/w1280/bottom/fb0001.webp" alt="" width="1280" height="1920" loading="lazy" decoding="async">
         </div>
+
+        <div data-fb-scrim="" aria-hidden="true"></div>
+
+        <div data-fb-copy="" style="max-width:48rem;text-align:center;padding-inline:5%">
+          <h1 style="font-size:var(--text-h1);line-height:1.1;letter-spacing:-0.01em;font-weight:700;margin:0 0 1.5rem;text-wrap:pretty">Bridging frontier AI and the classroom.</h1>
+          <p style="font-size:var(--text-medium);line-height:1.5;margin:0;text-wrap:pretty">AugmentED is an R&amp;D organization closing the gap between what AI can do and what students need. We are teachers, researchers, and engineers working together to build and test the missing technology, and the evidence to trust it.</p>
+          <div style="margin-top:2.5rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1rem">
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" hint-size="160px,44px">Follow our work</x-import>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary" onClick="{{ goApproach }}" hint-size="190px,44px">Explore our approach</x-import>
+          </div>
+        </div>
+
+        <!-- Lazy on both stills so the animated path does not pay for them: an image
+             with no layout box is never near the viewport, so a lazy one is skipped
+             where the canvas has replaced it, while the static path renders it in the
+             viewport and loads it at once. -->
+        <div data-fb-layer="top" aria-hidden="true">
+          <canvas></canvas>
+          <img src="assets/falling-blocks/w1280/top/fb0001.webp" alt="" width="1280" height="1920" loading="lazy" decoding="async">
+        </div>
+
       </div>
-    </section>
+    </falling-blocks>
 
     <section style="padding:clamp(4rem,7vw,7rem) 5%">
       <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:48rem;text-align:center">
@@ -1391,18 +1432,12 @@ class Component extends DCLogic {
       }
     };
 
+    // The hero's rising block kit used to be driven from here. The falling-blocks
+    // element replaced it and listens for its own scroll, so nothing carries
+    // [data-parallax] any more and the loop that moved them has gone with them.
     this.onScroll = () => {
       this.sweep();
       this.arch();
-      const y = window.scrollY || window.pageYOffset || 0;
-      // The rising block kit is decorative motion at ~1.85x scroll speed, so it is the
-      // first thing a reduced-motion preference silences. The blocks stay at rest.
-      if (this.reduced) return;
-      const nodes = document.querySelectorAll("[data-parallax]");
-      for (let i = 0; i < nodes.length; i++) {
-        const el = nodes[i];
-        el.style.transform = "translate3d(0," + (y * parseFloat(el.dataset.parallax)).toFixed(1) + "px,0)";
-      }
     };
     window.addEventListener("scroll", this.onScroll, { passive: true });
     window.addEventListener("resize", this.onScroll, { passive: true });
