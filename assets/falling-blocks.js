@@ -12,8 +12,10 @@
      <falling-blocks base="path/to/falling-blocks/">
        <div data-fb-stage>
          <div data-fb-layer="bottom"><canvas></canvas><img src="…fb0001.webp" alt=""></div>
-         <div data-fb-scrim></div>
-         <div data-fb-copy> …your h1 and buttons… </div>
+         <div data-fb-copy>
+           <h1>…</h1>                          <- the near plate passes in front of this
+           <div data-fb-front> …body, buttons… </div>   <- and behind this
+         </div>
          <div data-fb-layer="top"><canvas></canvas><img src="…fb0001.webp" alt=""></div>
        </div>
      </falling-blocks>
@@ -22,13 +24,18 @@
    planes of one camera view, not halves of a taller image: they register 1:1, so they
    share one cover-fit box and one frame index and differ only in how far they travel.
 
+   Nothing is pinned: the copy scrolls away with the page while the plates spin and
+   rise. The element's own height is the animation's scroll budget. Making the element
+   taller than its stage pins the stage instead and holds the copy still — the same
+   formula covers both, so that is a CSS decision, not a code change.
+
    Attributes, all optional except base:
      base          URL prefix ending in "/"           (required)
      frames        frame count                        (48)
      layers        comma list, back to front           ("bottom,top")
-     width         encoded width to load               (1280)
-     revolutions   tumbles across the section          (2)
-     budget-mb     resident decoded-bitmap ceiling     (160)
+     width         encoded width to load               (1920)
+     revolutions   tumbles across the section          (1)
+     budget-mb     resident decoded-bitmap ceiling     (320)
      min-width     below this the still is shown       (901)
      travel-<layer>  "start,end" as fractions of the overhang
 */
@@ -53,21 +60,13 @@
   // Where each layer's window sits on the plate, as fractions of the overhang: the
   // travel rate is (end - start), and start is what frames the plate at rest.
   //
-  // A bare rate is not enough, because the blocks are not spread evenly down the
-  // plate. Measured across the loop, the far/mid plate's content runs from 26% down
-  // to the bottom edge and the near plate's from 18% to 78%, so translating either
-  // from the plate's top edge opens the far plate on empty sky and closes the near
-  // one on empty floor. These offsets frame each layer on the band it actually
-  // occupies while keeping the depth ratio at 0.55 — the 1/distance ratio measured
-  // in the source scene, far/mid against near.
-  // The near plate starts at the very top of its overhang for a legibility reason, not
-  // an arbitrary one: its blocks are massed between 29% and 41% down the plate, and
-  // starting any lower parks that band across the copy at rest. Measured against the
-  // rendered page, 0.18 put near-plate pixels over about a fifth of the copy block on
-  // first paint; 0 puts them over 2%, and the blocks frame the headline instead of
-  // crossing it. They still sweep past it later in the scroll, which is the depth
-  // reading and is meant to happen — just not on the frame everybody sees first.
-  var TRAVEL = { bottom: [0.28, 0.731], top: [0.0, 0.82] };
+  // The gap between the two rates is the parallax, and it is the whole depth reading.
+  // Both plates also rise with the page as the hero scrolls away, so what separates
+  // them on screen is only this difference — set them close together and the two
+  // planes read as one flat backdrop sliding past. The near plate travels its entire
+  // overhang while the far one covers well under half of it, which is roughly the
+  // 1/distance ratio measured between the planes in the source scene.
+  var TRAVEL = { bottom: [0, 0.42], top: [0, 1] };
 
   // Stop the pump this many still frames after the last change, not one: Safari can
   // paint once more after the final scroll event of a fling, and stopping on the
@@ -116,9 +115,9 @@
       this.base = this.getAttribute('base') || '';
       this.N = Math.max(1, num(this, 'frames', 48) | 0);
       this.layers = names;
-      this.tier = num(this, 'width', 1280) | 0;
-      this.revolutions = num(this, 'revolutions', 2);
-      this.budget = num(this, 'budget-mb', 160) * 1048576;
+      this.tier = num(this, 'width', 1920) | 0;
+      this.revolutions = num(this, 'revolutions', 1);
+      this.budget = num(this, 'budget-mb', 320) * 1048576;
       this.minWidth = num(this, 'min-width', 901);
 
       this.travel = {};
@@ -408,8 +407,19 @@
       // is measured against can then never drift apart, and a host with no sticky
       // header gets 0 without configuring anything.
       var stick = parseFloat(getComputedStyle(stage).top) || 0;
+      // Two shapes, one formula. Where the stage is pinned inside a taller rig, the
+      // scroll budget is the difference between them and the copy holds still while
+      // the plates travel. Where the stage fills the rig — the default, and what the
+      // hero uses — nothing is pinned, the copy scrolls away like any other section,
+      // and the budget is the rig's own height: the plates keep spinning and rising
+      // for exactly as long as the hero is on screen. A host that wants the pinned
+      // behaviour gets it by making the rig taller than the stage, and changes nothing
+      // here. `stick` is the stage's own CSS `top`, so the value that pins it and the
+      // value progress is measured from can never disagree; unpinned it reads auto,
+      // which is 0, which is correct.
       var span = this.offsetHeight - stage.offsetHeight;
-      var p = clamp01((stick - this.getBoundingClientRect().top) / (span || 1));
+      if (span < 1) span = this.offsetHeight;
+      var p = clamp01((stick - this.getBoundingClientRect().top) / span);
       var moved = p !== this.p;
       this.p = p;
 

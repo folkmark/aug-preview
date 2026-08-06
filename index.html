@@ -193,12 +193,11 @@
     [data-arch-beats] h3 { font-size: var(--text-h5) !important; }
     [data-arch-more] { display: none; }
   }
-  /* The two knobs assets/falling-blocks.css leaves to the host. Set here rather than
-     inline on the element because the x-dc compiler parses style attributes into an
-     object before React sees them, and React drops custom properties that arrive that
-     way — a --fb-sticky-top written inline would silently resolve to its 0px default
-     and the stage would pin under the header instead of below it. */
-  falling-blocks { --fb-sticky-top: 4.5rem; --fb-scrim: var(--surface-page); }
+  /* The header is sticky and 4.5rem tall, so the hero is a screen minus the header
+     rather than a whole one — otherwise it overhangs the fold by exactly the header
+     and the next section starts just off-screen. This doubles as the animation's
+     scroll budget, which the element reads off the rendered height. */
+  falling-blocks { height: calc(100vh - 4.5rem); height: calc(100svh - 4.5rem); }
 
   [data-slot="button"]:not([data-variant^="link"]) { padding-left: 2.25rem !important; padding-right: 2.25rem !important; }
   [data-slot="button"][data-btn-size="sm"] { padding-left: 1.875rem !important; padding-right: 1.875rem !important; }
@@ -268,22 +267,26 @@
          so the runtime owns these nodes and the element only drives them. With the
          script absent or the element unsupported this is a static hero of two stills
          and readable copy. -->
-    <falling-blocks base="assets/falling-blocks/" width="1280" frames="48" layers="bottom,top" revolutions="2" budget-mb="160" min-width="901">
+    <falling-blocks base="assets/falling-blocks/" width="1920" frames="48" layers="bottom,top" revolutions="1" budget-mb="320" min-width="901" travel-bottom="0,0.42" travel-top="0,1">
       <div data-fb-stage="">
 
         <div data-fb-layer="bottom" aria-hidden="true">
           <canvas></canvas>
-          <img src="assets/falling-blocks/w1280/bottom/fb0001.webp" alt="" width="1280" height="1920" loading="lazy" decoding="async">
+          <img src="assets/falling-blocks/w1920/bottom/fb0001.webp" alt="" width="1920" height="2880" loading="lazy" decoding="async">
         </div>
 
-        <div data-fb-scrim="" aria-hidden="true"></div>
-
+        <!-- The heading is the only thing the near plate crosses. The body and the
+             buttons sit above it in [data-fb-front]: they are what has to stay
+             readable and clickable, and a headline this size reads through a block
+             passing over it in a way a paragraph does not. -->
         <div data-fb-copy="" style="max-width:48rem;text-align:center;padding-inline:5%">
           <h1 style="font-size:var(--text-h1);line-height:1.1;letter-spacing:-0.01em;font-weight:700;margin:0 0 1.5rem;text-wrap:pretty">Bridging frontier AI and the classroom.</h1>
-          <p style="font-size:var(--text-medium);line-height:1.5;margin:0;text-wrap:pretty">AugmentED is an R&amp;D organization closing the gap between what AI can do and what students need. We are teachers, researchers, and engineers working together to build and test the missing technology, and the evidence to trust it.</p>
-          <div style="margin-top:2.5rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1rem">
-            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" hint-size="160px,44px">Follow our work</x-import>
-            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary" onClick="{{ goApproach }}" hint-size="190px,44px">Explore our approach</x-import>
+          <div data-fb-front="">
+            <p style="font-size:var(--text-medium);line-height:1.5;margin:0;text-wrap:pretty">AugmentED is an R&amp;D organization closing the gap between what AI can do and what students need. We are teachers, researchers, and engineers working together to build and test the missing technology, and the evidence to trust it.</p>
+            <div style="margin-top:2.5rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1rem">
+              <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" hint-size="160px,44px">Follow our work</x-import>
+              <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary" onClick="{{ goApproach }}" hint-size="190px,44px">Explore our approach</x-import>
+            </div>
           </div>
         </div>
 
@@ -293,7 +296,7 @@
              viewport and loads it at once. -->
         <div data-fb-layer="top" aria-hidden="true">
           <canvas></canvas>
-          <img src="assets/falling-blocks/w1280/top/fb0001.webp" alt="" width="1280" height="1920" loading="lazy" decoding="async">
+          <img src="assets/falling-blocks/w1920/top/fb0001.webp" alt="" width="1920" height="2880" loading="lazy" decoding="async">
         </div>
 
       </div>
