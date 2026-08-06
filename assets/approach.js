@@ -51,7 +51,7 @@
      manifest    manifest URL                     (base + "manifest.json")
      budget-mb   resident decoded-bitmap ceiling             (96)
      move        fraction of a beat spent moving       (from frame density)
-     near        viewport-heights of lead before loading     (3)
+     near        viewport-heights of lead before loading     (1.25)
 */
 (function () {
   if (!window.customElements || customElements.get('approach-scrub')) return;
@@ -96,7 +96,14 @@
       this.stage = stage; this.cam = cam; this.cvs = [l0, l1];
       this.base = this.getAttribute('base') || '';
       this.budget = num(this, 'budget-mb', 96) * 1048576;
-      this.near = num(this, 'near', 3);
+      // Viewport-heights of lead before the sequence starts downloading. Keep this
+      // comfortably below the height of whatever sits above the section, or the gate is
+      // satisfied at rest and there is no laziness at all: with a 290vh hero above it,
+      // a lead of 3 meant a phone fetched 2.4 MB of frames before the visitor had
+      // scrolled a pixel. 1.25 is still around 1300px of warning at both layouts, which
+      // is seconds of scrolling, and the loader fills beats-first so the first hold is
+      // ready well before the reader arrives at it.
+      this.near = num(this, 'near', 1.25);
       this.moveAttr = this.getAttribute('move');
 
       this.copies = [].slice.call(this.querySelectorAll('[data-arch-copy]'));
@@ -108,6 +115,11 @@
       // boot is what makes this safe to cache; do not optimise it away.
       this.cvs.forEach(function (cv) { delete cv.dataset.f; });
       delete this.stage.dataset.archPin;
+
+      // Seeded rather than left for the first resize: put() stamps the drawn frame with
+      // this.cut, so an unset value tags the first paint "undefined:12" and a later
+      // resize then redraws every layer for no reason.
+      this.cut = this.variant();
 
       this.bits = [];
       this.pend = [];

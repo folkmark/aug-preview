@@ -30,7 +30,6 @@
 // WebP archive is -alpha_q 100 for that reason, so its alpha is intact and only its
 // colour is lossy.
 
-import sharp from 'sharp';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -87,6 +86,30 @@ const pad4 = (n) => String(n).padStart(4, '0');
 
 const beatMaster = (n) => path.join(BEAT_SRC, `anim_desk_${pad4(n)}.png`);
 const moveMaster = (n) => path.join(MOVE_SRC, `anim_desk_76_${String(n).padStart(5, '0')}.webp`);
+
+// The plates are kept off the repository — see .gitignore. Between them the lossless
+// beat PNGs and the WebP move archive came to most of a 700 MB checkout, and the site
+// serves neither: assets/approach/ holds the encoded frames and is committed.
+for (const [dir, what] of [[BEAT_SRC, 'lossless beat plates'], [MOVE_SRC, 'WebP move archive']]) {
+  if (fs.existsSync(dir)) continue;
+  console.error(`No ${what} at ${path.relative(root, dir)}/
+
+Restore the renders to that path to re-encode. This tool expects:
+
+  project/renders/approach-desk/anim_desk_####.png          (beats, lossless)
+  project/renders/full-desk-anim-webp/anim_desk_76_#####.webp  (moves, q90 archive)
+
+Frame numbers are Blender frame numbers — see docs/approach-render-map.md.`);
+  process.exit(1);
+}
+
+// Imported here rather than at the top so the missing-masters message above wins: sharp
+// is not a repo dependency, and a bare ERR_MODULE_NOT_FOUND is a worse first thing to
+// read than "restore the renders".
+const sharp = await import('sharp').then((m) => m.default).catch(() => {
+  console.error('sharp is not installed. Run:\n\n  npm i --no-save sharp\n');
+  process.exit(1);
+});
 
 fs.mkdirSync(OUT, { recursive: true });
 

@@ -12,20 +12,47 @@ Approach, Who We Are, Follow Our Work) and switches between them client-side.
 | `support.js`      | Claude Design runtime that renders the `<x-dc>` block                |
 | `_ds/`            | Design system — tokens, `styles.css`, component bundle, fonts        |
 | `assets/`         | Web-ready images — everything here is sized and encoded for the page |
-| `project/`        | Working material and every original the encoders read                |
+| `docs/`           | Render notes, including the frame ↔ beat map for the Approach section |
 | `tools/`          | The build, and the encoders that turn originals into `assets/`       |
+| `wordpress-handoff/` | The rebuild package — rendered markup and per-section specs       |
 
-Everything the published site needs sits at the repository root; `project/`
-holds inputs and is deliberately left out of the deploy.
+The whole repository is about 10 MB, and everything in it either ships or builds
+what ships.
+
+### Master material is not in the repository
+
+The Blender plates, the 8K PNG renders, the WebP frame archive, the original
+Webflow export and the Avenir OTFs used to be tracked here. They came to **692 MB
+of the 702 MB checked in**, and the site serves none of it — every one of them is
+an *input* to a tool in `tools/`, and every output those tools produce is
+committed. They now live on the designer's machine and are ignored by
+`.gitignore`.
+
+Nothing routine needs them. `node tools/build-site.mjs` and the Pages deploy work
+without them; only the encoders below do, and each one exits with the path it
+wants if the masters are absent. Restore them at these paths to re-encode:
+
+| Restore to | For |
+| ---------- | --- |
+| `Falling Blocks/FallingBlocks_{Top,Bottom}/*.png` | `tools/encode-falling-blocks.mjs` |
+| `project/renders/approach-desk/*.png` | the Approach beats |
+| `project/renders/full-desk-anim-webp/*.webp` | the Approach moves |
+| `project/renders/sources/` | `tools/encode-images.mjs` |
 
 ## The Approach animation
 
 The pinned section on the home page scrubs the arch being built across two
-desks. Its frames live in `assets/approach/` and are named by their Blender
-frame number, so a file, the timeline marker in
-`project/scratch/approach-render-map.md`, and `ARCH_FRAMES` in `index.html` all
-refer to the same thing. `ARCH_BEATS` is where the six beats come to rest and
-does not change; `ARCH_FRAMES` is simply every frame that exists as a file.
+desks. It is a self-contained component — `assets/approach.js` and
+`assets/approach.css` — with a full build spec at
+[`wordpress-handoff/sections/approach.md`](wordpress-handoff/sections/approach.md).
+
+Its frames live in `assets/approach/` and are named by their Blender frame
+number, so a file, the timeline marker in
+[`docs/approach-render-map.md`](docs/approach-render-map.md), and the manifest
+all refer to the same thing. The six beats are where the section comes to rest
+and do not change; the rest of the list is simply every frame that exists as a
+file. The page reads all of it from `assets/approach/manifest.json`, which the
+encoder writes — so the page cannot ask for a frame that was never produced.
 
 Every frame ships in two cuts. `ap####.webp` is the whole 2048x1432 plate, which
 the desktop stage hangs full-bleed from the top. `ap####m.webp` is a 1147x888 crop
@@ -36,29 +63,36 @@ and must stay in step with the `aspect-ratio` on `[data-arch-box]`. Which cut th
 page loads is read from a CSS custom property, so the breakpoint that sizes the band
 is also the one that picks the file — there is no second copy of it to drift.
 
-Only the six resting frames have been rendered so far, so a move between beats is
-currently a short cross-dissolve rather than a scrub. As the in-between frames
-arrive, drop the plates into `project/renders/approach-desk/`, add their numbers to
-`FRAMES` in `tools/encode-approach.mjs` and to `ARCH_FRAMES` in `index.html`, and
-re-run:
+105 frames ship — the six beats plus every fifth frame between them — so a move
+between beats is a real scrub. Beats and moves are encoded differently on purpose:
+the beats hold still under copy for a screenful of scrolling and stay
+lossless-sourced at native size, while the moves are only seen in passing and go
+out smaller and cheaper. That split is what keeps the whole sequence at 3.0 MB for
+the desktop cut and 2.4 MB for the phone cut, of which a browser fetches one and
+never both.
+
+To change the sequence, edit `BEATS`/`STRIDE` at the top of
+`tools/encode-approach.mjs` and re-run it; it rewrites the frames and the manifest
+together, and `tools/build-site.mjs` then checks the two against disk.
 
 ```sh
 npm i --no-save sharp && node tools/encode-approach.mjs
 ```
 
-The section becomes a continuous scrub on its own — the move lengthens automatically
-once there are more frames than beats. Nothing else changes.
-
 ## Images, fonts and icons
 
-Nothing in `assets/` is hand-placed. The originals live in
-`project/renders/sources/` and three encoders produce what ships:
+Nothing in `assets/` is hand-placed. Four encoders produce what ships, from
+originals kept off the repository (see above):
 
 ```sh
-npm i --no-save sharp   && node tools/encode-approach.mjs   # the arch frames
-npm i --no-save sharp   && node tools/encode-images.mjs     # blocks, team, photography
-npm i --no-save wawoff2 && node tools/encode-fonts.mjs      # Avenir OTF -> WOFF2
+npm i --no-save sharp   && node tools/encode-approach.mjs        # the arch frames
+npm i --no-save sharp   && node tools/encode-falling-blocks.mjs  # the hero frames
+npm i --no-save sharp   && node tools/encode-images.mjs          # team, photography
+npm i --no-save wawoff2 && node tools/encode-fonts.mjs           # Avenir OTF -> WOFF2
 ```
+
+`encode-fonts.mjs` is the exception: it reads the OTFs already in `_ds/`, so it
+runs with nothing restored.
 
 Each target size is set from the box the image actually occupies, at about three
 device pixels per CSS pixel — what a phone at DPR 3 can resolve and no more.
@@ -112,14 +146,19 @@ node tools/build-site.mjs _site /aug-preview   # served under a subpath
 ```
 
 The script assembles `_site`, then checks that every relative reference on every
-emitted page resolves inside the artifact and exits non-zero if one does not.
-`project/` is left out, which keeps the deploy at ~2.9 MB instead of ~330 MB.
+emitted page resolves inside the artifact and exits non-zero if one does not. The
+artifact is about 12 MB.
 
-The Approach frames are the one thing the reference check cannot see directly:
-the page builds their filenames by concatenating `ARCH_FRAMES`, so the script
-reads that list out of `index.html` and checks each frame. Renaming the frames
-without updating `tools/build-site.mjs` fails the build by design — a scan that
-silently matched nothing would let a missing frame reach the browser.
+The animation frames are the one thing the reference check cannot see directly:
+both components build their filenames by concatenation, so no literal
+`ap0353.webp` exists in the markup to scan for. Each encoder writes a
+`manifest.json` beside its frames recording what it actually produced, and the
+build reads those and checks the full cross product — every frame in every cut —
+against disk. Three ways to fail, all at build time rather than in someone's
+browser: the manifest is missing, the page and the manifest disagree, or a frame
+the pair of them promise is not there. Shipping one cut without the other is the
+case worth knowing about, because it is invisible on a desktop and breaks every
+phone.
 
 ## Publishing to GitHub Pages
 
