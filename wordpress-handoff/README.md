@@ -332,7 +332,7 @@ That one value drives the sticky offset, the stage's height, and the scroll math
 element reads it back off the rendered stage rather than measuring a page header, so
 there is nothing to keep in step and a WordPress admin bar cannot throw it off.
 
-The element's own height is the scroll budget: `1000vh` on a wide screen, `600svh` on a
+The element's own height is the scroll budget: `1250vh` on a wide screen, `1240svh` on a
 phone, both in `approach.css`. Longer means slower; the beats divide it between them in
 proportion to the frames each covers, so the height and the length of the encoded
 sequence are one setting in two files — encode more frames without raising the height and
