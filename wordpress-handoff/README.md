@@ -113,7 +113,7 @@ host before deploying. `--font-heading` and `--font-body` both resolve to it.
 
 | path | what | notes |
 |---|---|---|
-| `assets/falling-blocks/w1440/{bottom,top}/fb0001…0048.webp` | 96 hero frames, 3.3 MB | filenames are load-bearing — see §5 |
+| `assets/falling-blocks/w{1440,720}/{bottom,top}/fb0001…0048.webp` | 192 hero frames in two tiers, 4.7 MB | filenames are load-bearing; ship both tiers — see §5 |
 | `assets/falling-blocks/manifest.json` | what the encoder produced | frame count, padding, widths |
 | `assets/falling-blocks.js` / `.css` | the hero component | portable, see §5 |
 | `assets/approach/ap*.webp` | the Approach sequence, every frame in two cuts | filenames load-bearing — see §6 |
@@ -160,7 +160,7 @@ or block editor does can leave it half-constructed:
 ```php
 <falling-blocks base="<?php echo esc_url(get_template_directory_uri() . '/falling-blocks/'); ?>"
                 width="1440" frames="48" layers="bottom,top"
-                revolutions="0.6" budget-mb="128" min-width="901" stage-fill="0.93"
+                revolutions="0.6" budget-mb="128" min-width="0" stage-fill="0.93"
                 content-bottom="0.273,0.700" content-top="0.183,0.775"
                 speed-bottom="1" speed-top="1.25">
   <div data-fb-stage>
@@ -218,15 +218,28 @@ as its stage and nothing pins: the copy just scrolls away while the blocks move.
   hero that stays blank until you scroll. The element now clears those attributes on
   boot, so this is handled; do not "optimise" that away. It was a real bug, found when
   this project's own static export reproduced exactly what a page cache does.
-- Below `min-width` (901px), on `prefers-reduced-motion`, and on a Save-Data or 2G/3G
-  connection, the element shows the still and collapses the section to one screen. These
-  are three separate checks on purpose; they mean different things.
+- **Phones scrub a smaller tier, and the stylesheet is what picks it.**
+  `falling-blocks.css` sets `--fb-tier: 1440`, and `720` under `(max-width: 900px)`;
+  the element re-reads the property every frame and swaps its whole cache when it
+  changes. The `width` attribute is only the fallback for a host whose stylesheet sets
+  nothing. Ship **both** `w1440/` and `w720/` directories — a viewport whose tier
+  directory is missing scrubs 404s and shows a frozen first frame. The phone tier is
+  not a nicety: a 1440 pair decodes to 23.7 MiB, so the default budget holds five
+  frames of forty-eight, and on a mid phone every draw of a scroll-through wanted a
+  frame that was not decoded yet. At 720 the same budget holds twenty-one and the
+  tumble actually plays.
+- On `prefers-reduced-motion`, on a Save-Data or 2G/3G connection, and below
+  `min-width` where a host sets one, the element shows the still and collapses the
+  section to one screen. These are separate checks on purpose; they mean different
+  things. `min-width` is `0` here — it was `901` when there was only the 1440 tier and
+  a phone's honest option was the still; the tier replaced that gate, and the
+  reduced-motion and thin-connection stills remain.
 - **`width`, `budget-mb` and `revolutions` are a performance budget, not preferences.**
   A frame decodes to width x height x 4 bytes however small the WebP is on disk, so at
   1440 each frame costs 11.9 MiB and a pair costs 24. Those three numbers were tuned
   down together after Chrome reported the tab as slowing the machine — at 1920 with a
   320 MiB budget it held 295 MiB of decoded frames and re-decoded 21 MiB every frame
-  step. Raise `width` and the window shrinks automatically; raise `budget-mb` with it
+  step. Raise the tier and the window shrinks automatically; raise `budget-mb` with it
   and the memory goes back. Measure before changing either.
 - `stage-fill` is the plate's width as a fraction of the stage. It is 0.93 here because
   that is the share of the viewport the desk artwork occupies further down the page.
