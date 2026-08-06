@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="en"><head><style>.sc-placeholder{background:color-mix(in srgb,currentColor 8%,transparent);
+      border:1px solid color-mix(in srgb,currentColor 50%,transparent);
+      border-radius:2px;box-sizing:border-box;overflow:hidden}
+    @keyframes sc-shine{0%{background-position:100% 50%}100%{background-position:0% 50%}}
+    html.sc-dc-streaming .sc-placeholder,
+    html.sc-dc-streaming .sc-interp.sc-missing{position:relative;
+      background:color-mix(in srgb,currentColor 5%,transparent);
+      border-color:transparent}
+    html.sc-dc-streaming .sc-placeholder::before,
+    html.sc-dc-streaming .sc-interp.sc-missing::before{content:'';
+      position:absolute;inset:0;pointer-events:none;
+      background:linear-gradient(90deg,rgba(217,119,87,0) 25%,rgba(247,225,211,.95) 37%,rgba(217,119,87,0) 63%);
+      background-size:400% 100%;animation:sc-shine 1.4s ease infinite}
+    html.sc-dc-streaming .sc-placeholder:nth-child(n+9 of .sc-placeholder)::before,
+    html.sc-dc-streaming .sc-interp.sc-missing:nth-child(n+9 of .sc-interp.sc-missing)::before{animation:none;
+      background:color-mix(in srgb,currentColor 8%,transparent)}
+    .sc-placeholder-error{padding:4px 8px;font:11px/1.4 ui-monospace,monospace;
+      color:color-mix(in srgb,currentColor 70%,transparent);word-break:break-word}
+    .sc-interp.sc-missing{display:inline-block;width:2em;height:1em;overflow:hidden;
+      vertical-align:text-bottom;background:rgba(255,255,255,.3);border:1px solid rgba(0,0,0,.5);
+      border-radius:2px;box-sizing:border-box;color:transparent;
+      user-select:none}
+    .sc-interp.sc-unresolved{font-family:ui-monospace,monospace;font-size:.85em;
+      color:color-mix(in srgb,currentColor 50%,transparent);
+      background:color-mix(in srgb,currentColor 10%,transparent);border-radius:3px;
+      padding:0 3px}
+    .sc-host.sc-has-error{position:relative}
+    .sc-logic-error{position:absolute;top:8px;left:8px;z-index:2147483647;max-width:60ch;
+      padding:6px 10px;background:#b00020;color:#fff;font:12px/1.4 ui-monospace,monospace;
+      border-radius:4px;white-space:pre-wrap;pointer-events:none}
+    /* Mirrors PRINT_BASELINE_CSS in apps/web deck-stage-export.ts — keep both
+       in sync until dc-runtime regains a build step. */
+    @media print {
+      @page { margin: 0.5cm; }
+      figure, table { break-inside: avoid; }
+      #dc-root, #dc-root > .sc-host { height: auto; }
+      *, *::before, *::after {
+        print-color-adjust: exact; -webkit-print-color-adjust: exact;
+        backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+        animation-delay: -99s !important; animation-duration: .001s !important;
+        animation-iteration-count: 1 !important; animation-fill-mode: both !important;
+        animation-play-state: running !important; transition-duration: 0s !important;
+      }
+    }</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who We Are | AugmentED</title>
+<meta name="description" content="AugmentED brings together people from classrooms, research labs, and engineering teams who share a conviction that AI should augment human teaching, not replace it.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Who We Are | AugmentED">
+<meta property="og:description" content="AugmentED brings together people from classrooms, research labs, and engineering teams who share a conviction that AI should augment human teaching, not replace it.">
+<meta property="og:image" content="../assets/logo/logo-light.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Who We Are | AugmentED">
+<meta name="twitter:description" content="AugmentED brings together people from classrooms, research labs, and engineering teams who share a conviction that AI should augment human teaching, not replace it.">
+<link rel="icon" href="../assets/logo/logo-light.png" type="image/png">
+<meta name="theme-color" content="#fdfcfa">
+<!-- The design-system stylesheets load from <helmet> once the runtime boots, so
+     paint the brand page colour up front rather than flashing white first. -->
+<style>html, body { margin: 0; background: #fdfcfa; }</style>
+
+<link rel="stylesheet" href="../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/fonts.css"><link rel="stylesheet" href="../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/colors.css"><link rel="stylesheet" href="../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/typography.css"><link rel="stylesheet" href="../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/layout.css"><link rel="stylesheet" href="../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/icons.css"><link rel="stylesheet" href="../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/schemes.css"><link rel="stylesheet" href="../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/base.css"><link rel="stylesheet" href="../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/styles.css"><link rel="stylesheet" href="../assets/falling-blocks.css"><script src="../assets/falling-blocks.js" defer=""></script><style>body { margin: 0; background: var(--surface-page); }
+  /* The intrinsic width/height attributes are there to reserve the box before the
+     bytes arrive, not to size the image: every one of these is sized by CSS, and
+     without this the height attribute would fight a CSS width and squash it. Where
+     an aspect-ratio is set, that still wins and computes the height. */
+  img[width][height] { height: auto; }
+  a { color: var(--color-neutral-darkest); text-decoration: none; transition: opacity 200ms ease-in-out; }
+  /* Guarded: a touch device has no hover to leave, so an unguarded rule sticks the
+     tapped link at 0.7 until something else is tapped. */
+  @media (hover: hover) { a:hover { opacity: 0.7; } }
+  @media (max-width: 991px) { .at-desktop { display: none !important; } }
+  @media (min-width: 992px) { .at-mobile { display: none !important; } }
+  @media (min-width: 992px) {
+    .team-grid-3 { grid-template-columns: repeat(6, minmax(0, 1fr)) !important; column-gap: 1.25rem !important; }
+    .team-grid-2 { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; column-gap: 1.25rem !important; }
+  }
+  @media (max-width: 991px) {
+    .team-grid-2, .team-grid-3 { grid-template-columns: repeat(auto-fit, minmax(min(150px,100%),1fr)) !important; column-gap: 1.25rem !important; }
+  }
+  .team-grid-2 h3, .team-grid-3 h3 { font-size: var(--text-regular) !important; line-height: 1.35 !important; }
+  .team-grid-2 p, .team-grid-3 p { font-size: var(--text-small) !important; }
+  .team-grid-2 img, .team-grid-3 img, .team-grid-2 > div > div:first-child, .team-grid-3 > div > div:first-child { margin-bottom: 1rem !important; }
+  .team-grid-2 a[aria-label], .team-grid-3 a[aria-label] { width: 24px; height: 24px; align-items: center; justify-content: center; flex: 0 0 auto; }
+  .team-grid-2 a[aria-label] > *, .team-grid-3 a[aria-label] > * { width: 24px !important; height: 24px !important; min-width: 24px !important; min-height: 24px !important; font-size: 24px !important; line-height: 24px !important; display: block !important; margin: 0 !important; }
+  [data-cycle] [data-arc] { color: #255799; opacity: 0.55; transition: opacity 200ms ease-in-out; }
+  [data-cycle] [data-node] { background: var(--surface-card); border: 1px solid var(--color-neutral-darkest-15); transition: border-color 200ms ease-in-out; }
+  [data-cycle] [data-label] { transition: opacity 200ms ease-in-out; }
+  [data-cycle] [data-node]:hover { border-color: var(--color-neutral-darkest); }
+  [data-cycle][data-active="0"] [data-arc="0"],
+  [data-cycle][data-active="1"] [data-arc="1"],
+  [data-cycle][data-active="2"] [data-arc="2"],
+  [data-cycle][data-active="3"] [data-arc="3"] { opacity: 1; }
+  [data-cycle][data-active="0"] [data-node="0"],
+  [data-cycle][data-active="1"] [data-node="1"],
+  [data-cycle][data-active="2"] [data-node="2"],
+  [data-cycle][data-active="3"] [data-node="3"] { border-color: var(--color-neutral-darkest); }
+  /* Parked: the diagram sits mostly above the fold and turns a quarter per
+     section, bringing the active step down to the visible bottom of the wheel.
+     Hovering slides the whole thing back into view so any node can be clicked. */
+  [data-chrome] { opacity: var(--chromeFade, 1); }
+@media (prefers-reduced-motion: reduce) {
+    [data-cycle], [data-cycle] [data-upright] { transition: none; }
+  }
+  [data-cycle][data-active="0"] [data-label]:not([data-label="0"]),
+  [data-cycle][data-active="1"] [data-label]:not([data-label="1"]),
+  [data-cycle][data-active="2"] [data-label]:not([data-label="2"]),
+  [data-cycle][data-active="3"] [data-label]:not([data-label="3"]) { opacity: 0.45; }
+  [data-piece] { position: absolute; display: block; will-change: transform, opacity; }
+  [data-note] { position: absolute; inset: 0; opacity: 0; will-change: opacity; }
+  [data-leader] { position: absolute; width: 1px; background: var(--color-neutral-darkest); opacity: 0.28; transform-origin: top center; transform: scaleY(0); }
+  [data-dot] { position: absolute; width: 7px; height: 7px; border-radius: 100px; border: 1.5px solid var(--brand-accent); background: var(--surface-page); transform: translate(-50%, -50%); }
+  [data-arch-layer], [data-arch-copy] { will-change: opacity; }
+  [data-arch-tick]:hover { opacity: 0.7 !important; }
+  /* The kit stage: the blocks hold still and selection changes which pieces a tool
+     draws on. Structures are not faked in CSS — the cut-outs disagree on perspective,
+     so assembly waits for renders of each arrangement built in 3D. */
+  [data-build] { opacity: 0.45; }
+  [data-build]:hover, [data-build]:focus-visible, [data-build][data-on] { opacity: 1; }
+  [data-build]:focus-visible { outline: 2px solid var(--brand-accent); outline-offset: 4px; }
+  [data-build-copy] { transition: opacity 200ms ease-in-out; }
+  [data-brick] { transition: opacity 200ms ease-in-out; }
+  [data-kit][data-active] [data-brick]:not([data-on]) { opacity: 0.16; }
+  /* Section interaction grammar: hovering one item dims its siblings and reveals the
+     layer under the claim. CSS-only, so it needs no mount ordering and works on focus. */
+  /* Dims the card's children, not the card: [data-reveal] writes opacity inline on
+     the card itself, and an inline declaration would always outrank this rule. */
+  [data-lift-group]:has([data-lift]:hover) [data-lift]:not(:hover) > *:not([data-gloss]),
+  [data-lift-group]:has([data-lift]:focus-visible) [data-lift]:not(:focus-visible) > *:not([data-gloss]) { opacity: 0.45; }
+  [data-lift] > * { transition: opacity 200ms ease-in-out; }
+  [data-gloss] { opacity: 0; transform: translateY(4px); transition: opacity 200ms ease-in-out, transform 200ms ease-in-out; }
+  [data-lift]:hover [data-gloss], [data-lift]:focus-visible [data-gloss] { opacity: 1; transform: none; }
+  [data-term] { border: 0; padding: 0; background: none; font: inherit; color: inherit; letter-spacing: inherit; cursor: pointer; border-bottom: 2px solid var(--color-neutral-darkest-15, rgba(2,4,8,0.15)); transition: border-color 200ms ease-in-out, color 200ms ease-in-out; }
+  [data-term]:hover, [data-term]:focus-visible { border-bottom-color: var(--brand-accent); color: var(--brand-accent); }
+  [data-terms]:has([data-term]:hover) [data-term]:not(:hover) { opacity: 0.45; }
+  [data-term-gloss] { opacity: 0; transition: opacity 200ms ease-in-out; }
+  /* The prompt is shown only while no term is engaged, so nothing has to override it. */
+  [data-terms]:not(:has([data-term]:hover)):not(:has([data-term]:focus-visible)) [data-term-gloss="0"] { opacity: 0.55; }
+  [data-terms]:has([data-term="1"]:hover) [data-term-gloss="1"],
+  [data-terms]:has([data-term="1"]:focus-visible) [data-term-gloss="1"],
+  [data-terms]:has([data-term="2"]:hover) [data-term-gloss="2"],
+  [data-terms]:has([data-term="2"]:focus-visible) [data-term-gloss="2"],
+  [data-terms]:has([data-term="3"]:hover) [data-term-gloss="3"],
+  [data-terms]:has([data-term="3"]:focus-visible) [data-term-gloss="3"] { opacity: 1; }
+  [data-term]:focus-visible, [data-lift]:focus-visible { outline: 2px solid var(--brand-accent); outline-offset: 4px; }
+  @media (max-width: 991px) {
+    .kit-grid { grid-template-columns: 1fr !important; row-gap: 2rem; }
+  }
+  /* The Approach act runs everywhere; the stacked stills are its fallback, not the
+     mobile layout. The two are swapped by specificity rather than source order —
+     .at-mobile and .hero-static-block were both (0,1,0) with !important, so moving
+     either block would have silently handed squarish windows an empty section. */
+  .hero-static-block { display: none !important; }
+  /* The desktop presentation hangs a full-width 1.43 plate from the top of a
+     full-height stage, so a portrait or squarish desktop window leaves a dead band
+     beneath it. The phone presentation is a band cut to its own aspect and has no
+     such problem, which is why this is scoped to the width that uses the tall stage. */
+  @media (min-width: 992px) and (max-aspect-ratio: 5/4) {
+    .hero-animated-rig { display: none !important; }
+    main .hero-static-block { display: grid !important; }
+  }
+  [data-hero-static-mode="reduced"] .hero-animated-rig { display: none !important; }
+  [data-hero-static-mode="reduced"] .hero-static-block { display: grid !important; }
+
+  /* The phone gets the same act, cut to a band. The plate is 1.43 landscape, so a
+     full-height pinned stage on a 390x844 phone would spend a third of its height on
+     artwork and the rest on nothing — a band is the honest shape, with the copy under
+     it on the page rather than over it.
+
+     The sticky stage carries no viewport unit at all on mobile: it is auto-height, so
+     a retracting URL bar cannot reflow it. Only the rig's scroll budget is in svh, and
+     svh rather than dvh because dvh changes as the chrome hides, and arch() derives its
+     progress from rig.offsetHeight — a budget that moved mid-scroll would snap the
+     scrub. The plain-vh line before it is the fallback for engines without svh. */
+  .hero-animated-rig { height: 880vh; --arch-variant: ""; }
+  [data-arch-stage] { height: calc(100vh - 4.5rem); }
+  [data-arch-box] { position: absolute; inset: 0; overflow: hidden; }
+  [data-arch-cam] { aspect-ratio: 2048 / 1432; }
+  /* Styled here rather than inline so the mobile rules below can reach them — an
+     inline declaration outranks any stylesheet rule short of !important. */
+  [data-arch-beats] { position: absolute; left: 5%; bottom: clamp(3.5rem, 8vh, 6rem); width: min(30rem, 34vw); display: grid; }
+  [data-arch-ticks] { position: absolute; right: 5%; bottom: clamp(3.5rem, 8vh, 6rem); width: min(19rem, 24vw); display: grid; gap: 0.25rem; }
+  /* Page-coloured, not dark: the plates are alpha over cream, so this is invisible
+     wherever the frame is empty and only hazes the artwork where it is not. Two
+     corner wedges rather than one full-width band — the copy sits in the bottom
+     corners, and a band dense enough to carry it there would fog the arch. Sized by
+     measurement against short viewports, which scale the plate up until the dark
+     desk cubby lands behind the text. */
+  [data-arch-scrim] { position: absolute; inset: 0; pointer-events: none; opacity: 0.97;
+    background:
+      radial-gradient(ellipse 92% 118% at 0% 108%, var(--surface-page) 0%, var(--surface-page) 48%, transparent 78%),
+      radial-gradient(ellipse 92% 118% at 100% 108%, var(--surface-page) 0%, var(--surface-page) 48%, transparent 78%),
+      linear-gradient(0deg, var(--surface-page) 0%, transparent 26%); }
+
+  @media (max-width: 991px), (max-aspect-ratio: 5/4) {
+    .hero-animated-rig { height: 520vh; height: 520svh; --arch-variant: "m"; }
+    [data-arch-stage] { height: auto; padding-bottom: 1.25rem; }
+    [data-arch-box] { position: relative; inset: auto; width: 100%; aspect-ratio: 1147 / 888; }
+    [data-arch-cam] { height: 100%; aspect-ratio: auto; }
+    /* The copy is on the page now, not over the artwork, so the corner wedges have
+       nothing left to carry — all that remains is softening the cut leg stubs. */
+    [data-arch-scrim] { background: linear-gradient(0deg, var(--surface-page) 0%, transparent 15%); opacity: 1; }
+    [data-arch-ticks] { position: static; width: auto; display: flex; gap: 0.375rem; padding: 1.125rem 5% 0; }
+    [data-arch-tick] { flex: 1; justify-content: center; padding: 0.75rem 0 0.875rem !important; }
+    [data-arch-tick] > span:last-child { display: none; }
+    [data-arch-beats] { position: static; width: auto; padding: 1rem 5% 0; }
+    [data-arch-beats] h3 { font-size: var(--text-h4) !important; }
+  }
+  /* Only where the copy genuinely will not fit under the band: the claim carries the
+     beat and the elaboration steps aside. One source of copy, not a second mobile
+     set — taller phones still get the whole paragraph. */
+  @media (max-width: 991px) and (max-height: 700px), (max-aspect-ratio: 5/4) and (max-height: 700px) {
+    [data-arch-beats] h3 { font-size: var(--text-h5) !important; }
+    [data-arch-more] { display: none; }
+  }
+  /* The two knobs assets/falling-blocks.css leaves to the host. Set here rather than
+     inline on the element because the x-dc compiler parses style attributes into an
+     object before React sees them, and React drops custom properties that arrive that
+     way — a --fb-sticky-top written inline would silently resolve to its 0px default
+     and the stage would pin under the header instead of below it. */
+  falling-blocks { --fb-sticky-top: 4.5rem; --fb-scrim: var(--surface-page); }
+
+  [data-slot="button"]:not([data-variant^="link"]) { padding-left: 2.25rem !important; padding-right: 2.25rem !important; }
+  [data-slot="button"][data-btn-size="sm"] { padding-left: 1.875rem !important; padding-right: 1.875rem !important; }
+  /* Touch targets. The hint-size attributes in the markup are preview annotations and
+     set nothing, so buttons render at their text height — about 35px, and 31px at the
+     small size. Below the desktop breakpoint every control gets the 44px a fingertip
+     needs; the footer and the team's social icons are the worst offenders at 18 and
+     24px, and they get it from padding rather than from a bigger glyph. */
+  @media (max-width: 991px) {
+    [data-slot="button"] { min-height: 2.75rem !important; }
+    [data-arch-tick] { min-height: 2.75rem; }
+    footer a, footer [data-slot="button"][data-variant^="link"] { display: inline-flex; align-items: center; min-height: 2.75rem; }
+    /* The wordmark is a 168x33 link. min-height rather than a display change, so the
+       header's own flex layout is left alone. */
+    header a, footer a:has(img) { min-height: 2.75rem; }
+    .team-grid-2 a[aria-label], .team-grid-3 a[aria-label] { width: 44px !important; height: 44px !important; margin: -10px; }
+    /* Radios and checkboxes are wrapped in their label, so the row is what a finger
+       hits — the 18px control is only the mark. Give the row the height. Not a
+       direct-child selector: the design system nests the control in a wrapper. */
+    label:has(button) { min-height: 2.75rem; }
+  }</style></head>
+<body>
+
+
+
+
+<div class="sc-host" data-sc-name="Root"><div class="scheme-1" style="min-height: 100vh; overflow-x: clip; font-family: var(--font-body); color: var(--text-body); background: var(--surface-page);">
+
+  <header style="position: sticky; top: 0px; z-index: 900; display: flex; min-height: 4.5rem; width: 100%; align-items: center; padding-inline: 5%; background: var(--surface-page); border-bottom-width: ; border-style: none; border-color: rgba(250, 249, 245, 0);">
+    <div style="margin-inline: auto; display: flex; width: 100%; max-width: 80rem; align-items: center; justify-content: space-between; gap: 2rem;">
+      <a href="/" style="display: block; flex-shrink: 0;"><img src="../assets/logo/logo-light.png" alt="augment^ed" width="768" height="149" decoding="async" style="width: 168px; display: block;"></a>
+      <nav class="at-desktop" style="display: flex; align-items: center; gap: 2.5rem;">
+        <a href="/the-challenge/">The Challenge</a>
+        <a href="/our-approach/">Our Approach</a>
+        <a href="/who-we-are/">Who We Are</a>
+        <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="default" data-btn-size="sm" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border-width: 1px; border-style: solid; border-color: var(--color-st-tropaz); border-image: initial; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-st-tropaz); color: var(--color-scheme-btn-text, var(--color-white)); padding: 0.25rem 0.625rem; font-weight: var(--font-weight-medium);">Follow Our Work</button></div>
+      </nav>
+      <button class="at-mobile" aria-label="Menu" aria-expanded="false" aria-controls="site-menu" style="display: flex; flex-direction: column; justify-content: center; gap: 6px; width: 44px; height: 44px; padding: 0px; border: 0px; background: transparent; cursor: pointer;">
+        <span style="display: block; width: 22px; height: 2px; background: var(--color-neutral-darkest); transition: transform 300ms ease-in-out; transform-origin: center center; transform: none;"></span>
+        <span style="display: block; width: 22px; height: 2px; background: var(--color-neutral-darkest); transition: transform 300ms ease-in-out; transform-origin: center center; transform: none;"></span>
+      </button>
+    </div>
+  </header>
+
+  
+
+  
+
+  
+
+  
+
+  
+  <main data-screen-label="Who We Are">
+
+    <section style="padding: clamp(4rem, 7vw, 7rem) 5%;">
+      <div style="margin-inline: auto; max-width: 80rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 2rem 5rem;">
+        <h1 style="font-size: var(--text-h1); line-height: 1.1; letter-spacing: -0.01em; font-weight: 700; margin: 0px;">Our Team</h1>
+        <p style="font-size: var(--text-medium); line-height: 1.5; font-weight: 300; margin: 0px; text-wrap: pretty;">AugmentED brings together people from classrooms, research labs, and engineering teams who share a conviction that AI should augment human teaching, not replace it. We build the infrastructure that lets teachers and students work alongside frontier AI in ways that deepen their thinking, learning, and relationships rather than short-circuit them.</p>
+      </div>
+    </section>
+
+    <section style="padding: clamp(3rem, 6vw, 5rem) 5%;">
+      <div style="margin-inline: auto; max-width: 80rem;">
+        <h2 data-reveal="" style="opacity: 1; transition: opacity 400ms ease-in-out; font-size: var(--text-h2); line-height: 1.2; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px clamp(3rem, 6vw, 5rem);">Leadership</h2>
+        <div class="team-grid-2" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 3rem 2rem;">
+          <div data-reveal="" style="opacity: 1; transition: opacity 400ms ease-in-out;">
+            <div style="aspect-ratio: 1 / 1; width: 100%; background: var(--color-neutral-lightest); border-radius: var(--radius-image); margin-bottom: 1.5rem;"></div>
+            <h3 style="font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 0.5rem;">Sherry Lachman</h3>
+            <p style="font-weight: 600; font-size: var(--text-regular); margin: 0px;">Founder &amp; Executive Director</p>
+            <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+              <a href="#" aria-label="LinkedIn" style="display: flex;"><img src="../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: 24px; height: 24px; display: block;"></a>
+              <a href="#" aria-label="Website" style="display: flex;"><div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 24px; width: 24px; height: 24px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 24;">language</span></div></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity: 1; transition: opacity 400ms ease-in-out;">
+            <div style="aspect-ratio: 1 / 1; width: 100%; background: var(--color-neutral-lightest); border-radius: var(--radius-image); margin-bottom: 1.5rem;"></div>
+            <h3 style="font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 0.5rem;">Caitlin Mills</h3>
+            <p style="font-weight: 600; font-size: var(--text-regular); margin: 0px;">Co-Founder &amp; Chief of Research and Impact</p>
+            <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+              <a href="#" aria-label="LinkedIn" style="display: flex;"><img src="../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: 24px; height: 24px; display: block;"></a>
+              <a href="#" aria-label="Website" style="display: flex;"><div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 24px; width: 24px; height: 24px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 24;">language</span></div></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity: 1; transition: opacity 400ms ease-in-out;">
+            <img src="../assets/team/raquel-romano.webp" alt="Raquel Romano" width="512" height="512" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 5%; border-radius: var(--radius-image); margin-bottom: 1.5rem; display: block;">
+            <h3 style="font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 0.5rem;">Raquel Romano</h3>
+            <p style="font-weight: 600; font-size: var(--text-regular); margin: 0px;">Chief Technology Officer</p>
+            <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+              <a href="https://www.linkedin.com/in/romano" target="_blank" rel="noopener" aria-label="LinkedIn" style="display: flex;"><img src="../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: 24px; height: 24px; display: block;"></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity: 1; transition: opacity 400ms ease-in-out;">
+            <div style="aspect-ratio: 1 / 1; width: 100%; background: var(--color-neutral-lightest); border-radius: var(--radius-image); margin-bottom: 1.5rem;"></div>
+            <h3 style="font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 0.5rem;">Jenny Bradbury</h3>
+            <p style="font-weight: 600; font-size: var(--text-regular); margin: 0px;">Vice President of Education Innovation and Partnerships</p>
+            <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+              <a href="#" aria-label="LinkedIn" style="display: flex;"><img src="../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: 24px; height: 24px; display: block;"></a>
+              <a href="#" aria-label="Website" style="display: flex;"><div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 24px; width: 24px; height: 24px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 24;">language</span></div></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity: 1; transition: opacity 400ms ease-in-out;">
+            <div style="aspect-ratio: 1 / 1; width: 100%; background: var(--color-neutral-lightest); border-radius: var(--radius-image); margin-bottom: 1.5rem;"></div>
+            <h3 style="font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 0.5rem;">Brandon Bodnar</h3>
+            <p style="font-weight: 600; font-size: var(--text-regular); margin: 0px;">Principal Engineer</p>
+            <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+              <a href="#" aria-label="LinkedIn" style="display: flex;"><img src="../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: 24px; height: 24px; display: block;"></a>
+              <a href="#" aria-label="Website" style="display: flex;"><div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 24px; width: 24px; height: 24px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 24;">language</span></div></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding: clamp(4rem, 7vw, 7rem) 5%;">
+      <div style="margin-inline: auto; max-width: 80rem;">
+        <h2 data-reveal="" style="opacity: 0; transition: opacity 400ms ease-in-out; font-size: var(--text-h2); line-height: 1.2; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px clamp(3rem, 6vw, 5rem);">Research Partners</h2>
+        <div class="team-grid-3" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 3rem 2rem;">
+          <div data-reveal="" style="opacity: 0; transition: opacity 400ms ease-in-out;">
+            <div style="aspect-ratio: 1 / 1; width: 100%; background: var(--color-neutral-lightest); border-radius: var(--radius-image); margin-bottom: 1.5rem;"></div>
+            <h3 style="font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 0.5rem;">Andrew Lan</h3>
+            <p style="font-weight: 600; font-size: var(--text-small); margin: 0px;">Associate Professor of Computer Science, University of Massachusetts Amherst</p>
+            <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+              <a href="#" aria-label="LinkedIn" style="display: flex;"><img src="../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: 24px; height: 24px; display: block;"></a>
+              <a href="#" aria-label="Website" style="display: flex;"><div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 24px; width: 24px; height: 24px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 24;">language</span></div></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity: 0; transition: opacity 400ms ease-in-out;">
+            <img src="../assets/team/ryan-baker.webp" alt="Ryan Baker" width="190" height="213" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 0%; border-radius: var(--radius-image); margin-bottom: 1.5rem; display: block;">
+            <h3 style="font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 0.5rem;">Ryan Baker</h3>
+            <p style="font-weight: 600; font-size: var(--text-small); margin: 0px;">Professor of Artificial Intelligence and Education, Adelaide University</p>
+            <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+              <a href="#" aria-label="LinkedIn" style="display: flex;"><img src="../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: 24px; height: 24px; display: block;"></a>
+              <a href="#" aria-label="Website" style="display: flex;"><div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 24px; width: 24px; height: 24px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 24;">language</span></div></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity: 0; transition: opacity 400ms ease-in-out;">
+            <div style="aspect-ratio: 1 / 1; width: 100%; background: var(--color-neutral-lightest); border-radius: var(--radius-image); margin-bottom: 1.5rem;"></div>
+            <h3 style="font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 0.5rem;">Angela E.B. Stewart</h3>
+            <p style="font-weight: 600; font-size: var(--text-small); margin: 0px;">Assistant Professor, University of Pittsburgh</p>
+            <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+              <a href="#" aria-label="LinkedIn" style="display: flex;"><img src="../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: 24px; height: 24px; display: block;"></a>
+              <a href="#" aria-label="Website" style="display: flex;"><div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 24px; width: 24px; height: 24px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 24;">language</span></div></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity: 0; transition: opacity 400ms ease-in-out;">
+            <img src="../assets/team/laura-allen.webp" alt="Laura Allen" width="365" height="512" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 5%; border-radius: var(--radius-image); margin-bottom: 1.5rem; display: block;">
+            <h3 style="font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 0.5rem;">Laura Allen</h3>
+            <p style="font-weight: 600; font-size: var(--text-small); margin: 0px;">Associate Professor, University of Minnesota</p>
+            <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+              <a href="https://www.linkedin.com/in/laura-allen-37344528/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display: flex;"><img src="../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: 24px; height: 24px; display: block;"></a>
+              <a href="https://edpsych.umn.edu/laura-allen" target="_blank" rel="noopener" aria-label="Website" style="display: flex;"><div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 24px; width: 24px; height: 24px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 24;">language</span></div></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity: 0; transition: opacity 400ms ease-in-out;">
+            <img src="../assets/team/blair-lehman.webp" alt="Blair Lehman" width="200" height="200" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 20%; border-radius: var(--radius-image); margin-bottom: 1.5rem; display: block;">
+            <h3 style="font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 0.5rem;">Blair Lehman</h3>
+            <p style="font-weight: 600; font-size: var(--text-small); margin: 0px;">Senior Scientist, Brighter Research</p>
+            <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+              <a href="https://www.linkedin.com/in/blair-lehman-bb043b11" target="_blank" rel="noopener" aria-label="LinkedIn" style="display: flex;"><img src="../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: 24px; height: 24px; display: block;"></a>
+              <a href="https://sites.google.com/site/blairlehman/home" target="_blank" rel="noopener" aria-label="Website" style="display: flex;"><div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 24px; width: 24px; height: 24px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 24;">language</span></div></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity: 0; transition: opacity 400ms ease-in-out;">
+            <div style="aspect-ratio: 1 / 1; width: 100%; background: var(--color-neutral-lightest); border-radius: var(--radius-image); margin-bottom: 1.5rem;"></div>
+            <h3 style="font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 0.5rem;">Isa Peczuh</h3>
+            <p style="font-weight: 600; font-size: var(--text-small); margin: 0px;">PhD Candidate, University of Minnesota</p>
+            <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+              <a href="#" aria-label="LinkedIn" style="display: flex;"><img src="../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: 24px; height: 24px; display: block;"></a>
+              <a href="#" aria-label="Website" style="display: flex;"><div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 24px; width: 24px; height: 24px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 24;">language</span></div></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding: clamp(4rem, 7vw, 7rem) 5%;">
+      <div style="margin-inline: auto; max-width: 80rem;">
+        <div data-reveal="" style="opacity: 0; transition: opacity 400ms ease-in-out; max-width: 48rem; margin-bottom: clamp(3rem, 6vw, 5rem);">
+          <h2 style="font-size: var(--text-h2); line-height: 1.2; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 1rem;">Technology Partners</h2>
+          <p style="font-size: var(--text-medium); line-height: 1.5; margin: 0px; text-wrap: pretty;">People who believe AI amplifies rather than replaces human thinking.</p>
+        </div>
+        <div class="team-grid-3" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 3rem 2rem;">
+          <div data-reveal="" style="opacity: 0; transition: opacity 400ms ease-in-out;">
+            <div style="aspect-ratio: 1 / 1; width: 100%; background: var(--color-neutral-lightest); border-radius: var(--radius-image); margin-bottom: 1.5rem;"></div>
+            <h3 style="font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 0.5rem;">Sarah Zaner</h3>
+            <p style="font-weight: 600; font-size: var(--text-small); margin: 0px;">Co-founder, Bendable Labs</p>
+            <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+              <a href="#" aria-label="LinkedIn" style="display: flex;"><img src="../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: 24px; height: 24px; display: block;"></a>
+              <a href="#" aria-label="Website" style="display: flex;"><div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 24px; width: 24px; height: 24px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 24;">language</span></div></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity: 0; transition: opacity 400ms ease-in-out;">
+            <img src="../assets/team/lisa-peterson.webp" alt="Lisa Peterson" width="512" height="512" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 30%; border-radius: var(--radius-image); margin-bottom: 1.5rem; display: block;">
+            <h3 style="font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 0.5rem;">Lisa Peterson</h3>
+            <p style="font-weight: 600; font-size: var(--text-small); margin: 0px;">Product Design Consultant</p>
+            <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+              <a href="https://www.linkedin.com/in/lisa-peterson/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display: flex;"><img src="../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: 24px; height: 24px; display: block;"></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity: 0; transition: opacity 400ms ease-in-out;">
+            <div style="aspect-ratio: 1 / 1; width: 100%; background: var(--color-neutral-lightest); border-radius: var(--radius-image); margin-bottom: 1.5rem;"></div>
+            <h3 style="font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 0.5rem;">Suzanna Smith</h3>
+            <p style="font-weight: 600; font-size: var(--text-small); margin: 0px;">Product Design Consultant</p>
+            <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+              <a href="#" aria-label="LinkedIn" style="display: flex;"><img src="../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: 24px; height: 24px; display: block;"></a>
+              <a href="#" aria-label="Website" style="display: flex;"><div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 24px; width: 24px; height: 24px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 24;">language</span></div></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity: 0; transition: opacity 400ms ease-in-out;">
+            <div style="aspect-ratio: 1 / 1; width: 100%; background: var(--color-neutral-lightest); border-radius: var(--radius-image); margin-bottom: 1.5rem;"></div>
+            <h3 style="font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 0.5rem;">Adam Bachman</h3>
+            <p style="font-weight: 600; font-size: var(--text-small); margin: 0px;">Engineering Consultant</p>
+            <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+              <a href="#" aria-label="LinkedIn" style="display: flex;"><img src="../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: 24px; height: 24px; display: block;"></a>
+              <a href="#" aria-label="Website" style="display: flex;"><div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 24px; width: 24px; height: 24px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 24;">language</span></div></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity: 0; transition: opacity 400ms ease-in-out;">
+            <div style="aspect-ratio: 1 / 1; width: 100%; background: var(--color-neutral-lightest); border-radius: var(--radius-image); margin-bottom: 1.5rem;"></div>
+            <h3 style="font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 0.5rem;">Neil Sharma</h3>
+            <p style="font-weight: 600; font-size: var(--text-small); margin: 0px;">Engineering Consultant</p>
+            <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+              <a href="#" aria-label="LinkedIn" style="display: flex;"><img src="../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: 24px; height: 24px; display: block;"></a>
+              <a href="#" aria-label="Website" style="display: flex;"><div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 24px; width: 24px; height: 24px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 24;">language</span></div></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity: 0; transition: opacity 400ms ease-in-out;">
+            <img src="../assets/team/joan-lee.webp" alt="Joan Lee" width="512" height="512" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 4%; border-radius: var(--radius-image); margin-bottom: 1.5rem; display: block;">
+            <h3 style="font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 0.5rem;">Joan Lee</h3>
+            <p style="font-weight: 600; font-size: var(--text-small); margin: 0px;">Project Manager</p>
+            <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+              <a href="https://www.linkedin.com/in/about-joan-lee" target="_blank" rel="noopener" aria-label="LinkedIn" style="display: flex;"><img src="../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: 24px; height: 24px; display: block;"></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding: clamp(4rem, 7vw, 7rem) 5%;">
+      <div data-reveal="" style="opacity: 0; transition: opacity 400ms ease-in-out; margin-inline: auto; max-width: 80rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 2rem 5rem; border-top: 1px solid var(--color-neutral-darkest-15); padding-top: clamp(2.5rem, 5vw, 4rem);">
+        <h2 style="font-size: var(--text-h2); line-height: 1.2; letter-spacing: -0.01em; font-weight: 700; margin: 0px; text-wrap: pretty;">Education Partnerships</h2>
+        <p style="font-size: var(--text-medium); line-height: 1.5; font-weight: 300; margin: 0px; text-wrap: pretty;">We collaborated with XQ and High Tech High to identify exceptional educators for our first co-design teams. Our inaugural AugmentED Education Fellowship cohort includes teachers from Crosstown High School (Memphis, TN), Grand Rapids Public Museum High School (Grand Rapids, MI), Thomas A. Edison Career and Technical Education High School (Queens, NY), and several High Tech High campuses in the San Diego region. We've selected these schools for their commitment to transforming the high school experience for students—the majority of whom are students of color and economically disadvantaged—by making learning meaningful and engaging, and preparing them with the critical skills they need to thrive in the age of AI.</p>
+      </div>
+    </section>
+
+    <section style="padding: clamp(4rem, 7vw, 7rem) 5% clamp(5rem, 9vw, 9rem);">
+      <div data-reveal="" style="opacity: 0; transition: opacity 400ms ease-in-out; margin-inline: auto; max-width: 48rem; text-align: center;">
+        <h2 style="font-size: var(--text-h2); line-height: 1.2; letter-spacing: -0.01em; font-weight: 700; margin: 0px 0px 1.5rem; text-wrap: pretty;">Join us in building better foundations for AI in education.</h2>
+        <p style="font-size: var(--text-medium); line-height: 1.5; margin: 0px; text-wrap: pretty;">We co-design with educators, publish what we learn, and build infrastructure for the whole field.</p>
+        <div style="margin-top: 2.5rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 1rem;">
+          <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="default" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border-width: 1px; border-style: solid; border-color: var(--color-st-tropaz); border-image: initial; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-st-tropaz); color: var(--color-scheme-btn-text, var(--color-white)); padding: 0.375rem 0.75rem; font-weight: var(--font-weight-medium);">Follow our work</button></div>
+          <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="secondary" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-neutral-darkest-5); color: inherit; padding: 0.375rem 0.75rem; font-weight: var(--font-weight-medium); backdrop-filter: blur(var(--blur-glass));">Explore our approach</button></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  
+
+  
+
+  <footer style="padding: clamp(3rem, 6vw, 5rem) 5% 3rem;">
+    <div style="margin-inline: auto; max-width: 80rem;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 3rem; margin-bottom: 4rem;">
+        <div>
+          <img src="../assets/logo/logo-light.png" alt="augment^ed" width="768" height="149" decoding="async" style="width: 168px; display: block; margin-bottom: 1.5rem;">
+          <p style="font-size: var(--text-regular); line-height: 1.5; margin: 0px 0px 1.5rem;">Get updates on AugmentED research and tools.</p>
+          <form style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1rem; margin-bottom: 1rem;">
+            <div style="flex: 1 1 12rem;">
+              <div class="sc-host-x" style="display: contents;"><div style="position: relative; display: flex; width: 100%; align-items: center;"><input data-slot="input" type="email" placeholder="Your email" style="display: flex; width: 100%; min-height: 2rem; padding: 0.5rem 0px; background: transparent; border-top: 0px; border-right: 0px; border-bottom: 1px solid var(--color-neutral-darkest-15); border-left: 0px; border-image: initial; color: var(--color-scheme-text, var(--text-body)); font-family: var(--font-body); font-size: var(--text-regular); line-height: var(--text-body-line-height); outline: none; transition: all var(--transition-fast);"></div></div>
+            </div>
+            <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="secondary" type="submit" data-btn-size="sm" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-neutral-darkest-5); color: inherit; padding: 0.25rem 0.625rem; font-weight: var(--font-weight-medium); backdrop-filter: blur(var(--blur-glass));">Subscribe</button></div>
+          </form>
+          <p style="font-size: var(--text-tiny); line-height: 1.5; margin: 0px; max-width: 24rem;">By subscribing you agree to our Privacy Policy and consent to receive updates from AugmentED.</p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <p style="font-weight: 600; font-size: var(--text-small); margin: 0px 0px 0.25rem;">Explore</p>
+          <a href="/the-challenge/" style="font-size: var(--text-small);">The Challenge</a>
+          <a href="/our-approach/" style="font-size: var(--text-small);">Our Approach</a>
+          <a href="/who-we-are/" style="font-size: var(--text-small);">Who We Are</a>
+          <a href="#" style="font-size: var(--text-small);">Research</a>
+          <a href="/follow-our-work/" style="font-size: var(--text-small);">Get Involved</a>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <p style="font-weight: 600; font-size: var(--text-small); margin: 0px 0px 0.25rem;">AERDF</p>
+          <a href="#" style="font-size: var(--text-small);">Partnerships</a>
+          <a href="#" style="font-size: var(--text-small);">Careers</a>
+          <a href="#" style="font-size: var(--text-small);">Contact</a>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <p style="font-weight: 600; font-size: var(--text-small); margin: 0px 0px 0.25rem;">Follow Us</p>
+          <a href="#" style="font-size: var(--text-small); display: flex; align-items: center; gap: 0.75rem;"><img src="../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: 24px; height: 24px; display: block;">LinkedIn</a>
+          <a href="#" style="font-size: var(--text-small); display: flex; align-items: center; gap: 0.75rem;"><img src="../assets/icons/youtube.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: 24px; height: 24px; display: block;">Youtube</a>
+        </div>
+      </div>
+      <div style="height: 1px; width: 100%; background: var(--color-neutral-darkest-15); margin-bottom: 1.5rem;"></div>
+      <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;">
+        <p style="font-size: var(--text-small); margin: 0px;">© 2025 AugmentED. All rights reserved.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 1.5rem;">
+          <a href="#" style="font-size: var(--text-small); text-decoration: underline;">Cookie settings</a>
+          <a href="#" style="font-size: var(--text-small); text-decoration: underline;">Terms of service</a>
+          <a href="#" style="font-size: var(--text-small); text-decoration: underline;">Privacy policy</a>
+        </div>
+      </div>
+    </div>
+  </footer></div></div></body></html>
