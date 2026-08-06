@@ -46,7 +46,7 @@ const PAGES = [
   },
 ];
 
-const COPY_FILES = ['support.js', 'scroll-world.js'];
+const COPY_FILES = ['support.js'];
 const COPY_DIRS = ['assets', '_ds'];
 
 const escapeAttr = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
@@ -130,14 +130,20 @@ function refsIn(html) {
   // the page and check every frame in it: a sequence that ships half-encoded has to
   // fail the build here rather than 404 in the browser. Both halves are required —
   // a rename that leaves one behind checks nothing at all, silently.
+  // Every frame exists in each cut of the plate — the full one and the mobile crop —
+  // so check the cross product. Shipping one cut without the other is the failure a
+  // phone would hit and a desktop would not.
   const stem = html.match(/"((?:\.\.\/|\/)?[\w./-]*assets\/approach\/ap)"/);
   const list = html.match(/ARCH_FRAMES\s*=\s*\[([\d,\s]*)\]/);
-  if (!stem || !list) {
+  const cuts = html.match(/ARCH_CROP\s*=\s*\{([^}]*\}[^}]*)\}/);
+  if (!stem || !list || !cuts) {
     problems.push('approach frame references are no longer readable — check the ARCH_FRAMES scan');
   } else {
+    const variants = [...cuts[1].matchAll(/(?:^|,)\s*"?([a-z]*)"?\s*:\s*\{/g)].map((m) => m[1]);
     for (const n of list[1].split(',')) {
       const f = n.trim();
-      if (f) out.add(stem[1] + f.padStart(4, '0') + '.webp');
+      if (!f) continue;
+      for (const v of variants) out.add(stem[1] + f.padStart(4, '0') + v + '.webp');
     }
   }
   return [...out].filter(
