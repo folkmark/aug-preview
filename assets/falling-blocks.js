@@ -24,10 +24,11 @@
    planes of one camera view, not halves of a taller image: they register 1:1, so they
    share one cover-fit box and one frame index and differ only in how far they travel.
 
-   Nothing is pinned: the copy scrolls away with the page while the plates spin and
-   rise. The element's own height is the animation's scroll budget. Making the element
-   taller than its stage pins the stage instead and holds the copy still — the same
-   formula covers both, so that is a CSS decision, not a code change.
+   The stage pins while the blocks rise through it, then the hero scrolls away. The
+   scroll budget is the element's height minus the stage's, so the pin's length and the
+   speed of the motion are one number set in CSS. Make the element the same height as
+   its stage and nothing pins — the copy just scrolls away while the blocks move. The
+   same formula covers both, so that is a CSS decision, not a code change.
 
    Attributes, all optional except base:
      base          URL prefix ending in "/"           (required)
@@ -38,7 +39,8 @@
      budget-mb     resident decoded-bitmap ceiling     (128)
      min-width     below this the still is shown       (901)
      stage-fill    plate width as a fraction of the stage's (1)
-     travel-<layer>  "start,end" as fractions of the overhang
+     content-<layer> "c0,c1": where that layer's blocks sit, as fractions of plate height
+     speed-<layer>   multiplier on its travel; 1 leaves exactly as the pin ends
 */
 (function () {
   if (!window.customElements || customElements.get('falling-blocks')) return;
@@ -58,22 +60,24 @@
   // with no visible symptom to debug.
   var HEADROOM = 0.35;
 
-  // Where each layer's window sits on the plate, as fractions of the overhang: the
-  // travel rate is (end - start), and start is what frames the plate at rest.
+  // Where each layer's blocks actually live, as fractions of the plate's height. This
+  // is measured off the render, not chosen — see tools/encode-falling-blocks.mjs.
   //
-  // The gap between the two rates is the parallax, and it is the whole depth reading.
-  // Both plates also rise with the page as the hero scrolls away, so what separates
-  // them on screen is only this difference — set them close together and the two
-  // planes read as one flat backdrop sliding past. The near plate travels its entire
-  // overhang while the far one covers well under half of it, which is roughly the
-  // 1/distance ratio measured between the planes in the source scene.
-  //
-  // The far plate's start is not 0, and that is what makes it visible at all. Its
-  // blocks only begin 26% down the plate — the top quarter is empty sky — so a window
-  // opening at the plate's top edge spends most of the hero showing nothing, which is
-  // exactly how it looked. Starting at 0.35 of the overhang puts the window on the
-  // band the blocks actually occupy for the whole scroll.
-  var TRAVEL = { bottom: [0.35, 0.77], top: [0, 1] };
+  // The motion is defined by these bounds rather than by the plate's edges, and that is
+  // the whole trick. At rest the plate is placed so the top of its content sits exactly
+  // on the stage's bottom edge: the blocks are just below the fold and rise into view.
+  // At the end it is placed so the bottom of its content sits on the stage's top edge:
+  // they have all left. The plate's own edges are free to cross the stage on the way,
+  // because a plate is transparent and an empty region of one is indistinguishable from
+  // no plate at all. What must never cross is a block cut by the frame — which is why
+  // the far plate's lowest group is trimmed at encode time.
+  var CONTENT = { bottom: [0.273, 0.700], top: [0.183, 0.775] };
+
+  // Multiplier on that minimum travel, per layer. 1 means the layer's last block leaves
+  // exactly as the pin ends. Above 1 it leaves earlier and the plate keeps rising
+  // empty, which is what makes the parallax: the near plane clears the frame before the
+  // far one, as it should. Below 1 would strand blocks on screen and is never right.
+  var SPEED = { bottom: 1, top: 1.25 };
 
   // Stop the pump this many still frames after the last change, not one: Safari can
   // paint once more after the final scroll event of a fling, and stopping on the
@@ -138,11 +142,13 @@
       // hero is kept to the same width as the artwork further down the page.
       this.fill = num(this, 'stage-fill', 1);
 
-      this.travel = {};
+      this.content = {};
+      this.speed = {};
       for (var i = 0; i < this.layers.length; i++) {
         var L = this.layers[i];
-        var a = (this.getAttribute('travel-' + L) || '').split(',').map(parseFloat);
-        this.travel[L] = (a.length === 2 && isFinite(a[0]) && isFinite(a[1])) ? a : (TRAVEL[L] || [0, 1]);
+        var a = (this.getAttribute('content-' + L) || '').split(',').map(parseFloat);
+        this.content[L] = (a.length === 2 && isFinite(a[0]) && isFinite(a[1])) ? a : (CONTENT[L] || [0, 1]);
+        this.speed[L] = num(this, 'speed-' + L, SPEED[L] || 1);
       }
 
       this.stage = stage;
@@ -448,7 +454,6 @@
       var sw = stage.clientWidth, sh = stage.clientHeight;
       var plateW = Math.max(sw * this.fill, sh * (PLATE_W / PLATE_H) * (1 + HEADROOM));
       var plateH = plateW * PLATE_H / PLATE_W;
-      var spare = plateH - sh;
       var box = plateW.toFixed(1);
       // The memo lives on the element rather than on this instance for the same
       // reason the drawn-frame tag does: if a host framework swaps the node out, an
@@ -464,10 +469,17 @@
       // canvas contents are identical whatever the scroll position is. Written every
       // tick rather than on change, because a host re-render wipes inline style and a
       // change guard would leave the plate parked at zero.
+      //
+      // Strictly linear in p, and p is strictly linear in scroll position. There is no
+      // easing anywhere on this path and there must not be: anything that shapes the
+      // curve here reads as the blocks speeding up and slowing down for no reason the
+      // visitor can see, which is worse than no motion at all.
       for (var n = 0; n < this.layers.length; n++) {
-        var L = this.layers[n], t = this.travel[L], el = this.plates[L].box;
+        var L = this.layers[n], c = this.content[L], el = this.plates[L].box;
         if (!el) continue;
-        el.style.transform = 'translate3d(0,' + (-spare * (t[0] + p * (t[1] - t[0]))).toFixed(1) + 'px,0)';
+        var y0 = sh - c[0] * plateH;   // content's top edge resting on the stage's bottom
+        var y1 = -c[1] * plateH;       // content's bottom edge level with the stage's top
+        el.style.transform = 'translate3d(0,' + (y0 + p * (y1 - y0) * this.speed[L]).toFixed(1) + 'px,0)';
       }
 
       // Tumble. Index and travel are two independent functions of one progress value:
