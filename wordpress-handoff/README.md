@@ -94,7 +94,7 @@ host before deploying. `--font-heading` and `--font-body` both resolve to it.
 
 | path | what | notes |
 |---|---|---|
-| `assets/falling-blocks/w1920/{bottom,top}/fb0001…0048.webp` | 96 hero frames, 5.6 MB | filenames are load-bearing — see §5 |
+| `assets/falling-blocks/w1440/{bottom,top}/fb0001…0048.webp` | 96 hero frames, 3.9 MB | filenames are load-bearing — see §5 |
 | `assets/falling-blocks/manifest.json` | what the encoder produced | frame count, padding, widths |
 | `assets/falling-blocks.js` / `.css` | the hero component | portable, see §5 |
 | `assets/approach/ap*.webp` | 12 frames for the Approach scrub (6 beats x 2 cuts) | see §6.1 |
@@ -132,13 +132,13 @@ or block editor does can leave it half-constructed:
 
 ```php
 <falling-blocks base="<?php echo esc_url(get_template_directory_uri() . '/falling-blocks/'); ?>"
-                width="1920" frames="48" layers="bottom,top"
-                revolutions="1" budget-mb="320" min-width="901"
-                travel-bottom="0,0.42" travel-top="0,1">
+                width="1440" frames="48" layers="bottom,top"
+                revolutions="0.6" budget-mb="128" min-width="901"
+                stage-fill="0.93" travel-bottom="0.35,0.77" travel-top="0,1">
   <div data-fb-stage>
     <div data-fb-layer="bottom" aria-hidden="true">
       <canvas></canvas>
-      <img src="…/falling-blocks/w1920/bottom/fb0001.webp" alt="" width="1920" height="2880" loading="lazy" decoding="async">
+      <img src="…/falling-blocks/w1440/bottom/fb0001.webp" alt="" width="1440" height="2160" loading="lazy" decoding="async">
     </div>
     <div data-fb-copy>
       <h1>Bridging frontier AI and the classroom.</h1>
@@ -149,7 +149,7 @@ or block editor does can leave it half-constructed:
     </div>
     <div data-fb-layer="top" aria-hidden="true">
       <canvas></canvas>
-      <img src="…/falling-blocks/w1920/top/fb0001.webp" alt="" width="1920" height="2880" loading="lazy" decoding="async">
+      <img src="…/falling-blocks/w1440/top/fb0001.webp" alt="" width="1440" height="2160" loading="lazy" decoding="async">
     </div>
   </div>
 </falling-blocks>
@@ -194,8 +194,18 @@ same code covers both, so it is a CSS decision.
 - Below `min-width` (901px), on `prefers-reduced-motion`, and on a Save-Data or 2G/3G
   connection, the element shows the still and collapses the section to one screen. These
   are three separate checks on purpose; they mean different things.
-- Everything else is a knob: `revolutions` is tumble speed, `budget-mb` caps resident
-  decoded frames, `travel-bottom` / `travel-top` take `"start,end"` fractions.
+- **`width`, `budget-mb` and `revolutions` are a performance budget, not preferences.**
+  A frame decodes to width x height x 4 bytes however small the WebP is on disk, so at
+  1440 each frame costs 11.9 MiB and a pair costs 24. Those three numbers were tuned
+  down together after Chrome reported the tab as slowing the machine — at 1920 with a
+  320 MiB budget it held 295 MiB of decoded frames and re-decoded 21 MiB every frame
+  step. Raise `width` and the window shrinks automatically; raise `budget-mb` with it
+  and the memory goes back. Measure before changing either.
+- `stage-fill` is the plate's width as a fraction of the stage. It is 0.93 here because
+  that is the share of the viewport the desk artwork occupies further down the page.
+- `travel-bottom` / `travel-top` take `"start,end"` fractions of the overhang. The
+  difference between the two is the parallax; `start` frames each plate on the band its
+  blocks actually occupy, which is not the same for the two layers.
 
 The full markup contract and every attribute are documented at the top of
 `assets/falling-blocks.js`.
