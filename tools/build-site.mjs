@@ -97,6 +97,13 @@ fs.writeFileSync(path.join(outDir, 'index.html'), home);
 for (const file of COPY_FILES) fs.copyFileSync(path.join(root, file), path.join(outDir, file));
 for (const dir of COPY_DIRS) copyDir(path.join(root, dir), path.join(outDir, dir));
 
+// Pages reads the custom domain from a CNAME in the published artifact, not from the
+// repository, so leaving it behind here silently drops the site back to its
+// github.io address on the next deploy. Optional: the repo builds fine without one.
+if (fs.existsSync(path.join(root, 'CNAME'))) {
+  fs.copyFileSync(path.join(root, 'CNAME'), path.join(outDir, 'CNAME'));
+}
+
 for (const page of PAGES) {
   const dir = path.join(outDir, page.slug);
   fs.mkdirSync(dir, { recursive: true });
