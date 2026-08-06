@@ -33,10 +33,11 @@
      base          URL prefix ending in "/"           (required)
      frames        frame count                        (48)
      layers        comma list, back to front           ("bottom,top")
-     width         encoded width to load               (1920)
-     revolutions   tumbles across the section          (1)
-     budget-mb     resident decoded-bitmap ceiling     (320)
+     width         encoded width to load               (1440)
+     revolutions   tumbles across the section          (0.6)
+     budget-mb     resident decoded-bitmap ceiling     (128)
      min-width     below this the still is shown       (901)
+     stage-fill    plate width as a fraction of the stage's (1)
      travel-<layer>  "start,end" as fractions of the overhang
 */
 (function () {
@@ -66,7 +67,13 @@
   // planes read as one flat backdrop sliding past. The near plate travels its entire
   // overhang while the far one covers well under half of it, which is roughly the
   // 1/distance ratio measured between the planes in the source scene.
-  var TRAVEL = { bottom: [0, 0.42], top: [0, 1] };
+  //
+  // The far plate's start is not 0, and that is what makes it visible at all. Its
+  // blocks only begin 26% down the plate — the top quarter is empty sky — so a window
+  // opening at the plate's top edge spends most of the hero showing nothing, which is
+  // exactly how it looked. Starting at 0.35 of the overhang puts the window on the
+  // band the blocks actually occupy for the whole scroll.
+  var TRAVEL = { bottom: [0.35, 0.77], top: [0, 1] };
 
   // Stop the pump this many still frames after the last change, not one: Safari can
   // paint once more after the final scroll event of a fling, and stopping on the
@@ -75,7 +82,13 @@
 
   // A frame is only drawable once both plates hold it, so a frame costs two decodes
   // and the window divisor says so. Requests go out frame-major for the same reason.
-  var MAX_INFLIGHT = 6;
+  //
+  // Kept deliberately low. Decoding is the expensive half of this component and it
+  // competes with the compositor for the same cores: a browser told to decode a dozen
+  // multi-megapixel frames at once while scrolling is how a hero ends up reported as
+  // making the whole machine slow. Four in flight keeps the window filling faster than
+  // a reading scroll drains it without ever monopolising the machine.
+  var MAX_INFLIGHT = 4;
 
   function num(el, name, dflt) {
     var v = parseFloat(el.getAttribute(name));
@@ -115,10 +128,15 @@
       this.base = this.getAttribute('base') || '';
       this.N = Math.max(1, num(this, 'frames', 48) | 0);
       this.layers = names;
-      this.tier = num(this, 'width', 1920) | 0;
-      this.revolutions = num(this, 'revolutions', 1);
-      this.budget = num(this, 'budget-mb', 320) * 1048576;
+      this.tier = num(this, 'width', 1440) | 0;
+      this.revolutions = num(this, 'revolutions', 0.6);
+      this.budget = num(this, 'budget-mb', 128) * 1048576;
       this.minWidth = num(this, 'min-width', 901);
+      // What fraction of the stage's width the plate spans. 1 is full bleed, which
+      // throws blocks off both edges of the screen at whatever size the viewport
+      // happens to make them; less than that pulls them into a measure and is how the
+      // hero is kept to the same width as the artwork further down the page.
+      this.fill = num(this, 'stage-fill', 1);
 
       this.travel = {};
       for (var i = 0; i < this.layers.length; i++) {
@@ -428,7 +446,7 @@
       // as custom properties that both layers read — the registration is structural
       // rather than two code paths that have to keep agreeing.
       var sw = stage.clientWidth, sh = stage.clientHeight;
-      var plateW = Math.max(sw, sh * (PLATE_W / PLATE_H) * (1 + HEADROOM));
+      var plateW = Math.max(sw * this.fill, sh * (PLATE_W / PLATE_H) * (1 + HEADROOM));
       var plateH = plateW * PLATE_H / PLATE_W;
       var spare = plateH - sh;
       var box = plateW.toFixed(1);
