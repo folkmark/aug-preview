@@ -60,7 +60,14 @@
   // one on empty floor. These offsets frame each layer on the band it actually
   // occupies while keeping the depth ratio at 0.55 — the 1/distance ratio measured
   // in the source scene, far/mid against near.
-  var TRAVEL = { bottom: [0.28, 0.731], top: [0.18, 1.0] };
+  // The near plate starts at the very top of its overhang for a legibility reason, not
+  // an arbitrary one: its blocks are massed between 29% and 41% down the plate, and
+  // starting any lower parks that band across the copy at rest. Measured against the
+  // rendered page, 0.18 put near-plate pixels over about a fifth of the copy block on
+  // first paint; 0 puts them over 2%, and the blocks frame the headline instead of
+  // crossing it. They still sweep past it later in the scroll, which is the depth
+  // reading and is meant to happen — just not on the frame everybody sees first.
+  var TRAVEL = { bottom: [0.28, 0.731], top: [0.0, 0.82] };
 
   // Stop the pump this many still frames after the last change, not one: Safari can
   // paint once more after the final scroll event of a fling, and stopping on the
@@ -126,8 +133,18 @@
       for (var j = 0; j < this.layers.length; j++) {
         var name = this.layers[j];
         var box = this.querySelector('[data-fb-layer="' + name + '"]');
-        this.plates[name] = { box: box, cv: box.querySelector('canvas') };
+        var cv = box.querySelector('canvas');
+        // Drop any drawn-frame tag that arrived with the markup. The tag exists so a
+        // re-render cannot leave a canvas blank, and it is trusted — so a tag on a
+        // canvas that has only just been parsed is a lie, and one that survives into
+        // the HTML pins the plate blank for good. That is not hypothetical: anything
+        // that serialises a live DOM reproduces it, which is what a WordPress
+        // full-page cache does on every request, and what this project's own static
+        // export did. A freshly parsed canvas has never been drawn to, so say so.
+        cv.removeAttribute('data-fbf');
+        this.plates[name] = { box: box, cv: cv };
       }
+      stage.removeAttribute('data-fb-box');
 
       // State. Bitmaps live here, on the element instance — not in the DOM, so no
       // re-render can touch them, and not in a module-level cache, so two instances
@@ -445,8 +462,8 @@
       // copy fully readable — never a flash of empty plate, and after that it holds
       // the last complete frame rather than clearing to one.
       if (idx < 0 || idx === this.drawn) return;
-      this.drawn = idx;
       var tag = this.tier + ':' + idx;
+      var painted = 0;
       for (var n = 0; n < this.layers.length; n++) {
         var L = this.layers[n], cv = this.plates[L].cv, bm = this.bits[L][idx];
         if (!cv || !bm) continue;
@@ -469,7 +486,14 @@
         ctx.clearRect(0, 0, cv.width, cv.height);
         ctx.drawImage(bm, 0, 0);
         cv.dataset.fbf = tag;
+        painted++;
       }
+      // Commit only once every plate carries this frame. Committing before the loop
+      // would make one missing bitmap permanent — the next tick reads "already drawn",
+      // returns early, and the plates stay blank however long the frame takes to
+      // arrive. It is also what keeps the two depth planes on the same index: a
+      // half-painted frame is not a drawn frame.
+      if (painted === this.layers.length) this.drawn = idx;
     }
 
     wake() {
