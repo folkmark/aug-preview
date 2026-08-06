@@ -76,10 +76,8 @@
   [data-note] { position: absolute; inset: 0; opacity: 0; will-change: opacity; }
   [data-leader] { position: absolute; width: 1px; background: var(--color-neutral-darkest); opacity: 0.28; transform-origin: top center; transform: scaleY(0); }
   [data-dot] { position: absolute; width: 7px; height: 7px; border-radius: 100px; border: 1.5px solid var(--brand-accent); background: var(--surface-page); transform: translate(-50%, -50%); }
-  [data-hero-intro], [data-hero-outro] { will-change: transform, opacity; }
-  [data-frame], [data-copy] { will-change: opacity; }
-  @keyframes heroCue { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
-  [data-tick]:hover { opacity: 0.7 !important; }
+  [data-arch-layer], [data-arch-copy] { will-change: opacity; }
+  [data-arch-tick]:hover { opacity: 0.7 !important; }
   /* The kit stage: the blocks hold still and selection changes which pieces a tool
      draws on. Structures are not faked in CSS — the cut-outs disagree on perspective,
      so assembly waits for renders of each arrangement built in 3D. */
@@ -114,8 +112,17 @@
   @media (max-width: 991px) {
     .kit-grid { grid-template-columns: 1fr !important; row-gap: 2rem; }
   }
+  /* The pinned rig hangs a 1.43 plate from the top of its stage, so a portrait or
+     squarish window leaves a dead band under the artwork. Those windows get the
+     stacked stills instead — the same swap reduced motion asks for. Scoped to the
+     rig rather than .at-desktop because this is about the plate's shape, not the
+     viewport's width: the nav keeps its own breakpoint. */
+  @media (max-aspect-ratio: 5/4) {
+    .hero-animated-rig { display: none !important; }
+    .hero-static-block { display: grid !important; }
+  }
   [data-hero-static-mode="reduced"] .hero-animated-rig { display: none !important; }
-  [data-hero-static-mode="reduced"] .hero-static-block { display: block !important; }
+  [data-hero-static-mode="reduced"] .hero-static-block { display: grid !important; }
   [data-slot="button"]:not([data-variant^="link"]) { padding-left: 2.25rem !important; padding-right: 2.25rem !important; }
   [data-slot="button"][data-btn-size="sm"] { padding-left: 1.875rem !important; padding-right: 1.875rem !important; }
 </style>
@@ -198,13 +205,13 @@
         <div class="at-mobile hero-static-block" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));column-gap:clamp(2rem,4vw,4rem);row-gap:clamp(3rem,6vw,6rem)">
           <div style="display:flex;flex-direction:column;gap:clamp(3rem,6vw,6rem)">
             <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
-              <div role="img" aria-label="Photography to supply: a teacher working alongside two students" style="aspect-ratio:3/2;width:100%;border-radius:var(--radius-image);margin-bottom:2rem;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:var(--color-ecru-white);text-align:center"><p style="font-weight:600;font-size:var(--text-small);line-height:1.5;margin:0;color:var(--text-muted);text-wrap:pretty">Photography to supply — a teacher working alongside two students</p></div>
+              <img src="assets/approach/ap0235s.webp" alt="A blueprint arch drawn in wireframe across the gap between two school desks" style="aspect-ratio:3/2;width:100%;object-fit:contain;background:var(--color-ecru-white);border-radius:var(--radius-image);margin-bottom:2rem;display:block">
               <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">01</p>
               <h3 style="font-size:var(--text-h4);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem">Define the role</h3>
               <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">AI can play many distinct roles in a classroom, and each requires its own standards, evidence, and safeguards. With each group of teachers and students, we identify a specific role AI could play to meet a real need, and what teachers uniquely bring alongside it. Then we study what that role requires, where its limits are, and what bar it must meet.</p>
             </div>
             <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
-              <div role="img" aria-label="Photography to supply: educators and a researcher in a co-design workshop" style="aspect-ratio:3/2;width:100%;border-radius:var(--radius-image);margin-bottom:2rem;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:var(--color-ecru-white);text-align:center"><p style="font-weight:600;font-size:var(--text-small);line-height:1.5;margin:0;color:var(--text-muted);text-wrap:pretty">Photography to supply — educators and a researcher in a co-design workshop</p></div>
+              <img src="assets/approach/ap0477s.webp" alt="The arch complete across the gap, every block set and the blueprint retired" style="aspect-ratio:3/2;width:100%;object-fit:contain;background:var(--color-ecru-white);border-radius:var(--radius-image);margin-bottom:2rem;display:block">
               <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">03</p>
               <h3 style="font-size:var(--text-h4);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem">Co-design the applications</h3>
               <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Teachers, researchers, engineers, and designers build classroom tools on those capabilities, along with new ways of teaching alongside them. They then test our work where it counts: in real classrooms.</p>
@@ -212,13 +219,13 @@
           </div>
           <div style="display:flex;flex-direction:column;gap:clamp(3rem,6vw,6rem);margin-top:clamp(0rem,7vw,7rem)">
             <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
-              <div role="img" aria-label="Photography to supply: an engineer and a teacher reviewing a tool together" style="aspect-ratio:1/1;width:100%;border-radius:var(--radius-image);margin-bottom:2rem;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:var(--color-ecru-white);text-align:center"><p style="font-weight:600;font-size:var(--text-small);line-height:1.5;margin:0;color:var(--text-muted);text-wrap:pretty">Photography to supply — an engineer and a teacher reviewing a tool together</p></div>
+              <img src="assets/approach/ap0353s.webp" alt="Wooden blocks part-way through building the arch along the blueprint" style="aspect-ratio:3/2;width:100%;object-fit:contain;background:var(--color-ecru-white);border-radius:var(--radius-image);margin-bottom:2rem;display:block">
               <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">02</p>
               <h3 style="font-size:var(--text-h4);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem">Build the capabilities</h3>
               <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Much of the technology needed for AI to play these roles well doesn’t exist off the shelf. We build the missing layer between frontier AI models and classroom apps — validated capabilities that tools can build on, like computational methods that help AI measure student skills or track how concepts connect across a semester.</p>
             </div>
             <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
-              <img src="assets/images/student-notes.png" alt="A student taking notes beside a laptop" style="aspect-ratio:1/1;width:100%;object-fit:cover;border-radius:var(--radius-image);margin-bottom:2rem;display:block">
+              <img src="assets/approach/ap0598s.webp" alt="The finished arch carrying its load, the force travelling down through every block" style="aspect-ratio:3/2;width:100%;object-fit:contain;background:var(--color-ecru-white);border-radius:var(--radius-image);margin-bottom:2rem;display:block">
               <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">04</p>
               <h3 style="font-size:var(--text-h4);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem">Test, learn, begin again</h3>
               <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Classroom data tells us whether the AI roles we selected and the capabilities and tools we built actually helped. Those lessons sharpen our hypotheses, strengthen our capabilities and tools, and inform our next cycle of R&amp;D.</p>
@@ -229,12 +236,35 @@
     </section>
 
 
-    <div class="at-desktop hero-animated-rig" data-arch-rig="" style="position:relative;height:640vh">
+    <!-- The Approach act. The plate hangs from the top of the stage at its full width,
+         so the push-in always crops the desk legs and never the arch: in the last beat
+         two books come to rest on the keystone thirteen thousandths of a plate-height
+         from its top edge. Copy sits in the lower third, over the one band of the frame
+         that is legs and cream in every frame. -->
+    <div class="at-desktop hero-animated-rig" data-arch-rig="" style="position:relative;height:880vh">
       <div data-arch-stage="" style="position:sticky;top:4.5rem;height:calc(100vh - 4.5rem);overflow:hidden">
-        <div style="height:100%;display:grid;grid-template-columns:minmax(0,0.82fr) minmax(0,1.18fr);align-items:center;column-gap:clamp(2rem,5vw,5rem);padding:0 5% 3rem">
-          <div style="display:flex;flex-direction:column;gap:clamp(2rem,5vh,3.5rem)">
-            <div style="display:grid">
-          <div data-arch-copy="0" style="grid-area:1/1;opacity:1">
+
+        <div data-arch-cam="" role="img" aria-label="Two school desks, a gap between them, and a wooden arch assembled across it — the load then travelling down through every block" style="position:absolute;left:0;top:0;width:100%;aspect-ratio:2048/1432;transform-origin:50% 0%;isolation:isolate;will-change:transform">
+          <!-- Two layers cross-faded by CSS, not one canvas blended in JS: plus-lighter over
+               an isolated group is an exact linear dissolve, where drawing both into a single
+               canvas at partial alpha washes out everything the two frames share — here, both
+               desks. isolation:isolate is load-bearing; without it plus-lighter blows out
+               against the page. -->
+          <canvas data-arch-layer="0" aria-hidden="true" width="2048" height="1432" style="position:absolute;inset:0;width:100%;height:100%;display:block"></canvas>
+          <canvas data-arch-layer="1" aria-hidden="true" width="2048" height="1432" style="position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;mix-blend-mode:plus-lighter"></canvas>
+        </div>
+
+        <!-- Page-coloured, not dark: the plates are alpha over cream, so this is invisible
+             wherever the frame is empty and only hazes the artwork where it is not. Two
+             corner wedges rather than one full-width band — the text lives in the bottom
+             corners, and a band dense enough to carry it there would fog the arch. The
+             shallow third gradient just grounds the desks so the legs do not end in a
+             hard line. Short viewports are what this is sized for: they scale the plate
+             up until the dark desk cubby sits behind the copy. -->
+        <div data-arch-scrim="" aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 92% 118% at 0% 108%,var(--surface-page) 0%,var(--surface-page) 48%,transparent 78%),radial-gradient(ellipse 92% 118% at 100% 108%,var(--surface-page) 0%,var(--surface-page) 48%,transparent 78%),linear-gradient(0deg,var(--surface-page) 0%,transparent 26%);opacity:0.97"></div>
+
+        <div data-arch-beats="" style="position:absolute;left:5%;bottom:clamp(3.5rem,8vh,6rem);width:min(30rem,34vw);display:grid">
+          <div data-arch-copy="0" style="grid-area:1/1;opacity:0">
             <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">01</p>
             <h3 style="font-size:min(var(--text-h3),5vh);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem;text-wrap:pretty">Define the role.</h3>
             <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">AI can play many distinct roles in a classroom, and each requires its own standards, evidence, and safeguards. With each group of teachers and students, we identify a specific role AI could play to meet a real need — and what teachers uniquely bring alongside it.</p>
@@ -254,18 +284,15 @@
             <h3 style="font-size:min(var(--text-h3),5vh);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem;text-wrap:pretty">Test, learn, begin again.</h3>
             <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Classroom data tells us whether the role we chose and the capabilities we built actually helped. Those lessons sharpen our hypotheses and inform the next turn of the cycle.</p>
           </div>
-            </div>
-            <div data-arch-ticks="" style="display:grid;gap:0.25rem">
+        </div>
+
+        <div data-arch-ticks="" style="position:absolute;right:5%;bottom:clamp(3.5rem,8vh,6rem);width:min(19rem,24vw);display:grid;gap:0.25rem">
           <button data-arch-tick="0" type="button" onClick="{{ archJump }}" style="display:flex;align-items:baseline;gap:0.625rem;padding:0.75rem 0 0;border:0;border-top:1px solid var(--border-hairline);background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left;opacity:0.4;transition:opacity 200ms ease-in-out"><span style="font-weight:600;font-size:var(--text-tiny,0.75rem)">01</span><span style="font-weight:600;font-size:var(--text-small);letter-spacing:-0.01em">Define the role</span></button>
           <button data-arch-tick="1" type="button" onClick="{{ archJump }}" style="display:flex;align-items:baseline;gap:0.625rem;padding:0.75rem 0 0;border:0;border-top:1px solid var(--border-hairline);background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left;opacity:0.4;transition:opacity 200ms ease-in-out"><span style="font-weight:600;font-size:var(--text-tiny,0.75rem)">02</span><span style="font-weight:600;font-size:var(--text-small);letter-spacing:-0.01em">Build the capabilities</span></button>
           <button data-arch-tick="2" type="button" onClick="{{ archJump }}" style="display:flex;align-items:baseline;gap:0.625rem;padding:0.75rem 0 0;border:0;border-top:1px solid var(--border-hairline);background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left;opacity:0.4;transition:opacity 200ms ease-in-out"><span style="font-weight:600;font-size:var(--text-tiny,0.75rem)">03</span><span style="font-weight:600;font-size:var(--text-small);letter-spacing:-0.01em">Co-design the applications</span></button>
           <button data-arch-tick="3" type="button" onClick="{{ archJump }}" style="display:flex;align-items:baseline;gap:0.625rem;padding:0.75rem 0 0;border:0;border-top:1px solid var(--border-hairline);background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left;opacity:0.4;transition:opacity 200ms ease-in-out"><span style="font-weight:600;font-size:var(--text-tiny,0.75rem)">04</span><span style="font-weight:600;font-size:var(--text-small);letter-spacing:-0.01em">Test, learn, begin again</span></button>
-            </div>
-          </div>
-          <div style="position:relative;height:100%;display:flex;align-items:center;justify-content:center">
-            <canvas data-arch-canvas="" width="1280" height="720" role="img" aria-label="Two school desks, a gap between them, and a wooden arch assembled across it — the load then travelling down through every block" style="width:100%;height:auto;max-height:78vh"></canvas>
-          </div>
         </div>
+
         <div style="position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--color-neutral-darkest-10,rgba(2,4,8,0.1))">
           <div data-arch-prog="" style="height:1px;width:0%;background:var(--brand-accent)"></div>
         </div>
@@ -1030,6 +1057,9 @@ const ROUTES = [
   ["involved", "follow-our-work"]
 ];
 
+const clamp = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
+const smooth = (t) => { const c = clamp(t); return c * c * (3 - 2 * c); };
+
 const TITLES = {
   home: "AugmentED | Bridging frontier AI and the classroom",
   challenge: "The Challenge | AugmentED",
@@ -1091,138 +1121,83 @@ class Component extends DCLogic {
     this.syncApproachOffset();
     this.approachTimer = setInterval(this.syncApproachOffset, 250);
 
-    // Hero: eight resting states from the Blender render, crossfaded across eight
-    // scroll segments — opening + six approach beats (150vh each) + finale. The
-    // stills are alpha PNGs so the cream page shows through; the mp8 render bakes
-    // its surround to black, so it is not used here. Frame 672 (H6c) is left out:
-    // a near-duplicate of 635 with an unresolved bright highlight.
-    // The pinned Approach act: the desks receive the blocks, then four resting states,
-    // one per step of the cycle (100vh to land, then 225vh per step).
-    this.heroBounds = [0, 0.1, 0.325, 0.55, 0.775, 1];
     this.reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    this.hero = () => {
-      const rig = document.querySelector("[data-rig]");
-      // The rig can mount after this class does; keep watching for it rather than
-      // leaving the opening on its authored defaults and jumping on first scroll.
-      if (!rig || !rig.offsetHeight) {
-        if (!this.reduced && (this.heroWaits = (this.heroWaits || 0) + 1) < 240) {
-          this.heroRaf = requestAnimationFrame(this.hero);
-        }
-        return;
-      }
-      this.heroWaits = 0;
-      const stage = rig.firstElementChild;
-      const span = rig.offsetHeight - stage.offsetHeight;
-      const clamp = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
-      const smooth = (t) => { const c = clamp(t); return c * c * (3 - 2 * c); };
-      const p = clamp((72 - rig.getBoundingClientRect().top) / (span || 1));
-      const bounds = this.heroBounds;
-      let seg = bounds.length - 2;
-      for (let i = 0; i < bounds.length - 1; i++) {
-        if (p < bounds[i + 1] || i === bounds.length - 2) { seg = i; break; }
-      }
-      const t = clamp((p - bounds[seg]) / ((bounds[seg + 1] - bounds[seg]) || 1));
-      const fadeT = smooth(t / 0.5);
+    // The Approach act: the arch built across two desks, scrubbed by scroll.
+    // The section's clock is the Blender timeline, not an array index, so it
+    // survives the rest of the render landing — ARCH_BEATS is where each beat comes
+    // to rest and never changes, while ARCH_FRAMES is simply every frame that
+    // exists as a file. project/scratch/approach-render-map.md is the authority for
+    // both; keep ARCH_FRAMES on one line, the build verifier reads it from here.
+    this.ARCH_BEATS = [167, 235, 353, 477, 598, 672];
+    this.ARCH_FRAMES = [167, 235, 353, 477, 598, 672];
+    // One bound per beat plus the ends. The opening and the coda are shorter than
+    // the four that carry copy, which get equal weight so no step reads as bigger
+    // than another.
+    this.archBounds = [0, 0.128, 0.321, 0.513, 0.705, 0.897, 1];
+    // A beat moves for its first stretch and is dead still for the rest. Copy lands
+    // on the still part, never on the move, so nothing is animating while there are
+    // words to read. How long the move gets depends on what there is to show: the
+    // camera turns 6.667° between beats, so with only the resting frames in hand a
+    // move is a dissolve between two different angles and ghosts. Keep it brief until
+    // the in-between frames land and it becomes a real scrub that can breathe.
+    this.ARCH_MOVE = this.ARCH_FRAMES.length > this.ARCH_BEATS.length ? 0.42 : 0.14;
+    this.archImgs = new Array(this.ARCH_FRAMES.length);
 
-      // Camera. The opening sits wide, low and centred; the beats push in and pan
-      // the artwork right, clearing the left third for the copy column; a slow
-      // drift continues through each hold so a settled frame never reads as dead.
-      const cam = rig.querySelector("[data-cam]");
-      if (cam) {
-        const wide = seg === 0;
-        const openOut = smooth((t - 0.45) / 0.55);
-        const sc = wide ? 0.84 + 0.26 * openOut : 1.1 + 0.05 * smooth(t);
-        const tx = wide ? 11 * openOut : 11;
-        const ty = wide ? 16 * (1 - openOut) : 0;
-        cam.style.transform = "translate(" + tx.toFixed(2) + "%," + ty.toFixed(2) + "%) scale(" + sc.toFixed(4) + ")";
-      }
-
-      // Beat rail: present only while the beats run, current beat inked.
-      const rail = rig.querySelector("[data-rail]");
-      if (rail) {
-        const inBeats = seg >= 1;
-        rail.style.opacity = inBeats ? "1" : "0";
-        rail.style.pointerEvents = inBeats ? "auto" : "none";
-        const ticks = rail.querySelectorAll("[data-tick]");
-        for (let i = 0; i < ticks.length; i++) {
-          const n = parseInt(ticks[i].dataset.tick, 10);
-          const active = n === seg || (seg === 4 && n === 4);
-          ticks[i].style.opacity = active ? "1" : "0.35";
-          const bar = ticks[i].querySelector("[data-tick-bar]");
-          if (bar) bar.style.width = active ? "2.5rem" : "1.25rem";
-        }
-      }
-      const prog = rig.querySelector("[data-prog]");
-      if (prog) prog.style.width = (p * 100).toFixed(2) + "%";
-
-      for (let i = 0; i < 5; i++) {
-        const frame = rig.querySelector('[data-frame="' + i + '"]');
-        if (frame) {
-          let fOp = 0;
-          if (i === seg) fOp = seg === 0 ? 1 : fadeT;
-          else if (i === seg - 1) fOp = 1 - fadeT;
-          frame.style.opacity = fOp.toFixed(3);
-        }
-        const copy = rig.querySelector('[data-copy="' + i + '"]');
-        if (!copy) continue;
-        let o = 0;
-        if (i === seg) o = smooth((t - 0.5) / 0.22) * (i === 4 ? 1 : 1 - smooth((t - 0.9) / 0.1));
-        if (i === 0 && seg === 0) o = 1 - smooth((t - 0.5) / 0.4);
-        o = clamp(o);
-        copy.style.opacity = o.toFixed(3);
-        copy.style.pointerEvents = o > 0.4 ? "auto" : "none";
-        if (i > 0) copy.style.transform = "translateY(" + (10 * (1 - o)).toFixed(2) + "px)";
-        // The eyebrow leads the headline in by a beat, the way a caption precedes a plate.
-        const eyebrow = copy.querySelector("[data-eyebrow]");
-        if (eyebrow) eyebrow.style.opacity = i === seg ? clamp(smooth((t - 0.44) / 0.16)).toFixed(3) : o.toFixed(3);
-      }
-    };
-
-    // The Approach act: 136 alpha stills of the arch being built across two desks,
-    // scrubbed by scroll. Four beats — the desks, the plan, the assembly, the load.
-    this.ARCH_N = 136;
-    this.archBounds = [0, 0.296, 0.504, 0.741, 1];
-    this.archImgs = new Array(this.ARCH_N);
-    this.archDrawn = -1;
-    const pad3 = (n) => String(n).padStart(3, "0");
-    const loadFrame = (i) => new Promise((res) => {
+    const pad4 = (n) => String(n).padStart(4, "0");
+    const loadFrame = (k) => new Promise((res) => {
       const im = new Image();
-      im.onload = () => { this.archImgs[i] = im; if (this.archWant === i || this.archDrawn < 0) this.archDraw(); res(); };
+      im.onload = () => { this.archImgs[k] = im; this.archDraw(); res(); };
       im.onerror = () => res();
-      im.src = "assets/approach/a" + pad3(i) + ".webp";
+      im.src = "assets/approach/ap" + pad4(this.ARCH_FRAMES[k]) + ".webp";
     });
-    // Front-load the opening, then walk the rest in order so a slow connection
-    // still scrubs from the top rather than stalling on a mid-sequence frame.
-    // 7MB of frames is only ever fetched where the stage actually renders: not on
-    // phones, not under reduced motion, and not until the rig is near the viewport.
+    // Resting frames first, so every beat reads correctly even mid-download and the
+    // moves between them fill in behind. The frames are only ever fetched where the
+    // stage actually renders: not on phones, not under reduced motion, and not
+    // until the rig is near the viewport.
     this.archLoading = false;
     this.archPrime = () => {
-      if (this.archLoading) return;
+      if (this.archLoading || this.reduced) return;
       const rig = document.querySelector("[data-arch-rig]");
       if (!rig || !rig.offsetHeight) return;
       if (rig.getBoundingClientRect().top > (window.innerHeight || 800) * 3) return;
       this.archLoading = true;
-      (async () => {
-        for (let i = 0; i < 8; i++) await loadFrame(i);
-        for (let i = 8; i < this.ARCH_N; i++) await loadFrame(i);
-      })();
+      const rest = [], between = [];
+      this.ARCH_FRAMES.forEach((f, k) => (this.ARCH_BEATS.indexOf(f) > -1 ? rest : between).push(k));
+      (async () => { for (const k of rest.concat(between)) await loadFrame(k); })();
     };
 
+    // The dissolve is CSS, not arithmetic on one canvas: drawing two frames into a
+    // single context at partial alpha squares the outgoing frame's contribution, so
+    // everything the pair shares — here, both desks, most of the picture — sags to
+    // three-quarters opacity halfway through every transition. Two layers under
+    // plus-lighter add to exactly the frame in between, and cost a raster only when
+    // the pair changes rather than on every scroll event.
     this.archDraw = () => {
-      const cv = document.querySelector("[data-arch-canvas]");
-      if (!cv) return;
-      const want = this.archWant || 0;
-      let use = -1;
-      for (let d = 0; d < this.ARCH_N; d++) {
-        if (this.archImgs[want - d]) { use = want - d; break; }
-        if (this.archImgs[want + d]) { use = want + d; break; }
-      }
-      if (use < 0 || use === this.archDrawn) return;
-      const ctx = cv.getContext("2d");
-      ctx.clearRect(0, 0, cv.width, cv.height);
-      ctx.drawImage(this.archImgs[use], 0, 0, cv.width, cv.height);
-      this.archDrawn = use;
+      const F = this.ARCH_FRAMES;
+      const want = typeof this.archWant === "number" ? this.archWant : F[0];
+      let i = 0;
+      while (i < F.length - 2 && F[i + 1] <= want) i++;
+      const j = Math.min(i + 1, F.length - 1);
+      const b = F[j] > F[i] ? (want - F[i]) / (F[j] - F[i]) : 0;
+      // Track what each layer holds on the element, not on the component: the
+      // runtime can re-render the canvas out from under us, and a stale index here
+      // would leave the layer blank forever.
+      const put = (n, k) => {
+        const cv = document.querySelector('[data-arch-layer="' + n + '"]');
+        if (!cv) return null;
+        const im = this.archImgs[k];
+        if (im && cv.dataset.f !== String(k)) {
+          const ctx = cv.getContext("2d");
+          ctx.clearRect(0, 0, cv.width, cv.height);
+          ctx.drawImage(im, 0, 0, cv.width, cv.height);
+          cv.dataset.f = String(k);
+        }
+        return cv;
+      };
+      const lower = put(0, i), upper = put(1, j);
+      if (lower) lower.style.opacity = (this.archImgs[j] ? 1 - b : 1).toFixed(3);
+      if (upper) upper.style.opacity = (this.archImgs[j] ? b : 0).toFixed(3);
     };
 
     this.arch = () => {
@@ -1231,38 +1206,64 @@ class Component extends DCLogic {
       if (!rig || !rig.offsetHeight) return;
       const stage = rig.firstElementChild;
       const span = rig.offsetHeight - stage.offsetHeight;
-      const clamp = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
-      const smooth = (t) => { const c = clamp(t); return c * c * (3 - 2 * c); };
-      const p = clamp((72 - rig.getBoundingClientRect().top) / (span || 1));
-      this.archWant = Math.round(p * (this.ARCH_N - 1));
-      this.archDraw();
-      const prog = rig.querySelector("[data-arch-prog]");
-      if (prog) prog.style.width = (p * 100).toFixed(2) + "%";
-      const b = this.archBounds;
+      const nav = (document.querySelector("header") || {}).offsetHeight || 72;
+      const p = clamp((nav - rig.getBoundingClientRect().top) / (span || 1));
+      const B = this.ARCH_BEATS, b = this.archBounds;
       let seg = b.length - 2;
       for (let i = 0; i < b.length - 1; i++) {
         if (p < b[i + 1] || i === b.length - 2) { seg = i; break; }
       }
       const t = clamp((p - b[seg]) / ((b[seg + 1] - b[seg]) || 1));
+
+      // Segment 0 rests on the opening frame; every later one travels from the
+      // previous beat's frame to its own over the move, then holds.
+      this.archWant = seg === 0 ? B[0] : B[seg - 1] + (B[seg] - B[seg - 1]) * smooth(t / this.ARCH_MOVE);
+      this.archDraw();
+
+      // Camera. The plate hangs from the top of the stage at its own aspect, so at
+      // scale 1 it fills the width and the overflow that gets clipped is the desk
+      // legs. The opening pulls back far enough to hold the whole plate, the piece
+      // pushes in to full bleed, and a hair of creep continues the whole way down so
+      // a frozen frame is never a dead frame. Origin is the top edge: that is what
+      // keeps the two books that come to rest on the arch inside the frame.
+      const cam = rig.querySelector("[data-arch-cam]");
+      if (cam) {
+        const sMin = Math.min(1, 1.4302 * stage.clientHeight / (stage.clientWidth || 1));
+        const open = smooth(p / 0.24);
+        const sc = sMin + (1 - sMin) * open + 0.028 * p;
+        cam.style.transform = "translateY(" + (1.2 * open).toFixed(2) + "%) scale(" + sc.toFixed(4) + ")";
+      }
+
+      const prog = rig.querySelector("[data-arch-prog]");
+      if (prog) prog.style.width = (p * 100).toFixed(2) + "%";
+
       for (let i = 0; i < 4; i++) {
+        // Copy blocks 0-3 belong to segments 1-4. The opening carries none, and the
+        // coda holds the last line rather than clearing it: the books coming to rest
+        // on the arch are that line's payoff, not a separate thought.
+        const own = seg === i + 1;
+        const held = i === 3 && seg === 5;
+        const on = own || held;
         const copy = rig.querySelector('[data-arch-copy="' + i + '"]');
         if (copy) {
-          // Each beat's copy arrives just after its frames start moving and holds
-          // to the end of the beat; only the last one fades on the way out.
+          // Arrives once the move has finished and holds to the end of its beat. The
+          // last line does not fade at that boundary — it is still up as the books
+          // land — and only leaves as the section itself releases.
           let o = 0;
-          if (i === seg) o = smooth(t / 0.18) * (1 - (i === 3 ? 0 : smooth((t - 0.9) / 0.1)));
-          copy.style.opacity = clamp(o).toFixed(3);
-          copy.style.transform = "translateY(" + (8 * (1 - clamp(o))).toFixed(2) + "px)";
+          if (own) o = smooth((t - this.ARCH_MOVE) / 0.14) * (i === 3 ? 1 : 1 - smooth((t - 0.92) / 0.08));
+          else if (held) o = 1 - smooth((t - 0.86) / 0.14);
+          o = clamp(o);
+          copy.style.opacity = o.toFixed(3);
+          copy.style.transform = "translateY(" + (8 * (1 - o)).toFixed(2) + "px)";
           copy.style.pointerEvents = o > 0.4 ? "auto" : "none";
         }
         const tick = rig.querySelector('[data-arch-tick="' + i + '"]');
-        if (tick) tick.style.opacity = i === seg ? "1" : "0.4";
+        if (tick) tick.style.opacity = on ? "1" : "0.4";
       }
     };
 
     this.onScroll = () => {
       this.sweep();
-      this.hero();
       this.arch();
       const y = window.scrollY || window.pageYOffset || 0;
       // The rising block kit is decorative motion at ~1.85x scroll speed, so it is the
@@ -1277,12 +1278,10 @@ class Component extends DCLogic {
     window.addEventListener("scroll", this.onScroll, { passive: true });
     window.addEventListener("resize", this.onScroll, { passive: true });
     this.sweep();
-    this.hero();
     this.arch();
   }
 
   componentWillUnmount() {
-    if (this.heroRaf) cancelAnimationFrame(this.heroRaf);
     window.removeEventListener("popstate", this.onPopState);
     window.removeEventListener("scroll", this.onScroll);
     window.removeEventListener("resize", this.onScroll);
@@ -1299,7 +1298,6 @@ class Component extends DCLogic {
       window.scrollTo(0, 0);
     }
     if (this.sweep) requestAnimationFrame(this.sweep);
-    if (this.hero) requestAnimationFrame(this.hero);
     if (this.arch) requestAnimationFrame(this.arch);
   }
 
@@ -1417,26 +1415,16 @@ class Component extends DCLogic {
         const tick = e.target && e.target.closest ? e.target.closest("[data-arch-tick]") : null;
         const rig = document.querySelector("[data-arch-rig]");
         if (!tick || !rig) return;
-        const seg = parseInt(tick.dataset.archTick, 10);
+        // Ticks 0-3 are the copy beats, which are segments 1-4: segment 0 is the
+        // opening and the last one is the coda, and neither is addressable.
+        const seg = parseInt(tick.dataset.archTick, 10) + 1;
         const stage = rig.firstElementChild;
         const span = rig.offsetHeight - stage.offsetHeight;
+        const nav = (document.querySelector("header") || {}).offsetHeight || 72;
         const b = this.archBounds;
-        // Land a third into the beat, where the copy has arrived and the frames read.
-        const at = b[seg] + (b[seg + 1] - b[seg]) * 0.35;
-        const top = rig.getBoundingClientRect().top + (window.scrollY || 0) - 72 + at * span;
-        window.scrollTo({ top: top, behavior: "smooth" });
-      },
-      railJump: (e) => {
-        const tick = e.target && e.target.closest ? e.target.closest("[data-tick]") : null;
-        const rig = document.querySelector("[data-rig]");
-        if (!tick || !rig) return;
-        const seg = parseInt(tick.dataset.tick, 10);
-        const stage = rig.firstElementChild;
-        const span = rig.offsetHeight - stage.offsetHeight;
-        // Land three-quarters into the beat, where the frame has settled and the copy reads.
-        const b = this.heroBounds;
-        const at = b[seg] + (b[seg + 1] - b[seg]) * 0.78;
-        const top = rig.getBoundingClientRect().top + (window.scrollY || 0) - 72 + at * span;
+        // Land past the move, on the hold, where the frame is still and the copy is up.
+        const at = b[seg] + (b[seg + 1] - b[seg]) * 0.6;
+        const top = rig.getBoundingClientRect().top + (window.scrollY || 0) - nav + at * span;
         window.scrollTo({ top: top, behavior: "smooth" });
       },
       isHome: this.state.page === "home",
