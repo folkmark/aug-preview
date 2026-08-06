@@ -128,6 +128,28 @@ fs.writeFileSync(path.join(outDir, '.nojekyll'), '');
 
 const problems = [];
 
+// The falling-block frames are addressed by string concatenation inside
+// assets/falling-blocks.js, from a base and a frame count the page carries as
+// attributes — so, exactly like the approach frames, no literal reference to any of
+// them exists for the src/href scan to find. The encoder writes a manifest beside the
+// frames recording what it actually produced; read it once here, and refsIn checks the
+// page against it and expands the cross product. Three ways to fail, all of them at
+// build time rather than in someone's browser: the manifest is missing, the page and
+// the manifest disagree, or a frame the pair of them promise is not on disk.
+const fallManifest = (() => {
+  const p = path.join(root, 'assets/falling-blocks/manifest.json');
+  if (!fs.existsSync(p)) {
+    problems.push('assets/falling-blocks/manifest.json is missing — run tools/encode-falling-blocks.mjs');
+    return null;
+  }
+  try {
+    return JSON.parse(fs.readFileSync(p, 'utf8'));
+  } catch {
+    problems.push('assets/falling-blocks/manifest.json is not readable JSON');
+    return null;
+  }
+})();
+
 function refsIn(html) {
   const out = new Set();
   for (const m of html.matchAll(/(?:src|href)="([^"]+)"/g)) out.add(m[1]);
@@ -151,6 +173,37 @@ function refsIn(html) {
       const f = n.trim();
       if (!f) continue;
       for (const v of variants) out.add(stem[1] + f.padStart(4, '0') + v + '.webp');
+    }
+  }
+  // The base is captured off the page rather than assumed, because reparent() has
+  // rewritten it differently on every route file and 404.html carries an absolute one.
+  // This is also why the base has to stay a single quoted attribute value beginning
+  // assets/ — build it from pieces and reparent() misses it, this scan misses it, and
+  // every route page 404s on all ninety-six frames while the home page looks fine.
+  const fall = html.match(/<falling-blocks\b([^>]*)>/);
+  if (!fall || !fallManifest) {
+    problems.push('the falling-blocks element is no longer readable — check this scan');
+  } else {
+    const attr = (k) => (fall[1].match(new RegExp(k + '="([^"]*)"')) || [, ''])[1];
+    const base = attr('base');
+    const frames = Number(attr('frames'));
+    const layers = attr('layers').split(',').map((s) => s.trim()).filter(Boolean).sort();
+    const width = Number(attr('width'));
+    const m = fallManifest;
+    if (frames !== m.frames) {
+      problems.push(`falling-blocks asks for ${frames} frames but the manifest encoded ${m.frames}`);
+    }
+    if (layers.join() !== [...m.layers].sort().join()) {
+      problems.push(`falling-blocks asks for layers ${layers.join()} but the manifest encoded ${m.layers.join()}`);
+    }
+    if (!m.widths.some((t) => t.w === width)) {
+      problems.push(`falling-blocks asks for width ${width}, which the manifest did not encode`);
+    } else {
+      for (const layer of m.layers) {
+        for (let i = m.first; i < m.first + m.frames; i++) {
+          out.add(`${base}w${width}/${layer}/${m.stem}${String(i).padStart(m.pad, '0')}.${m.ext}`);
+        }
+      }
     }
   }
   return [...out].filter(

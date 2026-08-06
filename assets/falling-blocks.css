@@ -1,0 +1,103 @@
+/* <falling-blocks> — see assets/falling-blocks.js for the markup contract.
+
+   Host-agnostic: no design tokens, no project class names, no assumption about the
+   page around it. The two things a host may want to set are custom properties with
+   working defaults — --fb-sticky-top for a fixed header's height, and --fb-scrim for
+   the page colour the plates composite over. Everything else is self-contained. */
+
+falling-blocks {
+  --fb-sticky-top: 0px;
+  --fb-scrim: transparent;
+  display: block;
+  position: relative;
+  /* The scroll budget. The plain-vh line is the fallback for engines without svh;
+     svh rather than dvh because dvh changes as mobile chrome hides, and progress is
+     measured against this element's own height — a budget that moved mid-gesture
+     would snap the scrub. */
+  height: 260vh;
+  height: 260svh;
+}
+
+/* Static presentation, which is also what a page with no JavaScript gets: one screen,
+   not three, so nobody scrolls past two empty ones to reach the next section. */
+falling-blocks:not([data-fb-motion="on"]) {
+  height: 100vh;
+  height: 100svh;
+}
+
+falling-blocks [data-fb-stage] {
+  position: sticky;
+  top: var(--fb-sticky-top);
+  height: calc(100vh - var(--fb-sticky-top));
+  height: calc(100svh - var(--fb-sticky-top));
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  /* The plates are absolutely positioned inside this box and never affect layout, so
+     nothing here can shift the page as frames arrive — the section's height is fixed
+     by the rules above before any script runs. */
+  contain: layout paint;
+}
+
+/* Both layers read the same two properties, written once per tick by the element.
+   There is one box, so the two depth planes cannot drift out of registration. */
+falling-blocks [data-fb-layer] {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: var(--fb-plate-w, 100%);
+  height: var(--fb-plate-h, 150%);
+  margin-left: calc(var(--fb-plate-w, 100%) / -2);
+  will-change: transform;
+  /* The near plate covers the copy, including any button in it. */
+  pointer-events: none;
+}
+
+falling-blocks [data-fb-layer] > canvas,
+falling-blocks [data-fb-layer] > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The sandwich. Ordering is by z-index rather than by DOM order so the element never
+   has to move authored nodes around — a framework that re-renders the copy then has
+   nothing of ours to reconcile away. */
+falling-blocks [data-fb-layer="bottom"] { z-index: 1; }
+falling-blocks [data-fb-scrim]          { z-index: 1; }
+falling-blocks [data-fb-copy]           { z-index: 2; position: relative; }
+falling-blocks [data-fb-layer="top"]    { z-index: 3; }
+
+/* Page-coloured, not dark: the plates are alpha over the page, so this is invisible
+   wherever the far plate is empty and only hazes it where it is not. It sits under
+   the near plate deliberately — the near blocks crossing the words is the depth
+   reading, not a defect to be washed out. */
+falling-blocks [data-fb-scrim] {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 62% 46% at 50% 50%,
+    var(--fb-scrim) 0%, var(--fb-scrim) 42%, transparent 76%);
+}
+
+/* Frame 1 is the designed composition, so the still is a deliberate state rather than
+   a degraded one. It is a plain <img>, which means it also survives with scripting
+   off and gives the static path a real LCP element instead of a canvas. */
+falling-blocks [data-fb-layer] > canvas { display: none; }
+falling-blocks[data-fb-motion="on"] [data-fb-layer] > canvas { display: block; }
+falling-blocks[data-fb-motion="on"] [data-fb-layer] > img { display: none; }
+
+/* Without the element running there is no cover-fit to apply, so the layer fills the
+   stage and the image covers it. Biased above centre because both plates carry their
+   blocks in the upper-middle band of the plate. */
+falling-blocks:not([data-fb-motion="on"]) [data-fb-layer] {
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin-left: 0;
+  transform: none;
+}
+falling-blocks:not([data-fb-motion="on"]) [data-fb-layer] > img {
+  object-fit: cover;
+  object-position: 50% 38%;
+}
