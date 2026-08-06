@@ -1,28 +1,38 @@
 /* <falling-blocks> — see assets/falling-blocks.js for the markup contract.
 
-   Host-agnostic: no design tokens, no project class names, no assumption about the
-   page around it. The only thing a host needs to supply is the frame directory; the
-   one thing it may usefully override is this element's height, which is the animation's
-   scroll budget — e.g. calc(100svh - 4.5rem) to sit under a fixed header. */
+   Host-agnostic: no design tokens, no project class names, no assumption about the page
+   around it. A host supplies the frame directory, and may set --fb-sticky-top to a fixed
+   header's height and this element's height to change how long the hero pins. */
 
 falling-blocks {
+  --fb-sticky-top: 0px;
   display: block;
   position: relative;
-  /* One screen, and nothing is pinned: the copy scrolls away like any other hero
-     while the plates keep spinning and rising behind and in front of it. The element
-     reads this height as its scroll budget, so the animation runs for exactly as long
-     as the hero is on screen.
+  /* Taller than the stage, and the difference is the pin: the copy is held still while
+     the blocks rise through it, and the hero only starts scrolling away once they have
+     all left. The element reads that difference as its scroll budget, so this one
+     number sets both how long the hero holds and how fast the blocks move — there is
+     no second place to keep in step.
 
      The plain-vh line is the fallback for engines without svh; svh rather than dvh
      because dvh changes as mobile chrome hides, and a budget that moved mid-gesture
      would snap the animation. */
+  height: 290vh;
+  height: 290svh;
+}
+
+/* Static presentation, which is also what a page with no JavaScript gets: one screen
+   and no pin, so nobody scrolls past two empty ones to reach the next section. */
+falling-blocks:not([data-fb-motion="on"]) {
   height: 100vh;
   height: 100svh;
 }
 
 falling-blocks [data-fb-stage] {
-  position: relative;
-  height: 100%;
+  position: sticky;
+  top: var(--fb-sticky-top);
+  height: calc(100vh - var(--fb-sticky-top));
+  height: calc(100svh - var(--fb-sticky-top));
   overflow: hidden;
   display: grid;
   place-items: center;

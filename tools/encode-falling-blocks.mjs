@@ -34,9 +34,21 @@ const SRC = path.join(root, 'Falling Blocks');
 const OUT = path.join(root, 'assets/falling-blocks');
 
 // Source folder -> the layer name the page addresses it by.
+//
+// trimBelow drops everything from that row down and pads the gap back with
+// transparency, so the plate keeps its 2560x3840 frame and the two layers still
+// register pixel for pixel. The far plate needs it: its lowest block group runs off the
+// bottom of the render, so those blocks are cut by the frame edge itself and rise
+// through the hero as flat-bottomed shapes. Row 2987 is where they start, and rows
+// 2706-2986 are empty in all 48 frames, so the cut crosses nothing.
+//
+// This is also what makes the motion possible at all. For blocks to begin below the
+// viewport and end above it without an edge ever showing, the content needs a clear
+// margin of at least one viewport height at both ends of the plate. The near plate
+// already had it; the far plate had none, because its content ran to the last row.
 const LAYERS = [
   { in: 'FallingBlocks_Top', out: 'top' },
-  { in: 'FallingBlocks_Bottom', out: 'bottom' }
+  { in: 'FallingBlocks_Bottom', out: 'bottom', trimBelow: 2987 }
 ];
 
 // The widths that ship, each into its own w<width> directory so adding a tier is a
@@ -67,7 +79,7 @@ fs.rmSync(OUT, { recursive: true, force: true });
 
 // Frames come off disk rather than a hardcoded list: the render is complete, and a
 // dropped-in frame should encode without also editing this file.
-const read = LAYERS.map(({ in: dir, out: layer }) => {
+const read = LAYERS.map(({ in: dir, out: layer, trimBelow }) => {
   const from = path.join(SRC, dir);
   const frames = fs.readdirSync(from)
     .filter((f) => f.toLowerCase().endsWith('.png'))
@@ -77,7 +89,7 @@ const read = LAYERS.map(({ in: dir, out: layer }) => {
       return { frame, src: path.join(from, file) };
     })
     .sort((a, b) => a.frame - b.frame);
-  return { layer, frames };
+  return { layer, frames, trimBelow };
 });
 
 // Parity gate, before a single file is written. Two layers of different length desync
@@ -103,18 +115,32 @@ for (const { layer, frames } of read) {
 const FRAMES = read[0].frames.length;
 
 const jobs = WIDTHS.flatMap((width) =>
-  read.flatMap(({ layer, frames }) => {
+  read.flatMap(({ layer, frames, trimBelow }) => {
     fs.mkdirSync(path.join(OUT, `w${width}`, layer), { recursive: true });
     return frames.map(({ frame, src }) => ({
-      width, layer, frame, src,
+      width, layer, frame, src, trimBelow,
       dst: path.join(OUT, `w${width}`, layer, `fb${pad4(frame)}.webp`)
     }));
   })
 );
 
 async function encode(job) {
-  const info = await sharp(job.src)
-    .resize({ width: job.width, withoutEnlargement: true, kernel: 'lanczos3' })
+  let pipe = sharp(job.src);
+  if (job.trimBelow) {
+    // The padding is in output pixels, not source pixels. Sharp runs extract before the
+    // resize and extend after it whatever order they are called in, so padding by the
+    // source-space figure would leave this layer taller than the untrimmed one — and two
+    // layers of different height do not register, which is the one thing about these
+    // plates that must never break.
+    const pad = Math.round(((MASTER.h - job.trimBelow) * job.width) / MASTER.w);
+    pipe = pipe
+      .extract({ left: 0, top: 0, width: MASTER.w, height: job.trimBelow })
+      .resize({ width: job.width, withoutEnlargement: true, kernel: 'lanczos3' })
+      .extend({ bottom: pad, background: { r: 0, g: 0, b: 0, alpha: 0 } });
+  } else {
+    pipe = pipe.resize({ width: job.width, withoutEnlargement: true, kernel: 'lanczos3' });
+  }
+  const info = await pipe
     .webp(ENCODER)
     .toFile(job.dst);
 
@@ -145,6 +171,22 @@ await Promise.all(Array.from({ length: POOL }, async () => {
     );
   }
 }));
+
+// Output parity, checked on what was actually written. The gate before the encode
+// compares the source plates; this compares the files, which is where a trim or a
+// resize can still make two layers disagree. Different heights mean the two depth
+// planes no longer line up, and that is invisible in any single frame.
+for (const w of WIDTHS) {
+  const dims = new Map();
+  for (const r of done.filter((x) => x.width === w)) {
+    dims.set(r.layer, `${r.wrote.width}x${r.wrote.height}`);
+  }
+  if (new Set(dims.values()).size !== 1) {
+    throw new Error(
+      `w${w} layers came out different sizes (${[...dims].map(([k, v]) => `${k} ${v}`).join(', ')}) — they would not register`
+    );
+  }
+}
 
 // Written from what actually landed on disk, never from the constants above: a tier
 // that failed halfway has to be visible here as a short frame count, and

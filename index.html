@@ -193,11 +193,12 @@
     [data-arch-beats] h3 { font-size: var(--text-h5) !important; }
     [data-arch-more] { display: none; }
   }
-  /* The header is sticky and 4.5rem tall, so the hero is a screen minus the header
-     rather than a whole one — otherwise it overhangs the fold by exactly the header
-     and the next section starts just off-screen. This doubles as the animation's
-     scroll budget, which the element reads off the rendered height. */
-  falling-blocks { height: calc(100vh - 4.5rem); height: calc(100svh - 4.5rem); }
+  /* The header is sticky and 4.5rem tall, so the stage is a screen minus the header and
+     the rig is that plus the pin. The difference between the two is the scroll budget
+     the element measures, so 290 minus 100 is the 190svh over which the blocks rise —
+     roughly one-to-one with the page for the far plate, which is what keeps the scrub
+     feeling like scrolling rather than like a machine being driven. */
+  falling-blocks { --fb-sticky-top: 4.5rem; height: calc(290vh - 4.5rem); height: calc(290svh - 4.5rem); }
 
   [data-slot="button"]:not([data-variant^="link"]) { padding-left: 2.25rem !important; padding-right: 2.25rem !important; }
   [data-slot="button"][data-btn-size="sm"] { padding-left: 1.875rem !important; padding-right: 1.875rem !important; }
@@ -272,7 +273,7 @@
          so the runtime owns these nodes and the element only drives them. With the
          script absent or the element unsupported this is a static hero of two stills
          and readable copy. -->
-    <falling-blocks base="assets/falling-blocks/" width="1440" frames="48" layers="bottom,top" revolutions="0.6" budget-mb="128" min-width="901" stage-fill="0.93" travel-bottom="0.35,0.77" travel-top="0,1">
+    <falling-blocks base="assets/falling-blocks/" width="1440" frames="48" layers="bottom,top" revolutions="0.6" budget-mb="128" min-width="901" stage-fill="0.93" content-bottom="0.273,0.700" content-top="0.183,0.775" speed-bottom="1" speed-top="1.25">
       <div data-fb-stage="">
 
         <div data-fb-layer="bottom" aria-hidden="true">
