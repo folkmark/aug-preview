@@ -73,8 +73,9 @@ without raising the height and the whole section plays faster.
 
 When any of this changes, these describe it and go stale silently:
 
-- `wordpress-handoff/sections/approach.md` — a 497-line build spec that restates the
-  constants, the maths and the byte totals. It is written to be built from.
+- `wordpress-handoff/sections/approach.md` — a build spec that restates the constants, the
+  maths and the byte totals so the section can be rebuilt in another stack. It is written
+  to be built from, so a stale number there becomes someone's wrong implementation.
 - `wordpress-handoff/README.md` §4 and §6 — asset inventory and porting notes.
 - `README.md` — frame count and sequence weight.
 - `docs/approach-render-map.md` — describes the Blender render, so an encode change

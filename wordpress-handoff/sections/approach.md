@@ -18,7 +18,7 @@ documented the same way.
 
 ## 0. The short version
 
-A scroll-scrubbed image sequence. The section is 880vh tall on desktop (520svh on phones);
+A scroll-scrubbed image sequence. The section is 1000vh tall on desktop (600svh on phones);
 a stage pins inside it and stays put while the page scrolls past; the scroll position picks a
 frame. Four blocks of copy fade in and out in time with it.
 
@@ -26,9 +26,9 @@ It is **three files and a directory**:
 
 | | |
 |---|---|
-| `assets/approach.js` | ~440 lines, no dependencies, defines `<approach-scrub>` |
+| `assets/approach.js` | ~550 lines, no dependencies, defines `<approach-scrub>` |
 | `assets/approach.css` | ~130 lines, all the geometry |
-| `assets/approach/` | 210 WebP frames + `manifest.json` |
+| `assets/approach/` | 240 WebP frames + `manifest.json` |
 
 No framework, no build step, no design system, no icon font, no images beyond the frames.
 It is a custom element that drives markup the page authors, so the copy is real text in the
@@ -54,9 +54,9 @@ Six **beats**, each with two phases, and the distinction is the whole design:
 
 The six beats and what each shows:
 
-| Segment | Beat frame | Copy shown | Picture |
+| Segment | Runs to | Copy shown | Picture |
 |---|---|---|---|
-| 0 — opening | 167 | *(none)* | Two desks, loaded, seen from the left |
+| 0 — opening | 167 | *(none)* | Books and blocks fall onto two bare desks and come to rest |
 | 1 | 235 | **Define the role.** | A blueprint arch draws itself in the gap — wireframe only |
 | 2 | 353 | **Build the capabilities.** | The arch becomes solid |
 | 3 | 477 | **Co-design the applications.** | Applications assemble on the arch |
@@ -65,6 +65,13 @@ The six beats and what each shows:
 
 The coda holds beat 4's copy rather than clearing it: the books coming to rest are that
 line's payoff, not a separate thought.
+
+**The opening is a run, not a still.** Segment 0 travels from the first encoded frame to
+the first beat, exactly as every later segment travels from the previous beat to its own.
+It plays if — and only if — the encoder put frames in front of the first beat; where a
+sequence starts *on* its first beat the travel is zero and the opening degenerates to a
+still hold, with no special case anywhere in the code. This section's sequence opens at
+frame 92, so the fall onto the desks is the first thing the visitor scrubs.
 
 ---
 
@@ -79,49 +86,64 @@ link back to the render is the point.
 
 | Cut | Suffix | Beats | Moves | Who gets it |
 |---|---|---|---|---|
-| Full plate | *(none)* | 2048 × 1432 | 896 × 626 | Desktop stage (≥ 992px) |
-| Crop | `m` | 1147 × 888 | 512 × 396 | Mobile band (≤ 991px) |
+| Full plate | *(none)* | 2048 × 1432 | 1600 × 1119 | Desktop stage (≥ 992px) |
+| Crop | `m` | 1147 × 888 | 768 × 595 | Mobile band (≤ 991px) |
 
 Squarish desktop windows fetch **neither** — they take the static fallback, see §5.
 
-**Which frames exist.** The six beats, plus every 5th frame from 167 to 672 — **105 frames**,
-210 files. Beats are fixed by the render; the in-between list is whatever the encoder made.
+**Which frames exist.** The six beats, plus every 5th frame from 92 to 672 — **120 frames**,
+240 files. Beats are fixed by the render; the in-between list is whatever the encoder made.
 Nothing in the page hard-codes it: `manifest.json` is written by the encoder and read at
 runtime, so the page cannot ask for a frame that was never produced.
 
+The stride grid is **anchored on the first beat and grown outward in both directions**, not
+counted up from the first frame. Both give the same spacing, but counting up from the start
+renumbers every file the moment the in-point moves.
+
 ```jsonc
 {
-  "frames": [167, 172, 177, …, 672],   // every frame that exists, ascending
+  "frames": [92, 97, 102, …, 672],     // every frame that exists, ascending
   "beats":  [167, 235, 353, 477, 598, 672],
   "stem": "ap", "pad": 4, "ext": "webp",
   // w/h are a *beat* frame; moveW/moveH are a move frame. Both are needed — the page
-  // budgets decoded memory per frame, and the two differ by 5x. See 6.8.
+  // budgets decoded memory per frame, and a beat costs 1.6x a move on the full cut and
+  // 2.2x on the crop. See 6.8.
   "cuts": {
-    "":  {"w":2048,"h":1432,"moveW":896,"moveH":626},
-    "m": {"w":1147,"h":888, "moveW":512,"moveH":396}
+    "":  {"w":2048,"h":1432,"moveW":1600,"moveH":1119},
+    "m": {"w":1147,"h":888, "moveW":768, "moveH":595}
   },
   "crop": {"left":426,"top":0,"width":1147,"height":888}
 }
 ```
 
 **Encoding.** Beats and moves are encoded differently *on purpose*, and this is what keeps a
-105-frame sequence affordable:
+120-frame sequence affordable:
 
 | | Source | Size | Quality | Alpha quality |
 |---|---|---|---|---|
 | **Beats** (6) | lossless 16-bit PNG | native | 82 / 80 | **100** |
-| **Moves** (99) | q90 WebP archive | 896 / 512 wide | 70 | **70** |
+| **Moves** (114) | q90 WebP archive | 1600 / 768 wide | 70 | **70** |
 
 The beats are what a visitor actually dwells on — they sit motionless under copy for a
 screenful of scrolling — so they take no second lossy generation and no downscale. The moves
 are only ever seen in passing.
 
-**What that costs**, for the whole 105-frame sequence:
+> **Do not economise on the move size the way this first did.** Moves went out at 896 / 512,
+> which is 44% of the beat's linear resolution rendered into the *same box on screen*. The
+> section then snapped between a sharp hold and a soft move at every beat, and because that
+> lands on the transition it reads as a property of the motion rather than of the file.
+> Against the 2048 master a move costs 23/31/35/42/47 KB at 896/1152/1280/1440/1600 wide, and
+> the difference from native closes around 1600 while 2048 doubles the decoded cost for a
+> difference that needs a crop tool to see. The mobile figure is lower on purpose: the band
+> renders about 390 CSS pixels wide, so 768 is 1:1 on a 2x phone, and bandwidth is scarcest
+> on the device with the smallest picture.
+
+**What that costs**, for the whole 120-frame sequence:
 
 | Cut | Beats | Moves | Total |
 |---|---|---|---|
-| Full plate | 675 KB (6) | 2.36 MB (99, ~24 KB each) | **3.02 MB** |
-| Crop (`m`) | 373 KB (6) | 1.99 MB (99, ~21 KB each) | **2.36 MB** |
+| Full plate | 675 KB (6) | 5.48 MB (114, ~49 KB each) | **6.14 MB** |
+| Crop (`m`) | 373 KB (6) | 3.65 MB (114, ~33 KB each) | **4.01 MB** |
 
 A browser fetches **one cut, never both**, and only once the section is within **1.25
 viewport heights** — so this is not page-load weight. It streams in during the scroll,
@@ -133,8 +155,9 @@ stage.
 > is "start loading when the section's top is within `near` × viewport heights". If whatever
 > precedes the section is taller than that, the gate is satisfied while the page is still at
 > rest and there is no laziness at all. This is not hypothetical: the hero above it grew to
-> 290vh, and with the old default of 3 a phone fetched **2.4 MB of frames before the visitor
-> had scrolled a pixel**. If you change the page order or the hero's height, re-measure.
+> 290vh, and with the old default of 3 a phone fetched **the entire sequence before the
+> visitor had scrolled a pixel** — 2.4 MB at the time, 4.0 MB at today's encode. If you
+> change the page order or the hero's height, re-measure.
 
 > **Alpha is where the bytes are, not colour.** In a move frame the colour costs ~14 KB and
 > the alpha channel ~24 KB, because these plates are mostly transparent and WebP stores alpha
@@ -146,7 +169,7 @@ stage.
 
 **The frames are RGBA and must stay RGBA.** They composite over the page colour. Flattening
 them onto a background would cut ~60% of the bytes and would also weld one page colour into
-210 files — don't, unless the section will never be re-themed.
+240 files — don't, unless the section will never be re-themed.
 
 ---
 
@@ -161,50 +184,90 @@ progress = (pin − sectionTop) / (sectionHeight − stageHeight)
 `sectionTop` is the section's `getBoundingClientRect().top`; `pin` is where the stage sticks.
 The denominator is the distance the page travels while the stage is pinned.
 
-**Progress is split into 6 segments**, one per beat, by a fixed table:
+**Progress is split into 6 segments**, one per beat, and the split is *computed from the
+frame list*, not tabulated. `plot()` runs once when the manifest lands.
+
+Each segment is a **move** followed by a **hold**. The move's share of the scroll is
+proportional to the number of render frames it covers, so the sequence plays at one rate
+from top to bottom. The holds are fixed weights, because a hold is for reading and reading
+does not take longer on a longer beat:
 
 ```
-lead = 0.128    tail = 0.103    span = (1 − lead − tail) / 4 = 0.19225
+travel[k]  = frames this segment crosses     // seg 0: FRAMES[0]→BEATS[0]; else BEATS[k−1]→BEATS[k]
+moveTotal  = 0.53                            // share of the whole scroll spent moving
+holdW      = [1.05, 1, 1, 1, 1, 0.7]         // opening settle, four reading holds, coda
+unit       = (1 − moveTotal) / Σ holdW
+rate       = moveTotal / Σ travel
 
-bounds = [0, 0.128, 0.32025, 0.5125, 0.70475, 0.897, 1]
-          └op─┘ └─1──┘ └──2──┘ └──3──┘ └──4──┘ └coda┘
+move[k]    = rate × travel[k]                // this segment's move, as a share of the scroll
+hold[k]    = unit × holdW[k]
+bounds     = running sum of (move[k] + hold[k]), starting at 0 and ending exactly at 1
+moves[k]   = move[k] / (move[k] + hold[k])   // the fraction of THIS segment that is the move
 ```
 
-The opening and the coda are deliberately shorter than the four beats that carry copy; those
-four get exactly equal weight so no step reads as more important than another.
-
-**Within a segment**, local position `t` runs 0→1, and it splits into move and hold:
+With the sequence that ships — travel `[75, 68, 118, 124, 121, 74]`, summing to 580 render
+frames — that comes out as:
 
 ```
-MOVE = 0.42          // first 42% of a segment is the move, the rest is the hold
-frame = B[seg−1] + (B[seg] − B[seg−1]) · smoothstep(t / MOVE)
+bounds = [0, 0.1544, 0.2982, 0.4878, 0.6829, 0.8752, 1]
+          └op──┘ └──1──┘ └──2──┘ └──3──┘ └──4──┘ └coda┘
+moves  = [0.444, 0.432, 0.569, 0.581, 0.575, 0.542]
+```
+
+**Do not re-tabulate those two arrays.** They are outputs. Change the frame list and they
+change; hard-code them and the scrub desynchronises from the frames in a way that looks like
+an easing bug.
+
+> **Why proportional, and not equal segments with a fixed move fraction.** That is what this
+> replaced, and it does not survive contact with the frame list. The beats are 68, 118, 124,
+> 121 and 74 frames apart while the coda was the *shortest* segment, so the last move ran at
+> **twice the rate of the first** and the piece visibly sped up beat by beat — worst exactly
+> where the books land on the arch and there is most to see. Two thirds of the section was
+> a frozen frame. Rate is the thing that has to be constant; the spans follow from it.
+
+**Within a segment**, local position `t` runs 0→1:
+
+```
+mv    = moves[seg]
+from  = seg == 0 ? FRAMES[0] : B[seg−1]
+frame = from + (B[seg] − from) · smoothstep(t / mv)
 ```
 
 `smoothstep(x) = x²(3−2x)`, clamped — so the move eases in and out rather than starting and
-stopping abruptly. Past `t = MOVE` the expression saturates and the frame is **exactly** the
+stopping abruptly. Past `t = mv` the expression saturates and the frame is **exactly** the
 beat frame: the hold is genuinely still, not nearly still.
 
-`MOVE` is not a constant of taste. With only the six beat frames encoded, a "move" is a
-dissolve between two camera angles 6.667° apart, which ghosts — so the code shortens it to
-**0.14** automatically when `frames.length === beats.length`. With the in-between frames
-present it is a real scrub and gets **0.42**. If you ever ship a beats-only build, this is
-why it still looks deliberate.
+`moveTotal` is not a constant of taste, and it is settable as the `move` attribute. With only
+the six beat frames encoded, a "move" is a dissolve between two camera angles 6.667° apart,
+which ghosts — so the code drops it to **0.12** automatically when
+`frames.length === beats.length`. With the in-between frames present it is a real scrub and
+gets **0.53**. If you ever ship a beats-only build, this is why it still looks deliberate.
+
+> **`move` is a share of the *whole scroll*, not of a beat.** It was the latter, with a
+> default of 0.42. A value carried over from the old meaning will not fail loudly — it will
+> just play the whole section at roughly half speed.
 
 **Copy timing**, in the same local `t`:
 
 | | |
 |---|---|
-| fades in | `smoothstep((t − MOVE) / 0.14)` — i.e. starting the instant the move ends |
+| fades in | `smoothstep((t − mv) / fade)` where `fade = min(0.14, (1 − mv) × 0.4)` — i.e. starting the instant *this segment's* move ends |
 | fades out | over the last 8% of its segment (the last beat instead holds through the coda) |
 | clickable | only while opacity > 0.4 |
+
+The cap on `fade` is what keeps a long `move` from stranding copy part-way up: the rise is
+never allowed to want more room than the hold has.
 
 **Picking the image.** The wanted frame is rarely one that exists, so two are drawn: the
 nearest existing frame at or below, and the next one up, cross-faded by the fractional part.
 
-**The tick jump is the inverse.** Clicking tick *n* scrolls to `bounds[n+1] + 0.6 × segment`
-— past the move, onto the hold, where the picture is still and the copy is up. It reads the
-same `pin` and the same span as `progress()` does. **If those two ever disagree, ticks land
-on the wrong beat**, so they must stay inverses of each other.
+**The tick jump is the inverse.** Clicking tick *n* scrolls to
+`bounds[n+1] + (mv + (1 − mv) / 2) × segment` — halfway into that segment's *hold*, where the
+picture is still and the copy is up. It reads the same `pin` and the same span as
+`progress()` does. **If those two ever disagree, ticks land on the wrong beat**, so they must
+stay inverses of each other. A fixed fraction of the segment will not do it any more: the
+segments are no longer the same length or the same shape, and 0.6 — which was right when
+every move was 0.42 — now lands mid-move on the longer beats.
 
 ---
 
@@ -239,9 +302,15 @@ Three states, and the third is the one people get wrong.
 
 | State | When | Shape |
 |---|---|---|
-| **Desktop stage** | ≥ 992px **and** wider than 5:4 | Full-bleed pinned stage, 880vh budget, copy overlaid in the lower corners |
-| **Mobile band** | ≤ 991px | Pinned band at the crop's aspect, 520svh budget, copy and ticks stacked underneath on the page |
+| **Desktop stage** | ≥ 992px **and** wider than 5:4 | Full-bleed pinned stage, 1000vh budget, copy overlaid in the lower corners |
+| **Mobile band** | ≤ 991px | Pinned band at the crop's aspect, 600svh budget, copy and ticks stacked underneath on the page |
 | **Static stills** | (≥ 992px **and** squarer than 5:4) **or** `prefers-reduced-motion: reduce` | The element is `display: none`; a stacked grid of the four beat plates shows instead |
+
+> **The height and the frame count are one setting in two files.** The height *is* the scroll
+> budget, and §3 divides that budget among the moves in proportion to the frames each covers
+> — so encoding more frames without raising the height plays the whole section faster, and
+> nothing warns you. The 1000vh/600svh above pays for 580 render frames at about 7.5px per
+> frame on a 1440×900 desktop. Change one, recompute the other.
 
 The squarish-desktop case is not a nicety. The desktop presentation hangs a full-width 1.43
 plate from the top of a full-height stage, so a portrait or square *desktop* window — a
@@ -357,8 +426,8 @@ otherwise get a canvas claiming to hold a frame it does not have.
 ### 6.8 The resident set is ranked and paid for, not windowed
 
 A frame decodes to `width × height × 4` bytes however small the WebP is on disk — **11.2 MiB**
-for a full-cut beat, **2.1 MiB** for a full-cut move. All 105 resident at once is several
-hundred megabytes, so the component holds a subset and closes the rest.
+for a full-cut beat, **6.8 MiB** for a full-cut move (3.9 and 1.7 on the crop). All 120
+resident at once is **846 MiB**, so the component holds a subset and closes the rest.
 
 The way it picks that subset matters more than it looks. Every frame is ranked by distance
 from the current position — biased forward, because reading is a downward act, and beats
@@ -380,6 +449,16 @@ Two consequences worth keeping if this is rewritten:
   frame's own dimensions, raising the encode resolution shrinks the resident set on its own
   instead of silently multiplying memory.
 
+**A small resident set is not automatically a problem, and the way to find out is to
+measure.** At the default 96 MB the full cut now holds **12 frames** — the six beats alone
+are 67 MiB of the budget — which is fewer than the 14–24 encoded frames a single move
+crosses. That sounds like it should stutter and does not: scrubbing the whole section at
+1000 px/s, the exact frame the scrub asked for was resident on **100% of ticks**, with no
+substitution from `nearest()`. Decoding runs off-thread and the loader stays ahead of a
+reading scroll; the window is insurance against re-scrubbing, not the thing that keeps up.
+Instrument `paint()` and count the misses before raising `budget-mb` — the number that
+matters is substitutions, not resident frames.
+
 ---
 
 ## 7. Traps
@@ -392,13 +471,13 @@ script. Lift that markup into a new stack without the sweeper and **the fallback
 invisible** — no error, no clue. This is the single most likely silent failure in a port.
 
 **7.2 Loading is gated on `offsetHeight`, deliberately.** A `display: none` element has no
-`offsetHeight`, which is what stops the component fetching 210 files under reduced motion.
+`offsetHeight`, which is what stops the component fetching 240 files under reduced motion.
 If you replace `display: none` with `visibility: hidden` or `opacity: 0`, **the section
 starts downloading the whole sequence for people who asked for no motion.**
 
 **7.3 Frames are addressed by string concatenation, so no build tool can see them.** There is
 no literal `ap0353.webp` anywhere in the markup. Asset pipelines that rewrite or fingerprint
-URLs by scanning HTML will miss all 210 files and ship a page that 404s mid-scroll. This is
+URLs by scanning HTML will miss all 240 files and ship a page that 404s mid-scroll. This is
 why the repo's build verifier reads `manifest.json` and checks the cross product of every
 frame against every cut on disk — reproduce that check in whatever pipeline replaces it.
 
@@ -426,7 +505,7 @@ it.
   `opacity` / `transform` on nodes the page authored.
 - **The picture carries one `role="img"` and a describing `aria-label`** on the camera element;
   both canvases are `aria-hidden`. A screen reader gets one description of the artwork, not
-  105 frames of nothing.
+  120 frames of nothing.
 - **Ticks are real `<button>`s** in a delegated click handler, keyboard-focusable, and
   **44px minimum touch target** on mobile (`min-height: 2.75rem`).
 - **Copy is `pointer-events: none` while faded out**, so invisible text is never a click
