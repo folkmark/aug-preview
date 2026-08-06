@@ -60,28 +60,6 @@
   var smooth = function (t) { var c = clamp01(t); return c * c * (3 - 2 * c); };
   var pad4 = function (n) { return String(n).padStart(4, '0'); };
 
-  // The scrub's own easing, and it is not smoothstep. Smoothstep's slope peaks at 1.5x
-  // its average halfway through, so the middle of every move — the part with the most
-  // to look at, and the part the eye is actually tracking — runs half again as fast as
-  // the number the whole thing was paced to. Averages are not what a viewer perceives;
-  // the fastest moment is.
-  //
-  // This ramps velocity up over the first RAMP of the move, holds it flat, and ramps it
-  // down over the last RAMP: constant speed through the middle, with the ends still
-  // eased so nothing starts or stops abruptly. Peak is 1/(1 - RAMP) = 1.28x average
-  // rather than 1.5x. The ramps are themselves smoothstepped, so acceleration is
-  // continuous and there is no corner where the flat part begins.
-  //
-  // Copy fades and the camera keep plain smoothstep — they are opacity and scale, where
-  // nobody is tracking a moving object and the softer curve is the better one.
-  var RAMP = 0.22;
-  var glide = function (t) {
-    var c = clamp01(t), r = RAMP, area = 1 - r, x;
-    if (c < r) { x = c / r; return r * (x * x * x - x * x * x * x / 2) / area; }
-    if (c > 1 - r) { x = (1 - c) / r; return 1 - r * (x * x * x - x * x * x * x / 2) / area; }
-    return (r * 0.5 + (c - r)) / area;
-  };
-
   // Four in flight keeps the window filling faster than a scroll can outrun it without
   // making the whole machine slow.
   var MAX_INFLIGHT = 4;
@@ -253,15 +231,11 @@
       }
 
       // The motion's share of the whole scroll. With the in-between frames encoded a
-      // move is a real scrub and is worth well over half the section; with only the
+      // move is a real scrub and is worth better than half the section; with only the
       // resting frames it is a dissolve between two camera angles and ghosts, so it is
       // kept brief. A sequence with nothing to travel spends everything on holds.
-      //
-      // This is only half of how fast the piece plays — the other half is the section's
-      // height, which is the budget being shared out. Raising this share without raising
-      // the height buys motion out of reading time; the two are meant to move together.
       var moveTotal = this.moveAttr !== null ? parseFloat(this.moveAttr)
-        : (this.N > B.length ? 0.60 : 0.12);
+        : (this.N > B.length ? 0.53 : 0.12);
       if (!sum) moveTotal = 0;
 
       var wSum = LEAD_W + Math.max(0, K - 1) * HOLD_W + TAIL_W;
@@ -445,7 +419,7 @@
         // frames in front of the first beat and rests on it when there are not.
         var B = this.BEATS, mv = this.moves[seg] || 0;
         var from = seg === 0 ? this.FRAMES[0] : B[seg - 1];
-        var want = mv > 0 ? from + (B[seg] - from) * glide(t / mv) : B[seg];
+        var want = mv > 0 ? from + (B[seg] - from) * smooth(t / mv) : B[seg];
         var idx = 0;
         while (idx < this.N - 1 && this.FRAMES[idx + 1] <= want) idx++;
         var j = Math.min(idx + 1, this.N - 1);
