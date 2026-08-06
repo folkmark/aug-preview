@@ -1,0 +1,464 @@
+/* <approach-scrub> — a scroll-scrubbed sequence of alpha plates with copy synced to it.
+
+   Dependency-free and host-agnostic on purpose: no framework, no build step, no
+   bundler, and no assumption about where it is mounted. It drives markup it does not
+   build — every node it touches is authored in the page — so a framework that
+   re-renders around it has nothing of ours to reconcile away, and the copy is real
+   text in the document whether or not this file ever runs. Dropping this into another
+   CMS is this file, approach.css, the frame directory, and the markup below.
+
+   Markup contract (all of it required; see assets/approach.css):
+
+     <approach-scrub base="path/to/approach/">
+       <div data-arch-stage>
+         <div data-arch-box>
+           <div data-arch-cam>
+             <canvas data-arch-layer="0"></canvas>
+             <canvas data-arch-layer="1"></canvas>     <- plus-lighter, see below
+           </div>
+           <div data-arch-scrim aria-hidden="true"></div>
+         </div>
+         <div data-arch-ticks>
+           <button data-arch-tick="0">…</button>       <- one per copy beat, in order
+         </div>
+         <div data-arch-beats>
+           <div data-arch-copy="0">…</div>             <- same count, same order
+         </div>
+       </div>
+     </approach-scrub>
+
+   Frame URLs are base + "ap<0000><cut>.webp", where cut is "" for the full plate and
+   "m" for the tighter crop phones scrub. Which cut is loaded is read from the
+   --arch-variant custom property in approach.css, so the breakpoint that sizes the
+   band is also the one that picks the file and there is no second copy of it here to
+   drift. The frame list and both cuts' dimensions come from manifest.json beside the
+   frames; the encoder writes it, so the page cannot promise a frame that was not made.
+
+   The section's own height is the scroll budget. The stage pins inside it, and the
+   sticky offset is read off the stage's computed `top` rather than measured from a
+   page header — CSS and JS then agree by construction, and a host whose header is a
+   different height, or absent, or overlaid by an admin bar, needs no code change.
+
+   Two canvases, not one. They hold the frames either side of the current position and
+   are cross-faded by CSS opacity under `mix-blend-mode: plus-lighter` over an
+   `isolation: isolate` group. Drawing both into a single context at partial alpha
+   squares the outgoing frame's contribution, so everything the two frames share — here
+   both desks, most of the picture — sags to three-quarters opacity halfway through
+   every transition. plus-lighter adds to exactly the frame in between.
+
+   Attributes, all optional except base:
+     base        URL prefix ending in "/"                    (required)
+     manifest    manifest URL                     (base + "manifest.json")
+     budget-mb   resident decoded-bitmap ceiling             (96)
+     move        fraction of a beat spent moving       (from frame density)
+     near        viewport-heights of lead before loading     (3)
+*/
+(function () {
+  if (!window.customElements || customElements.get('approach-scrub')) return;
+
+  var clamp01 = function (v) { return v < 0 ? 0 : v > 1 ? 1 : v; };
+  var smooth = function (t) { var c = clamp01(t); return c * c * (3 - 2 * c); };
+  var pad4 = function (n) { return String(n).padStart(4, '0'); };
+
+  // Four in flight keeps the window filling faster than a scroll can outrun it without
+  // making the whole machine slow.
+  var MAX_INFLIGHT = 4;
+  var IDLE_FRAMES = 6;
+
+  function num(el, name, dflt) {
+    var v = parseFloat(el.getAttribute(name));
+    return isFinite(v) ? v : dflt;
+  }
+
+  class ApproachScrub extends HTMLElement {
+    connectedCallback() { if (!this._booted) this.boot(); }
+
+    // Boot waits for the markup contract to actually be satisfied, and is not a
+    // one-shot. A host framework may insert this element and only then fill it, so
+    // giving up on an empty element would leave the section a dead pane for the rest
+    // of the session. If the parts are missing, watch for them instead.
+    boot() {
+      if (this._booted) return;
+      var stage = this.querySelector('[data-arch-stage]');
+      var cam = this.querySelector('[data-arch-cam]');
+      var l0 = this.querySelector('[data-arch-layer="0"]');
+      var l1 = this.querySelector('[data-arch-layer="1"]');
+      if (!stage || !cam || !l0 || !l1) {
+        if (!this.mo) {
+          this.mo = new MutationObserver(this.boot.bind(this));
+          this.mo.observe(this, { childList: true, subtree: true });
+        }
+        return;
+      }
+      if (this.mo) { this.mo.disconnect(); this.mo = null; }
+      this._booted = true;
+
+      this.stage = stage; this.cam = cam; this.cvs = [l0, l1];
+      this.base = this.getAttribute('base') || '';
+      this.budget = num(this, 'budget-mb', 96) * 1048576;
+      this.near = num(this, 'near', 3);
+      this.moveAttr = this.getAttribute('move');
+
+      this.copies = [].slice.call(this.querySelectorAll('[data-arch-copy]'));
+      this.ticks = [].slice.call(this.querySelectorAll('[data-arch-tick]'));
+
+      // A full-page cache serialises the rendered DOM, tags and all. Left in place,
+      // the next visitor gets a canvas that claims to hold a frame it does not have
+      // and a section that stays blank until something forces a redraw. Clearing on
+      // boot is what makes this safe to cache; do not optimise it away.
+      this.cvs.forEach(function (cv) { delete cv.dataset.f; });
+      delete this.stage.dataset.archPin;
+
+      this.bits = [];
+      this.pend = [];
+      this.inflight = 0;
+      this.gen = 0;
+      this.head = 0;
+      this.drawn = -1;
+      this.p = -1;
+
+      this.mqMotion = matchMedia('(prefers-reduced-motion: reduce)');
+      this.onScroll = this.wake.bind(this);
+      this.onResize = this.resize.bind(this);
+      addEventListener('scroll', this.onScroll, { passive: true, capture: true });
+      addEventListener('resize', this.onResize, { passive: true });
+      addEventListener('orientationchange', this.onResize);
+      this.mqMotion.addEventListener('change', this.onResize);
+
+      // One delegated listener rather than a binding per button: the tick row is
+      // authored markup and a host may re-render it.
+      this.onTick = this.jump.bind(this);
+      var ticks = this.querySelector('[data-arch-ticks]');
+      if (ticks) ticks.addEventListener('click', this.onTick);
+
+      this.load();
+      this.wake();
+    }
+
+    disconnectedCallback() {
+      removeEventListener('scroll', this.onScroll, { capture: true });
+      removeEventListener('resize', this.onResize);
+      removeEventListener('orientationchange', this.onResize);
+      if (this.mqMotion) this.mqMotion.removeEventListener('change', this.onResize);
+      var ticks = this.querySelector('[data-arch-ticks]');
+      if (ticks && this.onTick) ticks.removeEventListener('click', this.onTick);
+      cancelAnimationFrame(this.raf);
+      this.evictAll();
+    }
+
+    // Which cut of the plate this layout wants. Read from the stylesheet rather than
+    // re-tested against innerWidth here: a second copy of the breakpoint is free to
+    // drift from the one that sizes the band, and a band cut to one aspect fed a plate
+    // of another is a silent, invisible bug. getComputedStyle works on a display:none
+    // element, so this is valid even where the section never renders.
+    variant() {
+      var v = getComputedStyle(this).getPropertyValue('--arch-variant').trim().replace(/["']/g, '');
+      return v === 'm' ? 'm' : '';
+    }
+
+    load() {
+      var self = this;
+      var url = this.getAttribute('manifest') || this.base + 'manifest.json';
+      fetch(url)
+        .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+        .then(function (m) {
+          self.FRAMES = m.frames || [];
+          self.BEATS = m.beats || [];
+          self.cuts = m.cuts || { '': m.master, m: m.crop };
+          self.N = self.FRAMES.length;
+          // A beat moves for its first stretch and is dead still for the rest. Copy
+          // lands on the still part, never on the move, so nothing is animating while
+          // there are words to read. How long the move gets depends on what there is
+          // to show: with only the resting frames encoded, a move is a dissolve
+          // between two camera angles and ghosts, so it is kept brief; with the
+          // in-between frames it is a real scrub and can breathe.
+          self.MOVE = self.moveAttr !== null ? parseFloat(self.moveAttr)
+            : (self.N > self.BEATS.length ? 0.42 : 0.14);
+          // One bound per beat plus the ends. The opening and the coda are shorter
+          // than the beats that carry copy, which get equal weight so no step reads as
+          // bigger than another.
+          var inner = self.BEATS.length - 1;
+          self.bounds = [0];
+          var lead = 0.128, tail = 0.103, span = (1 - lead - tail) / (inner - 1);
+          for (var i = 0; i < inner; i++) self.bounds.push(lead + i * span);
+          self.bounds.push(1);
+          self.wake();
+        })
+        .catch(function () { /* no manifest: the still markup is what shows */ });
+    }
+
+    // What one frame costs decoded, which is its pixel count times four however small the
+    // WebP is on disk. Beats and moves are encoded at different sizes, so they are
+    // budgeted at different sizes: on the full cut a beat is 11.2 MiB and a move 2.1, and
+    // charging every frame the beat's price would hold a fifth of what was paid for.
+    bytesFor(i) {
+      var c = (this.cuts && this.cuts[this.variant()]) || { w: 2048, h: 1432 };
+      if (this.isBeat(i) || !c.moveW) return c.w * c.h * 4;
+      return c.moveW * c.moveH * 4;
+    }
+
+    keep(i) { return !!(this.wanted && this.wanted.has(i)); }
+
+    isBeat(i) { return this.BEATS && this.BEATS.indexOf(this.FRAMES[i]) > -1; }
+
+    evictAll() {
+      if (!this.bits) return;
+      for (var i = 0; i < this.bits.length; i++) {
+        if (this.bits[i]) { this.bits[i].close(); this.bits[i] = null; }
+      }
+    }
+
+    // Chooses the resident set: rank every frame by how much it is worth holding, then
+    // spend the byte budget down that ranking and keep exactly what it paid for.
+    //
+    // The obvious cheaper version — derive a window as budget/frameSize and keep
+    // everything inside it — is what this replaces, and it does not hold. The beats were
+    // pinned on top of that window and two frames behind the head were kept as well, so
+    // the set actually resident was the window plus nine, and on the full cut, where a
+    // beat decodes to 11.2 MiB, a 96 MB budget held 190 MB. A ceiling that is added to is
+    // not a ceiling. Ranking and spending costs one sort of a hundred-odd entries per
+    // head move and makes the number mean what it says.
+    plan() {
+      if (!this.N || this.mqMotion.matches) return;
+
+      var head = this.head, i;
+      var rank = [];
+      for (i = 0; i < this.N; i++) {
+        // Distance from the head, biased forward because reading is a downward act, so a
+        // frame ahead is worth more than one the same distance behind. Beats are
+        // discounted hard rather than exempted: a hold rests on one, so it outranks every
+        // ordinary frame, but it still competes for the budget instead of escaping it.
+        var d = i - head;
+        var cost = (d >= 0 ? d : -d * 2.5) * (this.isBeat(i) ? 0.15 : 1);
+        rank.push([cost, i]);
+      }
+      rank.sort(function (a, b) { return a[0] - b[0]; });
+
+      // Always room for the frame under the playhead and its neighbour, whatever the
+      // budget says — a budget too small to draw with should degrade to stuttering, not
+      // to a blank stage.
+      var spent = 0, wanted = new Set();
+      for (var k = 0; k < rank.length; k++) {
+        i = rank[k][1];
+        var cost = this.bytesFor(i);
+        if (wanted.size >= 2 && spent + cost > this.budget) continue;
+        wanted.add(i);
+        spent += cost;
+      }
+      this.wanted = wanted;
+      this.win = wanted.size;
+      this.resident = spent;
+
+      // Evict first, so the requests below are issued against a truthful budget.
+      for (i = 0; i < this.N; i++) {
+        if (wanted.has(i) || !this.bits[i]) continue;
+        this.bits[i].close();
+        this.bits[i] = null;
+      }
+
+      // Fetch in the same ranking, so the nearest frames and the beats arrive first and
+      // every hold reads correctly even mid-download.
+      for (k = 0; k < rank.length && this.inflight < MAX_INFLIGHT; k++) {
+        i = rank[k][1];
+        if (!wanted.has(i) || this.bits[i] || this.pend[i]) continue;
+        this.request(i);
+      }
+    }
+
+    request(i) {
+      var self = this, gen = this.gen, cut = this.variant();
+      this.pend[i] = 1;
+      this.inflight++;
+      fetch(this.base + 'ap' + pad4(this.FRAMES[i]) + cut + '.webp')
+        .then(function (r) { return r.ok ? r.blob() : Promise.reject(r.status); })
+        // colorSpaceConversion none to match the encoder: these were written
+        // view-transformed sRGB with no ICC profile, so there is nothing to convert and
+        // a round trip here would apply a transfer function twice.
+        .then(function (b) { return createImageBitmap(b, { colorSpaceConversion: 'none' }); })
+        .then(function (bm) {
+          if (gen !== self.gen || cut !== self.variant() || !self.keep(i)) { bm.close(); return; }
+          self.bits[i] = bm;
+          self.wake();
+        })
+        .catch(function () { /* left empty on purpose: nearest() covers it */ })
+        .then(function () { self.pend[i] = 0; self.inflight--; if (gen === self.gen) self.plan(); });
+    }
+
+    // The nearest decoded frame at or before i, else the nearest after. A gap in the
+    // sequence shows the last frame that did arrive rather than clearing to nothing.
+    nearest(i) {
+      for (var d = 0; d < this.N; d++) {
+        if (i - d >= 0 && this.bits[i - d]) return i - d;
+        if (i + d < this.N && this.bits[i + d]) return i + d;
+      }
+      return -1;
+    }
+
+    resize() {
+      // A variant flip is a different picture at the same index, so everything held is
+      // wrong. Bump the generation to strand in-flight requests, drop the bitmaps, and
+      // let the canvases re-tag themselves.
+      var cut = this.variant();
+      if (cut !== this.cut) {
+        this.cut = cut;
+        this.gen++;
+        this.evictAll();
+        this.drawn = -1;
+        this.cvs.forEach(function (cv) { delete cv.dataset.f; });
+      }
+      this.p = -1;
+      this.wake();
+    }
+
+    // Where the stage pins, in pixels. Read off the stage's own sticky top so the
+    // number the JS uses and the number the CSS uses cannot disagree — and so a host
+    // with a taller header, no header, or a CMS admin bar needs no code change.
+    pin() {
+      var t = parseFloat(getComputedStyle(this.stage).top);
+      return isFinite(t) ? t : 0;
+    }
+
+    progress() {
+      var span = this.offsetHeight - this.stage.offsetHeight;
+      return clamp01((this.pin() - this.getBoundingClientRect().top) / (span || 1));
+    }
+
+    frame() {
+      if (!this.N || !this.offsetHeight) return false;
+
+      var p = this.progress();
+      var moved = p !== this.p;
+      this.p = p;
+
+      // Only pay for frames where the section actually renders, and only once it is
+      // near enough to be worth it. A display:none element has no offsetHeight, which
+      // is what suppresses loading under reduced motion and on the static fallback —
+      // one test rather than a media query that would have to be kept in step.
+      if (!this.mqMotion.matches &&
+          this.getBoundingClientRect().top <= (innerHeight || 800) * this.near) {
+        var b = this.bounds, seg = b.length - 2, i;
+        for (i = 0; i < b.length - 1; i++) { if (p < b[i + 1] || i === b.length - 2) { seg = i; break; } }
+        var t = clamp01((p - b[seg]) / ((b[seg + 1] - b[seg]) || 1));
+
+        // Segment 0 rests on the opening frame; every later one travels from the
+        // previous beat's frame to its own over the move, then holds.
+        var B = this.BEATS;
+        var want = seg === 0 ? B[0] : B[seg - 1] + (B[seg] - B[seg - 1]) * smooth(t / this.MOVE);
+        var idx = 0;
+        while (idx < this.N - 1 && this.FRAMES[idx + 1] <= want) idx++;
+        var j = Math.min(idx + 1, this.N - 1);
+        var mix = this.FRAMES[j] > this.FRAMES[idx]
+          ? (want - this.FRAMES[idx]) / (this.FRAMES[j] - this.FRAMES[idx]) : 0;
+
+        if (idx !== this.head) { this.head = idx; this.plan(); }
+        else if (!this.win) this.plan();
+        this.paint(idx, j, mix);
+        this.chrome(seg, t);
+      }
+
+      this.camera(p);
+      return moved;
+    }
+
+    paint(i, j, mix) {
+      var lower = this.put(0, i), upper = this.put(1, j);
+      var haveUpper = !!this.bits[j];
+      if (lower) lower.style.opacity = (haveUpper ? 1 - mix : 1).toFixed(3);
+      if (upper) upper.style.opacity = (haveUpper ? mix : 0).toFixed(3);
+    }
+
+    put(n, k) {
+      var cv = this.cvs[n];
+      if (!cv) return null;
+      var use = this.bits[k] ? k : this.nearest(k);
+      var bm = use < 0 ? null : this.bits[use];
+      if (!bm) return cv;
+      // The drawn frame is recorded on the element, never on this instance: a host
+      // framework can replace the canvas between ticks, and an instance-held index
+      // would then read "already drawn" against a fresh blank element and leave the
+      // layer empty for the rest of the session. The tag carries the cut too, because
+      // the same index is a different picture in the mobile crop.
+      var tag = this.cut + ':' + use;
+      if (cv.dataset.f === tag) return cv;
+      // Backing store is the source frame's size, not the display box times a device
+      // pixel ratio: it therefore changes only when the cut does, which changes the tag
+      // in the same breath, so the clear that assigning width performs can never
+      // strand a stale tag and blank the layer.
+      if (cv.width !== bm.width) { cv.width = bm.width; cv.height = bm.height; }
+      var ctx = cv.getContext('2d');
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      ctx.drawImage(bm, 0, 0);
+      cv.dataset.f = tag;
+      return cv;
+    }
+
+    // Camera. The plate hangs from the top of the box at its own aspect, so at scale 1
+    // it fills the width and the overflow that gets clipped is the desk legs. The
+    // opening pulls back far enough to hold the whole plate, the piece pushes in to
+    // full bleed, and a hair of creep continues the whole way down so a frozen frame is
+    // never a dead frame. Origin is the top edge — that is what keeps the two books
+    // that come to rest on the arch inside the frame, since content reaches within 1.3%
+    // of the plate's top there and any other anchor decapitates it.
+    //
+    // The box is the frame the plate is fitted into: the whole stage on a wide screen,
+    // a band on a phone. Measuring the box rather than the stage is what lets one
+    // camera serve both — on a phone the band is cut to the same aspect as the plate it
+    // holds, so the fit works out to 1 and the formula reports "already fits" rather
+    // than needing a special case.
+    camera(p) {
+      var box = this.querySelector('[data-arch-box]') || this.stage;
+      var c = (this.cuts && this.cuts[this.variant()]) || { w: 2048, h: 1432 };
+      var fit = Math.min(1, (c.w / c.h) * box.clientHeight / (box.clientWidth || 1));
+      var open = smooth(p / 0.24);
+      var sc = fit + (1 - fit) * open + 0.028 * p;
+      this.cam.style.transform = 'translateY(' + (1.2 * open).toFixed(2) + '%) scale(' + sc.toFixed(4) + ')';
+    }
+
+    // Copy blocks belong to segments 1..n. The opening carries none, and the coda holds
+    // the last line rather than clearing it: the books coming to rest on the arch are
+    // that line's payoff, not a separate thought.
+    chrome(seg, t) {
+      var last = this.copies.length - 1, coda = this.bounds.length - 2;
+      for (var i = 0; i < this.copies.length; i++) {
+        var own = seg === i + 1, held = i === last && seg === coda;
+        var o = 0;
+        if (own) o = smooth((t - this.MOVE) / 0.14) * (i === last ? 1 : 1 - smooth((t - 0.92) / 0.08));
+        else if (held) o = 1 - smooth((t - 0.86) / 0.14);
+        o = clamp01(o);
+        var el = this.copies[i];
+        el.style.opacity = o.toFixed(3);
+        el.style.transform = 'translateY(' + (8 * (1 - o)).toFixed(2) + 'px)';
+        el.style.pointerEvents = o > 0.4 ? 'auto' : 'none';
+        if (this.ticks[i]) this.ticks[i].style.opacity = (own || held) ? '1' : '0.4';
+      }
+    }
+
+    // Land past the move, on the hold, where the frame is still and the copy is up.
+    // This is the inverse of progress(): if the two ever disagree a tick lands on the
+    // wrong beat, so they read the same pin and the same span.
+    jump(e) {
+      var btn = e.target && e.target.closest ? e.target.closest('[data-arch-tick]') : null;
+      if (!btn || !this.bounds) return;
+      var seg = parseInt(btn.dataset.archTick, 10) + 1;
+      var b = this.bounds;
+      if (!(seg > 0 && seg < b.length - 1)) return;
+      var at = b[seg] + (b[seg + 1] - b[seg]) * 0.6;
+      var span = this.offsetHeight - this.stage.offsetHeight;
+      scrollTo({ top: this.getBoundingClientRect().top + scrollY - this.pin() + at * span, behavior: 'smooth' });
+    }
+
+    wake() {
+      this.idle = 0;
+      if (this.raf) return;
+      this.raf = requestAnimationFrame(this.tick.bind(this));
+    }
+
+    tick() {
+      this.raf = 0;
+      this.idle = this.frame() ? 0 : this.idle + 1;
+      if (this.idle < IDLE_FRAMES) this.raf = requestAnimationFrame(this.tick.bind(this));
+    }
+  }
+
+  customElements.define('approach-scrub', ApproachScrub);
+})();
