@@ -5,7 +5,7 @@ so it can be rebuilt in another stack without reading the original source. Every
 is read from the files that ship — `assets/approach.js`, `assets/approach.css`,
 `assets/approach/manifest.json`, `tools/encode-approach.mjs` — not estimated.
 
-**Read this with `project/scratch/approach-render-map.md`.** That document maps Blender frame
+**Read this with [`docs/approach-render-map.md`](../../docs/approach-render-map.md).** That document maps Blender frame
 numbers to the beats and messages they carry, and is the source of every frame number below.
 This one describes what the page does with them.
 
@@ -123,9 +123,18 @@ are only ever seen in passing.
 | Full plate | 675 KB (6) | 2.36 MB (99, ~24 KB each) | **3.02 MB** |
 | Crop (`m`) | 373 KB (6) | 1.99 MB (99, ~21 KB each) | **2.36 MB** |
 
-A browser fetches **one cut, never both**, and only once the section is within 3 viewport
-heights — so this is not page-load weight. It streams in during the scroll, beats first, so
-every hold reads correctly even mid-download.
+A browser fetches **one cut, never both**, and only once the section is within **1.25
+viewport heights** — so this is not page-load weight. It streams in during the scroll,
+beats first, so every hold reads correctly even mid-download; on a throttled 3G connection
+with a brisk scroll the first beat is an approximate neighbouring frame rather than a blank
+stage.
+
+> **That 1.25 is coupled to what sits above the section, and nothing enforces it.** The gate
+> is "start loading when the section's top is within `near` × viewport heights". If whatever
+> precedes the section is taller than that, the gate is satisfied while the page is still at
+> rest and there is no laziness at all. This is not hypothetical: the hero above it grew to
+> 290vh, and with the old default of 3 a phone fetched **2.4 MB of frames before the visitor
+> had scrolled a pixel**. If you change the page order or the hero's height, re-measure.
 
 > **Alpha is where the bytes are, not colour.** In a move frame the colour costs ~14 KB and
 > the alpha channel ~24 KB, because these plates are mostly transparent and WebP stores alpha

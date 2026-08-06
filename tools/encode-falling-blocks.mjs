@@ -24,7 +24,6 @@
 // these view-transformed 8-bit sRGB with no ICC profile, so there is nothing to
 // convert.
 
-import sharp from 'sharp';
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -32,6 +31,31 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = path.join(root, 'Falling Blocks');
 const OUT = path.join(root, 'assets/falling-blocks');
+
+// The masters are not in the repository — they are ~320 MB of 2560x3840 PNG that the
+// site never serves, and the encoded frames beside this tool are the shipped artefact.
+// Say so plainly rather than letting readdirSync throw an ENOENT that reads like a bug.
+if (!fs.existsSync(SRC)) {
+  console.error(`No masters at ${path.relative(root, SRC)}/
+
+The render plates are kept off the repository (see .gitignore). To re-encode, restore
+the "Falling Blocks" folder to the repository root so it contains:
+
+  Falling Blocks/FallingBlocks_Top/*.png
+  Falling Blocks/FallingBlocks_Bottom/*.png
+
+Nothing else needs it: assets/falling-blocks/ is committed, so the site builds and
+deploys without the masters present.`);
+  process.exit(1);
+}
+
+// Imported here rather than at the top so the missing-masters message above wins: sharp
+// is not a repo dependency, and a bare ERR_MODULE_NOT_FOUND is a worse first thing to
+// read than "restore the masters".
+const sharp = await import('sharp').then((m) => m.default).catch(() => {
+  console.error('sharp is not installed. Run:\n\n  npm i --no-save sharp\n');
+  process.exit(1);
+});
 
 // Source folder -> the layer name the page addresses it by.
 //
