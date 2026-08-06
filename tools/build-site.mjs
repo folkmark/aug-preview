@@ -125,9 +125,21 @@ function refsIn(html) {
   const out = new Set();
   for (const m of html.matchAll(/(?:src|href)="([^"]+)"/g)) out.add(m[1]);
   for (const m of html.matchAll(/<meta property="og:image" content="([^"]+)"/g)) out.add(m[1]);
-  // Frames the approach sequence builds by string concatenation, so no literal
-  // reference to them exists for the scan above to find.
-  for (const m of html.matchAll(/"((?:\.\.\/|\/)?[\w./-]*assets\/approach\/a)"/g)) out.add(m[1] + '000.webp');
+  // The approach frames are built by string concatenation from ARCH_FRAMES, so no
+  // literal reference to them exists for the scan above to find. Read the list off
+  // the page and check every frame in it: a sequence that ships half-encoded has to
+  // fail the build here rather than 404 in the browser. Both halves are required —
+  // a rename that leaves one behind checks nothing at all, silently.
+  const stem = html.match(/"((?:\.\.\/|\/)?[\w./-]*assets\/approach\/ap)"/);
+  const list = html.match(/ARCH_FRAMES\s*=\s*\[([\d,\s]*)\]/);
+  if (!stem || !list) {
+    problems.push('approach frame references are no longer readable — check the ARCH_FRAMES scan');
+  } else {
+    for (const n of list[1].split(',')) {
+      const f = n.trim();
+      if (f) out.add(stem[1] + f.padStart(4, '0') + '.webp');
+    }
+  }
   return [...out].filter(
     (r) =>
       r &&
