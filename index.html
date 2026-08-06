@@ -38,6 +38,8 @@
      degrades to the still <img> in its markup if this script never runs. -->
 <link rel="stylesheet" href="assets/falling-blocks.css">
 <script src="assets/falling-blocks.js" defer></script>
+<link rel="stylesheet" href="assets/approach.css">
+<script src="assets/approach.js" defer></script>
 <style>
   body { margin: 0; background: var(--surface-page); }
   /* The intrinsic width/height attributes are there to reserve the box before the
@@ -90,8 +92,6 @@
   [data-note] { position: absolute; inset: 0; opacity: 0; will-change: opacity; }
   [data-leader] { position: absolute; width: 1px; background: var(--color-neutral-darkest); opacity: 0.28; transform-origin: top center; transform: scaleY(0); }
   [data-dot] { position: absolute; width: 7px; height: 7px; border-radius: 100px; border: 1.5px solid var(--brand-accent); background: var(--surface-page); transform: translate(-50%, -50%); }
-  [data-arch-layer], [data-arch-copy] { will-change: opacity; }
-  [data-arch-tick]:hover { opacity: 0.7 !important; }
   /* The kit stage: the blocks hold still and selection changes which pieces a tool
      draws on. Structures are not faked in CSS — the cut-outs disagree on perspective,
      so assembly waits for renders of each arrangement built in 3D. */
@@ -136,63 +136,14 @@
      beneath it. The phone presentation is a band cut to its own aspect and has no
      such problem, which is why this is scoped to the width that uses the tall stage. */
   @media (min-width: 992px) and (max-aspect-ratio: 5/4) {
-    .hero-animated-rig { display: none !important; }
+    approach-scrub { display: none !important; }
     main .hero-static-block { display: grid !important; }
   }
-  [data-hero-static-mode="reduced"] .hero-animated-rig { display: none !important; }
+  /* The component hides itself under reduced motion — see assets/approach.css — so
+     only the stack it falls back to needs saying here. */
   [data-hero-static-mode="reduced"] .hero-static-block { display: grid !important; }
 
-  /* The phone gets the same act, cut to a band. The plate is 1.43 landscape, so a
-     full-height pinned stage on a 390x844 phone would spend a third of its height on
-     artwork and the rest on nothing — a band is the honest shape, with the copy under
-     it on the page rather than over it.
 
-     The sticky stage carries no viewport unit at all on mobile: it is auto-height, so
-     a retracting URL bar cannot reflow it. Only the rig's scroll budget is in svh, and
-     svh rather than dvh because dvh changes as the chrome hides, and arch() derives its
-     progress from rig.offsetHeight — a budget that moved mid-scroll would snap the
-     scrub. The plain-vh line before it is the fallback for engines without svh. */
-  .hero-animated-rig { height: 880vh; --arch-variant: ""; }
-  [data-arch-stage] { height: calc(100vh - 4.5rem); }
-  [data-arch-box] { position: absolute; inset: 0; overflow: hidden; }
-  [data-arch-cam] { aspect-ratio: 2048 / 1432; }
-  /* Styled here rather than inline so the mobile rules below can reach them — an
-     inline declaration outranks any stylesheet rule short of !important. */
-  [data-arch-beats] { position: absolute; left: 5%; bottom: clamp(3.5rem, 8vh, 6rem); width: min(30rem, 34vw); display: grid; }
-  [data-arch-ticks] { position: absolute; right: 5%; bottom: clamp(3.5rem, 8vh, 6rem); width: min(19rem, 24vw); display: grid; gap: 0.25rem; }
-  /* Page-coloured, not dark: the plates are alpha over cream, so this is invisible
-     wherever the frame is empty and only hazes the artwork where it is not. Two
-     corner wedges rather than one full-width band — the copy sits in the bottom
-     corners, and a band dense enough to carry it there would fog the arch. Sized by
-     measurement against short viewports, which scale the plate up until the dark
-     desk cubby lands behind the text. */
-  [data-arch-scrim] { position: absolute; inset: 0; pointer-events: none; opacity: 0.97;
-    background:
-      radial-gradient(ellipse 92% 118% at 0% 108%, var(--surface-page) 0%, var(--surface-page) 48%, transparent 78%),
-      radial-gradient(ellipse 92% 118% at 100% 108%, var(--surface-page) 0%, var(--surface-page) 48%, transparent 78%),
-      linear-gradient(0deg, var(--surface-page) 0%, transparent 26%); }
-
-  @media (max-width: 991px), (max-aspect-ratio: 5/4) {
-    .hero-animated-rig { height: 520vh; height: 520svh; --arch-variant: "m"; }
-    [data-arch-stage] { height: auto; padding-bottom: 1.25rem; }
-    [data-arch-box] { position: relative; inset: auto; width: 100%; aspect-ratio: 1147 / 888; }
-    [data-arch-cam] { height: 100%; aspect-ratio: auto; }
-    /* The copy is on the page now, not over the artwork, so the corner wedges have
-       nothing left to carry — all that remains is softening the cut leg stubs. */
-    [data-arch-scrim] { background: linear-gradient(0deg, var(--surface-page) 0%, transparent 15%); opacity: 1; }
-    [data-arch-ticks] { position: static; width: auto; display: flex; gap: 0.375rem; padding: 1.125rem 5% 0; }
-    [data-arch-tick] { flex: 1; justify-content: center; padding: 0.75rem 0 0.875rem !important; }
-    [data-arch-tick] > span:last-child { display: none; }
-    [data-arch-beats] { position: static; width: auto; padding: 1rem 5% 0; }
-    [data-arch-beats] h3 { font-size: var(--text-h4) !important; }
-  }
-  /* Only where the copy genuinely will not fit under the band: the claim carries the
-     beat and the elaboration steps aside. One source of copy, not a second mobile
-     set — taller phones still get the whole paragraph. */
-  @media (max-width: 991px) and (max-height: 700px), (max-aspect-ratio: 5/4) and (max-height: 700px) {
-    [data-arch-beats] h3 { font-size: var(--text-h5) !important; }
-    [data-arch-more] { display: none; }
-  }
   /* The header is sticky and 4.5rem tall, so the stage is a screen minus the header and
      the rig is that plus the pin. The difference between the two is the scroll budget
      the element measures, so 290 minus 100 is the 190svh over which the blocks rise —
@@ -209,7 +160,6 @@
      24px, and they get it from padding rather than from a bigger glyph. */
   @media (max-width: 991px) {
     [data-slot="button"] { min-height: 2.75rem !important; }
-    [data-arch-tick] { min-height: 2.75rem; }
     footer a, footer [data-slot="button"][data-variant^="link"] { display: inline-flex; align-items: center; min-height: 2.75rem; }
     /* The wordmark is a 168x33 link. min-height rather than a display change, so the
        header's own flex layout is left alone. */
@@ -372,18 +322,18 @@
          two books come to rest on the keystone thirteen thousandths of a plate-height
          from its top edge. Copy sits in the lower third, over the one band of the frame
          that is legs and cream in every frame. -->
-    <div class="hero-animated-rig" data-arch-rig="" style="position:relative">
-      <div data-arch-stage="" style="position:sticky;top:4.5rem">
+    <approach-scrub base="assets/approach/">
+      <div data-arch-stage="">
 
         <div data-arch-box="">
-        <div data-arch-cam="" role="img" aria-label="Two school desks, a gap between them, and a wooden arch assembled across it — the load then travelling down through every block" style="position:absolute;left:0;top:0;width:100%;transform-origin:50% 0%;isolation:isolate;will-change:transform">
+        <div data-arch-cam="" role="img" aria-label="Two school desks, a gap between them, and a wooden arch assembled across it — the load then travelling down through every block">
           <!-- Two layers cross-faded by CSS, not one canvas blended in JS: plus-lighter over
                an isolated group is an exact linear dissolve, where drawing both into a single
                canvas at partial alpha washes out everything the two frames share — here, both
                desks. isolation:isolate is load-bearing; without it plus-lighter blows out
                against the page. -->
-          <canvas data-arch-layer="0" aria-hidden="true" width="2048" height="1432" style="position:absolute;inset:0;width:100%;height:100%;display:block"></canvas>
-          <canvas data-arch-layer="1" aria-hidden="true" width="2048" height="1432" style="position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;mix-blend-mode:plus-lighter"></canvas>
+          <canvas data-arch-layer="0" aria-hidden="true" width="2048" height="1432"></canvas>
+          <canvas data-arch-layer="1" aria-hidden="true" width="2048" height="1432"></canvas>
         </div>
 
         <!-- Page-coloured, not dark: the plates are alpha over cream, so this is invisible
@@ -397,29 +347,29 @@
         </div>
 
         <div data-arch-ticks="">
-          <button data-arch-tick="0" type="button" onClick="{{ archJump }}" style="display:flex;align-items:baseline;gap:0.625rem;padding:0.75rem 0 0;border:0;border-top:1px solid var(--border-hairline);background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left;opacity:0.4;transition:opacity 200ms ease-in-out"><span style="font-weight:600;font-size:var(--text-tiny,0.75rem)">01</span><span style="font-weight:600;font-size:var(--text-small);letter-spacing:-0.01em">Define the role</span></button>
-          <button data-arch-tick="1" type="button" onClick="{{ archJump }}" style="display:flex;align-items:baseline;gap:0.625rem;padding:0.75rem 0 0;border:0;border-top:1px solid var(--border-hairline);background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left;opacity:0.4;transition:opacity 200ms ease-in-out"><span style="font-weight:600;font-size:var(--text-tiny,0.75rem)">02</span><span style="font-weight:600;font-size:var(--text-small);letter-spacing:-0.01em">Build the capabilities</span></button>
-          <button data-arch-tick="2" type="button" onClick="{{ archJump }}" style="display:flex;align-items:baseline;gap:0.625rem;padding:0.75rem 0 0;border:0;border-top:1px solid var(--border-hairline);background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left;opacity:0.4;transition:opacity 200ms ease-in-out"><span style="font-weight:600;font-size:var(--text-tiny,0.75rem)">03</span><span style="font-weight:600;font-size:var(--text-small);letter-spacing:-0.01em">Co-design the applications</span></button>
-          <button data-arch-tick="3" type="button" onClick="{{ archJump }}" style="display:flex;align-items:baseline;gap:0.625rem;padding:0.75rem 0 0;border:0;border-top:1px solid var(--border-hairline);background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left;opacity:0.4;transition:opacity 200ms ease-in-out"><span style="font-weight:600;font-size:var(--text-tiny,0.75rem)">04</span><span style="font-weight:600;font-size:var(--text-small);letter-spacing:-0.01em">Test, learn, begin again</span></button>
+          <button data-arch-tick="0" type="button"><span style="font-weight:600;font-size:var(--text-tiny,0.75rem)">01</span><span style="font-weight:600;font-size:var(--text-small);letter-spacing:-0.01em">Define the role</span></button>
+          <button data-arch-tick="1" type="button"><span style="font-weight:600;font-size:var(--text-tiny,0.75rem)">02</span><span style="font-weight:600;font-size:var(--text-small);letter-spacing:-0.01em">Build the capabilities</span></button>
+          <button data-arch-tick="2" type="button"><span style="font-weight:600;font-size:var(--text-tiny,0.75rem)">03</span><span style="font-weight:600;font-size:var(--text-small);letter-spacing:-0.01em">Co-design the applications</span></button>
+          <button data-arch-tick="3" type="button"><span style="font-weight:600;font-size:var(--text-tiny,0.75rem)">04</span><span style="font-weight:600;font-size:var(--text-small);letter-spacing:-0.01em">Test, learn, begin again</span></button>
         </div>
 
         <div data-arch-beats="" style="display:grid">
-          <div data-arch-copy="0" style="grid-area:1/1;opacity:0">
+          <div data-arch-copy="0">
             <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">01</p>
             <h3 style="font-size:min(var(--text-h3),5vh);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem;text-wrap:pretty">Define the role.</h3>
             <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">AI can play many distinct roles in a classroom, and each requires its own standards, evidence, and safeguards.<span data-arch-more=""> With each group of teachers and students, we identify a specific role AI could play to meet a real need — and what teachers uniquely bring alongside it.</span></p>
           </div>
-          <div data-arch-copy="1" style="grid-area:1/1;opacity:0">
+          <div data-arch-copy="1">
             <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">02</p>
             <h3 style="font-size:min(var(--text-h3),5vh);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem;text-wrap:pretty">Build the capabilities.</h3>
             <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Much of the technology needed for AI to play these roles well doesn’t exist off the shelf.<span data-arch-more=""> We build the missing layer between frontier AI models and classroom apps: validated capabilities that tools can build on.</span></p>
           </div>
-          <div data-arch-copy="2" style="grid-area:1/1;opacity:0">
+          <div data-arch-copy="2">
             <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">03</p>
             <h3 style="font-size:min(var(--text-h3),5vh);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem;text-wrap:pretty">Co-design the applications.</h3>
             <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Teachers, researchers, engineers, and designers build classroom tools on those capabilities, along with new ways of teaching alongside them.<span data-arch-more=""> Then they test the work where it counts: in real classrooms.</span></p>
           </div>
-          <div data-arch-copy="3" style="grid-area:1/1;opacity:0">
+          <div data-arch-copy="3">
             <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">04</p>
             <h3 style="font-size:min(var(--text-h3),5vh);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem;text-wrap:pretty">Test, learn, begin again.</h3>
             <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Classroom data tells us whether the role we chose and the capabilities we built actually helped.<span data-arch-more=""> Those lessons sharpen our hypotheses and inform the next turn of the cycle.</span></p>
@@ -427,7 +377,7 @@
         </div>
 
       </div>
-    </div>
+    </approach-scrub>
 
     <section style="padding:clamp(4rem,7vw,7rem) 5%">
       <div style="margin-inline:auto;max-width:80rem">
@@ -1268,190 +1218,16 @@ class Component extends DCLogic {
 
     this.reduced = REDUCED;
 
-    // The Approach act: the arch built across two desks, scrubbed by scroll.
-    // The section's clock is the Blender timeline, not an array index, so it
-    // survives the rest of the render landing — ARCH_BEATS is where each beat comes
-    // to rest and never changes, while ARCH_FRAMES is simply every frame that
-    // exists as a file. project/scratch/approach-render-map.md is the authority for
-    // both; keep ARCH_FRAMES on one line, the build verifier reads it from here.
-    this.ARCH_BEATS = [167, 235, 353, 477, 598, 672];
-    this.ARCH_FRAMES = [167, 235, 353, 477, 598, 672];
-    // One bound per beat plus the ends. The opening and the coda are shorter than
-    // the four that carry copy, which get equal weight so no step reads as bigger
-    // than another.
-    this.archBounds = [0, 0.128, 0.321, 0.513, 0.705, 0.897, 1];
-    // A beat moves for its first stretch and is dead still for the rest. Copy lands
-    // on the still part, never on the move, so nothing is animating while there are
-    // words to read. How long the move gets depends on what there is to show: the
-    // camera turns 6.667° between beats, so with only the resting frames in hand a
-    // move is a dissolve between two different angles and ghosts. Keep it brief until
-    // the in-between frames land and it becomes a real scrub that can breathe.
-    this.ARCH_MOVE = this.ARCH_FRAMES.length > this.ARCH_BEATS.length ? 0.42 : 0.14;
-    // The mobile band is a tighter frame cut from the same plate — see
-    // tools/encode-approach.mjs, which must agree with the aspect-ratio on
-    // [data-arch-box]. Keyed by variant suffix, "" being the full plate.
-    this.ARCH_CROP = { "": { w: 2048, h: 1432 }, m: { w: 1147, h: 888 } };
-    this.archImgs = {};
-    this.archLoading = {};
-
-    // Which cut of the plate this layout wants. Read from the stylesheet rather than
-    // re-tested against innerWidth here: a second copy of the breakpoint is free to
-    // drift from the one that sizes the band, and a band cut to 1147x888 fed the full
-    // 2048-wide plate is a silent, invisible bug. getComputedStyle works on a
-    // display:none element, so this is valid even where the rig never renders.
-    this.archVariant = () => {
-      const rig = document.querySelector("[data-arch-rig]");
-      if (!rig) return "";
-      const v = getComputedStyle(rig).getPropertyValue("--arch-variant").trim().replace(/["']/g, "");
-      return v === "m" ? "m" : "";
-    };
-
-    const pad4 = (n) => String(n).padStart(4, "0");
-    const loadFrame = (v, k) => new Promise((res) => {
-      const im = new Image();
-      im.onload = () => { this.archImgs[v][k] = im; this.archDraw(); res(); };
-      im.onerror = () => res();
-      im.src = "assets/approach/ap" + pad4(this.ARCH_FRAMES[k]) + v + ".webp";
-    });
-    // Resting frames first, so every beat reads correctly even mid-download and the
-    // moves between them fill in behind. The frames are only ever fetched where the
-    // stage actually renders: not under reduced motion, not where the layout falls
-    // back to the stacked stills, and not until the rig is near the viewport. The
-    // offsetHeight test covers the fallbacks on its own — CSS display:none is what
-    // hides the rig in both cases.
-    this.archPrime = () => {
-      if (this.reduced) return;
-      const rig = document.querySelector("[data-arch-rig]");
-      if (!rig || !rig.offsetHeight) return;
-      if (rig.getBoundingClientRect().top > (window.innerHeight || 800) * 3) return;
-      const v = this.archVariant();
-      if (this.archLoading[v]) return;
-      this.archLoading[v] = true;
-      this.archImgs[v] = this.archImgs[v] || new Array(this.ARCH_FRAMES.length);
-      const rest = [], between = [];
-      this.ARCH_FRAMES.forEach((f, k) => (this.ARCH_BEATS.indexOf(f) > -1 ? rest : between).push(k));
-      (async () => { for (const k of rest.concat(between)) await loadFrame(v, k); })();
-    };
-
-    // The dissolve is CSS, not arithmetic on one canvas: drawing two frames into a
-    // single context at partial alpha squares the outgoing frame's contribution, so
-    // everything the pair shares — here, both desks, most of the picture — sags to
-    // three-quarters opacity halfway through every transition. Two layers under
-    // plus-lighter add to exactly the frame in between, and cost a raster only when
-    // the pair changes rather than on every scroll event.
-    this.archDraw = () => {
-      const F = this.ARCH_FRAMES;
-      const v = this.archVariant();
-      const imgs = this.archImgs[v] || [];
-      const want = typeof this.archWant === "number" ? this.archWant : F[0];
-      let i = 0;
-      while (i < F.length - 2 && F[i + 1] <= want) i++;
-      const j = Math.min(i + 1, F.length - 1);
-      const b = F[j] > F[i] ? (want - F[i]) / (F[j] - F[i]) : 0;
-      // Track what each layer holds on the element, not on the component: the
-      // runtime can re-render the canvas out from under us, and a stale index here
-      // would leave the layer blank forever. The tag carries the variant too — the
-      // same index is a different picture in the mobile crop, and a raster left over
-      // from the other cut would sit there looking almost right.
-      const put = (n, k) => {
-        const cv = document.querySelector('[data-arch-layer="' + n + '"]');
-        if (!cv) return null;
-        const im = imgs[k];
-        const tag = v + ":" + k;
-        if (im && cv.dataset.f !== tag) {
-          // Size the backing store from the image rather than a constant, so the
-          // file and the canvas can never disagree. Assigning width also clears it.
-          if (cv.width !== im.naturalWidth) { cv.width = im.naturalWidth; cv.height = im.naturalHeight; }
-          const ctx = cv.getContext("2d");
-          ctx.clearRect(0, 0, cv.width, cv.height);
-          ctx.drawImage(im, 0, 0, cv.width, cv.height);
-          cv.dataset.f = tag;
-        }
-        return cv;
-      };
-      const lower = put(0, i), upper = put(1, j);
-      if (lower) lower.style.opacity = (imgs[j] ? 1 - b : 1).toFixed(3);
-      if (upper) upper.style.opacity = (imgs[j] ? b : 0).toFixed(3);
-    };
-
-    this.arch = () => {
-      this.archPrime();
-      const rig = document.querySelector("[data-arch-rig]");
-      if (!rig || !rig.offsetHeight) return;
-      const stage = rig.firstElementChild;
-      const span = rig.offsetHeight - stage.offsetHeight;
-      const nav = (document.querySelector("header") || {}).offsetHeight || 72;
-      const p = clamp((nav - rig.getBoundingClientRect().top) / (span || 1));
-      const B = this.ARCH_BEATS, b = this.archBounds;
-      let seg = b.length - 2;
-      for (let i = 0; i < b.length - 1; i++) {
-        if (p < b[i + 1] || i === b.length - 2) { seg = i; break; }
-      }
-      const t = clamp((p - b[seg]) / ((b[seg + 1] - b[seg]) || 1));
-
-      // Segment 0 rests on the opening frame; every later one travels from the
-      // previous beat's frame to its own over the move, then holds.
-      this.archWant = seg === 0 ? B[0] : B[seg - 1] + (B[seg] - B[seg - 1]) * smooth(t / this.ARCH_MOVE);
-      this.archDraw();
-
-      // Camera. The plate hangs from the top of the box at its own aspect, so at
-      // scale 1 it fills the width and the overflow that gets clipped is the desk
-      // legs. The opening pulls back far enough to hold the whole plate, the piece
-      // pushes in to full bleed, and a hair of creep continues the whole way down so
-      // a frozen frame is never a dead frame. Origin is the top edge: that is what
-      // keeps the two books that come to rest on the arch inside the frame.
-      //
-      // The box is the frame the plate is fitted into — the whole stage on desktop,
-      // the band on a phone. Measuring the box rather than the stage is what lets one
-      // camera serve both: on mobile the band is cut to the same aspect as the plate
-      // it holds, so the fit works out to exactly 1 and the formula reports "already
-      // fits" rather than needing a special case.
-      const cam = rig.querySelector("[data-arch-cam]");
-      const box = rig.querySelector("[data-arch-box]") || stage;
-      if (cam) {
-        const crop = this.ARCH_CROP[this.archVariant()] || this.ARCH_CROP[""];
-        const sMin = Math.min(1, (crop.w / crop.h) * box.clientHeight / (box.clientWidth || 1));
-        const open = smooth(p / 0.24);
-        const sc = sMin + (1 - sMin) * open + 0.028 * p;
-        cam.style.transform = "translateY(" + (1.2 * open).toFixed(2) + "%) scale(" + sc.toFixed(4) + ")";
-      }
-
-      for (let i = 0; i < 4; i++) {
-        // Copy blocks 0-3 belong to segments 1-4. The opening carries none, and the
-        // coda holds the last line rather than clearing it: the books coming to rest
-        // on the arch are that line's payoff, not a separate thought.
-        const own = seg === i + 1;
-        const held = i === 3 && seg === 5;
-        const on = own || held;
-        const copy = rig.querySelector('[data-arch-copy="' + i + '"]');
-        if (copy) {
-          // Arrives once the move has finished and holds to the end of its beat. The
-          // last line does not fade at that boundary — it is still up as the books
-          // land — and only leaves as the section itself releases.
-          let o = 0;
-          if (own) o = smooth((t - this.ARCH_MOVE) / 0.14) * (i === 3 ? 1 : 1 - smooth((t - 0.92) / 0.08));
-          else if (held) o = 1 - smooth((t - 0.86) / 0.14);
-          o = clamp(o);
-          copy.style.opacity = o.toFixed(3);
-          copy.style.transform = "translateY(" + (8 * (1 - o)).toFixed(2) + "px)";
-          copy.style.pointerEvents = o > 0.4 ? "auto" : "none";
-        }
-        const tick = rig.querySelector('[data-arch-tick="' + i + '"]');
-        if (tick) tick.style.opacity = on ? "1" : "0.4";
-      }
-    };
 
     // The hero's rising block kit used to be driven from here. The falling-blocks
     // element replaced it and listens for its own scroll, so nothing carries
     // [data-parallax] any more and the loop that moved them has gone with them.
     this.onScroll = () => {
       this.sweep();
-      this.arch();
     };
     window.addEventListener("scroll", this.onScroll, { passive: true });
     window.addEventListener("resize", this.onScroll, { passive: true });
     this.sweep();
-    this.arch();
   }
 
   componentWillUnmount() {
@@ -1474,7 +1250,6 @@ class Component extends DCLogic {
       window.scrollTo(0, 0);
     }
     if (this.sweep) requestAnimationFrame(this.sweep);
-    if (this.arch) requestAnimationFrame(this.arch);
   }
 
   // The URL a page lives at, relative to wherever the site is mounted.
@@ -1586,22 +1361,6 @@ class Component extends DCLogic {
         const btn = e.target && e.target.closest ? e.target.closest("[data-build]") : null;
         if (!btn) return;
         this.setBuild(parseInt(btn.dataset.build, 10));
-      },
-      archJump: (e) => {
-        const tick = e.target && e.target.closest ? e.target.closest("[data-arch-tick]") : null;
-        const rig = document.querySelector("[data-arch-rig]");
-        if (!tick || !rig) return;
-        // Ticks 0-3 are the copy beats, which are segments 1-4: segment 0 is the
-        // opening and the last one is the coda, and neither is addressable.
-        const seg = parseInt(tick.dataset.archTick, 10) + 1;
-        const stage = rig.firstElementChild;
-        const span = rig.offsetHeight - stage.offsetHeight;
-        const nav = (document.querySelector("header") || {}).offsetHeight || 72;
-        const b = this.archBounds;
-        // Land past the move, on the hold, where the frame is still and the copy is up.
-        const at = b[seg] + (b[seg + 1] - b[seg]) * 0.6;
-        const top = rig.getBoundingClientRect().top + (window.scrollY || 0) - nav + at * span;
-        window.scrollTo({ top: top, behavior: "smooth" });
       },
       isHome: this.state.page === "home",
       isChallenge: this.state.page === "challenge",

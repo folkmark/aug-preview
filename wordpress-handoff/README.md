@@ -4,9 +4,10 @@ Everything needed to rebuild this site in WordPress, and an honest account of wh
 carries over untouched, what has to be ported, and what should simply be deleted.
 
 The short version: **the design system, the assets and the page markup all transfer as
-they are. The falling-blocks hero is already a portable component. Everything else that
-moves on the page is written against a runtime that will not exist in WordPress and has
-to be rewritten — none of it is large, and one piece of it is genuinely intricate.**
+they are. Both animated sections — the falling-blocks hero and the Approach scrub — are
+already portable components. Everything else that moves on the page is written against a
+runtime that will not exist in WordPress and has to be rewritten; none of it is large,
+and none of what is left is intricate.**
 
 ---
 
@@ -25,6 +26,23 @@ Two consequences that shape this whole handoff:
 - **With JavaScript disabled the entire site is blank** — nav, copy, footer and all. This
   is pre-existing and worth knowing before anyone writes an SEO ticket about it. Moving
   to WordPress fixes it for free, since PHP renders on the server.
+
+---
+
+## 1a. `sections/` — per-section build specs
+
+Where a section is intricate enough that porting it needs more than "copy these files",
+it gets its own spec in [`sections/`](sections/). Each one is written so the section can
+be rebuilt in another stack **without reading the original source**: the asset contract,
+the maths, the responsive states, and — the part that earns the document — the decisions
+that look arbitrary and are load-bearing.
+
+| spec | covers |
+|---|---|
+| [`sections/approach.md`](sections/approach.md) | the Approach scrub (§6) |
+
+The shape of that document is meant to be reused; the hero can be written up the same way
+if it ever needs it.
 
 ---
 
@@ -97,14 +115,18 @@ host before deploying. `--font-heading` and `--font-body` both resolve to it.
 | `assets/falling-blocks/w1440/{bottom,top}/fb0001…0048.webp` | 96 hero frames, 3.3 MB | filenames are load-bearing — see §5 |
 | `assets/falling-blocks/manifest.json` | what the encoder produced | frame count, padding, widths |
 | `assets/falling-blocks.js` / `.css` | the hero component | portable, see §5 |
-| `assets/approach/ap*.webp` | 12 frames for the Approach scrub (6 beats x 2 cuts) | see §6.1 |
+| `assets/approach/ap*.webp` | the Approach sequence, every frame in two cuts | filenames load-bearing — see §6 |
+| `assets/approach/manifest.json` | what the encoder produced | frame list, beats, cut sizes |
+| `assets/approach.js` / `.css` | the Approach scrub | portable, see §6 |
 | `assets/blocks/*.webp` | 6 wooden-block cutouts | **now unused** — the hero that showed them was replaced. Keep only if a future section wants them |
 | `assets/images/`, `assets/team/`, `assets/icons/`, `assets/logo/` | photography, headshots, marks | plain images |
 
 `project/` is the working directory — Blender plates, source PNGs, notes, an abandoned
 video experiment. It is deliberately excluded from the deploy (~330 MB) and is not needed
 in WordPress, but `project/scratch/approach-render-map.md` is worth reading if anyone
-touches the Approach animation.
+touches the Approach animation: it maps every Blender frame number to the beat and the
+message it carries, and is the source of the frame numbers in
+[`sections/approach.md`](sections/approach.md).
 
 ---
 
@@ -224,36 +246,132 @@ The full markup contract and every attribute are documented at the top of
 
 ---
 
-## 6. What has to be rebuilt
+## 6. The Approach scrub — also portable
+
+The other animated section, and the intricate one. A canvas sequence scrubbed by scroll
+through six beats, with copy and tick markers synced to it, a camera push-in, and a
+separate tighter crop of every plate for phones. It is built the same way as the hero:
+dependency-free custom element, no framework, no build step, driving markup authored in
+the page.
+
+> **This section has a full build spec: [`sections/approach.md`](sections/approach.md).**
+> Read it before changing anything here. It documents the frame contract, the scroll and
+> camera maths, and — most importantly — the decisions that look arbitrary and are
+> load-bearing, each of which produces a section that looks approximately right and is
+> subtly broken if "simplified". If the section has to be rewritten natively rather than
+> ported, that document is the specification.
+
+**1. Copy** `assets/approach.js`, `assets/approach.css`, and the `assets/approach/`
+frame directory into the theme.
+
+**2. Enqueue** both files:
+
+```php
+add_action('wp_enqueue_scripts', function () {
+    $uri = get_template_directory_uri();
+    wp_enqueue_style('approach-scrub', $uri . '/approach.css', [], '1.0');
+    wp_enqueue_script('approach-scrub', $uri . '/approach.js', [], '1.0', true);
+});
+```
+
+**3. Emit the markup**, with `base` pointing at the frame directory. The copy is real
+text in the document — it is what the element fades in and out, and it is readable and
+indexable whether or not the script ever runs:
+
+```php
+<approach-scrub base="<?php echo esc_url(get_template_directory_uri() . '/approach/'); ?>">
+  <div data-arch-stage>
+    <div data-arch-box>
+      <div data-arch-cam role="img" aria-label="Two school desks, a gap between them, and a wooden arch assembled across it">
+        <canvas data-arch-layer="0" aria-hidden="true" width="2048" height="1432"></canvas>
+        <canvas data-arch-layer="1" aria-hidden="true" width="2048" height="1432"></canvas>
+      </div>
+      <div data-arch-scrim aria-hidden="true"></div>
+    </div>
+    <div data-arch-ticks>
+      <button data-arch-tick="0" type="button"><span>01</span><span>Define the role</span></button>
+      <!-- 01–04, one per copy beat, same order -->
+    </div>
+    <div data-arch-beats>
+      <div data-arch-copy="0">
+        <p>01</p>
+        <h3>Define the role.</h3>
+        <p>The claim.<span data-arch-more> The elaboration, which a short phone drops.</span></p>
+      </div>
+      <!-- 0–3, same count and order as the ticks -->
+    </div>
+  </div>
+</approach-scrub>
+```
+
+**4. Set the pin offset** if the theme's header is not 4.5rem, or is not sticky:
+
+```css
+approach-scrub { --arch-pin: 6rem; }   /* 0 if nothing is sticky */
+```
+
+That one value drives the sticky offset, the stage's height, and the scroll maths — the
+element reads it back off the rendered stage rather than measuring a page header, so
+there is nothing to keep in step and a WordPress admin bar cannot throw it off.
+
+The element's own height is the scroll budget: `880vh` on a wide screen, `520svh` on a
+phone, both in `approach.css`. Longer means slower; the beats divide it between them.
+
+### Things that will bite
+
+- **Do not upload the frames through the media library.** Same reason as the hero:
+  WordPress renames on collision and generates its own size variants, and the element
+  addresses frames by exact name. Deploy the directory as files.
+- **`manifest.json` ships with the frames and is not optional.** The element fetches it
+  to learn the frame list and both cuts' dimensions. Serve it from the same directory;
+  if it 404s the section stays a still.
+- **Two canvases, cross-faded with `mix-blend-mode: plus-lighter` over
+  `isolation: isolate`** — not one canvas at partial alpha, which washes out everything
+  the two frames share. Both desks are in both frames, so that is most of the picture.
+  A theme ancestor with a `filter`, an `opacity` below 1, or its own `mix-blend-mode`
+  makes a competing stacking context and can break the blend; that is the first thing to
+  check if the plates ever look wrong.
+- **The plate hangs from the top of its box, and that is load-bearing.** In the last beat
+  two books come to rest on the keystone **thirteen thousandths of a plate-height from
+  its top edge**. Anchoring anywhere but the top decapitates that frame. The crop lands
+  on the desk legs instead, which is the only part of the picture nothing depends on.
+- **`svh`, never `dvh`, for the element's height.** Scroll progress is derived from that
+  height, so a budget that changed as a mobile URL bar retracted would snap the scrub
+  mid-scroll.
+- **The crop rectangle is a three-way contract** — `CROP` in `tools/encode-approach.mjs`,
+  `cuts` in the manifest, and the `aspect-ratio` on `[data-arch-box]` in `approach.css`.
+  Nothing enforces it. Change one and the camera silently mis-scales.
+- **Full-page caching is safe, but only because it was made safe.** As with the hero, the
+  element writes a tag on each canvas recording which frame it holds; a cache plugin that
+  serialises the rendered DOM would bake that in and the next visitor would get an empty
+  canvas claiming to be drawn. The element clears those on boot. Do not optimise it away.
+- `budget-mb` (default 96) is a decoded-bitmap ceiling, not a preference. A frame costs
+  width × height × 4 bytes however small the WebP is on disk, so the full cut is 11.7 MiB
+  a frame and the phone's crop is 3.9. The resident window is derived from the budget, so
+  encoding larger shrinks the window automatically instead of silently multiplying what
+  is held.
+- Under `prefers-reduced-motion` the element hides itself and the stacked stills in
+  `.hero-static-block` show instead. Those stills carry `opacity: 0` inline and depend on
+  the page's `data-reveal` sweeper — see §7.1. **Port that or strip the inline opacity, or
+  the reduced-motion fallback renders invisible.**
+
+`project/scratch/approach-render-map.md` maps frames to beats to messages and is the
+authority for the numbers. The full markup contract and every attribute are documented at
+the top of `assets/approach.js`.
+
+---
+
+## 7. What has to be rebuilt
 
 All of this lives in one `class Component extends DCLogic` inside
 `<script type="text/x-dc">` at the bottom of `index.html`. It is written against the
 Claude Design runtime — `DCLogic`, `renderVals()`, `{{ bindings }}`, `<sc-if>` — none of
 which exists in WordPress. The markup each one drives is already in `pages/`; what is
-missing is the behaviour. Read the originals: they are heavily commented and the comments
-explain *why*, which is the part that is expensive to rediscover.
+missing is the behaviour. None of it is large — the two pieces that were are already
+components — but read the originals: they are heavily commented and the comments explain
+*why*, which is the part that is expensive to rediscover.
 
-### 6.1 The Approach scrub — the one genuinely intricate piece
-
-`index.html` ~1260–1435, markup at ~360–420, CSS at ~127–195. A canvas sequence scrubbed
-by scroll through six "beats", with copy and tick markers synced to it, a camera push-in,
-and a separate tighter crop of every plate for phones.
-
-Budget real time for this one, and read these before starting:
-
-- The dissolve is **two stacked canvases cross-faded with `mix-blend-mode: plus-lighter`
-  over `isolation: isolate`** — not one canvas at partial alpha, which washes out
-  everything the two frames share. The reasoning is in the comment above the markup.
-- The drawn frame is tracked **on the element** (`cv.dataset.f`), not in component state,
-  so a re-render cannot leave a canvas permanently blank.
-- `project/scratch/approach-render-map.md` maps frames to beats to messages and is the
-  authority for the numbers.
-
-`assets/falling-blocks.js` solves the same class of problem — scroll progress, a frame
-window, canvas drawing, degradation — in a portable form. It is the better model to
-follow if this gets rewritten rather than transliterated.
-
-### 6.2 The small stuff
+### 7.1 The small stuff
 
 | behaviour | attribute | what it does | effort |
 |---|---|---|---|
@@ -267,7 +385,7 @@ follow if this gets rewritten rather than transliterated.
 Note `data-reveal` starts at `opacity: 0` in the markup, so **if it is not reimplemented,
 those 59 blocks stay invisible.** Either port it or strip the inline opacity.
 
-### 6.3 Delete rather than port
+### 7.2 Delete rather than port
 
 - **The client-side router** (`ROUTES`, `TITLES`, `readRoute`, `show`, `go`, `href`,
   `popstate`). WordPress has real URLs and real pages.
@@ -280,7 +398,7 @@ those 59 blocks stay invisible.** Either port it or strip the inline opacity.
 
 ---
 
-## 7. Content
+## 8. Content
 
 There is no CMS behind any of this — all copy is hardcoded in the template, which is why
 `pages/` doubles as the content export. Worth deciding early which of these become
@@ -295,13 +413,13 @@ editable fields versus staying in templates:
 
 ---
 
-## 8. Regenerating anything
+## 9. Regenerating anything
 
 | command | what it does |
 |---|---|
 | `node tools/export-static.mjs` | re-renders `pages/` from the current site (needs `npm i --no-save playwright`) |
 | `node tools/encode-falling-blocks.mjs` | re-encodes the hero frames from the master PNGs in `Falling Blocks/` (needs `npm i --no-save sharp`) |
-| `node tools/encode-approach.mjs` | re-encodes the Approach plates |
+| `node tools/encode-approach.mjs` | re-encodes the Approach frames and rewrites their manifest |
 | `node tools/encode-images.mjs` | re-encodes photography and headshots from `project/renders/sources` |
 | `node tools/build-site.mjs _site` | builds the current static site — useful for comparison while rebuilding |
 
