@@ -49,6 +49,14 @@ const PAGES = [
 const COPY_FILES = ['support.js'];
 const COPY_DIRS = ['assets', '_ds'];
 
+// Files inside COPY_DIRS that exist for people rather than for browsers. The design
+// system is an export and ships with its own lint config, a build manifest and a readme;
+// nothing in the page references any of them, and together they are ~60 KB on every
+// deploy. They stay in the repository — the WordPress handoff says to copy `_ds`
+// verbatim, and the readme is how anyone learns what the tokens mean — but there is no
+// reason to publish them.
+const SKIP_IN_DEPLOY = new Set(['_adherence.oxlintrc.json', '_ds_manifest.json', 'readme.md']);
+
 const escapeAttr = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
 // Rewrite the head of a copy so each page carries its own title and description
@@ -82,7 +90,7 @@ function copyDir(from, to) {
     const src = path.join(from, entry.name);
     const dst = path.join(to, entry.name);
     if (entry.isDirectory()) copyDir(src, dst);
-    else fs.copyFileSync(src, dst);
+    else if (!SKIP_IN_DEPLOY.has(entry.name)) fs.copyFileSync(src, dst);
   }
 }
 
