@@ -39,6 +39,13 @@ wants if the masters are absent. Restore them at these paths to re-encode:
 | `project/renders/full-desk-anim-webp/*.webp` | the Approach moves |
 | `project/renders/sources/` | `tools/encode-images.mjs` |
 
+They are untracked, not lost: they were committed until `8e830fe` stripped them, so a
+checkout can restore them from the history rather than from anyone's machine.
+
+```sh
+git archive 98d0243 project/renders/full-desk-anim-webp project/renders/approach-desk | tar -x
+```
+
 ## The Approach animation
 
 The pinned section on the home page scrubs the arch being built across two
@@ -63,15 +70,21 @@ and must stay in step with the `aspect-ratio` on `[data-arch-box]`. Which cut th
 page loads is read from a CSS custom property, so the breakpoint that sizes the band
 is also the one that picks the file — there is no second copy of it to drift.
 
-105 frames ship — the six beats plus every fifth frame between them — so a move
-between beats is a real scrub. Beats and moves are encoded differently on purpose:
-the beats hold still under copy for a screenful of scrolling and stay
-lossless-sourced at native size, while the moves are only seen in passing and go
-out smaller and cheaper. That split is what keeps the whole sequence at 3.0 MB for
-the desktop cut and 2.4 MB for the phone cut, of which a browser fetches one and
-never both.
+120 frames ship — the six beats plus every fifth frame between them — so a move
+between beats is a real scrub. The sequence opens before its first beat, on the
+books and blocks falling onto the desks; the section plays that as its opening run
+and holds nothing still until they land. Beats and moves are encoded differently on
+purpose: the beats hold still under copy for a screenful of scrolling and stay
+lossless-sourced at native size, while the moves are only seen in passing and go out
+a little smaller. That split keeps the whole sequence at 6.1 MB for the desktop cut
+and 4.0 MB for the phone cut, of which a browser fetches one and never both.
 
-To change the sequence, edit `BEATS`/`STRIDE` at the top of
+The section's height in `assets/approach.css` is its scroll budget, and the scrub
+divides that budget among the moves in proportion to the frames each covers — so the
+frame count and the height are one setting in two files. Encode more frames without
+raising the height and the whole thing plays faster.
+
+To change the sequence, edit `OPEN`/`BEATS`/`STRIDE` at the top of
 `tools/encode-approach.mjs` and re-run it; it rewrites the frames and the manifest
 together, and `tools/build-site.mjs` then checks the two against disk.
 
