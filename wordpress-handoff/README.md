@@ -94,7 +94,7 @@ host before deploying. `--font-heading` and `--font-body` both resolve to it.
 
 | path | what | notes |
 |---|---|---|
-| `assets/falling-blocks/w1440/{bottom,top}/fb0001…0048.webp` | 96 hero frames, 3.9 MB | filenames are load-bearing — see §5 |
+| `assets/falling-blocks/w1440/{bottom,top}/fb0001…0048.webp` | 96 hero frames, 3.3 MB | filenames are load-bearing — see §5 |
 | `assets/falling-blocks/manifest.json` | what the encoder produced | frame count, padding, widths |
 | `assets/falling-blocks.js` / `.css` | the hero component | portable, see §5 |
 | `assets/approach/ap*.webp` | 12 frames for the Approach scrub (6 beats x 2 cuts) | see §6.1 |
@@ -133,8 +133,9 @@ or block editor does can leave it half-constructed:
 ```php
 <falling-blocks base="<?php echo esc_url(get_template_directory_uri() . '/falling-blocks/'); ?>"
                 width="1440" frames="48" layers="bottom,top"
-                revolutions="0.6" budget-mb="128" min-width="901"
-                stage-fill="0.93" travel-bottom="0.35,0.77" travel-top="0,1">
+                revolutions="0.6" budget-mb="128" min-width="901" stage-fill="0.93"
+                content-bottom="0.273,0.700" content-top="0.183,0.775"
+                speed-bottom="1" speed-top="1.25">
   <div data-fb-stage>
     <div data-fb-layer="bottom" aria-hidden="true">
       <canvas></canvas>
@@ -161,18 +162,17 @@ with a block crossing it; body copy and buttons do not. Do not add a `z-index` t
 `data-fb-copy` itself — that makes it a stacking context and collapses the copy back
 into one layer, putting the plate over all of it.
 
-**4. Set the height** if the theme has a fixed header, so the hero is a screen minus
-the header rather than a whole one:
+**4. Set the height and the header offset:**
 
 ```css
-falling-blocks { height: calc(100svh - 4.5rem); }
+falling-blocks { --fb-sticky-top: 4.5rem; height: calc(290svh - 4.5rem); }
 ```
 
-That height is also the animation's scroll budget — the element reads it off the
-rendered element, so one value drives both. Nothing is pinned: the copy scrolls away
-with the page while the plates spin and rise. Making the element *taller than its
-stage* pins the stage instead and holds the copy still, if that is ever wanted; the
-same code covers both, so it is a CSS decision.
+`--fb-sticky-top` is the fixed header's height; the stage pins below it. The element's
+height minus the stage's height is the scroll budget — here 290 minus 100 is 190svh of
+pin. That single number sets both how long the hero holds and how fast the blocks
+travel, so there is no second value to keep in step. Make the element the same height
+as its stage and nothing pins: the copy just scrolls away while the blocks move.
 
 ### Things that will bite
 
@@ -203,9 +203,21 @@ same code covers both, so it is a CSS decision.
   and the memory goes back. Measure before changing either.
 - `stage-fill` is the plate's width as a fraction of the stage. It is 0.93 here because
   that is the share of the viewport the desk artwork occupies further down the page.
-- `travel-bottom` / `travel-top` take `"start,end"` fractions of the overhang. The
-  difference between the two is the parallax; `start` frames each plate on the band its
-  blocks actually occupy, which is not the same for the two layers.
+- **`content-<layer>` is measured, not chosen.** It is where that layer's blocks sit as
+  fractions of the plate's height, and the motion is defined from it: at rest the plate
+  is placed so the top of its content rests on the stage's bottom edge, so the blocks
+  are below the fold and rise into view; at the end the bottom of its content sits on
+  the stage's top edge, so they have all left. Re-render the plates and these change —
+  `tools/encode-falling-blocks.mjs` prints the bounds it produced.
+- `speed-<layer>` multiplies that travel. 1 means the layer's last block leaves exactly
+  as the pin ends; above 1 it leaves earlier and the plate keeps rising empty, which is
+  what makes the near plane clear the frame before the far one. Below 1 strands blocks
+  on screen and is never right.
+- **The far plate's lowest block group is trimmed at encode time** (`trimBelow` in the
+  encoder). Those blocks run off the bottom of the render, so the frame edge itself cuts
+  them and they rise through the hero as flat-bottomed shapes. Both layers are trimmed
+  to the same output height — a difference there would put the two depth planes out of
+  registration, which the encoder now fails the build on.
 
 The full markup contract and every attribute are documented at the top of
 `assets/falling-blocks.js`.
