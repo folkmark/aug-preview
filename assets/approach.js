@@ -689,7 +689,25 @@
       // the reader is on or approaching. Inactive ticks get no inline value at all —
       // an inline opacity would sit on top of the stylesheet's :hover forever, which
       // is how the old '0.4' quietly disabled hover for the life of the session.
+      //
+      // The fill is the same four windows read as a progress bar: each tick's rule is
+      // its step's segment, so the four together sweep once across the row over the
+      // whole section. It is written from p, not from the frame index, and that is the
+      // entire point — the frames advance in 45px steps and then stop dead for up to
+      // 775px at a beat, while this moves with every pixel the thumb does. See the
+      // ::before in approach.css for why the section needs one thing that always does.
+      //
+      // The first segment starts filling at 0 rather than at its cue: the lead hold is
+      // the section's first stretch of frozen frame, and leaving the bar dead through
+      // it would put a dead patch exactly where a reader is deciding whether this
+      // section is worth their thumb. The tick itself still does not light until its
+      // copy is up, so a filling bar under an unlit 01 reads as the step loading.
       for (i = 0; i < this.ticks.length; i++) {
+        var mk = this.marks && this.marks[i];
+        var from = i === 0 ? 0 : (mk ? mk.up : 0);
+        var to = mk ? mk.down : 1;
+        this.ticks[i].style.setProperty('--arch-fill',
+          clamp01((p - from) / Math.max(1e-4, to - from)).toFixed(4));
         this.ticks[i].style.opacity = i === active ? '1' : '';
       }
     }
