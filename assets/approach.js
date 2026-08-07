@@ -109,8 +109,9 @@
   //   93   the first book enters the frame        -> "Define the role."
   //   276  the first solid block reaches the       -> "Build the capabilities."
   //        wireframe (271 is clean, 281 falling)
-  //   565  the first AR force-chevrons appear      -> "Co-design the applications."
-  //        (562 clean, 565 marked; resolved ~601)
+  //   436  the first roadway plank enters frame    -> "Co-design the applications."
+  //        (431 clean; laid across 441-476, the AR
+  //        chevrons then rise at 565 with it up)
   //   621  the first test book rests on the deck   -> "Test, learn, begin again."
   //        (settles to the crown by 636)
   //
@@ -119,7 +120,7 @@
   // event plays with its words already up. A cue is a frame NUMBER, not an index: it
   // does not need to be an encoded frame, because it converts to a progress position
   // through the same curve the scrub itself runs on (pAtFrame).
-  var CUES = [93, 276, 565, 621];
+  var CUES = [93, 276, 436, 621];
 
   // The copy's slide, in pixels of scroll and pixels of travel. Scroll-anchored rather
   // than segment-fraction-anchored because the segments are different lengths: a fade
