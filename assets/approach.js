@@ -101,18 +101,36 @@
   // read out.
   var LEAD_W = 0.4, HOLD_W = 1, TAIL_W = 0.7;
 
+  // When each copy block enters, as the render-frame number of the event it narrates.
+  // These are content decisions, read off the plates frame by frame — the same kind of
+  // measured constant as falling-blocks' CONTENT bounds — and they are the other half
+  // of the choreography whose stills live in the encoder's BEATS table:
+  //
+  //   93   the first book enters the frame        -> "Define the role."
+  //   276  the first solid block reaches the       -> "Build the capabilities."
+  //        wireframe (271 is clean, 281 falling)
+  //   565  the first AR force-chevrons appear      -> "Co-design the applications."
+  //        (562 clean, 565 marked; resolved ~601)
+  //   621  the first test book rests on the deck   -> "Test, learn, begin again."
+  //        (settles to the crown by 636)
+  //
+  // Each block stays up from its cue, through its beat's still, until the next cue —
+  // so from frame 93 to the coda there is always exactly one step on screen, and every
+  // event plays with its words already up. A cue is a frame NUMBER, not an index: it
+  // does not need to be an encoded frame, because it converts to a progress position
+  // through the same curve the scrub itself runs on (pAtFrame).
+  var CUES = [93, 276, 565, 621];
+
   // The copy's slide, in pixels of scroll and pixels of travel. Scroll-anchored rather
   // than segment-fraction-anchored because the segments are different lengths: a fade
   // that is 14% of its segment gave step 01 a 521px dwell and step 03 a 313px one, so
   // every beat entered at a different speed and stayed a different time for no reason a
   // visitor could see. In pixels, every beat behaves identically on every viewport.
   //
-  // FADE_IN ends exactly where the move ends, so the text rises through the move's
-  // deceleration and is fully readable the moment the picture comes to rest. FADE_OUT
-  // spends the first pixels of the *next* move, inside glide()'s ramp, so the text
-  // leaves as the picture visibly starts moving — between the two, the frame is never
-  // both frozen and wordless, which is where the old model spent 22% of the section.
-  // RISE is the entrance travel; 8px read as a shimmer, not an arrival.
+  // FADE_IN starts exactly at the cue — the words rise with their event, over motion.
+  // FADE_OUT completes exactly at the next cue, so the outgoing and incoming blocks —
+  // which share one grid cell — are never both visible. RISE is the entrance travel;
+  // 8px read as a shimmer, not an arrival.
   var FADE_IN = 260, FADE_OUT = 220, RISE = 28;
 
   function num(el, name, dflt) {
@@ -323,19 +341,48 @@
       // which is the next segment's start). The fade widths around these are added in
       // chrome() in scroll pixels, so they cannot be precomputed here — the span is a
       // layout fact that changes on resize; these are not.
+      // Each copy's window on the progress line, from the CUES table: it rises at its
+      // own event's onset, holds through its beat's still, and leaves as the next
+      // event's copy arrives. The anchors are render-frame numbers, so they are
+      // converted here through the inverse of the scrub — the one place that knows
+      // where a frame lands in p. A cue that precedes the sequence clamps to its
+      // segment's start; one past the end clamps to 1.
       this.marks = [];
-      for (k = 1; k < K; k++) {
-        this.marks.push({ up: this.bounds[k] + (this.bounds[k + 1] - this.bounds[k]) * this.moves[k],
-                          down: this.bounds[k + 1] });
+      for (k = 0; k < CUES.length; k++) {
+        this.marks.push({ up: this.pAtFrame(CUES[k]),
+                          down: k + 1 < CUES.length ? this.pAtFrame(CUES[k + 1]) : 0 });
       }
-      // The last copy's exit is not its hold's end — it stays up through the coda while
-      // the books land, because they are that line's payoff, and leaves over the coda's
-      // last stretch instead.
+      // The last copy's exit is not the next cue — there is none. It stays up through
+      // the coda while the second book lands, because that is the line's payoff, and
+      // leaves over the coda's last stretch instead.
       if (this.marks.length) {
         var lastMark = this.marks[this.marks.length - 1];
         lastMark.down = this.bounds[K] + (1 - this.bounds[K]) * 0.86;
         lastMark.tail = true;
       }
+    }
+
+    // Where a render-frame number lands on the progress line — the exact inverse of
+    // the expression frame() scrubs with, segment by segment. Within a move the frame
+    // advances along glide(), which has no closed inverse worth writing out, so it is
+    // bisected; twenty-four halvings put the answer within a millionth of the span,
+    // which is a fraction of a pixel. Runs once per cue per plot(), not per tick.
+    pAtFrame(F) {
+      var B = this.BEATS, b = this.bounds;
+      for (var k = 0; k <= B.length - 1; k++) {
+        var from = k === 0 ? this.FRAMES[0] : B[k - 1];
+        if (F <= from) return b[k];
+        if (F > B[k]) continue;
+        var mv = this.moves[k] || 0, span = B[k] - from;
+        if (!mv || !span) return b[k];
+        var want = (F - from) / span, lo = 0, hi = 1;
+        for (var i = 0; i < 24; i++) {
+          var mid = (lo + hi) / 2;
+          if (glide(mid) < want) lo = mid; else hi = mid;
+        }
+        return b[k] + (b[k + 1] - b[k]) * mv * ((lo + hi) / 2);
+      }
+      return 1;
     }
 
     // What one frame costs decoded, which is its pixel count times four however small the
@@ -568,21 +615,19 @@
       this.cam.style.transform = 'translateY(' + (1.2 * open).toFixed(2) + '%) scale(' + sc.toFixed(4) + ')';
     }
 
-    // The copy's whole life is two anchors from plot() plus two pixel widths. It rises
-    // through its own move's deceleration and is fully up the instant the picture
-    // stops; it stays up for the entire hold; it leaves inside the next move's ramp,
-    // while the picture is visibly going somewhere. The old model — in after the move,
-    // out before the hold ended — left a frozen, wordless frame on both sides of every
-    // beat, and that bracketing was measured at 22% of the whole section. Under this
-    // one the frame is only ever still while there are words on it, which was the
-    // stated design all along; the opening settle and a short closure on the last
-    // frame are the deliberate exceptions.
+    // The copy's whole life is two anchors from plot() — its own cue and the next —
+    // plus two pixel widths. It rises the moment its event begins on screen, narrates
+    // the event as it plays, sits with the completed state through the beat's still,
+    // and hands off exactly as the next event's copy arrives. From the first cue to
+    // the coda there is always one step up: the relay has no gaps, so a frozen frame
+    // is never wordless and an event never plays unnarrated.
     //
-    // The picture animating under legible text is not a violation of "nothing moves
-    // while there are words to read" so much as its edges: the text is fully readable
-    // for the whole still, and the motion it overlaps is the ramp ends, where glide()
-    // is slowest. The coda always worked this way — the books land under step 04's
-    // line because they are that line's payoff — and this generalises it.
+    // This inverts the section's original doctrine — copy after the move, never over
+    // it — deliberately, and in two steps of user feedback: first the edges of each
+    // hold were opened to motion, then the whole window was re-anchored from segment
+    // maths to the content itself (see CUES). What survives of the doctrine is its
+    // point: the words are fully readable long before the still arrives, and the
+    // stills themselves are completed states, never mid-event freezes.
     chrome(p) {
       var span = (this.offsetHeight - this.stage.offsetHeight) || 1;
       var fi = FADE_IN / span, fo = FADE_OUT / span;
@@ -591,12 +636,17 @@
         var m = this.marks && this.marks[i];
         var rise = 0, exit = 0;
         if (m) {
-          rise = smooth((p - (m.up - fi)) / fi);
-          // The last copy's exit is anchored to the section's end, not to a pixel
-          // width: the coda's remaining stretch is what there is, and overrunning it
+          // The rise begins AT the cue — "from the moment the first book enters the
+          // frame" means from that moment, not fully-faded-by it.
+          rise = smooth((p - m.up) / fi);
+          // The exit completes AT the next cue, so the incoming block starts on an
+          // empty grid cell. The last copy has no next cue: it exits over the coda's
+          // remaining stretch, anchored to the section's end, because overrunning it
           // would strand the line partly visible at the unpin.
-          exit = smooth((p - m.down) / (m.tail ? Math.max(1e-4, 1 - m.down) : fo));
-          if (p >= m.up - fi) active = i;
+          exit = m.tail
+            ? smooth((p - m.down) / Math.max(1e-4, 1 - m.down))
+            : smooth((p - (m.down - fo)) / fo);
+          if (p >= m.up) active = i;
         }
         var o = clamp01(rise * (1 - exit));
         var el = this.copies[i];
