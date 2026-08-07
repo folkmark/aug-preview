@@ -337,11 +337,6 @@
         this.bounds.push(k === K ? 1 : at);
       }
 
-      // Each copy's two fixed points on the progress line: where its rise must be
-      // complete (its own move's end) and where its exit begins (its own hold's end,
-      // which is the next segment's start). The fade widths around these are added in
-      // chrome() in scroll pixels, so they cannot be precomputed here — the span is a
-      // layout fact that changes on resize; these are not.
       // Each copy's window on the progress line, from the CUES table: it rises at its
       // own event's onset, holds through its beat's still, and leaves as the next
       // event's copy arrives. The anchors are render-frame numbers, so they are
@@ -351,16 +346,14 @@
       this.marks = [];
       for (k = 0; k < CUES.length; k++) {
         this.marks.push({ up: this.pAtFrame(CUES[k]),
-                          down: k + 1 < CUES.length ? this.pAtFrame(CUES[k + 1]) : 0 });
+                          down: k + 1 < CUES.length ? this.pAtFrame(CUES[k + 1]) : 1 });
       }
-      // The last copy's exit is not the next cue — there is none. It stays up through
-      // the coda while the second book lands, because that is the line's payoff, and
-      // leaves over the coda's last stretch instead.
-      if (this.marks.length) {
-        var lastMark = this.marks[this.marks.length - 1];
-        lastMark.down = this.bounds[K] + (1 - this.bounds[K]) * 0.86;
-        lastMark.tail = true;
-      }
+      // The last copy has no next cue and no exit of its own: its window runs to the
+      // end of the section, and it leaves by scrolling away with the stage at the
+      // unpin. It used to dissolve over the coda's last stretch, which read as the
+      // closing line being taken back while its frame was still on screen — the one
+      // step the reader is meant to be left holding.
+      if (this.marks.length) this.marks[this.marks.length - 1].tail = true;
     }
 
     // Where a render-frame number lands on the progress line — the exact inverse of
@@ -641,12 +634,10 @@
           // frame" means from that moment, not fully-faded-by it.
           rise = smooth((p - m.up) / fi);
           // The exit completes AT the next cue, so the incoming block starts on an
-          // empty grid cell. The last copy has no next cue: it exits over the coda's
-          // remaining stretch, anchored to the section's end, because overrunning it
-          // would strand the line partly visible at the unpin.
-          exit = m.tail
-            ? smooth((p - m.down) / Math.max(1e-4, 1 - m.down))
-            : smooth((p - (m.down - fo)) / fo);
+          // empty grid cell. The last copy is the exception and does not fade at all:
+          // it holds full through the coda and rides out with the stage, so the
+          // section ends on its closing step rather than on an empty frame.
+          exit = m.tail ? 0 : smooth((p - (m.down - fo)) / fo);
           if (p >= m.up) active = i;
         }
         var o = clamp01(rise * (1 - exit));
