@@ -39,7 +39,7 @@ const BEAT_SRC = path.join(root, 'project/renders/approach-desk');
 const MOVE_SRC = path.join(root, 'project/renders/full-desk-anim-webp');
 const OUT = path.join(root, 'assets/approach');
 
-// Where the six beats come to rest — each the frame at which that beat's copy is up and
+// Where the seven beats come to rest — each the frame at which that beat's copy is up and
 // the picture is still. Keyed to what the animation does, and specifically to COMPLETED
 // states: a still is a frame the reader dwells on, and a frozen half-event — a book in
 // mid-air, a wireframe half-drawn — reads as the animation being stuck, which visitors
@@ -49,10 +49,17 @@ const OUT = path.join(root, 'assets/approach');
 //   91   the sequence's first frame, held for a breath. Bare desks; nothing yet.
 //   265  the wireframe arch fully rendered and at rest (draws in over 201-236; the
 //        first solid block does not arrive until ~276). Define-the-role's still.
+//   431  the voussoir ring closed: the last crown blocks land by 426 and the arch
+//        stands on its own with no deck on it yet. Build-the-capabilities' still, and
+//        the only one taken at a SHORT_HOLD weight — see assets/approach.js. Read off
+//        the difference between successive plates: 421-426 still lands crown blocks,
+//        426-431 changes by camera drift alone, and the first plank is in frame by
+//        436. 431 is therefore the last at-rest frame before the deck begins, which
+//        puts the pause immediately before the next event rather than stranding ten
+//        frames of nothing after it.
 //   481  the roadway laid: the last deck blocks land by 476 and the structure stands
 //        complete and unmarked. Co-design's first still — its cue is the first plank
-//        entering at 436, so the words are up before this hold. Build-the-capabilities
-//        holds no still at all: its window (276-436) is the arch filling, pure motion.
+//        entering at 436, so the words are up before this hold.
 //   601  the AR force overlay fully resolved: first chevrons at 565, all blocks marked
 //        and the ring saturated by 591-601, book not yet in frame (enters 606).
 //        Co-design's second still.
@@ -64,7 +71,11 @@ const OUT = path.join(root, 'assets/approach');
 // (93, 276, 436, 621: the CUES table in assets/approach.js) and rides the motion in,
 // so the fall, the build, the overlay and the landing all play with their words up.
 // Beats and cues are two halves of one choreography: change one, re-check the other.
-const BEATS = [91, 265, 481, 601, 636, 672];
+// 431 is already on the stride grid below (91 + 68x5), so promoting it to a beat adds
+// no frame to the sequence — it only re-encodes that one frame at beat quality and
+// splits the 265-481 segment in two. Pick an off-grid beat and the whole grid between
+// its neighbours renumbers.
+const BEATS = [91, 265, 431, 481, 601, 636, 672];
 
 // Where the sequence opens. It coincides with the first beat: the page holds still on
 // 91 for a breath and the whole fall onto the desks plays inside beat 2's move, under
