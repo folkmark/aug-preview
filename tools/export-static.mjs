@@ -31,10 +31,10 @@ const PORT = 8731;
 
 const PAGES = [
   { slug: '', file: 'home.html', name: 'Home' },
-  { slug: 'the-challenge/', file: 'the-challenge.html', name: 'The Challenge' },
-  { slug: 'our-approach/', file: 'our-approach.html', name: 'Our Approach' },
-  { slug: 'who-we-are/', file: 'who-we-are.html', name: 'Who We Are' },
-  { slug: 'follow-our-work/', file: 'follow-our-work.html', name: 'Follow Our Work' }
+  { slug: 'challenge/', file: 'challenge.html', name: 'The Challenge' },
+  { slug: 'approach/', file: 'approach.html', name: 'Our Approach' },
+  { slug: 'team/', file: 'team.html', name: 'Who We Are' },
+  { slug: 'contact/', file: 'contact.html', name: 'Follow Our Work' }
 ];
 
 // The runtime pulls React and Babel from unpkg on boot. Mirror them into the staged

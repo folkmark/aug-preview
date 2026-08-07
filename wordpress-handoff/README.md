@@ -55,10 +55,10 @@ the file to build a WordPress template from, not `index.html`.
 | file | route | source in `index.html` |
 |---|---|---|
 | `home.html` | `/` | `<main data-screen-label="Home">` |
-| `the-challenge.html` | `/the-challenge/` | `<main data-screen-label="The Challenge">` |
-| `our-approach.html` | `/our-approach/` | `<main data-screen-label="Our Approach">` |
-| `who-we-are.html` | `/who-we-are/` | `<main data-screen-label="Who We Are">` |
-| `follow-our-work.html` | `/follow-our-work/` | `<main data-screen-label="Get Involved">` |
+| `challenge.html` | `/challenge/` | `<main data-screen-label="The Challenge">` |
+| `approach.html` | `/approach/` | `<main data-screen-label="Our Approach">` |
+| `team.html` | `/team/` | `<main data-screen-label="Who We Are">` |
+| `contact.html` | `/contact/` | `<main data-screen-label="Get Involved">` |
 
 They open straight from disk — asset paths point up two levels at the real `assets/` and
 `_ds/` folders. Regenerate at any time with:

@@ -22,25 +22,25 @@ const basePath = ('/' + (process.argv[3] || '').replace(/^\/+|\/+$/g, '') + '/')
 // Kept in step with ROUTES and TITLES in index.html.
 const PAGES = [
   {
-    slug: 'the-challenge',
+    slug: 'challenge',
     title: 'The Challenge | AugmentED',
     description:
       'AI is arriving in classrooms whether schools are ready or not. The danger is that some are rushing in without asking what AI can do well, what teachers uniquely bring, or what students actually need.',
   },
   {
-    slug: 'our-approach',
+    slug: 'approach',
     title: 'Our Approach | AugmentED',
     description:
       'We believe better educational AI will emerge from discovering what classrooms actually need, building solutions with real educators and students, and testing them in real classrooms.',
   },
   {
-    slug: 'who-we-are',
+    slug: 'team',
     title: 'Who We Are | AugmentED',
     description:
       'AugmentED brings together people from classrooms, research labs, and engineering teams who share a conviction that AI should augment human teaching, not replace it.',
   },
   {
-    slug: 'follow-our-work',
+    slug: 'contact',
     title: 'Follow Our Work | AugmentED',
     description: 'Get updates on AugmentED’s work and research findings.',
   },
