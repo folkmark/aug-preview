@@ -109,6 +109,8 @@ approach-scrub *, approach-scrub *::before, approach-scrub *::after { box-sizing
   padding: 0.75rem 0 0;
   border: 0;
   border-top: 1px solid var(--arch-rule);
+  /* Containing block for the fill below, which rides on this rule. */
+  position: relative;
   background: none;
   cursor: pointer;
   font: inherit;
@@ -121,6 +123,40 @@ approach-scrub *, approach-scrub *::before, approach-scrub *::after { box-sizing
   opacity: 0.62;
   transition: opacity 200ms ease-in-out;
 }
+/* Each tick's rule doubles as that step's segment of a four-part progress bar, filled
+   from --arch-fill, which the element rewrites every tick — see chrome().
+
+   This is the section's only continuously moving thing, and it exists because the rest
+   of it deliberately is not. Measured on the shipped build at 390x844: the sequence
+   advances one frame per 45px of scroll (median) and the seven beats hold a frozen
+   frame for 3486px, 35% of the section, the longest single run being 775px — nearly a
+   whole screen of thumb travel returning no pixels of change. A reader cannot tell
+   that from a page that has stopped responding, which is exactly what was reported.
+   The fill answers it: any scroll delta at all moves this bar, because it is driven by
+   p rather than by the frame index, and over that same 775px run it travels ~27px on a
+   phone. It answers "how far in" second and "is this thing alive" first.
+
+   A bar rather than a bigger number or a longer label: the eye-tracking evidence on
+   custom scroll indicators is that they mostly go unfixated (Viget/Tobii, 4 of 18
+   participants noticed one at all), so this is not asked to be read — it is asked to
+   be moving in the reader's peripheral vision while they look at the artwork. It sits
+   on the rule that was already there rather than adding furniture.
+
+   The accent at the tick's own opacity, so the hierarchy comes for free: the active
+   tick is at full strength and its bar fills live, while finished steps keep theirs at
+   0.62 and read as done-and-quiet. */
+[data-arch-tick]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 100%;
+  height: 2px;
+  background: var(--arch-accent);
+  transform: scaleX(var(--arch-fill, 0));
+  transform-origin: left center;
+}
+
 /* Guarded: a touch device has no hover to leave, so an unguarded rule sticks the
    tapped tick at 0.8 until something else is tapped. The element writes an inline
    opacity only on the active tick and clears it elsewhere — an inline value on every
@@ -142,7 +178,21 @@ approach-scrub *, approach-scrub *::before, approach-scrub *::after { box-sizing
   [data-arch-scrim] { background: linear-gradient(0deg, var(--arch-page) 0%, transparent 15%); opacity: 1; }
   [data-arch-ticks] { position: static; width: auto; display: flex; gap: 0.375rem; padding: 1.125rem 5% 0; }
   [data-arch-tick] { flex: 1; justify-content: center; padding: 0.75rem 0 0.875rem; min-height: 2.75rem; }
-  [data-arch-tick] > span:last-child { display: none; }
+  /* Out of the layout, not out of the accessible name. The label is the only thing
+     that says what step 02 actually IS, and display:none takes it out of the
+     accessibility tree along with the flow — every tick then announced as a button
+     called "02", on the one control that navigates the section. Absolute rather than
+     width:0 so it cannot stretch the flex row; the tick is the containing block. */
+  [data-arch-tick] > span:last-child {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
   [data-arch-beats] { position: static; width: auto; padding: 1rem 5% 0; }
   [data-arch-beats] h3 { font-size: var(--text-h4, 1.5rem); }
 }
