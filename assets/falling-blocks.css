@@ -6,6 +6,22 @@
 
 falling-blocks {
   --fb-sticky-top: 0px;
+  /* Which encoded width this viewport scrubs. The element reads this back at boot and
+     on every media-query flip, so the breakpoint that changes the page's layout is
+     also the one that picks the file — the same arrangement approach-scrub uses for
+     its cuts, and for the same reason: a second copy of the breakpoint in JS is free
+     to drift from this one.
+
+     The values name directories that exist under the element's base
+     (w1440/, w720/ — see assets/falling-blocks/ and tools/encode-falling-blocks.mjs),
+     so this file is coupled to what the encoder shipped. The phone tier exists because
+     the arithmetic forces it: a 1440 frame pair decodes to 23.7 MiB however small the
+     WebP is, so the default 128 MB budget holds five frames of forty-eight — measured
+     on a throttled phone, every single draw during a scroll wanted a frame that was
+     not decoded yet. At 720 the same budget holds twenty-one and each decode costs a
+     quarter, which is the difference between the tumble playing and it juddering
+     between stale frames. */
+  --fb-tier: 1440;
   display: block;
   position: relative;
   /* Taller than the stage, and the difference is the pin: the copy is held still while
@@ -26,6 +42,22 @@ falling-blocks {
 falling-blocks:not([data-fb-motion="on"]) {
   height: 100vh;
   height: 100svh;
+}
+
+/* Phones scrub the small tier. 900px rather than the design system's 991 because the
+   element's own former still-image cutoff was 901, and keeping the same line means
+   this change swaps what those viewports get without moving where anything changes.
+   The short-viewport arm catches large phones rotated: an iPhone Pro Max is 926 CSS px
+   wide in landscape, over the width line, and was measured scrubbing the 1440 tier
+   there.
+
+   The budget travels with the tier, and is smaller for a reason that is easy to get
+   backwards: a byte ceiling alone buys MORE frames when each one gets cheaper. At the
+   attribute's 128 MB the phone held 17 pairs — 100.9 MiB of decoded bitmaps, more
+   than the desktop's 94.9 — on the device least able to afford it. 48 MB holds 8
+   pairs, ~47 MiB, still a wider window than the desktop's five. */
+@media (max-width: 900px), (max-height: 500px) {
+  falling-blocks { --fb-tier: 720; --fb-budget: 48; }
 }
 
 falling-blocks [data-fb-stage] {
