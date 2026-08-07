@@ -39,14 +39,31 @@ const BEAT_SRC = path.join(root, 'project/renders/approach-desk');
 const MOVE_SRC = path.join(root, 'project/renders/full-desk-anim-webp');
 const OUT = path.join(root, 'assets/approach');
 
-// Where the six beats come to rest. Fixed by the render, not by us.
-const BEATS = [167, 235, 353, 477, 598, 672];
+// Where the six beats come to rest — each the frame at which that beat's copy is up and
+// the picture is still. Keyed to what the animation does, not to even spacing:
+//
+//   91   the sequence's first frame, held. Nothing has happened yet.
+//   93   Define the role — the desks barely touched; the copy leads the wireframe.
+//   265  Build the capabilities — BRIDGE_v1 starts, the first solid block falls into
+//        the blueprint outline.
+//   565  Co-design the applications — the AR force-chevrons come on. Measured against
+//        the plates rather than read from the render map, which does not cover it:
+//        frame 562 is clean and 565 carries the first marks.
+//   604  Test, learn, begin again — the first book is placed. Frame-to-frame change
+//        spikes 25x here, which confirms the render map's 604-632 against the plates.
+//   672  coda. Both books at rest on the keystone.
+//
+// Note what this costs: the fall from 91 to 167 is no longer a copy-free opening run,
+// because beat 1's copy lands at 93, before it. The fall now plays under beat 2's move.
+// That is deliberate — see the segment-0 note in assets/approach.js.
+const BEATS = [91, 93, 265, 565, 604, 672];
 
-// Where the sequence opens, which is before the first beat rather than on it. Frames
-// 91-167 are the books and blocks falling onto the desks — the "before" the whole rest
-// of the section is a consequence of — and encoding from 167 meant the page opened on
-// a still of the aftermath and the fall was never seen at all. The page plays this as
-// its opening run; see the segment-0 note in assets/approach.js.
+// Where the sequence opens. This now coincides with the first beat rather than sitting
+// in front of it, because beat 1's copy moved to f 93 — so the page holds still on 91
+// and the fall onto the desks plays under beat 2's move instead of as a copy-free
+// opening run. The distinction still matters to the encoder: OPEN is what the frame grid
+// extends back to, and moving beat 1 later would make the opening a run again with no
+// other change. See the segment-0 note in assets/approach.js.
 //
 // 91 is the first frame the WebP archive holds, not a chosen in-point: the render map
 // puts the books landing from f 77, so the first fourteen frames of the fall are in the
@@ -116,7 +133,15 @@ const MOVE_ALPHA_Q = 70;
 
 const pad4 = (n) => String(n).padStart(4, '0');
 
-const beatMaster = (n) => path.join(BEAT_SRC, `anim_desk_${pad4(n)}.png`);
+// Prefer a lossless plate where one was rendered, fall back to the archive. Only 672 of
+// the current beats has a PNG — the beats moved and the renders did not follow — and the
+// rest costing nothing was measured rather than assumed: from the archive at quality 88 a
+// beat lands at 46.1 dB against the lossless master, where the PNG-at-82 path managed
+// 45.3. The extra 13 KB a beat is the whole price, and there are six of them.
+const beatMaster = (n) => {
+  const png = path.join(BEAT_SRC, `anim_desk_${pad4(n)}.png`);
+  return fs.existsSync(png) ? png : moveMaster(n);
+};
 const moveMaster = (n) => path.join(MOVE_SRC, `anim_desk_76_${String(n).padStart(5, '0')}.webp`);
 
 // The plates are kept off the repository — see .gitignore. Between them the lossless
@@ -181,7 +206,7 @@ for (const n of FRAMES) {
   if (!beat) fullPipe.resize({ width: FULL_MOVE_W, kernel: 'lanczos3' });
   const full = await fullPipe
     .webp({
-      quality: beat ? 82 : MOVE_Q,
+      quality: beat ? 88 : MOVE_Q,
       alphaQuality: beat ? 100 : MOVE_ALPHA_Q,
       effort: 6,
       smartSubsample: true,
@@ -200,7 +225,7 @@ for (const n of FRAMES) {
   if (!beat) cropPipe.resize({ width: CROP_MOVE_W, kernel: 'lanczos3' });
   const crop = await cropPipe
     .webp({
-      quality: beat ? 80 : MOVE_Q,
+      quality: beat ? 86 : MOVE_Q,
       alphaQuality: beat ? 100 : MOVE_ALPHA_Q,
       effort: 6,
       smartSubsample: true,

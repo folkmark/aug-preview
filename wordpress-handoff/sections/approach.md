@@ -56,12 +56,27 @@ The six beats and what each shows:
 
 | Segment | Runs to | Copy shown | Picture |
 |---|---|---|---|
-| 0 — opening | 167 | *(none)* | Books and blocks fall onto two bare desks and come to rest |
-| 1 | 235 | **Define the role.** | A blueprint arch draws itself in the gap — wireframe only |
-| 2 | 353 | **Build the capabilities.** | The arch becomes solid |
-| 3 | 477 | **Co-design the applications.** | Applications assemble on the arch |
-| 4 | 598 | **Test, learn, begin again.** | The load travels down through every block |
+| 0 — opening | 91 | *(none)* | Two bare desks. The sequence's first frame, held |
+| 1 | 93 | **Define the role.** | The desks barely touched, the gap empty |
+| 2 | 265 | **Build the capabilities.** | Books and blocks fall, the blueprint arch draws itself, the first solid block lands |
+| 3 | 565 | **Co-design the applications.** | The finished arch, every block marked with a force annotation |
+| 4 | 604 | **Test, learn, begin again.** | The first book being lowered onto the span |
 | 5 — coda | 672 | *(beat 4's copy, held)* | Two books come to rest on the keystone |
+
+**Every beat is keyed to an event, not to even spacing.** That is why the numbers look
+arbitrary, and it is the thing to preserve:
+
+| Beat | Why that frame |
+|---|---|
+| 91 | The first frame the WebP archive holds. A hard floor, not a choice. |
+| 93 | Chosen: the copy leads the picture rather than following it. |
+| 265 | `BRIDGE_v1` starts — the first solid block falls into the blueprint outline. |
+| 565 | The AR force-chevrons come on. Measured against the plates, not in the render map: 562 is clean, 565 carries the first marks. |
+| 604 | The first book is placed. Frame-to-frame change spikes 25× here. |
+
+Note what beat 1 costs. The fall from 91 to 265 — books, cubby contents, blocks, then the
+blueprint — is no longer a copy-free opening run, because beat 1's copy lands at 93, before
+any of it. The fall plays under beat 2's move instead. That is deliberate.
 
 The coda holds beat 4's copy rather than clearing it: the books coming to rest are that
 line's payoff, not a separate thought.
@@ -70,8 +85,12 @@ line's payoff, not a separate thought.
 the first beat, exactly as every later segment travels from the previous beat to its own.
 It plays if — and only if — the encoder put frames in front of the first beat; where a
 sequence starts *on* its first beat the travel is zero and the opening degenerates to a
-still hold, with no special case anywhere in the code. This section's sequence opens at
-frame 92, so the fall onto the desks is the first thing the visitor scrubs.
+still hold, with no special case anywhere in the code.
+
+**This section is currently that second case.** Its first beat is frame 91, which is also
+its first encoded frame, so segment 0 is a still hold and the fall onto the desks plays
+under beat 2's move instead. Move beat 1 later and the opening becomes a run again on its
+own — the mechanism is still there, it just has nothing to travel right now.
 
 ---
 
@@ -91,8 +110,8 @@ link back to the render is the point.
 
 Squarish desktop windows fetch **neither** — they take the static fallback, see §5.
 
-**Which frames exist.** The six beats, plus every 5th frame from 92 to 672 — **120 frames**,
-240 files. Beats are fixed by the render; the in-between list is whatever the encoder made.
+**Which frames exist.** The six beats, plus every 5th frame from 91 to 672 — **122 frames**,
+244 files. Beats are fixed by the render; the in-between list is whatever the encoder made.
 Nothing in the page hard-codes it: `manifest.json` is written by the encoder and read at
 runtime, so the page cannot ask for a frame that was never produced.
 
@@ -103,7 +122,7 @@ renumbers every file the moment the in-point moves.
 ```jsonc
 {
   "frames": [92, 97, 102, …, 672],     // every frame that exists, ascending
-  "beats":  [167, 235, 353, 477, 598, 672],
+  "beats":  [91, 93, 265, 565, 604, 672],
   "stem": "ap", "pad": 4, "ext": "webp",
   // w/h are a *beat* frame; moveW/moveH are a move frame. Both are needed — the page
   // budgets decoded memory per frame, and a beat costs 1.6x a move on the full cut and
@@ -121,8 +140,14 @@ renumbers every file the moment the in-point moves.
 
 | | Source | Size | Quality | Alpha quality |
 |---|---|---|---|---|
-| **Beats** (6) | lossless 16-bit PNG | native | 82 / 80 | **100** |
-| **Moves** (114) | q90 WebP archive | 1600 / 768 wide | 70 | **70** |
+| **Beats** (6) | lossless PNG *if one exists*, else the archive | native | 88 / 86 | **100** |
+| **Moves** (116) | q90 WebP archive | 1600 / 768 wide | 70 | **70** |
+
+Only one of the six beats still has a lossless plate — the beats moved to follow the
+animation and the renders did not follow them. The other five come from the q90 archive,
+which was measured rather than assumed: at quality 88 an archive-sourced beat lands at
+**46.1 dB** against the lossless master, where the old PNG-at-82 path managed **45.3**.
+The extra 13 KB a beat is the whole price.
 
 The beats are what a visitor actually dwells on — they sit motionless under copy for a
 screenful of scrolling — so they take no second lossy generation and no downscale. The moves
@@ -142,8 +167,8 @@ are only ever seen in passing.
 
 | Cut | Beats | Moves | Total |
 |---|---|---|---|
-| Full plate | 675 KB (6) | 5.48 MB (114, ~49 KB each) | **6.14 MB** |
-| Crop (`m`) | 373 KB (6) | 3.65 MB (114, ~33 KB each) | **4.01 MB** |
+| Full plate | 693 KB (6) | 5.58 MB (116, ~49 KB each) | **6.25 MB** |
+| Crop (`m`) | 357 KB (6) | 3.70 MB (116, ~33 KB each) | **4.05 MB** |
 
 A browser fetches **one cut, never both**, and only once the section is within **1.25
 viewport heights** — so this is not page-load weight. It streams in during the scroll,
@@ -505,7 +530,7 @@ it.
   `opacity` / `transform` on nodes the page authored.
 - **The picture carries one `role="img"` and a describing `aria-label`** on the camera element;
   both canvases are `aria-hidden`. A screen reader gets one description of the artwork, not
-  120 frames of nothing.
+  122 frames of nothing.
 - **Ticks are real `<button>`s** in a delegated click handler, keyboard-focusable, and
   **44px minimum touch target** on mobile (`min-height: 2.75rem`).
 - **Copy is `pointer-events: none` while faded out**, so invisible text is never a click
