@@ -101,6 +101,17 @@
   // read out.
   var LEAD_W = 0.4, HOLD_W = 1, TAIL_W = 0.7;
 
+  // Beats that are punctuation rather than a reading hold, by beat frame number. 431 is
+  // the voussoir ring closed and standing with no deck on it — a completed structure
+  // worth stopping on, but Build-the-capabilities' copy has been up since 276 and is
+  // being read out over the fill, so the hold is there to let the arch land, not to buy
+  // reading time. Same reasoning as TAIL_W, further along: 0.45 is about half a reading
+  // hold, which measures ~300px at 1440x900.
+  //
+  // Keyed by frame rather than by index so it survives beats being added either side of
+  // it; a number here that is not in BEATS is simply never consulted.
+  var SHORT_HOLDS = { 431: 0.45 };
+
   // When each copy block enters, as the render-frame number of the event it narrates.
   // These are content decisions, read off the plates frame by frame — the same kind of
   // measured constant as falling-blocks' CONTENT bounds — and they are the other half
@@ -311,12 +322,28 @@
       // pixel length exactly what it was at 0.60 while the scroll freed by shrinking
       // LEAD_W flows to the moves — the animation plays a little slower everywhere
       // rather than the section getting shorter. Change LEAD_W and this moves with it:
-      // hold px are unit x (1 - moveTotal) x span, and unit is meant to stay put.
+      // a hold is weight x unit x span, and unit is meant to stay put.
+      //
+      // Adding a beat is the one thing that moves unit anyway, and deliberately: the
+      // voussoir hold is paid for out of the other holds (725 -> 667px each at 1440x900,
+      // buying a 300px pause) rather than out of the moves, which would speed the
+      // animation up, or out of the section's height, which would make the page 9%
+      // longer. Add a full-weight beat and that becomes a 13% cut instead — at which
+      // point the height is the honest place to find it.
       var moveTotal = this.moveAttr !== null ? parseFloat(this.moveAttr)
         : (this.N > B.length ? 0.645 : 0.12);
       if (!sum) moveTotal = 0;
 
-      var wSum = LEAD_W + Math.max(0, K - 1) * HOLD_W + TAIL_W;
+      // One rule, read twice: the weights are needed as a total here and per segment in
+      // the loop below. Written out once instead, because the previous pair of copies
+      // agreed only as long as every middle beat weighed the same — a SHORT_HOLDS entry
+      // would have been spent by the loop without ever being counted in the total, and
+      // the section would have run past its own end by exactly that much.
+      var hw = [], wSum = 0;
+      for (k = 0; k <= K; k++) {
+        hw[k] = k === 0 ? LEAD_W : k === K ? TAIL_W : (SHORT_HOLDS[B[k]] || HOLD_W);
+        wSum += hw[k];
+      }
       var unit = (1 - moveTotal) / wSum;
       var rate = sum ? moveTotal / sum : 0;
 
@@ -325,7 +352,7 @@
       var at = 0;
       for (k = 0; k <= K; k++) {
         var mv = rate * travel[k];
-        var hd = unit * (k === 0 ? LEAD_W : k === K ? TAIL_W : HOLD_W);
+        var hd = unit * hw[k];
         // Per segment rather than one number for all of them, because the segments are
         // no longer the same length: the fraction of *this* segment spent moving is
         // what the scrub, the copy and the tick jumps all have to agree on.
