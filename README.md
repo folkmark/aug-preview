@@ -70,14 +70,16 @@ and must stay in step with the `aspect-ratio` on `[data-arch-box]`. Which cut th
 page loads is read from a CSS custom property, so the breakpoint that sizes the band
 is also the one that picks the file — there is no second copy of it to drift.
 
-120 frames ship — the six beats plus every fifth frame between them — so a move
-between beats is a real scrub. The sequence opens before its first beat, on the
-books and blocks falling onto the desks; the section plays that as its opening run
-and holds nothing still until they land. Beats and moves are encoded differently on
-purpose: the beats hold still under copy for a screenful of scrolling and stay
-lossless-sourced at native size, while the moves are only seen in passing and go out
-a little smaller. That split keeps the whole sequence at 6.1 MB for the desktop cut
-and 4.0 MB for the phone cut, of which a browser fetches one and never both.
+122 frames ship — the six beats plus every fifth frame between them, spanning 91 to
+672 — so a move between beats is a real scrub. Beats and moves are encoded differently
+on purpose: the beats hold still under copy for a screenful of scrolling and stay at
+native size, while the moves are only seen in passing and go out a little smaller. That
+split keeps the whole sequence at 6.3 MB for the desktop cut and 4.1 MB for the phone
+cut, of which a browser fetches one and never both.
+
+The beats are keyed to events in the animation rather than spaced evenly — the first
+solid block falling, the force annotations coming on, the first book being placed. See
+[`wordpress-handoff/sections/approach.md`](wordpress-handoff/sections/approach.md) §1.
 
 The section's height in `assets/approach.css` is its scroll budget, and the scrub
 divides that budget among the moves in proportion to the frames each covers — so the
