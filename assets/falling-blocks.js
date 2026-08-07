@@ -138,7 +138,7 @@
       this.layers = names;
       this.tier = this.tierWanted();
       this.revolutions = num(this, 'revolutions', 0.6);
-      this.budget = num(this, 'budget-mb', 128) * 1048576;
+      this.budget = this.budgetWanted();
       this.minWidth = num(this, 'min-width', 901);
       // What fraction of the stage's width the plate spans. 1 is full bleed, which
       // throws blocks off both edges of the screen at whatever size the viewport
@@ -188,6 +188,7 @@
       this.head = 0;
       this.dir = 1;
       this.win = this.N;
+      this.arc = this.N;
       this.live = false;
       this.drawn = -1;
       this.idle = 0;
@@ -233,6 +234,18 @@
     tierWanted() {
       var v = parseFloat(getComputedStyle(this).getPropertyValue('--fb-tier'));
       return (isFinite(v) && v > 0 ? v : num(this, 'width', 1440)) | 0;
+    }
+
+    // The byte ceiling, from the stylesheet like the tier, and for the same reason: a
+    // budget is a per-device decision. When the phone tier landed with the attribute's
+    // one number, each frame cost a quarter as much and the ceiling quietly bought
+    // four times as many — a 390px phone held 100.9 MiB of decoded hero where the
+    // 1440px desktop held 94.9. Cheaper frames should mean less memory on the device
+    // that has less, not more coverage at the same cost, and only the stylesheet
+    // knows which device this is.
+    budgetWanted() {
+      var v = parseFloat(getComputedStyle(this).getPropertyValue('--fb-budget'));
+      return (isFinite(v) && v > 0 ? v : num(this, 'budget-mb', 128)) * 1048576;
     }
 
     // Bandwidth is the one signal with no media query behind it. It never reaches the
@@ -351,15 +364,42 @@
     }
 
     // Frame 48's successor is frame 1. The wrap step is the same size as any other
-    // adjacent step, so the seam is not a boundary — nothing in here may compare
-    // indices with < or subtract them directly.
+    // adjacent step, so the seam is not a boundary — where the whole loop is
+    // reachable, nothing may compare indices with < or subtract them directly. Where
+    // it is not (see arc below), the strip is linear and plain subtraction is the
+    // correct arithmetic; both cases live in span()/keep() and nowhere else.
     cfwd(a, b) { var n = this.N; return ((b - a) % n + n) % n; }
 
-    keep(i) {
+    // The retention window around the head — one computation that keep() and the
+    // request walk in plan() both read. It used to be two: keep() retained `back`
+    // frames behind while plan() requested `win` forward, and the frames in the
+    // difference were fetched, decoded, closed by the guard in request(), and
+    // requested again by the plan() in that same settle chain — forever. Measured on
+    // a phone parked on the hero doing nothing: 1.01 MB per second, indefinitely,
+    // from a directory that is 1.41 MB. One definition, and the loop cannot exist.
+    //
+    // Near the end of the arc the forward room runs out, and the slots it cannot use
+    // are spent behind the head instead — a head at the last reachable frame still
+    // holds a full window rather than back+1 frames.
+    span() {
       var back = Math.max(2, Math.floor(this.win * 0.25));
       var fwd = this.win - back;
-      var d = this.dir > 0 ? this.cfwd(this.head, i) : this.cfwd(i, this.head);
-      return d <= fwd || d >= this.N - back;
+      if (this.arc < this.N) {
+        var room = this.dir > 0 ? this.arc - 1 - this.head : this.head;
+        if (fwd > room) { back = Math.min(this.win - room, this.arc - 1); fwd = room; }
+      }
+      return { fwd: fwd, back: back };
+    }
+
+    keep(i) {
+      var s = this.span();
+      if (this.arc >= this.N) {
+        var d = this.dir > 0 ? this.cfwd(this.head, i) : this.cfwd(i, this.head);
+        return d <= s.fwd || d >= this.N - s.back;
+      }
+      if (i < 0 || i >= this.arc) return false;
+      var a = this.dir > 0 ? i - this.head : this.head - i;
+      return a >= -s.back && a <= s.fwd;
     }
 
     plan() {
@@ -369,9 +409,22 @@
       // The window follows from the byte budget and is never hand-set. Decoded size
       // is width x height x 4 no matter how small the WebP is on disk, so raising the
       // encoded width shrinks the window automatically instead of silently
-      // multiplying what is held.
+      // multiplying what is held. The budget itself is re-read here because the
+      // stylesheet may size it per viewport, exactly as it picks the tier — see
+      // budgetWanted().
+      this.budget = this.budgetWanted();
       var bpf = this.tier * Math.round(this.tier * PLATE_H / PLATE_W) * 4;
       this.win = Math.max(4, Math.min(this.N, Math.floor(this.budget / (bpf * this.layers.length))));
+
+      // What the playhead can ever reach. Below one revolution the tumble never
+      // crosses the wrap — the highest index it computes is floor(revolutions x N) —
+      // so the frames past it are pure cost: they were fetched and decoded on every
+      // visit (fb0030-fb0048, 40% of the directory's bytes) and could only ever
+      // appear as a substitute. The files stay encoded, because the seamless 48-to-1
+      // wrap is a property of the asset and a future revolutions >= 1 gets the whole
+      // loop back by changing one attribute.
+      this.arc = this.revolutions >= 1 ? this.N
+        : Math.min(this.N, Math.floor(this.revolutions * this.N) + 1);
 
       // Evict first, so the requests below are issued against a truthful budget.
       for (i = 0; i < this.N; i++) {
@@ -387,8 +440,16 @@
       // it, so both plates of frame i go out before either plate of i+1. Filling one
       // layer first would spend the whole warm-up with a full far plate, an empty near
       // one, and not one drawable frame between them.
-      for (var d = 0; d < this.win && this.inflight < MAX_INFLIGHT; d++) {
-        i = this.dir > 0 ? (this.head + d) % this.N : ((this.head - d) % this.N + this.N) % this.N;
+      //
+      // The walk visits exactly the set keep() retains — forward to the window's
+      // ahead edge, then backward — so nothing requested here can be closed on
+      // arrival for being outside it.
+      var s = this.span();
+      for (var d = 0; d <= s.fwd + s.back && this.inflight < MAX_INFLIGHT; d++) {
+        var off = d <= s.fwd ? d : -(d - s.fwd);
+        i = this.dir > 0 ? this.head + off : this.head - off;
+        if (this.arc >= this.N) i = ((i % this.N) + this.N) % this.N;
+        else if (i < 0 || i >= this.arc) continue;
         for (n = 0; n < this.layers.length && this.inflight < MAX_INFLIGHT; n++) {
           var L = this.layers[n];
           if (this.bits[L][i] || this.pend[L][i]) continue;
@@ -521,7 +582,13 @@
       // never be derived from the transform above or vice versa.
       var want = Math.floor(p * this.revolutions * this.N) % this.N;
       if (want !== this.head) {
-        this.dir = this.cfwd(this.head, want) <= this.N / 2 ? 1 : -1;
+        // Below one revolution the wrap is unreachable, so the shortest circular
+        // path is a lie: a forward fling from frame 1 to 27 measures shorter the
+        // wrong way round and would point the whole prefetch window away from the
+        // scroll. On the linear strip, direction is just which side want is on.
+        this.dir = this.arc < this.N
+          ? (want >= this.head ? 1 : -1)
+          : (this.cfwd(this.head, want) <= this.N / 2 ? 1 : -1);
         this.head = want;
         this.plan();
       }
