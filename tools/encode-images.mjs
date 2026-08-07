@@ -15,18 +15,14 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+// Photography and headshots come from the masters, which are kept off the repository —
+// see .gitignore. The illustrations came in already rendered and are committed, so they
+// have their own root and re-encode with nothing restored. Jobs name which they use, and
+// a job whose source is absent is skipped rather than killing the run: that way changing
+// an icon does not require fetching 88 MB of photography first.
 const SRC = path.join(root, 'project/renders/sources');
+const ICONS = path.join(root, 'assets/icons-rigtest');
 const OUT = path.join(root, 'assets');
-
-// The source photography and renders are kept off the repository — see .gitignore. The
-// sized WebP under assets/ are committed, so the site builds without any of this.
-if (!fs.existsSync(SRC)) {
-  console.error(`No source images at ${path.relative(root, SRC)}/
-
-Restore the originals to that path to re-encode. Each job below names the file it
-wants, relative to it — for example images/classroom-morning.png and team/<name>.jpg.`);
-  process.exit(1);
-}
 
 // Imported here rather than at the top so the missing-masters message above wins: sharp
 // is not a repo dependency, and a bare ERR_MODULE_NOT_FOUND is a worse first thing to
@@ -50,20 +46,83 @@ const JOBS = [
   // Under-resolution at source; upscaling would only invent detail, so these ship at
   // their native size and stay soft until someone supplies better originals.
   { in: 'team/blair-lehman.jpeg',  out: 'team/blair-lehman.webp',   width: 512, square: true },
-  { in: 'team/ryan-baker.png',     out: 'team/ryan-baker.webp',     width: 512, square: true }
+  { in: 'team/ryan-baker.png',     out: 'team/ryan-baker.webp',     width: 512, square: true },
+
+  // The three illustrations in the outputs row on the home page. These take a different
+  // treatment from everything above, for a reason worth stating: they arrived as
+  // 1200x1200 lossless plates with wildly different framing inside the square. Measured
+  // from the alpha, the content boxes are 702x897 (brain, portrait), 808x878 (network),
+  // and 1011x556 (laptop, landscape) — sitting anywhere from 144 to 373 px below the top
+  // edge. Dropped into identical boxes they read as three different sizes, because most
+  // of what the box is fitting is each plate's own idiosyncratic whitespace.
+  //
+  // So: trim to the content, then re-pad to one common 3:2 canvas with equal margins.
+  // Every plate then arrives at the page pre-fitted to the box it renders into, and the
+  // three carry matching weight without the page having to know anything about them.
+  //
+  // Normalising by *area* rather than by bounding box was tried and is wrong here. The
+  // network plate is a deliberately airy tangle of thin lines and carries only 21% of the
+  // brain's ink for a comparable bounding box; matching ink would scale it 2.2x and burst
+  // the frame. What reads at a glance is the extent, not the coverage.
+  //
+  // 810x540 is twice the 405 CSS px the box occupies in the desktop three-up, which is
+  // what a 2x screen resolves; the phone's box is smaller still at 351. The 1200px
+  // originals are more than the box can ever show, and their losslessness is what made
+  // them 202-343 KB apiece. The set goes 808 KB -> ~190 KB, lazy and below the fold.
+  //
+  // network.webp comes out five times the size of the other two, and that is the alpha,
+  // not the colour: flattened it is 17 KB against 131 KB with the alpha channel kept.
+  // Its tangle of thin anti-aliased lines and the wide soft shadow beneath it are simply
+  // expensive to store. Reaching for `quality` will not touch it — 82 to 60 saves 30 KB
+  // and starts to band the gradients — and nor will alphaQuality, which buys 13 KB at 80.
+  // The only real lever is flattening it onto the panel colour, which is deliberately not
+  // done: it would weld #f6f2e8 into the file and the tile would show a wrong-coloured
+  // rectangle the moment the panel is restyled.
+  { in: 'ICON_1_brain_0001.webp',   out: 'illustrations/brain.webp',   root: ICONS, box: [810, 540], margin: 0.07, alpha: true },
+  { in: 'ICON_2_network_0001.webp', out: 'illustrations/network.webp', root: ICONS, box: [810, 540], margin: 0.07, alpha: true },
+  { in: 'ICON_3_laptop_0001.webp',  out: 'illustrations/laptop.webp',  root: ICONS, box: [810, 540], margin: 0.07, alpha: true }
 ];
 
+// A job whose source is missing is skipped, not fatal — see the note on the roots above.
+const runnable = JOBS.filter((j) => fs.existsSync(path.join(j.root || SRC, j.in)));
+const skipped = JOBS.filter((j) => !runnable.includes(j));
+if (!runnable.length) {
+  console.error(`No source images found.
+
+Photography and headshots are read from ${path.relative(root, SRC)}/, which is kept off
+the repository — restore the originals there to re-encode them. The illustrations read
+from ${path.relative(root, ICONS)}/, which is committed.`);
+  process.exit(1);
+}
+
+const TRANSPARENT = { r: 0, g: 0, b: 0, alpha: 0 };
+
 let before = 0, after = 0;
-for (const job of JOBS) {
-  const src = path.join(SRC, job.in);
+for (const job of runnable) {
+  const src = path.join(job.root || SRC, job.in);
   const dst = path.join(OUT, job.out);
   fs.mkdirSync(path.dirname(dst), { recursive: true });
 
   const meta = await sharp(src).metadata();
-  const pipe = sharp(src);
-  // Never enlarge: withoutEnlargement keeps the two small headshots at their own
-  // size rather than fabricating pixels.
-  if (job.square) {
+  let pipe = sharp(src);
+  if (job.box) {
+    // Trim the plate's own transparent margin away, fit what is left inside the box less
+    // its margin, then pad back out to the box centred. Two passes rather than one
+    // pipeline: sharp keeps only the last resize in a chain, so the fit and the pad have
+    // to be separated by a buffer or the fit is silently discarded.
+    const [bw, bh] = job.box;
+    const inner = await sharp(src)
+      .trim({ background: TRANSPARENT, threshold: 0 })
+      .resize({
+        width: Math.round(bw * (1 - 2 * job.margin)),
+        height: Math.round(bh * (1 - 2 * job.margin)),
+        fit: 'inside', kernel: 'lanczos3',
+      })
+      .toBuffer();
+    pipe = sharp(inner).resize({ width: bw, height: bh, fit: 'contain', background: TRANSPARENT });
+  } else if (job.square) {
+    // Never enlarge: withoutEnlargement keeps the two small headshots at their own
+    // size rather than fabricating pixels.
     pipe.resize({ width: job.width, height: job.width, fit: 'cover', position: 'top', withoutEnlargement: true, kernel: 'lanczos3' });
   } else {
     pipe.resize({ width: job.width, withoutEnlargement: true, kernel: 'lanczos3' });
@@ -76,10 +135,14 @@ for (const job of JOBS) {
   if (job.alpha && !wrote.hasAlpha) throw new Error(`${dst} lost its alpha channel`);
   const src_b = fs.statSync(src).size;
   before += src_b; after += info.size;
-  const soft = wrote.width < job.width ? '  (source too small — ships soft)' : '';
+  const soft = job.width && wrote.width < job.width ? '  (source too small — ships soft)' : '';
   console.log(
     `${job.out.padEnd(34)} ${String(meta.width) + 'x' + meta.height} ${(src_b / 1024).toFixed(0)}KB` +
     ` -> ${wrote.width}x${wrote.height} ${(info.size / 1024).toFixed(0)}KB${soft}`
   );
 }
 console.log(`\n${(before / 1048576).toFixed(2)} MB -> ${(after / 1024).toFixed(0)} KB`);
+if (skipped.length) {
+  console.log(`\nskipped ${skipped.length} job(s) whose source is not present:`);
+  for (const j of skipped) console.log(`  ${path.relative(root, path.join(j.root || SRC, j.in))}`);
+}
