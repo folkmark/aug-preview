@@ -50,16 +50,18 @@ const OUT = path.join(root, 'assets/approach');
 //   265  the wireframe arch fully rendered and at rest (draws in over 201-236; the
 //        first solid block does not arrive until ~276). Define-the-role's still.
 //   481  the roadway laid: the last deck blocks land by 476 and the structure stands
-//        complete and unmarked. Build-the-capabilities' still.
+//        complete and unmarked. Co-design's first still — its cue is the first plank
+//        entering at 436, so the words are up before this hold. Build-the-capabilities
+//        holds no still at all: its window (276-436) is the arch filling, pure motion.
 //   601  the AR force overlay fully resolved: first chevrons at 565, all blocks marked
 //        and the ring saturated by 591-601, book not yet in frame (enters 606).
-//        Co-design's still.
+//        Co-design's second still.
 //   636  the first test book settled at the crown (touches the deck at 621, slides
 //        home by 636). Test-learn-begin-again's still.
 //   672  coda. Both books at rest on the keystone.
 //
 // The copy does NOT wait for these stills — each block enters at its event's onset
-// (93, 276, 565, 621: the CUES table in assets/approach.js) and rides the motion in,
+// (93, 276, 436, 621: the CUES table in assets/approach.js) and rides the motion in,
 // so the fall, the build, the overlay and the landing all play with their words up.
 // Beats and cues are two halves of one choreography: change one, re-check the other.
 const BEATS = [91, 265, 481, 601, 636, 672];
