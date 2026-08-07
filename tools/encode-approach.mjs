@@ -40,30 +40,33 @@ const MOVE_SRC = path.join(root, 'project/renders/full-desk-anim-webp');
 const OUT = path.join(root, 'assets/approach');
 
 // Where the six beats come to rest — each the frame at which that beat's copy is up and
-// the picture is still. Keyed to what the animation does, not to even spacing:
+// the picture is still. Keyed to what the animation does, and specifically to COMPLETED
+// states: a still is a frame the reader dwells on, and a frozen half-event — a book in
+// mid-air, a wireframe half-drawn — reads as the animation being stuck, which visitors
+// reported twice against beat sets that held mid-event. Every number below was read off
+// the plates, frame by frame, not off the render map:
 //
-//   91   the sequence's first frame, held. Nothing has happened yet.
-//   93   Define the role — the desks barely touched; the copy leads the wireframe.
-//   265  Build the capabilities — BRIDGE_v1 starts, the first solid block falls into
-//        the blueprint outline.
-//   565  Co-design the applications — the AR force-chevrons come on. Measured against
-//        the plates rather than read from the render map, which does not cover it:
-//        frame 562 is clean and 565 carries the first marks.
-//   604  Test, learn, begin again — the first book is placed. Frame-to-frame change
-//        spikes 25x here, which confirms the render map's 604-632 against the plates.
+//   91   the sequence's first frame, held for a breath. Bare desks; nothing yet.
+//   265  the wireframe arch fully rendered and at rest (draws in over 201-236; the
+//        first solid block does not arrive until ~276). Define-the-role's still.
+//   481  the roadway laid: the last deck blocks land by 476 and the structure stands
+//        complete and unmarked. Build-the-capabilities' still.
+//   601  the AR force overlay fully resolved: first chevrons at 565, all blocks marked
+//        and the ring saturated by 591-601, book not yet in frame (enters 606).
+//        Co-design's still.
+//   636  the first test book settled at the crown (touches the deck at 621, slides
+//        home by 636). Test-learn-begin-again's still.
 //   672  coda. Both books at rest on the keystone.
 //
-// Note what this costs: the fall from 91 to 167 is no longer a copy-free opening run,
-// because beat 1's copy lands at 93, before it. The fall now plays under beat 2's move.
-// That is deliberate — see the segment-0 note in assets/approach.js.
-const BEATS = [91, 93, 265, 565, 604, 672];
+// The copy does NOT wait for these stills — each block enters at its event's onset
+// (93, 276, 565, 621: the CUES table in assets/approach.js) and rides the motion in,
+// so the fall, the build, the overlay and the landing all play with their words up.
+// Beats and cues are two halves of one choreography: change one, re-check the other.
+const BEATS = [91, 265, 481, 601, 636, 672];
 
-// Where the sequence opens. This now coincides with the first beat rather than sitting
-// in front of it, because beat 1's copy moved to f 93 — so the page holds still on 91
-// and the fall onto the desks plays under beat 2's move instead of as a copy-free
-// opening run. The distinction still matters to the encoder: OPEN is what the frame grid
-// extends back to, and moving beat 1 later would make the opening a run again with no
-// other change. See the segment-0 note in assets/approach.js.
+// Where the sequence opens. It coincides with the first beat: the page holds still on
+// 91 for a breath and the whole fall onto the desks plays inside beat 2's move, under
+// Define-the-role's copy, which enters at 93 with the first book.
 //
 // 91 is the first frame the WebP archive holds, not a chosen in-point: the render map
 // puts the books landing from f 77, so the first fourteen frames of the fall are in the
