@@ -46,9 +46,18 @@ falling-blocks:not([data-fb-motion="on"]) {
 
 /* Phones scrub the small tier. 900px rather than the design system's 991 because the
    element's own former still-image cutoff was 901, and keeping the same line means
-   this change swaps what those viewports get without moving where anything changes. */
-@media (max-width: 900px) {
-  falling-blocks { --fb-tier: 720; }
+   this change swaps what those viewports get without moving where anything changes.
+   The short-viewport arm catches large phones rotated: an iPhone Pro Max is 926 CSS px
+   wide in landscape, over the width line, and was measured scrubbing the 1440 tier
+   there.
+
+   The budget travels with the tier, and is smaller for a reason that is easy to get
+   backwards: a byte ceiling alone buys MORE frames when each one gets cheaper. At the
+   attribute's 128 MB the phone held 17 pairs — 100.9 MiB of decoded bitmaps, more
+   than the desktop's 94.9 — on the device least able to afford it. 48 MB holds 8
+   pairs, ~47 MiB, still a wider window than the desktop's five. */
+@media (max-width: 900px), (max-height: 500px) {
+  falling-blocks { --fb-tier: 720; --fb-budget: 48; }
 }
 
 falling-blocks [data-fb-stage] {
