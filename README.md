@@ -134,13 +134,13 @@ access.
 
 Each page has its own URL:
 
-| Page              | URL                 |
-| ----------------- | ------------------- |
-| Home              | `/`                 |
-| The Challenge     | `/the-challenge/`   |
-| Our Approach      | `/our-approach/`    |
-| Who We Are        | `/who-we-are/`      |
-| Follow Our Work   | `/follow-our-work/` |
+| Page              | URL           |
+| ----------------- | ------------- |
+| Home              | `/`           |
+| The Challenge     | `/challenge/` |
+| Our Approach      | `/approach/`  |
+| Who We Are        | `/team/`      |
+| Follow Our Work   | `/contact/`   |
 
 They all render from `index.html`, but the build writes a real file per route,
 so a direct link, a refresh, or a crawler gets that page from the server with a
