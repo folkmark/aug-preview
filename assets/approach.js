@@ -90,10 +90,30 @@
   // What the scroll budget buys besides motion, as relative weights: the settle after
   // the opening run, each copy beat's reading hold, and the coda. They are weights
   // rather than fractions because the motion's share is set separately — see load() —
-  // and whatever is left over is divided among these in proportion. The lead is a
-  // little longer than a beat's hold because the camera is still pulling in through it,
-  // and the coda a little shorter because its copy is already up and being read out.
-  var LEAD_W = 1.05, HOLD_W = 1, TAIL_W = 0.7;
+  // and whatever is left over is divided among these in proportion.
+  //
+  // The lead is deliberately the shortest. It is the one hold with no copy over it, so
+  // every pixel of it is a frozen frame and nothing else — measured at the old 1.05 it
+  // was 834px of the books sitting still before the first word arrived, the longest
+  // dead run in the section and the thing visitors reported as "stuck". 0.4 keeps a
+  // settle after the fall (the camera is still pulling in) without the wait. The coda
+  // is a little shorter than a reading hold because its copy is already up and being
+  // read out.
+  var LEAD_W = 0.4, HOLD_W = 1, TAIL_W = 0.7;
+
+  // The copy's slide, in pixels of scroll and pixels of travel. Scroll-anchored rather
+  // than segment-fraction-anchored because the segments are different lengths: a fade
+  // that is 14% of its segment gave step 01 a 521px dwell and step 03 a 313px one, so
+  // every beat entered at a different speed and stayed a different time for no reason a
+  // visitor could see. In pixels, every beat behaves identically on every viewport.
+  //
+  // FADE_IN ends exactly where the move ends, so the text rises through the move's
+  // deceleration and is fully readable the moment the picture comes to rest. FADE_OUT
+  // spends the first pixels of the *next* move, inside glide()'s ramp, so the text
+  // leaves as the picture visibly starts moving — between the two, the frame is never
+  // both frozen and wordless, which is where the old model spent 22% of the section.
+  // RISE is the entrance travel; 8px read as a shimmer, not an arrival.
+  var FADE_IN = 260, FADE_OUT = 220, RISE = 28;
 
   function num(el, name, dflt) {
     var v = parseFloat(el.getAttribute(name));
@@ -138,6 +158,14 @@
 
       this.copies = [].slice.call(this.querySelectorAll('[data-arch-copy]'));
       this.ticks = [].slice.call(this.querySelectorAll('[data-arch-tick]'));
+      // The body paragraph of each block, cached once: chrome() staggers it behind the
+      // number and heading every tick, and a per-tick querySelector would be a DOM
+      // search inside a scroll handler. The last <p> is the body by the markup
+      // contract — the first is the step number.
+      this.kids = this.copies.map(function (c) {
+        var ps = c.querySelectorAll('p');
+        return ps.length > 1 ? ps[ps.length - 1] : null;
+      });
 
       // A full-page cache serialises the rendered DOM, tags and all. Left in place,
       // the next visitor gets a canvas that claims to hold a frame it does not have
@@ -260,8 +288,13 @@
       // This is only half of how fast the piece plays — the other half is the section's
       // height, which is the budget being shared out. Raising this share without raising
       // the height buys motion out of reading time; the two are meant to move together.
+      // 0.645 is derived, not chosen: it is the share that keeps each reading hold's
+      // pixel length exactly what it was at 0.60 while the scroll freed by shrinking
+      // LEAD_W flows to the moves — the animation plays a little slower everywhere
+      // rather than the section getting shorter. Change LEAD_W and this moves with it:
+      // hold px are unit x (1 - moveTotal) x span, and unit is meant to stay put.
       var moveTotal = this.moveAttr !== null ? parseFloat(this.moveAttr)
-        : (this.N > B.length ? 0.60 : 0.12);
+        : (this.N > B.length ? 0.645 : 0.12);
       if (!sum) moveTotal = 0;
 
       var wSum = LEAD_W + Math.max(0, K - 1) * HOLD_W + TAIL_W;
@@ -283,6 +316,25 @@
         // search treats the final entry as the end of the scroll, and a rounding error
         // there would leave a sliver of the section past the last segment.
         this.bounds.push(k === K ? 1 : at);
+      }
+
+      // Each copy's two fixed points on the progress line: where its rise must be
+      // complete (its own move's end) and where its exit begins (its own hold's end,
+      // which is the next segment's start). The fade widths around these are added in
+      // chrome() in scroll pixels, so they cannot be precomputed here — the span is a
+      // layout fact that changes on resize; these are not.
+      this.marks = [];
+      for (k = 1; k < K; k++) {
+        this.marks.push({ up: this.bounds[k] + (this.bounds[k + 1] - this.bounds[k]) * this.moves[k],
+                          down: this.bounds[k + 1] });
+      }
+      // The last copy's exit is not its hold's end — it stays up through the coda while
+      // the books land, because they are that line's payoff, and leaves over the coda's
+      // last stretch instead.
+      if (this.marks.length) {
+        var lastMark = this.marks[this.marks.length - 1];
+        lastMark.down = this.bounds[K] + (1 - this.bounds[K]) * 0.86;
+        lastMark.tail = true;
       }
     }
 
@@ -455,7 +507,7 @@
         if (idx !== this.head) { this.head = idx; this.plan(); }
         else if (!this.win) this.plan();
         this.paint(idx, j, mix);
-        this.chrome(seg, t);
+        this.chrome(p);
       }
 
       this.camera(p);
@@ -516,27 +568,60 @@
       this.cam.style.transform = 'translateY(' + (1.2 * open).toFixed(2) + '%) scale(' + sc.toFixed(4) + ')';
     }
 
-    // Copy blocks belong to segments 1..n. The opening carries none, and the coda holds
-    // the last line rather than clearing it: the books coming to rest on the arch are
-    // that line's payoff, not a separate thought.
-    chrome(seg, t) {
-      var last = this.copies.length - 1, coda = this.bounds.length - 2;
-      // The rise starts where this segment's move ends. Capped against what is left of
-      // the segment rather than fixed at 0.14, so a `move` attribute long enough to
-      // crowd the hold shortens the fade instead of leaving the copy stranded part-way
-      // up when the segment runs out.
-      var mv = this.moves[seg] || 0, fade = Math.min(0.14, (1 - mv) * 0.4);
+    // The copy's whole life is two anchors from plot() plus two pixel widths. It rises
+    // through its own move's deceleration and is fully up the instant the picture
+    // stops; it stays up for the entire hold; it leaves inside the next move's ramp,
+    // while the picture is visibly going somewhere. The old model — in after the move,
+    // out before the hold ended — left a frozen, wordless frame on both sides of every
+    // beat, and that bracketing was measured at 22% of the whole section. Under this
+    // one the frame is only ever still while there are words on it, which was the
+    // stated design all along; the opening settle and a short closure on the last
+    // frame are the deliberate exceptions.
+    //
+    // The picture animating under legible text is not a violation of "nothing moves
+    // while there are words to read" so much as its edges: the text is fully readable
+    // for the whole still, and the motion it overlaps is the ramp ends, where glide()
+    // is slowest. The coda always worked this way — the books land under step 04's
+    // line because they are that line's payoff — and this generalises it.
+    chrome(p) {
+      var span = (this.offsetHeight - this.stage.offsetHeight) || 1;
+      var fi = FADE_IN / span, fo = FADE_OUT / span;
+      var active = -1;
       for (var i = 0; i < this.copies.length; i++) {
-        var own = seg === i + 1, held = i === last && seg === coda;
-        var o = 0;
-        if (own) o = smooth((t - mv) / fade) * (i === last ? 1 : 1 - smooth((t - 0.92) / 0.08));
-        else if (held) o = 1 - smooth((t - 0.86) / 0.14);
-        o = clamp01(o);
+        var m = this.marks && this.marks[i];
+        var rise = 0, exit = 0;
+        if (m) {
+          rise = smooth((p - (m.up - fi)) / fi);
+          // The last copy's exit is anchored to the section's end, not to a pixel
+          // width: the coda's remaining stretch is what there is, and overrunning it
+          // would strand the line partly visible at the unpin.
+          exit = smooth((p - m.down) / (m.tail ? Math.max(1e-4, 1 - m.down) : fo));
+          if (p >= m.up - fi) active = i;
+        }
+        var o = clamp01(rise * (1 - exit));
         var el = this.copies[i];
         el.style.opacity = o.toFixed(3);
-        el.style.transform = 'translateY(' + (8 * (1 - o)).toFixed(2) + 'px)';
+        // Two signs, one direction of travel: the block rises RISE px into place, and
+        // on exit keeps going up rather than sinking back where it came from — leaving
+        // with intent reads as a transition, dimming in place reads as a glitch.
+        el.style.transform = 'translateY(' + (RISE * (1 - rise) - 20 * exit).toFixed(2) + 'px)';
         el.style.pointerEvents = o > 0.4 ? 'auto' : 'none';
-        if (this.ticks[i]) this.ticks[i].style.opacity = (own || held) ? '1' : '0.4';
+        // The body trails the number and heading by a quarter step, in opacity and in
+        // a shorter travel of its own. One envelope, two phases: the accent lands
+        // first and pulls the eye, the paragraph resolves under it.
+        var body = this.kids && this.kids[i];
+        if (body) {
+          var ob = smooth((o - 0.25) / 0.75);
+          body.style.opacity = ob.toFixed(3);
+          body.style.transform = 'translateY(' + (14 * (1 - ob)).toFixed(2) + 'px)';
+        }
+      }
+      // Exactly one tick lit once the first beat's copy has begun: the one whose copy
+      // the reader is on or approaching. Inactive ticks get no inline value at all —
+      // an inline opacity would sit on top of the stylesheet's :hover forever, which
+      // is how the old '0.4' quietly disabled hover for the life of the session.
+      for (i = 0; i < this.ticks.length; i++) {
+        this.ticks[i].style.opacity = i === active ? '1' : '';
       }
     }
 
