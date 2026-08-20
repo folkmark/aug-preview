@@ -65,15 +65,37 @@ function retitle(html, { title, description }) {
     .replace(/(<meta name="twitter:description" content=")[^"]*(">)/, `$1${d}$2`);
 }
 
-// A route file lives one directory down, so every reference into assets/, _ds/
-// and support.js has to climb back out. A <base> tag would do this in one line
-// but would also re-point the page's url(#gradient) and <use href="#id">
-// references at the base URL, which breaks the SVG artwork.
-function reparent(html) {
+// Every reference into assets/, _ds/ and support.js is made absolute against the base
+// the site is mounted at. Relative paths cannot work here, and the reason is the router
+// rather than the directory layout: go() calls history.pushState to move the URL to
+// /team/ and then re-renders, but the markup React renders still carries the relative
+// paths of the file the visitor actually loaded. A browser resolves a relative src
+// against the document URL at the moment the element is created, which pushState has
+// just changed — so a visitor who lands on / and clicks through to the team page asks
+// for /team/assets/team/*.webp and gets a grid of broken images that heal on reload,
+// the reload being the first time the served file's paths and the URL agree.
+//
+// Writing each file for its own depth cannot fix that: after a client-side navigation
+// the document URL and the markup come from two different pages, so no single relative
+// prefix is right for both. Absolute is, at every depth and on every route. 404.html
+// already had to be built this way, being served from whatever URL was missed; the
+// router puts every page in the same position.
+//
+// A <base> tag would do this in one line but would also re-point the page's
+// url(#gradient) and <use href="#id"> references at the base URL, which breaks the SVG
+// artwork.
+//
+// The leading character class earns both of its additions. It carries whitespace, comma
+// and "(" so srcset candidates after the first — which follow ", " rather than a quote —
+// and any unquoted url(assets/...) are caught; the hero's srcset was being half-rewritten
+// and 404ing its 2400w plate. And it excludes "/", so an already-absolute /assets/ is
+// never rewritten a second time into //assets/, which a browser reads as
+// protocol-relative and sends to an entirely different host.
+function absolutise(html) {
   return html
-    .replace(/(["'])assets\//g, '$1../assets/')
-    .replace(/(["'])_ds\//g, '$1../_ds/')
-    .replace(/(["'])\.\/support\.js\1/g, '$1../support.js$1');
+    .replace(/(["'\s,(])assets\//g, `$1${basePath}assets/`)
+    .replace(/(["'\s,(])_ds\//g, `$1${basePath}_ds/`)
+    .replace(/(["'])\.\/support\.js\1/g, `$1${basePath}support.js$1`);
 }
 
 function copyDir(from, to) {
@@ -92,7 +114,9 @@ fs.rmSync(outDir, { recursive: true, force: true });
 fs.mkdirSync(outDir, { recursive: true });
 
 const home = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-fs.writeFileSync(path.join(outDir, 'index.html'), home);
+// The root file gets the same treatment as the routes. It is the one the bug starts
+// from: land here, click any nav item, and its relative paths follow you one level down.
+fs.writeFileSync(path.join(outDir, 'index.html'), absolutise(home));
 
 for (const file of COPY_FILES) fs.copyFileSync(path.join(root, file), path.join(outDir, file));
 for (const dir of COPY_DIRS) copyDir(path.join(root, dir), path.join(outDir, dir));
@@ -107,7 +131,7 @@ if (fs.existsSync(path.join(root, 'CNAME'))) {
 for (const page of PAGES) {
   const dir = path.join(outDir, page.slug);
   fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, 'index.html'), reparent(retitle(home, page)));
+  fs.writeFileSync(path.join(dir, 'index.html'), absolutise(retitle(home, page)));
 }
 
 // The slugs were shortened after the preview had been shared, so links to the old
@@ -144,10 +168,7 @@ for (const [from, to] of MOVED) {
 // GitHub Pages serves 404.html from whatever URL was missed, so its references
 // have to be absolute — relative ones would resolve against the bad path — and
 // it has to be told the real base so its links point back into the site.
-const notFound = home
-  .replace(/(["'])assets\//g, `$1${basePath}assets/`)
-  .replace(/(["'])_ds\//g, `$1${basePath}_ds/`)
-  .replace(/(["'])\.\/support\.js\1/g, `$1${basePath}support.js$1`)
+const notFound = absolutise(home)
   .replace('<head>', `<head>\n<script>window.__siteBase = ${JSON.stringify(basePath)};</script>`);
 fs.writeFileSync(path.join(outDir, '404.html'), notFound);
 
@@ -207,8 +228,8 @@ function refsIn(html) {
   // failure a phone would hit and a desktop would not, and a sequence that ships
   // half-encoded has to fail here rather than 404 mid-scroll.
   //
-  // The base is captured off the page rather than assumed, because reparent() rewrites
-  // it differently on every route file and 404.html carries an absolute one.
+  // The base is captured off the page rather than assumed, because absolutise() has
+  // rewritten it to whatever base this build was given.
   // The scrub is not mounted at the moment — the home page carries a still where the
   // arch used to be built, and the component is kept for the shortened sequence that
   // replaces it. So its absence is not a fault; only a scrub on the page with no
@@ -230,11 +251,11 @@ function refsIn(html) {
       out.add(base + "manifest.json");
     }
   }
-  // The base is captured off the page rather than assumed, because reparent() has
-  // rewritten it differently on every route file and 404.html carries an absolute one.
-  // This is also why the base has to stay a single quoted attribute value beginning
-  // assets/ — build it from pieces and reparent() misses it, this scan misses it, and
-  // every route page 404s on all ninety-six frames while the home page looks fine.
+  // The base is captured off the page rather than assumed, because absolutise() has
+  // rewritten it to whatever base this build was given. This is also why the base has to
+  // stay a single attribute value beginning assets/ — build it from pieces and
+  // absolutise() misses it, this scan misses it, and every page 404s on all ninety-six
+  // frames with nothing here to say so.
   const fall = html.match(/<falling-blocks\b([^>]*)>/);
   if (!fall || !fallManifest) {
     problems.push('the falling-blocks element is no longer readable — check this scan');

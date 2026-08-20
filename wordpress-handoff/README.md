@@ -429,7 +429,7 @@ editable fields versus staying in templates:
 - **Team members** (Who We Are) — 28 people across four grids: Leadership, Research
   Partners, Technology Partners and Education Fellows. Each carries a headshot, a name, a
   role and optional LinkedIn/website links; fellows also carry a school and location. The
-  cards render no bio — the bios exist, but only in the tracking sheet. 11 of the 28 have no
+  cards render no bio — the bios exist, but only in the tracking sheet. 9 of the 28 have no
   usable photograph yet and fall back to a grey square, so whatever models this has to treat
   the image as optional. The obvious candidate for a custom post type.
 - **Research items** (Home, Follow Our Work) — title, description, link.

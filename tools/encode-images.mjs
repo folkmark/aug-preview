@@ -46,6 +46,7 @@ const JOBS = [
   // there against a 680x600 Drupal derivative in the sheet, Laura 1200x1800 against 300x450,
   // Sarah 2617x2500 against a 1024x978 re-export. Check both before adding anyone new — a
   // photo that has been pasted through a spreadsheet has usually lost a generation.
+  { in: 'team/sherry-lachman.jpg',     out: 'team/sherry-lachman.webp',     width: 512, square: true },
   { in: 'team/raquel-romano.png',      out: 'team/raquel-romano.webp',      width: 512, square: true },
   { in: 'team/joan-lee.jpg',           out: 'team/joan-lee.webp',           width: 512, square: true },
   { in: 'team/angela-stewart.jpg',     out: 'team/angela-stewart.webp',     width: 512, square: true },
@@ -76,11 +77,15 @@ const JOBS = [
   { in: 'team/danielle-ragavanis.jpg', out: 'team/danielle-ragavanis.webp', width: 512, square: true },
   { in: 'team/alondra-ramos.jpg',      out: 'team/alondra-ramos.webp',      width: 512, square: true },
 
-  // Nikki Wallace is deliberately absent. The sheet has an 800x800 for her, but it is a
-  // full-body conference stage photograph against a magenta backdrop, with her face about
-  // 150 px inside the frame. Cropping it square yields a soft, small face that still fights
-  // every neighbouring tile, which is worse than the placeholder; her card stays empty until
-  // a real headshot arrives. Add the job here when one does.
+  // Nikki Wallace's is the one photograph here that is not a headshot: a full-body
+  // conference stage shot against a magenta backdrop, her face about 165 px inside an
+  // 800 px frame. The square cover crop cannot help — the master is already square, so
+  // it would pass straight through and ship a whole stage into a 200 px tile. The crop
+  // box below is measured to her head and shoulders, which is the only way this image
+  // reads as a portrait next to the others. It costs resolution: 380 px, so it ships
+  // soft, and the magenta still does not match anything around it. Replace the master
+  // and drop the crop the moment a real headshot exists.
+  { in: 'team/nikki-wallace.jpg',      out: 'team/nikki-wallace.webp',      width: 512, square: true, crop: [288, 90, 380, 380] },
 
   // The three illustrations in the outputs row on the home page. These take a different
   // treatment from everything above, for a reason worth stating: they arrived as
@@ -139,6 +144,12 @@ for (const job of runnable) {
 
   const meta = await sharp(src).metadata();
   let pipe = sharp(src);
+  // A crop box, [left, top, width, height] in source pixels, taken before the resize.
+  // Only for a photograph that is not a headshot to begin with and cannot be made into
+  // one by the square cover crop below, which takes the top of the frame and would keep
+  // whatever framing the photographer chose. Measure the box against the master rather
+  // than guessing: an extract that runs past the edge throws, it does not clamp.
+  if (job.crop) pipe = pipe.extract({ left: job.crop[0], top: job.crop[1], width: job.crop[2], height: job.crop[3] });
   if (job.box) {
     // Trim the plate's own transparent margin away, fit what is left inside the box less
     // its margin, then pad back out to the box centred. Two passes rather than one
