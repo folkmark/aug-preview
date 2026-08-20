@@ -35,13 +35,17 @@ The seam is not a judgement call. Measured over the shipped WebPs, decoded at fu
 
 | | Partial alpha coverage | Mean abs. difference from the previous frame |
 |---|---|---|
-| 276 – 417 | 22.97 – 23.32% | 2 – 5 |
-| **417 → 419** | **23.01% → 1.04%** | **17.6** |
-| 419 – 468 | 0.92 – 1.07% | 1 – 4 |
+| 276 – 417 | 33.51 – 36.82% | 2.4 – 6.7 |
+| **417 → 419** | **33.53% → 2.20%** | **18.7** |
+| 419 – 468 | 1.95 – 2.25% | 1.5 – 5.7 |
 
 Partial coverage is the discriminator, not mean alpha — mean alpha does not separate the
 two deliveries at all, because the shadow adds soft pixels rather than opaque ones. A
-22-point cliff in a single step, with the frame difference agreeing.
+31-point cliff in a single step, with the frame difference agreeing.
+
+(These figures are the lossless-alpha encode. They were 22.97 – 23.32% against
+0.92 – 1.07% when the frames were encoded at `alphaQuality 70`, which destroyed some of
+the soft pixels the test counts — the separation was real either way, and is now wider.)
 
 When a re-render gives the tail its shadow, restoring the plates and re-running the
 encoder is the whole job; the span on the page is one attribute.
@@ -68,35 +72,58 @@ which a scroll-scrub does not need — it holds by itself when the reader stops 
 The encoder reads its grid off the directory rather than declaring it, so the full
 delivery needs no change here: restore the plates and re-run it.
 
-## Alpha carries a ground shadow, and that changes the encode
+## The ground shadow lives in alpha, and it decides the payload
 
 The Aug 20 delivery of this scene puts a soft directional ground shadow in the alpha
 channel. The Aug 19 delivery of the same scene did not — its alpha was hard-edged, 1.3%
-partial coverage against 33% now. (Those are the masters. The same measurement on the
-encoded WebPs reads 1.0% against 23%: `alphaQuality 70` quantizes some of the shadow's
-softest pixels to fully opaque, which is the cost described below. The gap between the two
-deliveries survives the encode intact, which is what makes it usable as the test for which
-frames the page may play.)
+partial coverage against 33% now. The shadow is smooth and correct as rendered; nothing
+about it needs fixing in the render.
 
-This is worth knowing about rather than fixing blind, because it is probably an art
-decision and the encoder cannot tell the difference between a wanted shadow and a stray
-wash. Two consequences, both measured on frame 417 at 1600 wide:
+What it changes is the encode, and this is the one setting here most likely to be tidied
+back into line with `encode-approach.mjs`. Do not. Alpha now carries a low-amplitude
+gradient rather than just object edges, and **lossy alpha posterises it into visible
+terraces** — a topographic-map floor. Measured along one scanline through the shadow on
+frame 417, counting distinct alpha levels and the longest flat run over 100 samples:
 
-- **It costs bytes in the expensive channel.** Alpha goes from 15 KB a frame to 27 KB —
-  about 1.9 MB across 142 frames. `encode-approach.mjs` explains why alpha, not colour,
-  is where these plates spend.
-- **It makes lossy alpha a real choice rather than a free one.** `alphaQuality 70` was
-  measured on hard object edges, where it cost nothing. On a smooth gradient it does not:
-  against the master, 20% of soft-shadow pixels come back off by more than 4 levels and
-  the worst by 11. `alphaQuality 80` reduces that to a maximum error of 1 — and costs
-  52% more, 94 KB a frame against 143.
+| | levels | longest flat run |
+|---|---|---|
+| master (as rendered) | 25 | 10 |
+| `alphaQuality 70` | **5** | **27** |
+| `alphaQuality 80` | 17 | 17 |
+| `alphaQuality 85` | 21 | 11 |
+| `alphaQuality 90` | 24 | 11 |
+| `alphaQuality 100` | 25+ | 7 |
 
-The frames in the repository are encoded at **70**, matching the rest of the site. If the
-shadow is wanted, 80 is the honest setting for it and the sequence gets much heavier; if
-it is not, dropping it from the render restores both the bytes and the quality for free.
+`alphaQuality 70` is what the Approach moves use and it was genuinely free there, because
+their alpha was hard-edged with no gradient to lose. Here it flattens a 25-level ramp to
+five plateaus. These frames ship at **lossless alpha**: 90 to 100 costs 2% (183 against
+187 KB a frame), so there is no useful middle ground.
 
-One detail that is *not* explained by a ground shadow: the top-right corner of the plate
-reads alpha 48, and nothing in the scene casts there. Worth a look at the render setup.
+**The price is the headline fact about this sequence.** At lossless alpha the shadow and
+soft edges are about **67% of every frame**; colour is the cheap part.
+
+| | 66 frames encoded | 48 frames played | 142 frames (full delivery) |
+|---|---|---|---|
+| full cut, 1600 wide | 10.4 MB | 7.6 MB | ~22.5 MB |
+| mobile cut, 1200 wide | 6.7 MB | 4.9 MB | ~14.4 MB |
+
+Note what this cost the loading work in `assets/hero-bridge.js`: transfer roughly doubled
+against the `alphaQuality 70` frames (162 against 89 KB a frame), while **decoded** size
+did not move at all — decode is width x height x 4 whichever way the file was compressed.
+So the frame budget and the eviction arithmetic are untouched; what got harder is arriving
+in time. If the ticks-waiting-on-a-frame measurement regresses, that is why, and the lever
+is width or the shadow, not alphaQuality.
+
+Two levers, in order of how much they buy:
+
+1. **Take the shadow out of alpha** — drop it from the render, or bake it into an opaque
+   backdrop the frames sit on. This cuts the sequence to roughly a third. It is an art
+   call, which is why it is written here rather than done.
+2. **Narrow the full cut.** At lossless alpha and 142 frames: 1152 → 14.9 MB,
+   1280 → 18.0 MB, 1440 → 21.3 MB, 1600 → 25.1 MB.
+
+One detail *not* explained by a ground shadow: the top-right corner of the plate reads
+alpha 48, and nothing in the scene casts there. Worth a look at the render setup.
 
 ## Payload
 
