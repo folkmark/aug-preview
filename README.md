@@ -212,7 +212,8 @@ node tools/build-site.mjs _site /aug-preview   # served under a subpath
 
 The script assembles `_site`, then checks that every relative reference on every
 emitted page resolves inside the artifact and exits non-zero if one does not. The
-artifact is about 12 MB.
+artifact is about 28 MB, and all but a megabyte of that is animation frames: 10.3
+for the Approach cuts, 9.5 for the hero bridge and 4.7 for the falling blocks.
 
 The animation frames are the one thing the reference check cannot see directly:
 both components build their filenames by concatenation, so no literal

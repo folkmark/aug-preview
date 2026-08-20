@@ -40,6 +40,22 @@ const JOBS = [
   { in: 'images/classroom-morning.png', out: 'images/classroom-morning.webp', width: 1264 },
   { in: 'images/student-notes.png',     out: 'images/student-notes.webp',     width: 1264 },
 
+  // The three co-design action shots in the Our Current Work row, one school each. 1080
+  // is set off the card, which is the narrowest photographic box on the site: 351 CSS px
+  // on a phone, where the row is one column, and 405 in the desktop three-up. That is the
+  // usual three device pixels per phone pixel, and 2.7x the desktop box. The full-width
+  // photography above ships at 1264 only because its box is ~640 rather than 405.
+  //
+  // Every one of these needs a crop, and the crop is the whole job. They are phone frames
+  // shot in tall rooms, so a third to a half of each is ceiling. Hand the page an uncropped
+  // 4:3 and `object-fit: cover` takes its 3:2 out of the middle: it keeps the ceiling and
+  // pushes the people down against the bottom edge, which at 405 px reads as a photograph
+  // of a room rather than of anyone working. Each box below was measured against its own
+  // master and is exactly 3:2, so the page's cover crop is left with nothing to take.
+  { in: 'schools/museum-high-workshop.jpg',    out: 'images/museum-high-workshop.webp',    width: 1080, crop: [400, 1000, 2400, 1600] },
+  { in: 'schools/high-tech-high-workshop.jpg', out: 'images/high-tech-high-workshop.webp', width: 1080, crop: [200, 624, 3600, 2400] },
+  { in: 'schools/crosstown-workshop.jpg',      out: 'images/crosstown-workshop.webp',      width: 1080, crop: [0, 300, 5712, 3808] },
+
   // Headshots in a square cell: 165 CSS px on a phone, ~200 on desktop.
   //
   // Most of these come from the "Website Bio tracking" sheet, where each person's photo is

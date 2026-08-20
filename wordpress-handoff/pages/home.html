@@ -60,7 +60,7 @@
      paint the brand page colour up front rather than flashing white first. -->
 <style>html, body { margin: 0; background: #fdfcfa; }</style>
 
-<link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/fonts.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/colors.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/typography.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/layout.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/icons.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/schemes.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/base.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/styles.css"><link rel="stylesheet" href="../../assets/falling-blocks.css"><script src="../../assets/falling-blocks.js" defer=""></script><style>body { margin: 0; background: var(--surface-page); }
+<link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/fonts.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/colors.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/typography.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/layout.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/icons.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/schemes.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/base.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/styles.css"><link rel="stylesheet" href="../../assets/hero-bridge.css"><script src="../../assets/hero-bridge.js" defer=""></script><link rel="stylesheet" href="../../assets/falling-blocks.css"><script src="../../assets/falling-blocks.js" defer=""></script><style>body { margin: 0; background: var(--surface-page); }
   /* The intrinsic width/height attributes are there to reserve the box before the
      bytes arrive, not to size the image: every one of these is sized by CSS, and
      without this the height attribute would fight a CSS width and squash it. Where
@@ -104,6 +104,12 @@
   [data-cycle][data-active="1"] [data-label]:not([data-label="1"]),
   [data-cycle][data-active="2"] [data-label]:not([data-label="2"]),
   [data-cycle][data-active="3"] [data-label]:not([data-label="3"]) { opacity: 0.45; }
+  /* The header's height, and the only thing the page has to tell the hero scrub: it
+     reads the pin back off its own stage, and hero-bridge.css derives the stage's
+     height and the element's from the same number. Nothing else here — the section's
+     height, the cuts and the budget are the component's own, and a page that sets
+     them from here would put the pacing in two files. */
+  hero-bridge { --hb-pin: var(--space-18); }
   /* The header is sticky and 4.5rem tall, so the stage is a screen minus the header
      and the rig is that plus the pin. The difference between the two is the scroll
      budget the element measures: 170 minus 100 leaves 70svh over which the blocks
@@ -176,8 +182,16 @@
       </div>
       </div>
       <div data-hero-visual="" data-reveal="" style="opacity: 1; transition: opacity var(--transition-fade); margin-top: clamp(var(--space-10),5vw,var(--space-16));">
-        
-        <img src="../../assets/images/hero-bridge.webp" srcset="../../assets/images/hero-bridge-m.webp 1200w, ../../assets/images/hero-bridge.webp 2048w" sizes="100vw" alt="An arch of toy blocks under construction between a server rack and a school desk, carrying the span from one to the other as the last blocks fall into place" width="2048" height="1432" decoding="async" style="width: 100%; height: auto; display: block;">
+        <hero-bridge base="../../assets/hero-bridge/" from="276" to="417" data-hb-motion="on" data-hb-ready="">
+          <div data-hb-stage="">
+            <div data-hb-box="">
+              <canvas data-hb-layer="0" aria-hidden="true" style="opacity: 1;" width="1200" height="839" data-f=":0"></canvas>
+              <canvas data-hb-layer="1" aria-hidden="true" style="opacity: 0;" width="1200" height="839" data-f=":1"></canvas>
+              
+              <img src="../../assets/images/hero-bridge.webp" srcset="../../assets/images/hero-bridge-m.webp 1200w, ../../assets/images/hero-bridge.webp 2048w" sizes="100vw" alt="An arch of toy blocks under construction between a server rack and a school desk, carrying the span from one to the other as the last blocks fall into place" width="2048" height="1432" decoding="async">
+            </div>
+          </div>
+        </hero-bridge>
       </div>
     </section>
 
@@ -366,21 +380,21 @@
         </div>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); column-gap: var(--space-8); row-gap: var(--space-12);">
           <article data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade);">
-            <div role="img" aria-label="Photography to supply: a student recording a spoken reflection" style="aspect-ratio: 3 / 2; width: 100%; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: flex; align-items: center; justify-content: center; padding: var(--space-6); background: var(--color-ecru-white); text-align: center;"><p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); line-height: var(--text-body-line-height); margin: 0px; color: var(--text-muted); text-wrap: pretty;">Photography to supply — a student recording a spoken reflection</p></div>
+            <img src="../../assets/images/museum-high-workshop.webp" alt="Teachers at worktables in a high-ceilinged classroom, project cards and sticky notes spread in front of them" width="1080" height="720" loading="lazy" decoding="async" style="width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: block;">
             <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0 0 var(--space-4);">Museum High School</p>
             <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-3);">Feedback Facilitator</h3>
             <p style="font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">During multi-week projects, students respond to teacher prompts with short voice memos. The tool surfaces where each student and group is progressing, stuck, or drifting off track, so teachers can provide specific, meaningful feedback for every student.</p>
             <div style="margin-top: var(--space-6); display: flex;"><div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="link" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background: none; color: var(--color-scheme-text, var(--text-body)); padding: 0.375rem 0.75rem;">Learn more<div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 20px; width: 20px; height: 20px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 20;">chevron_right</span></div></button></div></div>
           </article>
           <article data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade);">
-            <div role="img" aria-label="Photography to supply: four students working on a group project" style="aspect-ratio: 3 / 2; width: 100%; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: flex; align-items: center; justify-content: center; padding: var(--space-6); background: var(--color-ecru-white); text-align: center;"><p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); line-height: var(--text-body-line-height); margin: 0px; color: var(--text-muted); text-wrap: pretty;">Photography to supply — four students working on a group project</p></div>
+            <img src="../../assets/images/high-tech-high-workshop.webp" alt="Teachers gathered at a wall of sticky notes and storyboard sketches" width="1080" height="720" loading="lazy" decoding="async" style="width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: block;">
             <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0 0 var(--space-4);">High Tech High Mesa &amp; High Tech High International</p>
             <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-3);">Collaboration Navigator</h3>
             <p style="font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">After students reflect on their small-group work, the tool generates insights about how each group is functioning. It makes group dynamics visible to teachers in real time, so they can coach students on collaboration and repair problems before they harden.</p>
             <div style="margin-top: var(--space-6); display: flex;"><div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="link" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background: none; color: var(--color-scheme-text, var(--text-body)); padding: 0.375rem 0.75rem;">Learn more<div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 20px; width: 20px; height: 20px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 20;">chevron_right</span></div></button></div></div>
           </article>
           <article data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade);">
-            <div role="img" aria-label="Photography to supply: a student mapping connected ideas at a whiteboard" style="aspect-ratio: 3 / 2; width: 100%; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: flex; align-items: center; justify-content: center; padding: var(--space-6); background: var(--color-ecru-white); text-align: center;"><p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); line-height: var(--text-body-line-height); margin: 0px; color: var(--text-muted); text-wrap: pretty;">Photography to supply — a student mapping connected ideas at a whiteboard</p></div>
+            <img src="../../assets/images/crosstown-workshop.webp" alt="Teachers around a table watching a screen, sticky-note boards filling the windows behind them" width="1080" height="720" loading="lazy" decoding="async" style="width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: block;">
             <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0 0 var(--space-4);">Crosstown High</p>
             <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-3);">Connection Builder</h3>
             <p style="font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">Students learn more deeply when new material connects to what they already know and care about. This tool maps a teacher’s course material to each student’s knowledge, experiences, and interests and then suggests personalized connections.</p>
