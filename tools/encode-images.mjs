@@ -61,6 +61,8 @@ const JOBS = [
   // Under-resolution at source; upscaling would only invent detail, so these ship at
   // their native size and stay soft until someone supplies better originals. Blair Lehman
   // was in this group at 200x200 and has left it — the sheet supplied an 800x800.
+  // The fellows' photographs mostly arrive this way: pulled from LinkedIn, where the
+  // largest public rendition tops out around 400-450px square.
   //
   // Andrew Lan is the trap worth naming. cics.umass.edu serves his portrait through a
   // 1_1_2xl image style at 800x800, and that derivative is what got pasted into the sheet,
@@ -71,6 +73,8 @@ const JOBS = [
   { in: 'team/ryan-baker.png',         out: 'team/ryan-baker.webp',         width: 512, square: true },
   { in: 'team/mohammed-al-harthy.jpg', out: 'team/mohammed-al-harthy.webp', width: 512, square: true },
   { in: 'team/danie-cowden.jpg',       out: 'team/danie-cowden.webp',       width: 512, square: true },
+  { in: 'team/danielle-ragavanis.jpg', out: 'team/danielle-ragavanis.webp', width: 512, square: true },
+  { in: 'team/alondra-ramos.jpg',      out: 'team/alondra-ramos.webp',      width: 512, square: true },
 
   // Nikki Wallace is deliberately absent. The sheet has an 800x800 for her, but it is a
   // full-body conference stage photograph against a magenta backdrop, with her face about
