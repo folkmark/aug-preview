@@ -147,14 +147,16 @@
   <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
   <main data-screen-label="Home">
 
-    <!-- Static hero: the copy over a still of the finished bridge. The falling-blocks
-         scrub that used to pin here now wraps the closing CTA, and the long Approach
-         act it led into is gone — the bridge lands next to the bridging headline, the
-         way the client reads the page. The still is an interim frame from the approach
-         sequence (alpha over the ecru plate); when the re-rendered plate or the short
-         frame sequence arrives, swap the <picture> inside [data-hero-visual] and
-         nothing else. -->
-    <section style="padding:clamp(var(--space-12),5vw,var(--space-18)) var(--page-gutter) clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg))">
+    <!-- Static hero: the copy above a still of the bridge under construction. The
+         falling-blocks scrub that used to pin here now wraps the closing CTA, and the
+         long Approach act it led into is gone — the bridge lands next to the bridging
+         headline, the way the client reads the page. The plate runs the full width of
+         the viewport and its alpha sits straight on the page colour, so the section
+         carries no side gutter: the copy inside supplies its own. When the shortened
+         frame sequence arrives, swap the <img> inside [data-hero-visual] and nothing
+         else. -->
+    <section style="padding:clamp(var(--space-12),5vw,var(--space-18)) 0 clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg))">
+      <div style="padding-inline:var(--page-gutter)">
       <div style="margin-inline:auto;max-width:var(--container-lg);text-align:center">
         <h1 style="font-size:var(--text-h1);line-height:var(--text-h1-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">Bridging frontier AI and the classroom.</h1>
         <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">AugmentED is an R&amp;D organization closing the gap between what AI can do and what students need. We are teachers, researchers, and engineers working together to build and test the missing technology, and the evidence to trust it.</p>
@@ -163,11 +165,12 @@
           <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary" onClick="{{ goApproach }}">Explore our approach</x-import>
         </div>
       </div>
-      <div data-hero-visual="" data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin:clamp(var(--space-10),5vw,var(--space-16)) auto 0;max-width:60rem">
-        <picture>
-          <source media="(max-width:1200px)" srcset="../assets/images/hero-bridge-m.webp" width="1200" height="839">
-          <img src="../assets/images/hero-bridge.webp" alt="An arch of toy blocks under construction between a server rack and a school desk, carrying the span from one to the other as the last blocks fall into place" width="2048" height="1432" decoding="async" style="width:100%;height:auto;object-fit:contain;background:var(--color-ecru-white);border-radius:var(--radius-image);display:block">
-        </picture>
+      </div>
+      <div data-hero-visual="" data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-top:clamp(var(--space-10),5vw,var(--space-16))">
+        <!-- Both files are the same crop at two sizes, so the browser picks by width
+             and pixel density rather than by a media query. No plate and no radius:
+             the render's alpha is the point, and it sits on the page colour. -->
+        <img src="../assets/images/hero-bridge.webp" srcset="../assets/images/hero-bridge-m.webp 1200w, assets/images/hero-bridge.webp 2048w" sizes="100vw" alt="An arch of toy blocks under construction between a server rack and a school desk, carrying the span from one to the other as the last blocks fall into place" width="2048" height="1432" decoding="async" style="width:100%;height:auto;display:block">
       </div>
     </section>
 
