@@ -6,7 +6,7 @@
 // WOFF2 wraps the same CFF outlines in Brotli, so this is lossless and roughly
 // halves what every page pulls before it can render text. The italic faces are not
 // converted: the site renders no italic text at all, so no browser ever matches
-// them — they stay in project/ with the originals.
+// them — the OTFs now sit beside the WOFF2 in _ds/*/assets/fonts/.
 
 import { compress } from 'wawoff2';
 import path from 'node:path';

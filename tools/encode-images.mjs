@@ -1,5 +1,5 @@
 // Re-encodes the page's photographic and decorative art from the originals in
-// project/renders/sources into the sized WebP the site actually ships. Sharp is not
+// source-material/image-sources into the sized WebP the site actually ships. Sharp is not
 // a repo dependency and CI never runs this — the encoded files are committed:
 //
 //   npm i --no-save sharp && node tools/encode-images.mjs
@@ -20,7 +20,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 // have their own root and re-encode with nothing restored. Jobs name which they use, and
 // a job whose source is absent is skipped rather than killing the run: that way changing
 // an icon does not require fetching 88 MB of photography first.
-const SRC = path.join(root, 'project/renders/sources');
+const SRC = path.join(root, 'source-material/image-sources');
 const ICONS = path.join(root, 'assets/icons-rigtest');
 const OUT = path.join(root, 'assets');
 
@@ -89,9 +89,9 @@ const skipped = JOBS.filter((j) => !runnable.includes(j));
 if (!runnable.length) {
   console.error(`No source images found.
 
-Photography and headshots are read from ${path.relative(root, SRC)}/, which is kept off
-the repository — restore the originals there to re-encode them. The illustrations read
-from ${path.relative(root, ICONS)}/, which is committed.`);
+Photography and headshots are read from ${path.relative(root, SRC)}/, which is
+committed, as are the illustrations in ${path.relative(root, ICONS)}/ — so this
+encoder runs from a clean checkout with nothing restored.`);
   process.exit(1);
 }
 

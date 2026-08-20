@@ -3,14 +3,14 @@ node_modules/
 _site/
 .export-tmp/
 
-# Master material lives on the designer's machine, not in the repository. It was
-# tracked here once and came to 692 MB of the 702 MB checked in — Blender plates,
-# 8K PNG renders, the WebP frame archive, the original Webflow export and the Avenir
-# OTFs — none of which the site serves. Every one of them is an input to a tool in
-# tools/, and every output those tools produce is committed, so the site builds and
-# deploys without any of this present.
+# Bulk render masters. These are inputs to tools/encode-approach.mjs and
+# tools/encode-falling-blocks.mjs, the site serves none of them, and every output
+# they produce is committed under assets/. They came to 604 MB — more than eight
+# times the rest of the repository put together — so they live on the designer's
+# machine and are restored to these paths only when something needs re-encoding.
 #
-# Restore whichever of these you need before running the matching encoder; the paths
-# are the ones the tools expect. See README.md.
+# Everything else that used to sit under project/ is now tracked, in
+# source-material/. See source-material/README.md.
 /project/
 /Falling Blocks/
+/desk render preview/

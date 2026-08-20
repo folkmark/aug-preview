@@ -5,7 +5,7 @@
 //   npm i --no-save sharp && node tools/encode-approach.mjs
 //
 // Frames are named by their Blender frame number so the file, the timeline marker in
-// project/scratch/approach-render-map.md, and the manifest all agree.
+// docs/approach-render-map.md, and the manifest all agree.
 //
 // Two masters, chosen per frame rather than per run. The six beats carry the holds,
 // where the picture is motionless under copy for a screenful of scrolling, so they are
