@@ -16,7 +16,31 @@
 //
 // What it does inherit is where the bytes are. Alpha is the expensive channel on these
 // plates, not colour, because they are mostly transparent — see encode-approach.mjs for
-// the measurements. Hence quality 70 / alphaQuality 70, which measured as free there.
+// the measurements.
+//
+// It does NOT inherit that encoder's alphaQuality 70, and this is the one setting here
+// most likely to be "simplified" back. Do not. These plates put a soft ground shadow in
+// the alpha channel, so alpha now carries a smooth low-amplitude gradient and not just
+// hard object edges. Lossy alpha posterises it into visible terraces — a topographic-map
+// look across the floor. Measured on one scanline through the shadow on frame 417,
+// counting distinct alpha levels and the longest flat run over 100 samples:
+//
+//   master  25 levels, longest run 10     <- the gradient as rendered
+//   aq 70    5 levels, longest run 27     <- five plateaus. This is the failure.
+//   aq 80   17 levels, longest run 17
+//   aq 85   21 levels, longest run 11
+//   aq 90   24 levels, longest run 11
+//   aq 100  25 levels, longest run  7     <- faithful
+//
+// alphaQuality 70 was free on the Approach moves because their alpha was hard-edged and
+// had no gradient to lose. Here it costs the shadow. And since 90 to 100 is 183KB to
+// 187KB a frame — 2% — there is no reason to sit in between: lossless alpha it is, which
+// is also what CLAUDE.md says the original masters used.
+//
+// Be aware what this buys and at what price: at lossless alpha the shadow is about 65%
+// of every frame's bytes. Dropping it from the render, or moving it into an opaque
+// backdrop, would cut the sequence to roughly a third of its size. That is an art call,
+// not an encoder one.
 //
 // The widths are the hero's own, though, and the Approach section's numbers do not carry
 // over. Its "1600 is the knee" was measured on the two-desk plates at ~47KB a frame; the
@@ -58,7 +82,8 @@ const CROP_W = 1200;
 
 // One tier, because there are no holds to be compared against. See the header.
 const Q = 70;
-const ALPHA_Q = 70;
+// Lossless. The plates carry a gradient in alpha; anything below this terraces it.
+const ALPHA_Q = 100;
 
 const pad4 = (n) => String(n).padStart(4, '0');
 
@@ -106,22 +131,18 @@ for (const f of fs.readdirSync(OUT)) {
   if (/^hb\d{4}m?\.webp$/.test(f)) fs.unlinkSync(path.join(OUT, f));
 }
 
-// Alpha cleanliness, sampled rather than asserted, because it is the one property of
-// this render that has already regressed once and it is invisible until it is composited.
-// The Aug 19 delivery of this scene was 1.3% partial alpha with all four corners at 0;
-// the Aug 20 one was 32.9% partial with a corner at 48, a haze over a third of the canvas
-// that costs ~13KB a frame in the channel that dominates the byte budget and washes grey
-// over the hero background. Reported, not fatal — an imperfect sequence in the repo is
-// often what is wanted — but reported loudly enough that nobody encodes 142 frames of it
-// by accident.
-const alphaReport = async (file) => {
-  const { data, info } = await sharp(file).ensureAlpha().extractChannel('alpha').raw()
-    .toBuffer({ resolveWithObject: true });
-  const { width: W, height: H } = info;
-  let partial = 0;
-  for (let i = 0; i < data.length; i++) if (data[i] !== 0 && data[i] !== 255) partial++;
-  const corners = [[0, 0], [W - 1, 0], [0, H - 1], [W - 1, H - 1]].map(([x, y]) => data[y * W + x]);
-  return { partial: partial / data.length, corners };
+// The shadow's share of the bytes, reported rather than assumed, because it is the
+// single biggest thing about this sequence's weight and it is invisible in the output.
+// Measured by re-encoding one frame without its alpha channel and taking the difference:
+// at lossless alpha the shadow and the plate's soft edges together come to about 65% of
+// each frame. Worth printing every run, so that if the render ever comes back without a
+// shadow the drop is noticed rather than quietly enjoyed.
+const alphaShare = async (file) => {
+  const opts = { quality: Q, alphaQuality: ALPHA_Q, effort: 6, smartSubsample: true };
+  const withA = await sharp(file).resize({ width: FULL_W, kernel: 'lanczos3' }).webp(opts).toBuffer();
+  const noA = await sharp(file).resize({ width: FULL_W, kernel: 'lanczos3' })
+    .removeAlpha().webp({ quality: Q, effort: 6, smartSubsample: true }).toBuffer();
+  return (withA.length - noA.length) / withA.length;
 };
 
 let fullBytes = 0, cropBytes = 0, dims = null;
@@ -190,14 +211,7 @@ console.log(`${frames.length} frames  ${first.n}..${last.n}  step ${steps.length
 console.log(`full cut  ${dims.full.w}x${dims.full.h}  ${mb(fullBytes)} MB  (${(fullBytes / frames.length / 1024).toFixed(0)} KB/frame)`);
 console.log(`mobile    ${dims.crop.w}x${dims.crop.h}  ${mb(cropBytes)} MB  (${(cropBytes / frames.length / 1024).toFixed(0)} KB/frame)`);
 
-const a = await alphaReport(path.join(SRC, first.f));
-const pct = (a.partial * 100).toFixed(1);
-if (a.partial > 0.05 || a.corners.some((c) => c !== 0)) {
-  console.log(`\n  ! alpha on the masters is not clean: ${pct}% partial, corners [${a.corners.join(', ')}]`);
-  console.log(`    A clean delivery of this scene measured 1.3% with corners [0, 0, 0, 0].`);
-  console.log(`    This composites as a wash over the hero background and inflates every`);
-  console.log(`    frame. See docs/hero-bridge-render.md — it wants fixing in the render,`);
-  console.log(`    not here; nothing in this encoder can undo it.`);
-} else {
-  console.log(`\n  alpha clean: ${pct}% partial, corners [${a.corners.join(', ')}]`);
-}
+const share = await alphaShare(path.join(SRC, first.f));
+console.log(`\nalpha is ${(share * 100).toFixed(0)}% of each frame — the ground shadow. Encoded lossless`);
+console.log(`(alphaQuality ${ALPHA_Q}); anything lower terraces it. See the header, and`);
+console.log(`docs/hero-bridge-render.md for what dropping the shadow would save.`);
