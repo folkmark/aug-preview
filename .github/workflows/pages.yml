@@ -1,14 +1,8 @@
-name: Publish site to gh-pages
+name: Deploy site to GitHub Pages
 
-# Builds the AugmentED site and publishes it to the gh-pages branch, which is what
-# GitHub Pages serves. tools/build-site.mjs assembles the artifact — a file per
-# page, the assets, .nojekyll, CNAME and a 404.html — and fails if the pages
-# reference anything the artifact does not contain.
-#
-# gh-pages holds build output and nothing else, so each publish replaces it with a
-# single orphan commit rather than adding to it. Left to accumulate it would carry
-# every superseded copy of every re-encoded frame forever, which is how the branch
-# reached 38 MB of history for a 20 MB site.
+# Builds and publishes the AugmentED site. tools/build-site.mjs assembles the
+# site — a file per page, the assets, .nojekyll and a 404.html — and fails if
+# the pages reference anything the artifact does not contain.
 
 on:
   push:
@@ -17,10 +11,12 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
-# Publishes all come off main, so they serialise; pull request builds get their own
-# group rather than queueing behind one.
+# Deploys all come off main, so they still serialise; pull request builds get
+# their own group rather than queueing behind a deploy.
 concurrency:
   group: pages-${{ github.ref }}
   cancel-in-progress: false
@@ -31,23 +27,35 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # basePath is only needed for 404.html and the redirect stubs, which are served
-      # from arbitrary URLs and so cannot use relative references. The custom domain
-      # serves from the root, which is what the default gives.
-      - name: Build site
-        run: node tools/build-site.mjs _site
-
-      # A pull request gets the build as a check and stops there: the verify step
-      # inside build-site.mjs is the point, not the publish.
-      - name: Publish to gh-pages
+      # The repository's Pages source has to be "GitHub Actions" for this deploy
+      # to be the one that serves. enablement switches it over, which also stops
+      # the built-in branch build from racing this workflow — and that build
+      # publishes the repository as-is, without the per-page route files.
+      - name: Configure Pages
+        id: pages
         if: github.event_name != 'pull_request'
-        run: |
-          cd _site
-          git init -q
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -q -m "Build ${GITHUB_SHA::7}"
-          git push -q --force \
-            "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" \
-            HEAD:gh-pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      # base_path is only needed for 404.html, which is served from arbitrary
+      # URLs and so cannot use relative references. On pull requests it is empty
+      # and the build falls back to "/" — enough to verify the pages resolve.
+      - name: Build site
+        run: node tools/build-site.mjs _site "${{ steps.pages.outputs.base_path }}"
+
+      - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
