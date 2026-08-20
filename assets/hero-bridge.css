@@ -1,0 +1,175 @@
+/* <hero-bridge> — the styles the component's markup contract depends on. See
+   assets/hero-bridge.js for the contract itself.
+
+   Host-agnostic: no design tokens, no project class names, no assumption about the page
+   around it. A host supplies the frame directory, and may set --hb-pin to a fixed
+   header's height and this element's height to change how long the hero pins.
+
+   Everything geometric lives here rather than in JS, including the two things JS reads
+   back: --hb-variant tells the element which cut of the plate to load and --hb-budget how
+   much decoded image to hold, so the breakpoint that sizes the stage is also the one that
+   picks the file and sizes the memory. */
+
+hero-bridge {
+  /* Where the stage pins. One number drives the sticky offset, the stage's height and the
+     element's, and the element reads it back off the stage — so a host with a taller
+     header, or none, sets this and nothing else. */
+  --hb-pin: 0px;
+  --hb-variant: "";
+  display: block;
+  position: relative;
+  box-sizing: border-box;
+  /* Taller than the stage, and the difference is the scroll budget: the plate pins while
+     the arch assembles, and the hero only scrolls on once it has closed. This one number
+     therefore sets both how long the hero holds and how fast the arch builds — there is
+     no second place to keep in step.
+
+     70svh of budget across 48 render frames is about 13px of scroll per frame at
+     1440x900. That is deliberately a quick pass rather than the Approach section's
+     45px-per-frame crawl: this is the first thing on the page and it should not ask for
+     three screens of thumb before the reader reaches a word of copy. If the full
+     stride-1 delivery lands (142 frames — see docs/hero-bridge-render.md), this height
+     has to rise with it or the whole assembly plays three times faster; frames and height
+     are one setting in two files.
+
+     The plain-vh line is the fallback for engines without svh; svh rather than dvh
+     because dvh changes as mobile chrome hides, and a budget that moved mid-gesture would
+     snap the scrub. */
+  height: calc(170vh - var(--hb-pin));
+  height: calc(170svh - var(--hb-pin));
+}
+hero-bridge *, hero-bridge *::before, hero-bridge *::after { box-sizing: border-box; }
+
+hero-bridge [data-hb-stage] {
+  position: sticky;
+  top: var(--hb-pin);
+  height: calc(100vh - var(--hb-pin));
+  height: calc(100svh - var(--hb-pin));
+  display: grid;
+  place-items: center;
+}
+
+/* The plate is CONTAINED in the pinned stage, never cropped to cover it, and that is not
+   a taste decision. Content spans x 0.004 to 0.959 of this plate because blocks fly in
+   from the top and the right for the whole run — measured across the delivered frames, in
+   tools/encode-hero-bridge.mjs — so any crop tight enough to fill a stage of another
+   aspect clips blocks in flight, and blocks landing is the animation.
+
+   Width-driven with the height cap expressed as a width, rather than height:100% plus a
+   max-width. Both describe the same box, but this one is arithmetic the engine cannot
+   resolve two ways: over-constraining aspect-ratio against a max-width leaves which axis
+   gives way up to the sizing algorithm.
+
+   isolation is load-bearing: it makes the two canvases their own blending group, and
+   without it plus-lighter blends against the page and blows out to white. An ancestor
+   with a filter, an opacity below 1, or its own mix-blend-mode creates a competing
+   stacking context — the hero's [data-reveal] wrapper animates opacity, so it is one of
+   these, and this is what contains the group against it. */
+hero-bridge [data-hb-box] {
+  position: relative;
+  width: min(100%, calc((100vh - var(--hb-pin)) * 2048 / 1432));
+  width: min(100%, calc((100svh - var(--hb-pin)) * 2048 / 1432));
+  aspect-ratio: 2048 / 1432;
+  isolation: isolate;
+}
+
+/* One box, three stacked pictures: the two scrub layers and the still they replace. They
+   register 1:1 because they are the same plate at three sizes, so nothing here can drift
+   out of alignment as the browser picks a srcset candidate. */
+hero-bridge [data-hb-box] > canvas,
+hero-bridge [data-hb-box] > img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Two canvases, not one. They hold the frames either side of the current position and are
+   cross-faded by opacity under plus-lighter. Drawing both into a single context at partial
+   alpha squares the outgoing frame's contribution, so everything the two frames share —
+   here the rack, the desk and most of the arch — sags to three-quarters opacity halfway
+   through every transition. plus-lighter adds to exactly the frame in between.
+
+   It earns its place at this stride. The frames are every third one of a 30fps render, so
+   two adjacent frames are 0.1s of animation apart and a hard cut between them reads as a
+   judder; the fade is what makes 48 frames play like a sequence rather than a flipbook. */
+hero-bridge [data-hb-layer] { will-change: opacity; }
+hero-bridge [data-hb-layer="1"] { opacity: 0; mix-blend-mode: plus-lighter; }
+
+/* The still holds the hero until a frame has actually been drawn over it — see paint().
+   visibility rather than display, so the swap cannot be mistaken for a layout change by
+   anything watching; the image is absolutely positioned and contributes no layout either
+   way. */
+hero-bridge[data-hb-motion="on"][data-hb-ready] [data-hb-box] > img { visibility: hidden; }
+
+/* Static presentation, and the default: the attribute is absent until the element decides
+   it can animate, so a page whose script never runs, or has not run yet, renders the hero
+   exactly as it shipped before this component existed — the still at full width, in flow,
+   no pin and no extra screens to scroll past.
+
+   Reduced motion lands here too, but is decided in JS rather than by a media query in this
+   file. It is one of three signals — a preference, save-data, and whether the engine can
+   decode a bitmap at all — and only the element sees the other two, so all three resolve
+   in one place. */
+hero-bridge:not([data-hb-motion="on"]) { height: auto; }
+hero-bridge:not([data-hb-motion="on"]) [data-hb-stage] { position: static; height: auto; display: block; }
+hero-bridge:not([data-hb-motion="on"]) [data-hb-box] { width: 100%; aspect-ratio: auto; }
+hero-bridge:not([data-hb-motion="on"]) [data-hb-box] > canvas { display: none; }
+hero-bridge:not([data-hb-motion="on"]) [data-hb-box] > img { position: static; height: auto; }
+
+/* The cut follows the BOX, and on this component that is not the viewport. The plate is
+   contained in the pinned stage, so its width is min(100vw, (100svh - pin) x 1.4302) —
+   on a 1440x900 laptop that is 1184px, not 1440. Loading the 1600 cut there decodes
+   7.2 MiB a frame to draw it at 1184: it buys 35% more width than the box can show and
+   halves how many frames the budget holds.
+
+   Measured at 1440x900 on a reading scroll, both at 96 MB: the full cut holds 14 frames
+   and wants one it does not have on 57% of ticks, substituting a frame 3.0 positions
+   away; the 1200 cut holds 24 and misses on 26%, substituting 2.9 away. Same memory,
+   same picture — 1200 against an 1184px box is a 1.01x match where 1600 is a 1.35x
+   downscale.
+
+   Raising the budget instead is the obvious move and it does not work: at 192 MB the
+   window doubles to 28 and misses fall to 27%, but the average substitution gets WORSE,
+   6.7 frames away against 3.0. A wider window spreads the same four in-flight slots over
+   more requests, so the frames nearest the head arrive later. The bottleneck is fetch and
+   decode throughput, not memory, which is why the cheaper frame is the fix and the bigger
+   number is not.
+
+   The threshold is that arithmetic solved for the viewport: the box is 1200 wide or less
+   once (100svh - pin) x 1.4302 <= 1200, which with this page's 72px pin is a viewport
+   below about 910px. Guarded on resolution because a 2x screen wants 2368 device pixels
+   for that same box, where 1600 is the closer of the two cuts — and the guard failing to
+   match at all leaves the full cut, which is the safe direction to fail in. */
+@media (max-height: 910px) and (max-resolution: 1.5dppx) {
+  hero-bridge { --hb-variant: "m"; }
+}
+
+/* The phone scrubs the smaller cut, and the stage stops being a viewport-height box. The
+   plate is 1.43 landscape: pinned full-height on a 390x844 phone it would use a third of
+   the screen for artwork and hold two-thirds of empty page still underneath it. An
+   auto-height stage sticks the plate under the header at its own height instead, and the
+   page below scrolls past it — the same shape approach.css arrived at for the same plate,
+   for the same reason.
+
+   The height is not the desktop's. With the stage no longer a screen tall, the same
+   element height would buy far more budget than the desktop gets, and the piece would
+   play at a different speed on a phone — 130svh puts it within a few px per frame of the
+   desktop's rate at 390x844.
+
+   The budget travels with the cut, and is smaller for a reason that is easy to get
+   backwards: a byte ceiling alone buys MORE frames when each one gets cheaper. The mobile
+   cut decodes to 4.0 MiB against the full cut's 7.2, so the desktop's 96 MB would hold 24
+   frames here against 13 there — the wider window on the device least able to afford it.
+   48 MB holds 12, which is the same coverage at half the cost. */
+@media (max-width: 991px), (max-aspect-ratio: 5/4) {
+  hero-bridge {
+    --hb-variant: "m";
+    --hb-budget: 48;
+    height: 130vh;
+    height: 130svh;
+  }
+  hero-bridge [data-hb-stage] { height: auto; }
+  hero-bridge [data-hb-box] { width: 100%; }
+}
