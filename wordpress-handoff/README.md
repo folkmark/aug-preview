@@ -426,8 +426,12 @@ There is no CMS behind any of this — all copy is hardcoded in the template, wh
 `pages/` doubles as the content export. Worth deciding early which of these become
 editable fields versus staying in templates:
 
-- **Team members** (Who We Are) — 6 people, each a headshot, name, role and bio. The
-  obvious candidate for a custom post type.
+- **Team members** (Who We Are) — 30 people across four grids: Leadership, Research
+  Partners, Technology Partners and Education Fellows. Each carries a headshot, a name, a
+  role and optional LinkedIn/website links; fellows also carry a school and location. The
+  cards render no bio — the bios exist, but only in the tracking sheet. 13 of the 30 have no
+  usable photograph yet and fall back to a grey square, so whatever models this has to treat
+  the image as optional. The obvious candidate for a custom post type.
 - **Research items** (Home, Follow Our Work) — title, description, link.
 - **Approach beats** — six numbered steps, each with a heading and two paragraphs, tied to
   specific animation frames. Editable copy, fixed count; the frame mapping is not content.

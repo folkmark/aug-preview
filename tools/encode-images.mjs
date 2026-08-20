@@ -39,14 +39,46 @@ const JOBS = [
   { in: 'images/student-notes.png',     out: 'images/student-notes.webp',     width: 1264 },
 
   // Headshots in a square cell: 165 CSS px on a phone, ~200 on desktop.
-  { in: 'team/joan-lee.jpg',       out: 'team/joan-lee.webp',       width: 512, square: true },
-  { in: 'team/lisa-peterson.png',  out: 'team/lisa-peterson.webp',  width: 512, square: true },
-  { in: 'team/raquel-romano.png',  out: 'team/raquel-romano.webp',  width: 512, square: true },
-  { in: 'team/laura-allen.jpeg',   out: 'team/laura-allen.webp',    width: 512, square: true },
+  //
+  // Most of these come from the "Website Bio tracking" sheet, where each person's photo is
+  // embedded in a Headshots column. Four do not: where the subject's own institutional page
+  // still had the file the sheet's copy was resized from, the page won. Angela is 1000x1407
+  // there against a 680x600 Drupal derivative in the sheet, Laura 1200x1800 against 300x450,
+  // Sarah 2617x2500 against a 1024x978 re-export. Check both before adding anyone new — a
+  // photo that has been pasted through a spreadsheet has usually lost a generation.
+  { in: 'team/raquel-romano.png',      out: 'team/raquel-romano.webp',      width: 512, square: true },
+  { in: 'team/joan-lee.jpg',           out: 'team/joan-lee.webp',           width: 512, square: true },
+  { in: 'team/angela-stewart.jpg',     out: 'team/angela-stewart.webp',     width: 512, square: true },
+  { in: 'team/laura-allen.jpeg',       out: 'team/laura-allen.webp',        width: 512, square: true },
+  { in: 'team/blair-lehman.jpeg',      out: 'team/blair-lehman.webp',       width: 512, square: true },
+  { in: 'team/sarah-zaner.png',        out: 'team/sarah-zaner.webp',        width: 512, square: true },
+  { in: 'team/lisa-peterson.png',      out: 'team/lisa-peterson.webp',      width: 512, square: true },
+  { in: 'team/suzanna-smith.jpg',      out: 'team/suzanna-smith.webp',      width: 512, square: true },
+  { in: 'team/adam-bachman.jpg',       out: 'team/adam-bachman.webp',       width: 512, square: true },
+  { in: 'team/neil-sharma.jpg',        out: 'team/neil-sharma.webp',        width: 512, square: true },
+  { in: 'team/christopher-hanks.jpg',  out: 'team/christopher-hanks.webp',  width: 512, square: true },
+  { in: 'team/ben-hoff.jpg',           out: 'team/ben-hoff.webp',           width: 512, square: true },
+  { in: 'team/joshua-sloan.jpg',       out: 'team/joshua-sloan.webp',       width: 512, square: true },
+
   // Under-resolution at source; upscaling would only invent detail, so these ship at
-  // their native size and stay soft until someone supplies better originals.
-  { in: 'team/blair-lehman.jpeg',  out: 'team/blair-lehman.webp',   width: 512, square: true },
-  { in: 'team/ryan-baker.png',     out: 'team/ryan-baker.webp',     width: 512, square: true },
+  // their native size and stay soft until someone supplies better originals. Blair Lehman
+  // was in this group at 200x200 and has left it — the sheet supplied an 800x800.
+  //
+  // Andrew Lan is the trap worth naming. cics.umass.edu serves his portrait through a
+  // 1_1_2xl image style at 800x800, and that derivative is what got pasted into the sheet,
+  // but the file behind it — /files/2022-10/lan.jpg — is 203x203. The big one is a 4x
+  // upscale carrying no detail the small one lacks, at 48 KB against 17 KB. Encoding from
+  // it would ship a mushy tile that merely claims to be sharp, so the 203 is the master.
+  { in: 'team/andrew-lan.jpg',         out: 'team/andrew-lan.webp',         width: 512, square: true },
+  { in: 'team/ryan-baker.png',         out: 'team/ryan-baker.webp',         width: 512, square: true },
+  { in: 'team/mohammed-al-harthy.jpg', out: 'team/mohammed-al-harthy.webp', width: 512, square: true },
+  { in: 'team/danie-cowden.jpg',       out: 'team/danie-cowden.webp',       width: 512, square: true },
+
+  // Nikki Wallace is deliberately absent. The sheet has an 800x800 for her, but it is a
+  // full-body conference stage photograph against a magenta backdrop, with her face about
+  // 150 px inside the frame. Cropping it square yields a soft, small face that still fights
+  // every neighbouring tile, which is worse than the placeholder; her card stays empty until
+  // a real headshot arrives. Add the job here when one does.
 
   // The three illustrations in the outputs row on the home page. These take a different
   // treatment from everything above, for a reason worth stating: they arrived as
