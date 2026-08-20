@@ -23,6 +23,29 @@ sits between two stride-3 frames. Anything scrubbing the whole range will pop th
 frames are in the repository because they exist and are wanted available; the range
 276 – 417 is the only part currently coherent.
 
+## What the page plays
+
+**276 – 417 — the 48 frames that carry the shadow.** The hero names that span with
+`from` and `to` on its `<hero-bridge>` element in `index.html`; everything outside it stays
+encoded and on disk, unplayed rather than deleted. `tools/build-site.mjs` checks both
+bounds against the manifest, so a `from` or `to` naming a frame the encoder never produced
+fails the build instead of quietly shipping a hero missing its opening or closing frames.
+
+The seam is not a judgement call. Measured over the shipped WebPs, decoded at full size:
+
+| | Partial alpha coverage | Mean abs. difference from the previous frame |
+|---|---|---|
+| 276 – 417 | 22.97 – 23.32% | 2 – 5 |
+| **417 → 419** | **23.01% → 1.04%** | **17.6** |
+| 419 – 468 | 0.92 – 1.07% | 1 – 4 |
+
+Partial coverage is the discriminator, not mean alpha — mean alpha does not separate the
+two deliveries at all, because the shadow adds soft pixels rather than opaque ones. A
+22-point cliff in a single step, with the frame difference agreeing.
+
+When a re-render gives the tail its shadow, restoring the plates and re-running the
+encoder is the whole job; the span on the page is one attribute.
+
 ## What a complete delivery needs
 
 | | |
@@ -30,7 +53,14 @@ frames are in the repository because they exist and are wanted available; the ra
 | Range | **276 – 417**, the whole beat: the arch closes at 417 and that frame is a clean resting state |
 | Stride | **1** — every frame, 142 in total |
 | Plate | 2048 × 1432 PNG, RGBA |
-| Look | the Aug 20 revision throughout — copper legs, warm beige rack |
+| Look | the Aug 20 revision throughout — copper legs, warm beige rack, **and the ground shadow on every frame**, which is what the delivered tail is missing |
+
+Note that the stride is the one thing the shipped hero cannot make up for. 48 frames is
+every third frame of a 4.7-second move, and the page cross-fades between them to cover it;
+at stride 1 the fade stops doing that work and the assembly is genuinely continuous.
+`assets/hero-bridge.css` sets the section's height, and the two are one setting in two
+files — 142 frames scrubbed over the height 48 are scrubbed over now plays three times
+faster. Raise it with the frame count.
 
 The earlier batch ran out to 468. Those tail frames are a hold on the finished arch,
 which a scroll-scrub does not need — it holds by itself when the reader stops scrolling.
@@ -42,7 +72,11 @@ delivery needs no change here: restore the plates and re-run it.
 
 The Aug 20 delivery of this scene puts a soft directional ground shadow in the alpha
 channel. The Aug 19 delivery of the same scene did not — its alpha was hard-edged, 1.3%
-partial coverage against 33% now.
+partial coverage against 33% now. (Those are the masters. The same measurement on the
+encoded WebPs reads 1.0% against 23%: `alphaQuality 70` quantizes some of the shadow's
+softest pixels to fully opaque, which is the cost described below. The gap between the two
+deliveries survives the encode intact, which is what makes it usable as the test for which
+frames the page may play.)
 
 This is worth knowing about rather than fixing blind, because it is probably an art
 decision and the encoder cannot tell the difference between a wanted shadow and a stray
@@ -95,4 +129,12 @@ whole run. A crop tight enough to help would clip them, and blocks falling into 
 the animation.
 
 So both cuts are the whole plate, at 1600 and 1200 wide. 1200 matches what the hero
-already ships for its placeholder still, `assets/images/hero-bridge-m.webp`.
+already ships for its still, `assets/images/hero-bridge-m.webp`.
+
+Which of the two a viewport loads is not a phone-or-desktop decision, and
+`assets/hero-bridge.css` explains the arithmetic. The pinned plate is *contained* in its
+stage, so the box is narrower than the viewport — 1184px on a 1440×900 laptop — and the
+1200 cut is the correctly-sized plate there, not a degraded one. Measured: it holds 24
+frames in the same budget where the 1600 cut holds 14, and halves the ticks that want a
+frame not yet decoded. Screens above 1× density keep the 1600 cut, because the same box
+wants 2368 device pixels there.

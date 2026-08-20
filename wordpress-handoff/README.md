@@ -4,10 +4,10 @@ Everything needed to rebuild this site in WordPress, and an honest account of wh
 carries over untouched, what has to be ported, and what should simply be deleted.
 
 The short version: **the design system, the assets and the page markup all transfer as
-they are. Both animated sections — the falling-blocks hero and the Approach scrub — are
-already portable components. Everything else that moves on the page is written against a
-runtime that will not exist in WordPress and has to be rewritten; none of it is large,
-and none of what is left is intricate.**
+they are. All three scroll-driven sections — the hero bridge scrub, the falling-blocks
+CTA and the Approach scrub — are already portable components. Everything else that moves
+on the page is written against a runtime that will not exist in WordPress and has to be
+rewritten; none of it is large, and none of what is left is intricate.**
 
 ---
 
@@ -51,6 +51,13 @@ if it ever needs it.
 `pages/*.html` is each route as a visitor actually receives it: the template expanded,
 the design-system components resolved to real elements, and the runtime removed. This is
 the file to build a WordPress template from, not `index.html`.
+
+> **`home.html` is one revision behind.** It still shows the hero as a plain `<img>`,
+> which is what the hero was before the bridge sequence was wired up. Re-run
+> `node tools/export-static.mjs` to bring it in step — it needs a machine that can reach
+> unpkg from a browser, because the export drives the real client-rendered site. Take the
+> hero markup from `index.html` in the meantime; §5a describes it. Nothing else in
+> `pages/` is affected.
 
 | file | route | source in `index.html` |
 |---|---|---|
@@ -113,9 +120,12 @@ host before deploying. `--font-heading` and `--font-body` both resolve to it.
 
 | path | what | notes |
 |---|---|---|
-| `assets/falling-blocks/w1440/{bottom,top}/fb0001…0048.webp` | 96 hero frames, 3.3 MB | filenames are load-bearing — see §5 |
+| `assets/hero-bridge/hb*.webp` | the hero sequence, 66 frames in two cuts, 9.5 MB | filenames are load-bearing — see §5a. The page plays 48 of them: 4.3 MB at the 1600 cut, 2.8 MB at 1200 |
+| `assets/hero-bridge/manifest.json` | what the encoder produced | frame list, cut sizes |
+| `assets/hero-bridge.js` / `.css` | the hero component | portable, see §5a |
+| `assets/falling-blocks/w1440/{bottom,top}/fb0001…0048.webp` | 96 frames for the closing CTA, 3.3 MB | filenames are load-bearing — see §5 |
 | `assets/falling-blocks/manifest.json` | what the encoder produced | frame count, padding, widths |
-| `assets/falling-blocks.js` / `.css` | the hero component | portable, see §5 |
+| `assets/falling-blocks.js` / `.css` | the closing CTA's component | portable, see §5 |
 | `assets/approach/ap*.webp` | the Approach sequence, every frame in two cuts | filenames load-bearing — see §6 |
 | `assets/approach/manifest.json` | what the encoder produced | frame list, beats, cut sizes |
 | `assets/approach.js` / `.css` | the Approach scrub | portable, see §6 |
@@ -128,10 +138,70 @@ each is an *input* to a tool in `tools/`, and every output those tools produce i
 They are now kept off the repository, so **nothing in this handoff depends on them**: every
 file listed above is present and final.
 
-The render notes did stay, because they are worth reading if anyone touches the Approach
-animation: [`docs/approach-render-map.md`](../docs/approach-render-map.md) maps every Blender
+The render notes did stay, because they are worth reading if anyone touches either arch
+animation. [`docs/approach-render-map.md`](../docs/approach-render-map.md) maps every Blender
 frame number to the beat and the message it carries, and is the source of the frame numbers
 in [`sections/approach.md`](sections/approach.md).
+[`docs/hero-bridge-render.md`](../docs/hero-bridge-render.md) does the same job for the hero:
+which frames the page plays and why, what a complete delivery of that sequence still needs,
+and the byte cost of the widths it was encoded at.
+
+One qualification to "master material is not in the repository": for the hero sequence it
+never was. The other renders were tracked once and are still reachable in the history; the
+hero bridge plates have only ever existed on the designer's machine, so that sequence is the
+one thing here that cannot be re-encoded from this repository alone. The encoded frames are
+committed and final, so nothing in this handoff depends on it — but a re-render does.
+
+---
+
+## 5a. The hero bridge scrub — already portable
+
+> **Status.** New. The home page hero used to be a still of the finished bridge; it is
+> now `<hero-bridge>`, scrubbing the arch's assembly as the plate pins under the header.
+> The still is still in the markup and is what a reader gets with scripting off.
+
+Built to the same doctrine as §5 and §6, and portable for the same reasons: a
+dependency-free custom element that touches no runtime API and drives markup it does not
+build. Porting it is `assets/hero-bridge.js`, `assets/hero-bridge.css`, the frame
+directory, and the block of markup in the hero — copy all four and it works.
+
+**What the host has to supply.** One custom property, `--hb-pin`, set to the height of
+the sticky header — this site sets it to `4.5rem` in the page's own stylesheet. The
+element reads the pin back off its stage's computed `top`, so CSS and JS cannot disagree,
+and a theme with a taller header, no header, or a WordPress admin bar needs no code
+change.
+
+**What is load-bearing, and what breaks quietly:**
+
+- **Filenames.** Frames are addressed as `base + "hb" + <4-digit Blender frame> + <cut> +
+  ".webp"` by string concatenation. Nothing references them literally, so **do not upload
+  them through the media library** — WordPress renames and re-encodes on upload, and every
+  frame 404s while the still keeps showing and nothing looks broken. Same rule as §5 and
+  §6. Put the directory on disk and point `base` at it.
+- **`base` must stay a single quoted attribute value beginning `assets/`.** The build's
+  reference check and its route-relative rewriting both scan for exactly that shape.
+- **`from` and `to` are not decoration.** The page plays 276–417 of an encoded 276–468,
+  because only that span carries the ground shadow — see
+  [`docs/hero-bridge-render.md`](../docs/hero-bridge-render.md). Widen the span and the
+  arch visibly changes colour mid-scrub.
+- **The section's height is the scroll budget.** `assets/hero-bridge.css` sets it, the
+  element measures its own height minus its stage's, and the scrub divides that among the
+  frames the manifest offers. Frame count and height are one setting in two files: encode
+  more frames without raising the height and the whole thing plays proportionally faster.
+- **`isolation: isolate` on `[data-hb-box]`.** The two canvases cross-fade under
+  `mix-blend-mode: plus-lighter`; without the isolation they blend against the page and
+  blow out to white. A theme ancestor with a `filter`, an `opacity` below 1, or its own
+  `mix-blend-mode` is what to check first if the plates ever look wrong.
+- **The `<img>` inside the box carries no inline style.** Its positioning is the
+  stylesheet's, and an inline `height:auto` put back would break the registration between
+  the still and the canvases that replace it.
+
+**Degradation is deliberate and has three arms**, all resolved in JS rather than by a
+media query, because only the element sees all three: reduced motion, save-data or a slow
+connection, and an engine without `createImageBitmap`. Any of them leaves
+`data-hb-motion="off"`, which collapses the pin and shows the still in normal flow —
+exactly what the hero was before this existed. That is also the state before the script
+runs at all, so a page with no JavaScript renders the finished hero rather than a gap.
 
 ---
 
@@ -440,7 +510,8 @@ editable fields versus staying in templates:
 | command | what it does |
 |---|---|
 | `node tools/export-static.mjs` | re-renders `pages/` from the current site (needs `npm i --no-save playwright`) |
-| `node tools/encode-falling-blocks.mjs` | re-encodes the hero frames (needs `npm i --no-save sharp`) |
+| `node tools/encode-hero-bridge.mjs` | re-encodes the hero frames and rewrites their manifest (needs `npm i --no-save sharp`, and the plates, which are not in the repository) |
+| `node tools/encode-falling-blocks.mjs` | re-encodes the closing CTA's frames (needs `npm i --no-save sharp`) |
 | `node tools/encode-approach.mjs` | re-encodes the Approach frames and rewrites their manifest |
 | `node tools/encode-images.mjs` | re-encodes photography and headshots |
 | `node tools/build-site.mjs _site` | builds the current static site — useful for comparison while rebuilding |

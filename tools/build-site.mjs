@@ -195,10 +195,67 @@ const archManifest = (() => {
   }
 })();
 
+const heroManifest = (() => {
+  const p = path.join(root, "assets/hero-bridge/manifest.json");
+  if (!fs.existsSync(p)) {
+    problems.push("assets/hero-bridge/manifest.json is missing — run tools/encode-hero-bridge.mjs");
+    return null;
+  }
+  try {
+    return JSON.parse(fs.readFileSync(p, "utf8"));
+  } catch {
+    problems.push("assets/hero-bridge/manifest.json is not readable JSON");
+    return null;
+  }
+})();
+
 function refsIn(html) {
   const out = new Set();
   for (const m of html.matchAll(/(?:src|href)="([^"]+)"/g)) out.add(m[1]);
   for (const m of html.matchAll(/<meta property="og:image" content="([^"]+)"/g)) out.add(m[1]);
+  // The hero frames are addressed by string concatenation inside assets/hero-bridge.js,
+  // the same way the other two sequences are, so nothing the scan above can see refers to
+  // any of them. Same cross product for the same reason: shipping one cut without the
+  // other is the failure a phone hits and a desktop does not.
+  //
+  // What is different here is from/to. The page plays a span of the manifest rather than
+  // all of it — only part of this sequence carries the ground shadow, see the hero comment
+  // in index.html — so the span is what gets checked, and the span itself is checked
+  // against the manifest first. A from or to naming a frame the encoder never produced is
+  // the mistake this is really here to catch: it costs nothing at runtime, because the
+  // element simply filters it away and scrubs a shorter sequence, and it would ship a hero
+  // quietly missing its opening or its closing frames with nothing 404-ing to say so.
+  const hero = html.match(/<hero-bridge\b([^>]*)>/);
+  if (hero && !heroManifest) {
+    problems.push("the hero-bridge element is on the page but its manifest is unreadable");
+  } else if (hero) {
+    const attr = (k) => (hero[1].match(new RegExp(k + '="([^"]*)"')) || [, ""])[1];
+    const base = attr("base");
+    const m = heroManifest;
+    if (!base) {
+      problems.push("hero-bridge has no base attribute");
+    } else {
+      // Absent bounds mean the whole manifest, which is what the element does with them.
+      const from = attr("from") === "" ? -Infinity : Number(attr("from"));
+      const to = attr("to") === "" ? Infinity : Number(attr("to"));
+      for (const edge of ["from", "to"]) {
+        const v = Number(attr(edge));
+        if (attr(edge) !== "" && !m.frames.includes(v)) {
+          problems.push(`hero-bridge ${edge}="${attr(edge)}" is not a frame the manifest encoded`);
+        }
+      }
+      const played = m.frames.filter((n) => n >= from && n <= to);
+      if (played.length < 2) {
+        problems.push(`hero-bridge plays ${played.length} of the manifest's ${m.frames.length} frames — that is a still, not a sequence`);
+      }
+      for (const n of played) {
+        for (const v of Object.keys(m.cuts)) {
+          out.add(base + m.stem + String(n).padStart(m.pad, "0") + v + "." + m.ext);
+        }
+      }
+      out.add(base + "manifest.json");
+    }
+  }
   // The approach frames are addressed by string concatenation inside
   // assets/approach.js, from a base the page carries as an attribute and a frame list
   // the encoder wrote to a manifest — so, exactly like the falling-blocks frames, no
