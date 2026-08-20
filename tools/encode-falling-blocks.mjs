@@ -85,7 +85,9 @@ const LAYERS = [
 // 37.5MiB, so a 256MiB budget holds three of them per plate and the nearest-frame
 // substitution would fire constantly. The 2560 masters stay as the PNGs in
 // "Falling Blocks", which is the archive.
-const WIDTHS = [1440];
+// 720 is the phone tier: falling-blocks.css switches to it under 900px, where a
+// 1440 frame decodes to four times the bytes for pixels the screen cannot show.
+const WIDTHS = [1440, 720];
 
 const MASTER = { w: 2560, h: 3840 };
 const ENCODER = { quality: 82, alphaQuality: 100, effort: 6, smartSubsample: true };

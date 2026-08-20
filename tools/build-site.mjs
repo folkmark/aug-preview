@@ -40,7 +40,7 @@ const PAGES = [
       'AugmentED brings together people from classrooms, research labs, and engineering teams who share a conviction that AI should augment human teaching, not replace it.',
   },
   {
-    slug: 'contact',
+    slug: 'follow',
     title: 'Follow Our Work | AugmentED',
     description: 'Get updates on AugmentED’s work and research findings.',
   },
@@ -108,6 +108,37 @@ for (const page of PAGES) {
   const dir = path.join(outDir, page.slug);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, 'index.html'), reparent(retitle(home, page)));
+}
+
+// The slugs were shortened after the preview had been shared, so links to the old
+// ones are already in circulation. A stub at each keeps them landing on the right
+// page instead of falling through to 404.html and its soft home-page render.
+const MOVED = [
+  ['the-challenge', 'challenge'],
+  ['our-approach', 'approach'],
+  ['who-we-are', 'team'],
+  ['follow-our-work', 'follow'],
+];
+for (const [from, to] of MOVED) {
+  const target = `${basePath}${to}/`;
+  fs.mkdirSync(path.join(outDir, from), { recursive: true });
+  fs.writeFileSync(
+    path.join(outDir, from, 'index.html'),
+    `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="refresh" content="0; url=${target}">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="${target}">
+<title>Moved | AugmentED</title>
+</head>
+<body>
+<p>This page has moved to <a href="${target}">${target}</a>.</p>
+</body>
+</html>
+`
+  );
 }
 
 // GitHub Pages serves 404.html from whatever URL was missed, so its references
@@ -178,10 +209,14 @@ function refsIn(html) {
   //
   // The base is captured off the page rather than assumed, because reparent() rewrites
   // it differently on every route file and 404.html carries an absolute one.
+  // The scrub is not mounted at the moment — the home page carries a still where the
+  // arch used to be built, and the component is kept for the shortened sequence that
+  // replaces it. So its absence is not a fault; only a scrub on the page with no
+  // manifest behind it is.
   const arch = html.match(/<approach-scrub\b([^>]*)>/);
-  if (!arch || !archManifest) {
-    problems.push("the approach-scrub element is no longer readable — check this scan");
-  } else {
+  if (arch && !archManifest) {
+    problems.push("the approach-scrub element is on the page but its manifest is unreadable");
+  } else if (arch) {
     const base = (arch[1].match(/base="([^"]*)"/) || [, ""])[1];
     const m = archManifest;
     if (!base) {

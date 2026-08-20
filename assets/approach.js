@@ -60,6 +60,28 @@
   var smooth = function (t) { var c = clamp01(t); return c * c * (3 - 2 * c); };
   var pad4 = function (n) { return String(n).padStart(4, '0'); };
 
+  // The scrub's own easing, and it is not smoothstep. Smoothstep's slope peaks at 1.5x
+  // its average halfway through, so the middle of every move — the part with the most
+  // to look at, and the part the eye is actually tracking — runs half again as fast as
+  // the number the whole thing was paced to. Averages are not what a viewer perceives;
+  // the fastest moment is.
+  //
+  // This ramps velocity up over the first RAMP of the move, holds it flat, and ramps it
+  // down over the last RAMP: constant speed through the middle, with the ends still
+  // eased so nothing starts or stops abruptly. Peak is 1/(1 - RAMP) = 1.28x average
+  // rather than 1.5x. The ramps are themselves smoothstepped, so acceleration is
+  // continuous and there is no corner where the flat part begins.
+  //
+  // Copy fades and the camera keep plain smoothstep — they are opacity and scale, where
+  // nobody is tracking a moving object and the softer curve is the better one.
+  var RAMP = 0.22;
+  var glide = function (t) {
+    var c = clamp01(t), r = RAMP, area = 1 - r, x;
+    if (c < r) { x = c / r; return r * (x * x * x - x * x * x * x / 2) / area; }
+    if (c > 1 - r) { x = (1 - c) / r; return 1 - r * (x * x * x - x * x * x * x / 2) / area; }
+    return (r * 0.5 + (c - r)) / area;
+  };
+
   // Four in flight keeps the window filling faster than a scroll can outrun it without
   // making the whole machine slow.
   var MAX_INFLIGHT = 4;
@@ -68,10 +90,60 @@
   // What the scroll budget buys besides motion, as relative weights: the settle after
   // the opening run, each copy beat's reading hold, and the coda. They are weights
   // rather than fractions because the motion's share is set separately — see load() —
-  // and whatever is left over is divided among these in proportion. The lead is a
-  // little longer than a beat's hold because the camera is still pulling in through it,
-  // and the coda a little shorter because its copy is already up and being read out.
-  var LEAD_W = 1.05, HOLD_W = 1, TAIL_W = 0.7;
+  // and whatever is left over is divided among these in proportion.
+  //
+  // The lead is deliberately the shortest. It is the one hold with no copy over it, so
+  // every pixel of it is a frozen frame and nothing else — measured at the old 1.05 it
+  // was 834px of the books sitting still before the first word arrived, the longest
+  // dead run in the section and the thing visitors reported as "stuck". 0.4 keeps a
+  // settle after the fall (the camera is still pulling in) without the wait. The coda
+  // is a little shorter than a reading hold because its copy is already up and being
+  // read out.
+  var LEAD_W = 0.4, HOLD_W = 1, TAIL_W = 0.7;
+
+  // Beats that are punctuation rather than a reading hold, by beat frame number. 431 is
+  // the voussoir ring closed and standing with no deck on it — a completed structure
+  // worth stopping on, but Build-the-capabilities' copy has been up since 276 and is
+  // being read out over the fill, so the hold is there to let the arch land, not to buy
+  // reading time. Same reasoning as TAIL_W, further along: 0.45 is about half a reading
+  // hold, which measures ~300px at 1440x900.
+  //
+  // Keyed by frame rather than by index so it survives beats being added either side of
+  // it; a number here that is not in BEATS is simply never consulted.
+  var SHORT_HOLDS = { 431: 0.45 };
+
+  // When each copy block enters, as the render-frame number of the event it narrates.
+  // These are content decisions, read off the plates frame by frame — the same kind of
+  // measured constant as falling-blocks' CONTENT bounds — and they are the other half
+  // of the choreography whose stills live in the encoder's BEATS table:
+  //
+  //   93   the first book enters the frame        -> "Define the role."
+  //   276  the first solid block reaches the       -> "Build the capabilities."
+  //        wireframe (271 is clean, 281 falling)
+  //   436  the first roadway plank enters frame    -> "Co-design the applications."
+  //        (431 clean; laid across 441-476, the AR
+  //        chevrons then rise at 565 with it up)
+  //   621  the first test book rests on the deck   -> "Test, learn, begin again."
+  //        (settles to the crown by 636)
+  //
+  // Each block stays up from its cue, through its beat's still, until the next cue —
+  // so from frame 93 to the coda there is always exactly one step on screen, and every
+  // event plays with its words already up. A cue is a frame NUMBER, not an index: it
+  // does not need to be an encoded frame, because it converts to a progress position
+  // through the same curve the scrub itself runs on (pAtFrame).
+  var CUES = [93, 276, 436, 621];
+
+  // The copy's slide, in pixels of scroll and pixels of travel. Scroll-anchored rather
+  // than segment-fraction-anchored because the segments are different lengths: a fade
+  // that is 14% of its segment gave step 01 a 521px dwell and step 03 a 313px one, so
+  // every beat entered at a different speed and stayed a different time for no reason a
+  // visitor could see. In pixels, every beat behaves identically on every viewport.
+  //
+  // FADE_IN starts exactly at the cue — the words rise with their event, over motion.
+  // FADE_OUT completes exactly at the next cue, so the outgoing and incoming blocks —
+  // which share one grid cell — are never both visible. RISE is the entrance travel;
+  // 8px read as a shimmer, not an arrival.
+  var FADE_IN = 260, FADE_OUT = 220, RISE = 28;
 
   function num(el, name, dflt) {
     var v = parseFloat(el.getAttribute(name));
@@ -116,6 +188,14 @@
 
       this.copies = [].slice.call(this.querySelectorAll('[data-arch-copy]'));
       this.ticks = [].slice.call(this.querySelectorAll('[data-arch-tick]'));
+      // The body paragraph of each block, cached once: chrome() staggers it behind the
+      // number and heading every tick, and a per-tick querySelector would be a DOM
+      // search inside a scroll handler. The last <p> is the body by the markup
+      // contract — the first is the step number.
+      this.kids = this.copies.map(function (c) {
+        var ps = c.querySelectorAll('p');
+        return ps.length > 1 ? ps[ps.length - 1] : null;
+      });
 
       // A full-page cache serialises the rendered DOM, tags and all. Left in place,
       // the next visitor gets a canvas that claims to hold a frame it does not have
@@ -231,14 +311,39 @@
       }
 
       // The motion's share of the whole scroll. With the in-between frames encoded a
-      // move is a real scrub and is worth better than half the section; with only the
+      // move is a real scrub and is worth well over half the section; with only the
       // resting frames it is a dissolve between two camera angles and ghosts, so it is
       // kept brief. A sequence with nothing to travel spends everything on holds.
+      //
+      // This is only half of how fast the piece plays — the other half is the section's
+      // height, which is the budget being shared out. Raising this share without raising
+      // the height buys motion out of reading time; the two are meant to move together.
+      // 0.645 is derived, not chosen: it is the share that keeps each reading hold's
+      // pixel length exactly what it was at 0.60 while the scroll freed by shrinking
+      // LEAD_W flows to the moves — the animation plays a little slower everywhere
+      // rather than the section getting shorter. Change LEAD_W and this moves with it:
+      // a hold is weight x unit x span, and unit is meant to stay put.
+      //
+      // Adding a beat is the one thing that moves unit anyway, and deliberately: the
+      // voussoir hold is paid for out of the other holds (725 -> 667px each at 1440x900,
+      // buying a 300px pause) rather than out of the moves, which would speed the
+      // animation up, or out of the section's height, which would make the page 9%
+      // longer. Add a full-weight beat and that becomes a 13% cut instead — at which
+      // point the height is the honest place to find it.
       var moveTotal = this.moveAttr !== null ? parseFloat(this.moveAttr)
-        : (this.N > B.length ? 0.53 : 0.12);
+        : (this.N > B.length ? 0.645 : 0.12);
       if (!sum) moveTotal = 0;
 
-      var wSum = LEAD_W + Math.max(0, K - 1) * HOLD_W + TAIL_W;
+      // One rule, read twice: the weights are needed as a total here and per segment in
+      // the loop below. Written out once instead, because the previous pair of copies
+      // agreed only as long as every middle beat weighed the same — a SHORT_HOLDS entry
+      // would have been spent by the loop without ever being counted in the total, and
+      // the section would have run past its own end by exactly that much.
+      var hw = [], wSum = 0;
+      for (k = 0; k <= K; k++) {
+        hw[k] = k === 0 ? LEAD_W : k === K ? TAIL_W : (SHORT_HOLDS[B[k]] || HOLD_W);
+        wSum += hw[k];
+      }
       var unit = (1 - moveTotal) / wSum;
       var rate = sum ? moveTotal / sum : 0;
 
@@ -247,7 +352,7 @@
       var at = 0;
       for (k = 0; k <= K; k++) {
         var mv = rate * travel[k];
-        var hd = unit * (k === 0 ? LEAD_W : k === K ? TAIL_W : HOLD_W);
+        var hd = unit * hw[k];
         // Per segment rather than one number for all of them, because the segments are
         // no longer the same length: the fraction of *this* segment spent moving is
         // what the scrub, the copy and the tick jumps all have to agree on.
@@ -258,6 +363,47 @@
         // there would leave a sliver of the section past the last segment.
         this.bounds.push(k === K ? 1 : at);
       }
+
+      // Each copy's window on the progress line, from the CUES table: it rises at its
+      // own event's onset, holds through its beat's still, and leaves as the next
+      // event's copy arrives. The anchors are render-frame numbers, so they are
+      // converted here through the inverse of the scrub — the one place that knows
+      // where a frame lands in p. A cue that precedes the sequence clamps to its
+      // segment's start; one past the end clamps to 1.
+      this.marks = [];
+      for (k = 0; k < CUES.length; k++) {
+        this.marks.push({ up: this.pAtFrame(CUES[k]),
+                          down: k + 1 < CUES.length ? this.pAtFrame(CUES[k + 1]) : 1 });
+      }
+      // The last copy has no next cue and no exit of its own: its window runs to the
+      // end of the section, and it leaves by scrolling away with the stage at the
+      // unpin. It used to dissolve over the coda's last stretch, which read as the
+      // closing line being taken back while its frame was still on screen — the one
+      // step the reader is meant to be left holding.
+      if (this.marks.length) this.marks[this.marks.length - 1].tail = true;
+    }
+
+    // Where a render-frame number lands on the progress line — the exact inverse of
+    // the expression frame() scrubs with, segment by segment. Within a move the frame
+    // advances along glide(), which has no closed inverse worth writing out, so it is
+    // bisected; twenty-four halvings put the answer within a millionth of the span,
+    // which is a fraction of a pixel. Runs once per cue per plot(), not per tick.
+    pAtFrame(F) {
+      var B = this.BEATS, b = this.bounds;
+      for (var k = 0; k <= B.length - 1; k++) {
+        var from = k === 0 ? this.FRAMES[0] : B[k - 1];
+        if (F <= from) return b[k];
+        if (F > B[k]) continue;
+        var mv = this.moves[k] || 0, span = B[k] - from;
+        if (!mv || !span) return b[k];
+        var want = (F - from) / span, lo = 0, hi = 1;
+        for (var i = 0; i < 24; i++) {
+          var mid = (lo + hi) / 2;
+          if (glide(mid) < want) lo = mid; else hi = mid;
+        }
+        return b[k] + (b[k + 1] - b[k]) * mv * ((lo + hi) / 2);
+      }
+      return 1;
     }
 
     // What one frame costs decoded, which is its pixel count times four however small the
@@ -419,7 +565,7 @@
         // frames in front of the first beat and rests on it when there are not.
         var B = this.BEATS, mv = this.moves[seg] || 0;
         var from = seg === 0 ? this.FRAMES[0] : B[seg - 1];
-        var want = mv > 0 ? from + (B[seg] - from) * smooth(t / mv) : B[seg];
+        var want = mv > 0 ? from + (B[seg] - from) * glide(t / mv) : B[seg];
         var idx = 0;
         while (idx < this.N - 1 && this.FRAMES[idx + 1] <= want) idx++;
         var j = Math.min(idx + 1, this.N - 1);
@@ -429,7 +575,7 @@
         if (idx !== this.head) { this.head = idx; this.plan(); }
         else if (!this.win) this.plan();
         this.paint(idx, j, mix);
-        this.chrome(seg, t);
+        this.chrome(p);
       }
 
       this.camera(p);
@@ -490,27 +636,79 @@
       this.cam.style.transform = 'translateY(' + (1.2 * open).toFixed(2) + '%) scale(' + sc.toFixed(4) + ')';
     }
 
-    // Copy blocks belong to segments 1..n. The opening carries none, and the coda holds
-    // the last line rather than clearing it: the books coming to rest on the arch are
-    // that line's payoff, not a separate thought.
-    chrome(seg, t) {
-      var last = this.copies.length - 1, coda = this.bounds.length - 2;
-      // The rise starts where this segment's move ends. Capped against what is left of
-      // the segment rather than fixed at 0.14, so a `move` attribute long enough to
-      // crowd the hold shortens the fade instead of leaving the copy stranded part-way
-      // up when the segment runs out.
-      var mv = this.moves[seg] || 0, fade = Math.min(0.14, (1 - mv) * 0.4);
+    // The copy's whole life is two anchors from plot() — its own cue and the next —
+    // plus two pixel widths. It rises the moment its event begins on screen, narrates
+    // the event as it plays, sits with the completed state through the beat's still,
+    // and hands off exactly as the next event's copy arrives. From the first cue to
+    // the coda there is always one step up: the relay has no gaps, so a frozen frame
+    // is never wordless and an event never plays unnarrated.
+    //
+    // This inverts the section's original doctrine — copy after the move, never over
+    // it — deliberately, and in two steps of user feedback: first the edges of each
+    // hold were opened to motion, then the whole window was re-anchored from segment
+    // maths to the content itself (see CUES). What survives of the doctrine is its
+    // point: the words are fully readable long before the still arrives, and the
+    // stills themselves are completed states, never mid-event freezes.
+    chrome(p) {
+      var span = (this.offsetHeight - this.stage.offsetHeight) || 1;
+      var fi = FADE_IN / span, fo = FADE_OUT / span;
+      var active = -1;
       for (var i = 0; i < this.copies.length; i++) {
-        var own = seg === i + 1, held = i === last && seg === coda;
-        var o = 0;
-        if (own) o = smooth((t - mv) / fade) * (i === last ? 1 : 1 - smooth((t - 0.92) / 0.08));
-        else if (held) o = 1 - smooth((t - 0.86) / 0.14);
-        o = clamp01(o);
+        var m = this.marks && this.marks[i];
+        var rise = 0, exit = 0;
+        if (m) {
+          // The rise begins AT the cue — "from the moment the first book enters the
+          // frame" means from that moment, not fully-faded-by it.
+          rise = smooth((p - m.up) / fi);
+          // The exit completes AT the next cue, so the incoming block starts on an
+          // empty grid cell. The last copy is the exception and does not fade at all:
+          // it holds full through the coda and rides out with the stage, so the
+          // section ends on its closing step rather than on an empty frame.
+          exit = m.tail ? 0 : smooth((p - (m.down - fo)) / fo);
+          if (p >= m.up) active = i;
+        }
+        var o = clamp01(rise * (1 - exit));
         var el = this.copies[i];
         el.style.opacity = o.toFixed(3);
-        el.style.transform = 'translateY(' + (8 * (1 - o)).toFixed(2) + 'px)';
+        // Two signs, one direction of travel: the block rises RISE px into place, and
+        // on exit keeps going up rather than sinking back where it came from — leaving
+        // with intent reads as a transition, dimming in place reads as a glitch.
+        el.style.transform = 'translateY(' + (RISE * (1 - rise) - 20 * exit).toFixed(2) + 'px)';
         el.style.pointerEvents = o > 0.4 ? 'auto' : 'none';
-        if (this.ticks[i]) this.ticks[i].style.opacity = (own || held) ? '1' : '0.4';
+        // The body trails the number and heading by a quarter step, in opacity and in
+        // a shorter travel of its own. One envelope, two phases: the accent lands
+        // first and pulls the eye, the paragraph resolves under it.
+        var body = this.kids && this.kids[i];
+        if (body) {
+          var ob = smooth((o - 0.25) / 0.75);
+          body.style.opacity = ob.toFixed(3);
+          body.style.transform = 'translateY(' + (14 * (1 - ob)).toFixed(2) + 'px)';
+        }
+      }
+      // Exactly one tick lit once the first beat's copy has begun: the one whose copy
+      // the reader is on or approaching. Inactive ticks get no inline value at all —
+      // an inline opacity would sit on top of the stylesheet's :hover forever, which
+      // is how the old '0.4' quietly disabled hover for the life of the session.
+      //
+      // The fill is the same four windows read as a progress bar: each tick's rule is
+      // its step's segment, so the four together sweep once across the row over the
+      // whole section. It is written from p, not from the frame index, and that is the
+      // entire point — the frames advance in 45px steps and then stop dead for up to
+      // 775px at a beat, while this moves with every pixel the thumb does. See the
+      // ::before in approach.css for why the section needs one thing that always does.
+      //
+      // The first segment starts filling at 0 rather than at its cue: the lead hold is
+      // the section's first stretch of frozen frame, and leaving the bar dead through
+      // it would put a dead patch exactly where a reader is deciding whether this
+      // section is worth their thumb. The tick itself still does not light until its
+      // copy is up, so a filling bar under an unlit 01 reads as the step loading.
+      for (i = 0; i < this.ticks.length; i++) {
+        var mk = this.marks && this.marks[i];
+        var from = i === 0 ? 0 : (mk ? mk.up : 0);
+        var to = mk ? mk.down : 1;
+        this.ticks[i].style.setProperty('--arch-fill',
+          clamp01((p - from) / Math.max(1e-4, to - from)).toFixed(4));
+        this.ticks[i].style.opacity = i === active ? '1' : '';
       }
     }
 
