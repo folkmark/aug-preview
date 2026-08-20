@@ -120,6 +120,14 @@ host before deploying. `--font-heading` and `--font-body` both resolve to it.
 | `assets/approach/manifest.json` | what the encoder produced | frame list, beats, cut sizes |
 | `assets/approach.js` / `.css` | the Approach scrub | portable, see §6 |
 | `assets/images/`, `assets/team/`, `assets/icons/`, `assets/logo/` | photography, headshots, marks | plain images |
+| `assets/illustrations/{brain,blocks,laptop}.webp` | the three home-page icons, 116 KB | 810x810 with alpha — see the note below |
+
+The three illustrations are square plates carrying their own framing and their own soft
+cast shadows, and they are shipped exactly as rendered. Drop them into equal boxes at
+`aspect-ratio: 1 / 1` with `object-fit: contain` and change nothing else. Do not crop
+them to their content to tighten the framing: the shadow fades out gradually over a faint
+haze that covers the whole plate, so any crop tight enough to help will cut the shadow off
+against a straight edge.
 
 **Master material is not in the repository.** The Blender plates, source PNGs, the frame
 archive, the original Webflow export and the Avenir OTFs used to live under `project/` and
