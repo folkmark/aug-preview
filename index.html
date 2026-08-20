@@ -31,11 +31,14 @@
 <link rel="stylesheet" href="_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/base.css">
 <link rel="stylesheet" href="_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/styles.css">
 <script src="_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/_ds_bundle.js"></script>
-<!-- The falling-blocks CTA. Deliberately a standalone custom element with its own
-     stylesheet rather than page CSS and a method on the component below: it drives
-     markup it does not build and touches no runtime API, so the same two files and
-     the same markup work in any host. Nothing else on the page depends on it, and it
-     degrades to the still <img> in its markup if this script never runs. -->
+<!-- The hero scrub and the falling-blocks CTA. Both are deliberately standalone custom
+     elements with their own stylesheets, rather than page CSS and a method on the
+     component below: each drives markup it does not build and touches no runtime API, so
+     the same two files and the same markup work in any host. Nothing else on the page
+     depends on either, and both degrade to the still <img> in their markup if these
+     scripts never run. -->
+<link rel="stylesheet" href="assets/hero-bridge.css">
+<script src="assets/hero-bridge.js" defer></script>
 <link rel="stylesheet" href="assets/falling-blocks.css">
 <script src="assets/falling-blocks.js" defer></script>
 <style>
@@ -83,6 +86,12 @@
   [data-cycle][data-active="1"] [data-label]:not([data-label="1"]),
   [data-cycle][data-active="2"] [data-label]:not([data-label="2"]),
   [data-cycle][data-active="3"] [data-label]:not([data-label="3"]) { opacity: 0.45; }
+  /* The header's height, and the only thing the page has to tell the hero scrub: it
+     reads the pin back off its own stage, and hero-bridge.css derives the stage's
+     height and the element's from the same number. Nothing else here — the section's
+     height, the cuts and the budget are the component's own, and a page that sets
+     them from here would put the pacing in two files. */
+  hero-bridge { --hb-pin: var(--space-18); }
   /* The header is sticky and 4.5rem tall, so the stage is a screen minus the header
      and the rig is that plus the pin. The difference between the two is the scroll
      budget the element measures: 170 minus 100 leaves 70svh over which the blocks
@@ -147,14 +156,29 @@
   <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
   <main data-screen-label="Home">
 
-    <!-- Static hero: the copy above a still of the bridge under construction. The
-         falling-blocks scrub that used to pin here now wraps the closing CTA, and the
-         long Approach act it led into is gone — the bridge lands next to the bridging
-         headline, the way the client reads the page. The plate runs the full width of
-         the viewport and its alpha sits straight on the page colour, so the section
-         carries no side gutter: the copy inside supplies its own. When the shortened
-         frame sequence arrives, swap the <img> inside [data-hero-visual] and nothing
-         else. -->
+    <!-- The hero: the copy above the bridge assembling. The plate pins under the header
+         while the arch builds across the gap between the server rack and the school
+         desk, holds on the closed span, then scrolls on. 70svh of budget — a quick pass,
+         not the old hero's 190svh rise. The falling-blocks scrub that used to pin here
+         now wraps the closing CTA, and the long Approach act it led into is gone: the
+         bridge lands next to the bridging headline, the way the client reads the page.
+
+         The plate's alpha sits straight on the page colour, so the section carries no
+         side gutter and nothing behind the artwork: the copy above supplies its own.
+
+         from/to name the span of the manifest that is actually played. This sequence was
+         delivered in three renders and only 276-417 carries the soft ground shadow — the
+         rest is an older pass with grey legs, and the one step between them measures a
+         22-point drop in partial alpha coverage against 23% either side of it. The other
+         frames stay encoded and on disk, unplayed rather than deleted; when a re-render
+         gives the tail its shadow this is the one attribute that changes. See
+         docs/hero-bridge-render.md.
+
+         The <img> is the still this hero shipped before the sequence was wired up,
+         unchanged. It is what a reader gets with scripting off, under reduced motion, on
+         save-data, and in the seconds before the first frame decodes — and it is the LCP
+         element in every one of those cases. Its positioning belongs to hero-bridge.css;
+         do not give it an inline style back. -->
     <section style="padding:clamp(var(--space-12),5vw,var(--space-18)) 0 clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg))">
       <div style="padding-inline:var(--page-gutter)">
       <div style="margin-inline:auto;max-width:var(--container-lg);text-align:center">
@@ -167,10 +191,19 @@
       </div>
       </div>
       <div data-hero-visual="" data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-top:clamp(var(--space-10),5vw,var(--space-16))">
-        <!-- Both files are the same crop at two sizes, so the browser picks by width
-             and pixel density rather than by a media query. No plate and no radius:
-             the render's alpha is the point, and it sits on the page colour. -->
-        <img src="assets/images/hero-bridge.webp" srcset="assets/images/hero-bridge-m.webp 1200w, assets/images/hero-bridge.webp 2048w" sizes="100vw" alt="An arch of toy blocks under construction between a server rack and a school desk, carrying the span from one to the other as the last blocks fall into place" width="2048" height="1432" decoding="async" style="width:100%;height:auto;display:block">
+        <hero-bridge base="assets/hero-bridge/" from="276" to="417">
+          <div data-hb-stage="">
+            <div data-hb-box="">
+              <canvas data-hb-layer="0" aria-hidden="true"></canvas>
+              <canvas data-hb-layer="1" aria-hidden="true"></canvas>
+              <!-- Both files are the same plate at two sizes, so the browser picks by
+                   width and pixel density rather than by a media query. No plate and no
+                   radius: the render's alpha is the point, and it sits on the page
+                   colour. -->
+              <img src="assets/images/hero-bridge.webp" srcset="assets/images/hero-bridge-m.webp 1200w, assets/images/hero-bridge.webp 2048w" sizes="100vw" alt="An arch of toy blocks under construction between a server rack and a school desk, carrying the span from one to the other as the last blocks fall into place" width="2048" height="1432" decoding="async">
+            </div>
+          </div>
+        </hero-bridge>
       </div>
     </section>
 

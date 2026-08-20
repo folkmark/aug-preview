@@ -47,12 +47,39 @@ A full copy of the repository as it stood before the history rewrite, bulk rende
 and all, was bundled off to the designer. That bundle is the only way back to the
 old SHAs; nothing in this repository points at them any more.
 
+## The hero animation
+
+The home page opens on `<hero-bridge>` — `assets/hero-bridge.js` and
+`assets/hero-bridge.css` — a scroll-scrubbed sequence of alpha plates in which a
+toy-block arch assembles between a server rack and a school desk and closes. The
+plate pins under the header for 70svh while it builds, holds on the closed span,
+then scrolls on.
+
+Its frames are in `assets/hero-bridge/`, named by their Blender frame number so a
+file, [`docs/hero-bridge-render.md`](docs/hero-bridge-render.md) and the manifest
+all refer to the same thing, in two cuts: `hb####.webp` at 1600 wide and
+`hb####m.webp` at 1200. Both are the whole plate — blocks fly in from the top and
+the right for the whole run, so neither can be cropped.
+
+**The page plays 276–417 of the encoded 276–468**, named by `from` and `to` on the
+element. The sequence was delivered in three renders and only that span carries the
+soft ground shadow; the rest is an older pass with grey legs, and it measures a
+22-point drop in partial alpha coverage in a single step. The other frames stay on
+disk. `tools/build-site.mjs` checks both bounds against the manifest and every
+frame of the span, in both cuts, against disk.
+
+Two numbers move together and there is no build step that will catch them drifting:
+the section's height in `assets/hero-bridge.css` is the scroll budget, and the scrub
+spends it across however many frames the manifest offers. The full stride-1 delivery
+the render doc asks for is 142 frames, which is three times what ships — dropped in
+without raising the height, it would play three times faster.
+
 ## The Approach animation
 
 **Not currently on the page.** The pinned scrub asked the reader through many
 stages of the arch being built, and the client found it hard going, so the home
-page now carries a still of the finished bridge in the hero and the R&D cycle
-wheel where the scrub used to be. The component — `assets/approach.js` and
+page now carries the hero sequence above and the R&D cycle wheel where the scrub
+used to be. The component — `assets/approach.js` and
 `assets/approach.css` — and its frames are kept for the shortened sequence that
 replaces it, and the build only checks the frames when the element is actually
 mounted. The full build spec is at
@@ -101,19 +128,22 @@ npm i --no-save sharp && node tools/encode-approach.mjs
 
 ## Images, fonts and icons
 
-Nothing in `assets/` is hand-placed. Four encoders produce what ships:
+Nothing in `assets/` is hand-placed. Five encoders produce what ships:
 
 ```sh
+npm i --no-save sharp   && node tools/encode-hero-bridge.mjs     # the hero frames
 npm i --no-save sharp   && node tools/encode-approach.mjs        # the arch frames
-npm i --no-save sharp   && node tools/encode-falling-blocks.mjs  # the hero frames
+npm i --no-save sharp   && node tools/encode-falling-blocks.mjs  # the closing CTA's frames
 npm i --no-save sharp   && node tools/encode-images.mjs          # team, photography, icons
 npm i --no-save wawoff2 && node tools/encode-fonts.mjs           # Avenir OTF -> WOFF2
 ```
 
 The last two run from a clean checkout: `encode-images.mjs` reads
 `source-material/image-sources/` and `encode-fonts.mjs` reads the OTFs sitting
-beside the WOFF2 in `_ds/*/assets/fonts/`, and both are committed. The first two
-need the bulk renders restored (see above).
+beside the WOFF2 in `_ds/*/assets/fonts/`, and both are committed. The first three
+need the bulk renders restored (see above) — and the hero's masters are the one set
+that has never been in the history at all, so re-encoding that sequence needs them
+from the designer.
 
 Each target size is set from the box the image actually occupies, at about three
 device pixels per CSS pixel — what a phone at DPR 3 can resolve and no more.
