@@ -41,14 +41,53 @@ const JOBS = [
   { in: 'images/student-notes.png',     out: 'images/student-notes.webp',     width: 1264 },
 
   // Headshots in a square cell: 165 CSS px on a phone, ~200 on desktop.
-  { in: 'team/joan-lee.jpg',       out: 'team/joan-lee.webp',       width: 512, square: true },
-  { in: 'team/lisa-peterson.png',  out: 'team/lisa-peterson.webp',  width: 512, square: true },
-  { in: 'team/raquel-romano.png',  out: 'team/raquel-romano.webp',  width: 512, square: true },
-  { in: 'team/laura-allen.jpeg',   out: 'team/laura-allen.webp',    width: 512, square: true },
+  //
+  // Most of these come from the "Website Bio tracking" sheet, where each person's photo is
+  // embedded in a Headshots column. Four do not: where the subject's own institutional page
+  // still had the file the sheet's copy was resized from, the page won. Angela is 1000x1407
+  // there against a 680x600 Drupal derivative in the sheet, Laura 1200x1800 against 300x450,
+  // Sarah 2617x2500 against a 1024x978 re-export. Check both before adding anyone new — a
+  // photo that has been pasted through a spreadsheet has usually lost a generation.
+  { in: 'team/sherry-lachman.jpg',     out: 'team/sherry-lachman.webp',     width: 512, square: true },
+  { in: 'team/raquel-romano.png',      out: 'team/raquel-romano.webp',      width: 512, square: true },
+  { in: 'team/joan-lee.jpg',           out: 'team/joan-lee.webp',           width: 512, square: true },
+  { in: 'team/angela-stewart.jpg',     out: 'team/angela-stewart.webp',     width: 512, square: true },
+  { in: 'team/laura-allen.jpeg',       out: 'team/laura-allen.webp',        width: 512, square: true },
+  { in: 'team/blair-lehman.jpeg',      out: 'team/blair-lehman.webp',       width: 512, square: true },
+  { in: 'team/sarah-zaner.png',        out: 'team/sarah-zaner.webp',        width: 512, square: true },
+  { in: 'team/lisa-peterson.png',      out: 'team/lisa-peterson.webp',      width: 512, square: true },
+  { in: 'team/neil-sharma.jpg',        out: 'team/neil-sharma.webp',        width: 512, square: true },
+  { in: 'team/christopher-hanks.jpg',  out: 'team/christopher-hanks.webp',  width: 512, square: true },
+  { in: 'team/ben-hoff.jpg',           out: 'team/ben-hoff.webp',           width: 512, square: true },
+  { in: 'team/joshua-sloan.jpg',       out: 'team/joshua-sloan.webp',       width: 512, square: true },
+
   // Under-resolution at source; upscaling would only invent detail, so these ship at
-  // their native size and stay soft until someone supplies better originals.
-  { in: 'team/blair-lehman.jpeg',  out: 'team/blair-lehman.webp',   width: 512, square: true },
-  { in: 'team/ryan-baker.png',     out: 'team/ryan-baker.webp',     width: 512, square: true },
+  // their native size and stay soft until someone supplies better originals. Blair Lehman
+  // was in this group at 200x200 and has left it — the sheet supplied an 800x800.
+  // The fellows' photographs mostly arrive this way: pulled from LinkedIn, where the
+  // largest public rendition tops out around 400-450px square.
+  //
+  // Andrew Lan is the trap worth naming. cics.umass.edu serves his portrait through a
+  // 1_1_2xl image style at 800x800, and that derivative is what got pasted into the sheet,
+  // but the file behind it — /files/2022-10/lan.jpg — is 203x203. The big one is a 4x
+  // upscale carrying no detail the small one lacks, at 48 KB against 17 KB. Encoding from
+  // it would ship a mushy tile that merely claims to be sharp, so the 203 is the master.
+  { in: 'team/andrew-lan.jpg',         out: 'team/andrew-lan.webp',         width: 512, square: true },
+  { in: 'team/ryan-baker.png',         out: 'team/ryan-baker.webp',         width: 512, square: true },
+  { in: 'team/mohammed-al-harthy.jpg', out: 'team/mohammed-al-harthy.webp', width: 512, square: true },
+  { in: 'team/danie-cowden.jpg',       out: 'team/danie-cowden.webp',       width: 512, square: true },
+  { in: 'team/danielle-ragavanis.jpg', out: 'team/danielle-ragavanis.webp', width: 512, square: true },
+  { in: 'team/alondra-ramos.jpg',      out: 'team/alondra-ramos.webp',      width: 512, square: true },
+
+  // Nikki Wallace's is the one photograph here that is not a headshot: a full-body
+  // conference stage shot against a magenta backdrop, her face about 165 px inside an
+  // 800 px frame. The square cover crop cannot help — the master is already square, so
+  // it would pass straight through and ship a whole stage into a 200 px tile. The crop
+  // box below is measured to her head and shoulders, which is the only way this image
+  // reads as a portrait next to the others. It costs resolution: 380 px, so it ships
+  // soft, and the magenta still does not match anything around it. Replace the master
+  // and drop the crop the moment a real headshot exists.
+  { in: 'team/nikki-wallace.jpg',      out: 'team/nikki-wallace.webp',      width: 512, square: true, crop: [288, 90, 380, 380] },
 
   // The three illustrations in the outputs row on the home page. These ship as rendered:
   // the full 1200x1200 plate, scaled down and nothing else.
@@ -102,6 +141,12 @@ for (const job of runnable) {
 
   const meta = await sharp(src).metadata();
   let pipe = sharp(src);
+  // A crop box, [left, top, width, height] in source pixels, taken before the resize.
+  // Only for a photograph that is not a headshot to begin with and cannot be made into
+  // one by the square cover crop below, which takes the top of the frame and would keep
+  // whatever framing the photographer chose. Measure the box against the master rather
+  // than guessing: an extract that runs past the edge throws, it does not clamp.
+  if (job.crop) pipe = pipe.extract({ left: job.crop[0], top: job.crop[1], width: job.crop[2], height: job.crop[3] });
   if (job.square) {
     // Never enlarge: withoutEnlargement keeps the two small headshots at their own
     // size rather than fabricating pixels.
