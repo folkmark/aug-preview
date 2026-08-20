@@ -140,12 +140,23 @@ for (const p of PAGES) {
     return '<!doctype html>\n' + doc.outerHTML;
   });
 
-  // Same rewrite the build applies to route pages, for the same reason: these sit one
-  // directory below assets/ and _ds/.
+  // The build serves these pages with absolute asset paths — see absolutise() in
+  // build-site.mjs — so what comes off the page is /assets/..., not assets/.... These
+  // files are meant to open straight off disk, where an absolute path resolves to
+  // file:///assets/ and every image fails without a word, so bring them back down to a
+  // relative one. It is two levels, not one: these sit at wordpress-handoff/pages/ and
+  // the assets are at the repository root.
+  //
+  // This pattern used to be /(["'])assets\//, which quietly matched nothing at all: what
+  // the page hands back is the route file's own ../assets/, and a quote followed by ".."
+  // is not a quote followed by "assets/". The rewrite was a no-op, ../assets/ survived
+  // into every exported page, and it pointed at a wordpress-handoff/assets/ that does not
+  // exist — so the handoff pages have never rendered an image from disk. Verify this by
+  // opening one with file://, not over a server, where either path appears to work.
   const out = html
-    .replace(/(["'])assets\//g, '$1../../assets/')
-    .replace(/(["'])_ds\//g, '$1../../_ds/')
-    .replace(/(["'])\.\/support\.js\1/g, '$1../../support.js$1');
+    .replace(/(["'\s,(])\/assets\//g, '$1../../assets/')
+    .replace(/(["'\s,(])\/_ds\//g, '$1../../_ds/')
+    .replace(/(["'])\/support\.js\1/g, '$1../../support.js$1');
 
   fs.writeFileSync(path.join(OUT, p.file), out);
   console.log(`${p.file.padEnd(22)} ${(out.length / 1024).toFixed(0)} KB  ${p.name}`);

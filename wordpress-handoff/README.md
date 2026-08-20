@@ -130,6 +130,14 @@ host before deploying. `--font-heading` and `--font-body` both resolve to it.
 | `assets/approach/manifest.json` | what the encoder produced | frame list, beats, cut sizes |
 | `assets/approach.js` / `.css` | the Approach scrub | portable, see §6 |
 | `assets/images/`, `assets/team/`, `assets/icons/`, `assets/logo/` | photography, headshots, marks | plain images |
+| `assets/illustrations/{brain,blocks,laptop}.webp` | the three home-page icons, 116 KB | 810x810 with alpha — see the note below |
+
+The three illustrations are square plates carrying their own framing and their own soft
+cast shadows, and they are shipped exactly as rendered. Drop them into equal boxes at
+`aspect-ratio: 1 / 1` with `object-fit: contain` and change nothing else. Do not crop
+them to their content to tighten the framing: the shadow fades out gradually over a faint
+haze that covers the whole plate, so any crop tight enough to help will cut the shadow off
+against a straight edge.
 
 **Master material is not in the repository.** The Blender plates, source PNGs, the frame
 archive, the original Webflow export and the Avenir OTFs used to live under `project/` and
@@ -496,8 +504,12 @@ There is no CMS behind any of this — all copy is hardcoded in the template, wh
 `pages/` doubles as the content export. Worth deciding early which of these become
 editable fields versus staying in templates:
 
-- **Team members** (Who We Are) — 6 people, each a headshot, name, role and bio. The
-  obvious candidate for a custom post type.
+- **Team members** (Who We Are) — 28 people across four grids: Leadership, Research
+  Partners, Technology Partners and Education Fellows. Each carries a headshot, a name, a
+  role and optional LinkedIn/website links; fellows also carry a school and location. The
+  cards render no bio — the bios exist, but only in the tracking sheet. 9 of the 28 have no
+  usable photograph yet and fall back to a grey square, so whatever models this has to treat
+  the image as optional. The obvious candidate for a custom post type.
 - **Research items** (Home, Follow Our Work) — title, description, link.
 - **Approach beats** — six numbered steps, each with a heading and two paragraphs, tied to
   specific animation frames. Editable copy, fixed count; the frame mapping is not content.
