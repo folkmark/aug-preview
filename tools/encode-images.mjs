@@ -53,8 +53,6 @@ const JOBS = [
   { in: 'team/blair-lehman.jpeg',      out: 'team/blair-lehman.webp',       width: 512, square: true },
   { in: 'team/sarah-zaner.png',        out: 'team/sarah-zaner.webp',        width: 512, square: true },
   { in: 'team/lisa-peterson.png',      out: 'team/lisa-peterson.webp',      width: 512, square: true },
-  { in: 'team/suzanna-smith.jpg',      out: 'team/suzanna-smith.webp',      width: 512, square: true },
-  { in: 'team/adam-bachman.jpg',       out: 'team/adam-bachman.webp',       width: 512, square: true },
   { in: 'team/neil-sharma.jpg',        out: 'team/neil-sharma.webp',        width: 512, square: true },
   { in: 'team/christopher-hanks.jpg',  out: 'team/christopher-hanks.webp',  width: 512, square: true },
   { in: 'team/ben-hoff.jpg',           out: 'team/ben-hoff.webp',           width: 512, square: true },
