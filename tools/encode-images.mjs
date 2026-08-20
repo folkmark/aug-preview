@@ -50,53 +50,37 @@ const JOBS = [
   { in: 'team/blair-lehman.jpeg',  out: 'team/blair-lehman.webp',   width: 512, square: true },
   { in: 'team/ryan-baker.png',     out: 'team/ryan-baker.webp',     width: 512, square: true },
 
-  // The three illustrations in the outputs row on the home page. These take a different
-  // treatment from everything above, for a reason worth stating: they arrive as 1200x1200
-  // plates with wildly different framing inside the square. Measured from the alpha, the
-  // content boxes are 808x898 (brain, portrait), 927x707 (blocks) and 904x690 (laptop),
-  // sitting 224, 343 and 297 px below the top edge. Dropped into identical boxes they
-  // read as three different sizes, because most of what the box is fitting is each
-  // plate's own idiosyncratic whitespace.
+  // The three illustrations in the outputs row on the home page. These ship as rendered:
+  // the full 1200x1200 plate, scaled down and nothing else.
   //
-  // So: trim to the content, then re-pad to one common 3:2 canvas with equal margins.
-  // Every plate then arrives at the page pre-fitted to the box it renders into, and the
-  // three carry matching weight without the page having to know anything about them.
-  // All three come out height-constrained, so they land at a matched 464 px tall and
-  // 417, 608 and 608 wide — the brain is the narrow one because it is the portrait
-  // subject, not because it is scaled differently.
+  // An earlier version of this encoder trimmed each plate to its own content and re-padded
+  // all three onto a common 3:2 canvas, to make the row read as one set regardless of how
+  // each render framed its subject. Do not reintroduce it. Trimming means choosing an
+  // alpha threshold, and on these renders there is no threshold that works: the shadow
+  // falls off smoothly from the subject (measured along one row through the brain's
+  // shadow, alpha runs 0, 3, 13, 31, 56, 89, 129 over 240 px) while a faint global haze
+  // sits at alpha 1-2 across the whole canvas and never clears. Set the threshold low
+  // enough to clear the haze and it cuts nothing; set it high enough to trim and the crop
+  // lands partway up the shadow gradient and slices it off against a straight edge. At the
+  // threshold of 16 that shipped briefly, the brain's cast shadow was cut flat down its
+  // left side and across its bottom.
   //
-  // Normalising by *area* rather than by bounding box was tried on the previous set and
-  // is wrong here: what reads at a glance is the extent, not the coverage. An airy
-  // subject carrying a fraction of another's ink for a comparable bounding box would be
-  // scaled up until it burst the frame.
+  // The plates are square and already framed by whoever rendered them, with the shadow
+  // given room on every side. So the page gets a square box and the plate fills it. The
+  // three subjects are not scaled to match each other any more — they sit wherever the
+  // render put them — which is the cost of not cutting into anyone's shadow.
   //
-  // `trimThreshold` is the load-bearing setting, and 0 — which is what this used to pass,
-  // and which was right for the previous plates — now yields no trim at all. These
-  // renders carry a wash of sub-3%-opacity alpha out to all four canvas edges (82k pixels
-  // at alpha 1 on the brain, 100k on the laptop), so at threshold 0 the trim finds
-  // nothing to cut and hands back the full 1200x1200. The plate then ships with every bit
-  // of its whitespace and the row reads as three different sizes again — silently,
-  // because the encoder still reports success. Hence the guard below.
-  //
-  // 16 is about 6% opacity: well clear of the wash and still inside the real shadow.
-  // Anywhere from 8 to 26 moves the boxes by at most 5%, so the exact value is not
-  // delicate, but below 8 the framing falls off a cliff back to the whole canvas. It is
-  // passed explicitly rather than left to sharp's own default of 10, which lands inside
-  // that range by luck and sits close enough to the cliff not to be worth relying on.
-  // Note the threshold is on sharp's 0-255 scale even though these sources are 16 bits
-  // per channel; a value scaled for 16-bit is out of range and silently trims nothing.
-  //
-  // 810x540 is twice the 405 CSS px the box occupies in the desktop three-up, which is
-  // what a 2x screen resolves; the phone's box is smaller still at 351. The 1200px
-  // originals are more than the box can ever show, and their depth is what made them
-  // 669-745 KB apiece. The set goes 2.07 MB -> 105 KB, lazy and below the fold.
+  // 810 is twice the 405 CSS px the box occupies in the desktop three-up, which is what a
+  // 2x screen resolves; the phone's box is smaller still at 351. The set is 116 KB, lazy
+  // and below the fold.
   //
   // The alpha is kept rather than flattened onto the panel colour. Flattening would save
-  // 21-26 KB a plate, and is deliberately not done: it would weld #f6f2e8 into the file
-  // and the tile would show a wrong-coloured rectangle the moment the panel is restyled.
-  { in: 'icons/brain.png',  out: 'illustrations/brain.webp',  box: [810, 540], margin: 0.07, trimThreshold: 16, alpha: true },
-  { in: 'icons/blocks.png', out: 'illustrations/blocks.webp', box: [810, 540], margin: 0.07, trimThreshold: 16, alpha: true },
-  { in: 'icons/laptop.png', out: 'illustrations/laptop.webp', box: [810, 540], margin: 0.07, trimThreshold: 16, alpha: true }
+  // roughly 20 KB a plate, and is deliberately not done: it would weld #f6f2e8 into the
+  // file and the tile would show a wrong-coloured rectangle the moment the panel is
+  // restyled.
+  { in: 'icons/brain.png',  out: 'illustrations/brain.webp',  width: 810, alpha: true },
+  { in: 'icons/blocks.png', out: 'illustrations/blocks.webp', width: 810, alpha: true },
+  { in: 'icons/laptop.png', out: 'illustrations/laptop.webp', width: 810, alpha: true }
 ];
 
 // A job whose source is missing is skipped, not fatal — see the note on SRC above.
@@ -110,8 +94,6 @@ encoder runs from a clean checkout with nothing restored.`);
   process.exit(1);
 }
 
-const TRANSPARENT = { r: 0, g: 0, b: 0, alpha: 0 };
-
 let before = 0, after = 0;
 for (const job of runnable) {
   const src = path.join(SRC, job.in);
@@ -120,34 +102,7 @@ for (const job of runnable) {
 
   const meta = await sharp(src).metadata();
   let pipe = sharp(src);
-  if (job.box) {
-    // Trim the plate's own transparent margin away, fit what is left inside the box less
-    // its margin, then pad back out to the box centred. Two passes rather than one
-    // pipeline: sharp keeps only the last resize in a chain, so the fit and the pad have
-    // to be separated by a buffer or the fit is silently discarded. On trimThreshold, see
-    // the note on the jobs — it decides the framing, and a wrong one fails quietly.
-    const [bw, bh] = job.box;
-    const trimmed = await sharp(src)
-      .trim({ background: TRANSPARENT, threshold: job.trimThreshold })
-      .toBuffer({ resolveWithObject: true });
-    // A trim that cut nothing is the failure this whole treatment exists to prevent, and
-    // it is invisible in the output: the plate encodes fine, at the right dimensions, and
-    // only looks wrong beside the other two on the page. Catch it here instead.
-    if (trimmed.info.width === meta.width && trimmed.info.height === meta.height) {
-      throw new Error(
-        `${job.in}: trim at threshold ${job.trimThreshold} cut nothing — the plate would ` +
-        `ship with all of its own whitespace. Raise the threshold until it finds the content.`
-      );
-    }
-    const inner = await sharp(trimmed.data)
-      .resize({
-        width: Math.round(bw * (1 - 2 * job.margin)),
-        height: Math.round(bh * (1 - 2 * job.margin)),
-        fit: 'inside', kernel: 'lanczos3',
-      })
-      .toBuffer();
-    pipe = sharp(inner).resize({ width: bw, height: bh, fit: 'contain', background: TRANSPARENT });
-  } else if (job.square) {
+  if (job.square) {
     // Never enlarge: withoutEnlargement keeps the two small headshots at their own
     // size rather than fabricating pixels.
     pipe.resize({ width: job.width, height: job.width, fit: 'cover', position: 'top', withoutEnlargement: true, kernel: 'lanczos3' });

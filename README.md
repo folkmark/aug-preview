@@ -119,12 +119,13 @@ Each target size is set from the box the image actually occupies, at about three
 device pixels per CSS pixel — what a phone at DPR 3 can resolve and no more.
 
 The three home-page illustrations — `assets/illustrations/{brain,blocks,laptop}.webp` —
-are the exception, and `encode-images.mjs` does more to them than resize. Each render
-frames its subject differently inside a 1200x1200 square, so the encoder trims each plate
-to its own content and re-pads all three to one 810x540 canvas: the row then reads as one
-set without the page knowing anything about the individual plates. The trim threshold is
-load-bearing and a wrong one fails quietly — the note above the jobs in the encoder
-explains what to look for.
+ship as rendered: the full 1200x1200 plate scaled to 810 square, nothing trimmed and
+nothing re-framed. The encoder used to trim each plate to its content and re-pad all
+three onto a common 3:2 canvas so the row read as one set. That is gone, and the note
+above the jobs in `encode-images.mjs` says why it should stay gone: these renders have a
+soft cast shadow over a faint full-canvas haze, and no alpha threshold separates them —
+every threshold either trims nothing or slices the shadow off against a straight edge.
+The plates are already framed, so the page gives them a square box and lets them fill it.
 
 The icon font is subsetted to the five glyphs the site can render and self-hosted;
 the regeneration URL is in `_ds/*/tokens/icons.css` beside the `@font-face`. Adding
