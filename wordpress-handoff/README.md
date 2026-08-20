@@ -120,6 +120,12 @@ host before deploying. `--font-heading` and `--font-body` both resolve to it.
 | `assets/approach/manifest.json` | what the encoder produced | frame list, beats, cut sizes |
 | `assets/approach.js` / `.css` | the Approach scrub | portable, see §6 |
 | `assets/images/`, `assets/team/`, `assets/icons/`, `assets/logo/` | photography, headshots, marks | plain images |
+| `assets/illustrations/{brain,blocks,laptop}.webp` | the three home-page icons, 105 KB | 810x540 with alpha — pre-fitted, see the note below |
+
+The three illustrations are already trimmed and re-padded to a common 810x540 canvas by
+`tools/encode-images.mjs`, so the row reads as one set at any width. Drop them into equal
+boxes at `aspect-ratio: 3 / 2` with `object-fit: contain` and change nothing else — any
+per-image cropping, padding or sizing in the theme will pull them back out of step.
 
 **Master material is not in the repository.** The Blender plates, source PNGs, the frame
 archive, the original Webflow export and the Avenir OTFs used to live under `project/` and

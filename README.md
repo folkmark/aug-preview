@@ -106,7 +106,7 @@ Nothing in `assets/` is hand-placed. Four encoders produce what ships:
 ```sh
 npm i --no-save sharp   && node tools/encode-approach.mjs        # the arch frames
 npm i --no-save sharp   && node tools/encode-falling-blocks.mjs  # the hero frames
-npm i --no-save sharp   && node tools/encode-images.mjs          # team, photography
+npm i --no-save sharp   && node tools/encode-images.mjs          # team, photography, icons
 npm i --no-save wawoff2 && node tools/encode-fonts.mjs           # Avenir OTF -> WOFF2
 ```
 
@@ -117,6 +117,14 @@ need the bulk renders restored (see above).
 
 Each target size is set from the box the image actually occupies, at about three
 device pixels per CSS pixel — what a phone at DPR 3 can resolve and no more.
+
+The three home-page illustrations — `assets/illustrations/{brain,blocks,laptop}.webp` —
+are the exception, and `encode-images.mjs` does more to them than resize. Each render
+frames its subject differently inside a 1200x1200 square, so the encoder trims each plate
+to its own content and re-pads all three to one 810x540 canvas: the row then reads as one
+set without the page knowing anything about the individual plates. The trim threshold is
+load-bearing and a wrong one fails quietly — the note above the jobs in the encoder
+explains what to look for.
 
 The icon font is subsetted to the five glyphs the site can render and self-hosted;
 the regeneration URL is in `_ds/*/tokens/icons.css` beside the `@font-face`. Adding

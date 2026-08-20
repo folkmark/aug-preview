@@ -4,29 +4,31 @@
 //
 //   npm i --no-save sharp && node tools/encode-images.mjs
 //
-// The originals were dropped in as received: 24-bit PNGs of soft-shaded 3D renders,
-// and headshots ranging from a 300-DPI print export down to a 190px thumbnail. Every
-// target below is set from the box the image actually occupies, at roughly three
-// device pixels per CSS pixel, which is what a phone at DPR 3 can resolve and no
-// more. The approach frames have their own encoder, tools/encode-approach.mjs.
+// The originals were dropped in as received: PNGs of soft-shaded 3D renders, 24-bit for
+// the photography and 48-bit for the icons, and headshots ranging from a 300-DPI print
+// export down to a 190px thumbnail. Every target below is set from the box the image
+// actually occupies, at roughly three device pixels per CSS pixel, which is what a phone
+// at DPR 3 can resolve and no more. The approach frames have their own encoder,
+// tools/encode-approach.mjs.
 
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-// Photography and headshots come from the masters, which are kept off the repository —
-// see .gitignore. The illustrations came in already rendered and are committed, so they
-// have their own root and re-encode with nothing restored. Jobs name which they use, and
-// a job whose source is absent is skipped rather than killing the run: that way changing
-// an icon does not require fetching 88 MB of photography first.
+// Every source this reads is committed under source-material/image-sources — see that
+// directory's README — so the whole run works from a clean checkout with nothing
+// restored. The icons used to sit apart, under assets/icons-rigtest, which meant their
+// lossless plates were copied into the published site by tools/build-site.mjs and served
+// to nobody: assets/ ships wholesale, and no page has ever referenced a source plate.
+// A job whose source is absent is still skipped rather than killing the run, so a
+// half-populated tree re-encodes what it can.
 const SRC = path.join(root, 'source-material/image-sources');
-const ICONS = path.join(root, 'assets/icons-rigtest');
 const OUT = path.join(root, 'assets');
 
-// Imported here rather than at the top so the missing-masters message above wins: sharp
+// Imported here rather than at the top so the missing-source message below wins: sharp
 // is not a repo dependency, and a bare ERR_MODULE_NOT_FOUND is a worse first thing to
-// read than "restore the masters".
+// read than which directory the encoder could not find.
 const sharp = await import('sharp').then((m) => m.default).catch(() => {
   console.error('sharp is not installed. Run:\n\n  npm i --no-save sharp\n');
   process.exit(1);
@@ -49,48 +51,61 @@ const JOBS = [
   { in: 'team/ryan-baker.png',     out: 'team/ryan-baker.webp',     width: 512, square: true },
 
   // The three illustrations in the outputs row on the home page. These take a different
-  // treatment from everything above, for a reason worth stating: they arrived as
-  // 1200x1200 lossless plates with wildly different framing inside the square. Measured
-  // from the alpha, the content boxes are 702x897 (brain, portrait), 808x878 (network),
-  // and 1011x556 (laptop, landscape) — sitting anywhere from 144 to 373 px below the top
-  // edge. Dropped into identical boxes they read as three different sizes, because most
-  // of what the box is fitting is each plate's own idiosyncratic whitespace.
+  // treatment from everything above, for a reason worth stating: they arrive as 1200x1200
+  // plates with wildly different framing inside the square. Measured from the alpha, the
+  // content boxes are 808x898 (brain, portrait), 927x707 (blocks) and 904x690 (laptop),
+  // sitting 224, 343 and 297 px below the top edge. Dropped into identical boxes they
+  // read as three different sizes, because most of what the box is fitting is each
+  // plate's own idiosyncratic whitespace.
   //
   // So: trim to the content, then re-pad to one common 3:2 canvas with equal margins.
   // Every plate then arrives at the page pre-fitted to the box it renders into, and the
   // three carry matching weight without the page having to know anything about them.
+  // All three come out height-constrained, so they land at a matched 464 px tall and
+  // 417, 608 and 608 wide — the brain is the narrow one because it is the portrait
+  // subject, not because it is scaled differently.
   //
-  // Normalising by *area* rather than by bounding box was tried and is wrong here. The
-  // network plate is a deliberately airy tangle of thin lines and carries only 21% of the
-  // brain's ink for a comparable bounding box; matching ink would scale it 2.2x and burst
-  // the frame. What reads at a glance is the extent, not the coverage.
+  // Normalising by *area* rather than by bounding box was tried on the previous set and
+  // is wrong here: what reads at a glance is the extent, not the coverage. An airy
+  // subject carrying a fraction of another's ink for a comparable bounding box would be
+  // scaled up until it burst the frame.
+  //
+  // `trimThreshold` is the load-bearing setting, and 0 — which is what this used to pass,
+  // and which was right for the previous plates — now yields no trim at all. These
+  // renders carry a wash of sub-3%-opacity alpha out to all four canvas edges (82k pixels
+  // at alpha 1 on the brain, 100k on the laptop), so at threshold 0 the trim finds
+  // nothing to cut and hands back the full 1200x1200. The plate then ships with every bit
+  // of its whitespace and the row reads as three different sizes again — silently,
+  // because the encoder still reports success. Hence the guard below.
+  //
+  // 16 is about 6% opacity: well clear of the wash and still inside the real shadow.
+  // Anywhere from 8 to 26 moves the boxes by at most 5%, so the exact value is not
+  // delicate, but below 8 the framing falls off a cliff back to the whole canvas. It is
+  // passed explicitly rather than left to sharp's own default of 10, which lands inside
+  // that range by luck and sits close enough to the cliff not to be worth relying on.
+  // Note the threshold is on sharp's 0-255 scale even though these sources are 16 bits
+  // per channel; a value scaled for 16-bit is out of range and silently trims nothing.
   //
   // 810x540 is twice the 405 CSS px the box occupies in the desktop three-up, which is
   // what a 2x screen resolves; the phone's box is smaller still at 351. The 1200px
-  // originals are more than the box can ever show, and their losslessness is what made
-  // them 202-343 KB apiece. The set goes 808 KB -> ~190 KB, lazy and below the fold.
+  // originals are more than the box can ever show, and their depth is what made them
+  // 669-745 KB apiece. The set goes 2.07 MB -> 105 KB, lazy and below the fold.
   //
-  // network.webp comes out five times the size of the other two, and that is the alpha,
-  // not the colour: flattened it is 17 KB against 131 KB with the alpha channel kept.
-  // Its tangle of thin anti-aliased lines and the wide soft shadow beneath it are simply
-  // expensive to store. Reaching for `quality` will not touch it — 82 to 60 saves 30 KB
-  // and starts to band the gradients — and nor will alphaQuality, which buys 13 KB at 80.
-  // The only real lever is flattening it onto the panel colour, which is deliberately not
-  // done: it would weld #f6f2e8 into the file and the tile would show a wrong-coloured
-  // rectangle the moment the panel is restyled.
-  { in: 'ICON_1_brain_0001.webp',   out: 'illustrations/brain.webp',   root: ICONS, box: [810, 540], margin: 0.07, alpha: true },
-  { in: 'ICON_2_network_0001.webp', out: 'illustrations/network.webp', root: ICONS, box: [810, 540], margin: 0.07, alpha: true },
-  { in: 'ICON_3_laptop_0001.webp',  out: 'illustrations/laptop.webp',  root: ICONS, box: [810, 540], margin: 0.07, alpha: true }
+  // The alpha is kept rather than flattened onto the panel colour. Flattening would save
+  // 21-26 KB a plate, and is deliberately not done: it would weld #f6f2e8 into the file
+  // and the tile would show a wrong-coloured rectangle the moment the panel is restyled.
+  { in: 'icons/brain.png',  out: 'illustrations/brain.webp',  box: [810, 540], margin: 0.07, trimThreshold: 16, alpha: true },
+  { in: 'icons/blocks.png', out: 'illustrations/blocks.webp', box: [810, 540], margin: 0.07, trimThreshold: 16, alpha: true },
+  { in: 'icons/laptop.png', out: 'illustrations/laptop.webp', box: [810, 540], margin: 0.07, trimThreshold: 16, alpha: true }
 ];
 
-// A job whose source is missing is skipped, not fatal — see the note on the roots above.
-const runnable = JOBS.filter((j) => fs.existsSync(path.join(j.root || SRC, j.in)));
+// A job whose source is missing is skipped, not fatal — see the note on SRC above.
+const runnable = JOBS.filter((j) => fs.existsSync(path.join(SRC, j.in)));
 const skipped = JOBS.filter((j) => !runnable.includes(j));
 if (!runnable.length) {
   console.error(`No source images found.
 
-Photography and headshots are read from ${path.relative(root, SRC)}/, which is
-committed, as are the illustrations in ${path.relative(root, ICONS)}/ — so this
+Everything is read from ${path.relative(root, SRC)}/, which is committed — so this
 encoder runs from a clean checkout with nothing restored.`);
   process.exit(1);
 }
@@ -99,7 +114,7 @@ const TRANSPARENT = { r: 0, g: 0, b: 0, alpha: 0 };
 
 let before = 0, after = 0;
 for (const job of runnable) {
-  const src = path.join(job.root || SRC, job.in);
+  const src = path.join(SRC, job.in);
   const dst = path.join(OUT, job.out);
   fs.mkdirSync(path.dirname(dst), { recursive: true });
 
@@ -109,10 +124,22 @@ for (const job of runnable) {
     // Trim the plate's own transparent margin away, fit what is left inside the box less
     // its margin, then pad back out to the box centred. Two passes rather than one
     // pipeline: sharp keeps only the last resize in a chain, so the fit and the pad have
-    // to be separated by a buffer or the fit is silently discarded.
+    // to be separated by a buffer or the fit is silently discarded. On trimThreshold, see
+    // the note on the jobs — it decides the framing, and a wrong one fails quietly.
     const [bw, bh] = job.box;
-    const inner = await sharp(src)
-      .trim({ background: TRANSPARENT, threshold: 0 })
+    const trimmed = await sharp(src)
+      .trim({ background: TRANSPARENT, threshold: job.trimThreshold })
+      .toBuffer({ resolveWithObject: true });
+    // A trim that cut nothing is the failure this whole treatment exists to prevent, and
+    // it is invisible in the output: the plate encodes fine, at the right dimensions, and
+    // only looks wrong beside the other two on the page. Catch it here instead.
+    if (trimmed.info.width === meta.width && trimmed.info.height === meta.height) {
+      throw new Error(
+        `${job.in}: trim at threshold ${job.trimThreshold} cut nothing — the plate would ` +
+        `ship with all of its own whitespace. Raise the threshold until it finds the content.`
+      );
+    }
+    const inner = await sharp(trimmed.data)
       .resize({
         width: Math.round(bw * (1 - 2 * job.margin)),
         height: Math.round(bh * (1 - 2 * job.margin)),
@@ -144,5 +171,5 @@ for (const job of runnable) {
 console.log(`\n${(before / 1048576).toFixed(2)} MB -> ${(after / 1024).toFixed(0)} KB`);
 if (skipped.length) {
   console.log(`\nskipped ${skipped.length} job(s) whose source is not present:`);
-  for (const j of skipped) console.log(`  ${path.relative(root, path.join(j.root || SRC, j.in))}`);
+  for (const j of skipped) console.log(`  ${path.relative(root, path.join(SRC, j.in))}`);
 }
