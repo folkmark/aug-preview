@@ -1,5 +1,10 @@
 # The Approach section — build spec
 
+> **Status: not currently on the page.** The scrub was replaced by a still in the
+> hero and the R&D cycle wheel in the approach section. The component and its frames
+> are kept for the shortened sequence that replaces it, and everything below still
+> describes them accurately — but the page as it ships today does not mount it.
+
 **What this is.** A complete description of one section of the AugmentED home page, written
 so it can be rebuilt in another stack without reading the original source. Every number here
 is read from the files that ship — `assets/approach.js`, `assets/approach.css`,

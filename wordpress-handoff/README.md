@@ -58,7 +58,7 @@ the file to build a WordPress template from, not `index.html`.
 | `challenge.html` | `/challenge/` | `<main data-screen-label="The Challenge">` |
 | `approach.html` | `/approach/` | `<main data-screen-label="Our Approach">` |
 | `team.html` | `/team/` | `<main data-screen-label="Who We Are">` |
-| `contact.html` | `/contact/` | `<main data-screen-label="Get Involved">` |
+| `follow.html` | `/follow/` | `<main data-screen-label="Get Involved">` |
 
 They open straight from disk — asset paths point up two levels at the real `assets/` and
 `_ds/` folders. Regenerate at any time with:
@@ -135,7 +135,12 @@ in [`sections/approach.md`](sections/approach.md).
 
 ---
 
-## 5. The falling-blocks hero — already portable
+## 5. The falling-blocks rig — already portable
+
+> **Status.** This moved. It was the hero; it now wraps the closing call to action,
+> on a much shorter pin (about 70svh rather than 190svh) so the blocks tumble past
+> quickly. Same element, same frames, same contract — only the height and where it
+> sits on the page changed.
 
 This one was built for the move. It is a dependency-free custom element with no
 framework, no build step and no assumption about its host. To use it in WordPress:
@@ -251,7 +256,14 @@ The full markup contract and every attribute are documented at the top of
 
 ---
 
-## 6. The Approach scrub — also portable
+## 6. The Approach scrub — also portable, but not currently mounted
+
+> **Status.** The home page no longer runs this. The client found scrolling through
+> the arch's many stages hard going, so the hero now carries a still of the finished
+> bridge and the R&D cycle wheel sits where the scrub used to be. `assets/approach.js`,
+> `assets/approach.css` and the frames are all still in the repository, kept for the
+> shortened sequence that replaces it — so everything below still describes the
+> component accurately. Do not port it as part of rebuilding the page as it stands.
 
 The other animated section, and the intricate one. A canvas sequence scrubbed by scroll
 through six beats, with copy and tick markers synced to it, a camera push-in, and a

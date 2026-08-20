@@ -15,42 +15,47 @@ Approach, Who We Are, Follow Our Work) and switches between them client-side.
 | `docs/`           | Render notes, including the frame ↔ beat map for the Approach section |
 | `tools/`          | The build, and the encoders that turn originals into `assets/`       |
 | `wordpress-handoff/` | The rebuild package — rendered markup and per-section specs       |
+| `source-material/` | Inputs, not outputs: the original Webflow export and its style guide, the image and block originals the encoders read, the brand explorations and the headshots at full resolution. See its own README. |
 
-The whole repository is about 10 MB, and everything in it either ships or builds
-what ships.
+The whole repository is about 120 MB cloned, and everything in it either ships,
+builds what ships, or is the original something shipped was made from.
 
-### Master material is not in the repository
+### The bulk renders are not in the repository
 
-The Blender plates, the 8K PNG renders, the WebP frame archive, the original
-Webflow export and the Avenir OTFs used to be tracked here. They came to **692 MB
-of the 702 MB checked in**, and the site serves none of it — every one of them is
-an *input* to a tool in `tools/`, and every output those tools produce is
-committed. They now live on the designer's machine and are ignored by
-`.gitignore`.
+The Blender plates, the 8K PNG sequences and the WebP frame archive used to be
+tracked here. They came to **604 MB of the 702 MB checked in**, and the site serves
+none of it: every one is an *input* to a tool in `tools/`, and every output those
+tools produce is committed. Deleting them from the working tree did nothing for
+anyone, because a clone still pays for whatever history holds — so they were
+removed from history outright, and a clone went from about 700 MB to 120 MB.
 
-Nothing routine needs them. `node tools/build-site.mjs` and the Pages deploy work
-without them; only the encoders below do, and each one exits with the path it
-wants if the masters are absent. Restore them at these paths to re-encode:
+They live on the designer's machine now. Restore them at these paths to re-encode:
 
 | Restore to | For |
 | ---------- | --- |
 | `Falling Blocks/FallingBlocks_{Top,Bottom}/*.png` | `tools/encode-falling-blocks.mjs` |
 | `project/renders/approach-desk/*.png` | the Approach beats |
 | `project/renders/full-desk-anim-webp/*.webp` | the Approach moves |
-| `project/renders/sources/` | `tools/encode-images.mjs` |
 
-They are untracked, not lost: they were committed until `8e830fe` stripped them, so a
-checkout can restore them from the history rather than from anyone's machine.
+Nothing routine needs them. `node tools/build-site.mjs` and the publish work
+without them, and so do `tools/encode-images.mjs` and `tools/encode-fonts.mjs` —
+their inputs are committed, in `source-material/image-sources/` and
+`_ds/*/assets/fonts/` respectively. Each encoder exits with the path it wants if
+something is missing.
 
-```sh
-git archive 98d0243 project/renders/full-desk-anim-webp project/renders/approach-desk | tar -x
-```
+A full copy of the repository as it stood before the history rewrite, bulk renders
+and all, was bundled off to the designer. That bundle is the only way back to the
+old SHAs; nothing in this repository points at them any more.
 
 ## The Approach animation
 
-The pinned section on the home page scrubs the arch being built across two
-desks. It is a self-contained component — `assets/approach.js` and
-`assets/approach.css` — with a full build spec at
+**Not currently on the page.** The pinned scrub asked the reader through many
+stages of the arch being built, and the client found it hard going, so the home
+page now carries a still of the finished bridge in the hero and the R&D cycle
+wheel where the scrub used to be. The component — `assets/approach.js` and
+`assets/approach.css` — and its frames are kept for the shortened sequence that
+replaces it, and the build only checks the frames when the element is actually
+mounted. The full build spec is at
 [`wordpress-handoff/sections/approach.md`](wordpress-handoff/sections/approach.md).
 
 Its frames live in `assets/approach/` and are named by their Blender frame
@@ -96,8 +101,7 @@ npm i --no-save sharp && node tools/encode-approach.mjs
 
 ## Images, fonts and icons
 
-Nothing in `assets/` is hand-placed. Four encoders produce what ships, from
-originals kept off the repository (see above):
+Nothing in `assets/` is hand-placed. Four encoders produce what ships:
 
 ```sh
 npm i --no-save sharp   && node tools/encode-approach.mjs        # the arch frames
@@ -106,8 +110,10 @@ npm i --no-save sharp   && node tools/encode-images.mjs          # team, photogr
 npm i --no-save wawoff2 && node tools/encode-fonts.mjs           # Avenir OTF -> WOFF2
 ```
 
-`encode-fonts.mjs` is the exception: it reads the OTFs already in `_ds/`, so it
-runs with nothing restored.
+The last two run from a clean checkout: `encode-images.mjs` reads
+`source-material/image-sources/` and `encode-fonts.mjs` reads the OTFs sitting
+beside the WOFF2 in `_ds/*/assets/fonts/`, and both are committed. The first two
+need the bulk renders restored (see above).
 
 Each target size is set from the box the image actually occupies, at about three
 device pixels per CSS pixel — what a phone at DPR 3 can resolve and no more.
@@ -140,7 +146,12 @@ Each page has its own URL:
 | The Challenge     | `/challenge/` |
 | Our Approach      | `/approach/`  |
 | Who We Are        | `/team/`      |
-| Follow Our Work   | `/contact/`   |
+| Follow Our Work   | `/follow/`    |
+
+The slugs were shortened after the preview had been shared, so the build also
+writes a stub at each old one — `/the-challenge/`, `/our-approach/`, `/who-we-are/`
+and `/follow-our-work/` — that bounces to its replacement. The list is `MOVED` in
+`tools/build-site.mjs`.
 
 They all render from `index.html`, but the build writes a real file per route,
 so a direct link, a refresh, or a crawler gets that page from the server with a
@@ -177,15 +188,20 @@ phone.
 
 ## Publishing to GitHub Pages
 
-`.github/workflows/pages.yml` builds and deploys on every push to `main`, and
-runs the build as a check on pull requests without deploying.
+`.github/workflows/pages.yml` builds on every push to `main` and force-pushes the
+result to the **`gh-pages`** branch, which is what Pages serves. On a pull request
+it builds and stops — the verify step inside `tools/build-site.mjs` is the point,
+not the publish.
 
-The repository's Pages **Source** must be **GitHub Actions** (Settings → Pages).
-The workflow sets that itself via `actions/configure-pages` with
-`enablement: true`. That also matters because the alternative — *Deploy from a
-branch* — publishes the repository as-is: no per-page route files, so every URL
-except `/` would 404, and its built-in `pages-build-deployment` run races this
-workflow for whichever finishes last.
+The repository's Pages **Source** must be **Deploy from a branch → `gh-pages` /
+(root)** (Settings → Pages). Nothing else should be pushing to that branch: each
+publish replaces it with a single orphan commit, so anything committed there by
+hand is gone on the next push to main. Treat it as build output, because that is
+all it is.
+
+`gh-pages` is a separate root with no ancestor in common with `main`, and that is
+deliberate: it means the deploy branch carries none of the source history and can
+be replaced wholesale without touching anything.
 
 ### `.nojekyll` is load-bearing
 
@@ -193,4 +209,4 @@ GitHub Pages runs Jekyll over the published files unless a `.nojekyll` file sits
 at the root, and Jekyll silently drops every directory whose name starts with an
 underscore. That would take `_ds/` — the design tokens and the component bundle
 — with it, and the page renders as unstyled Times New Roman with empty buttons.
-Keep the root `.nojekyll`; the Actions workflow writes one into its artifact too.
+Keep the root `.nojekyll`; `tools/build-site.mjs` writes one into every build too.

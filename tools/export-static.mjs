@@ -34,7 +34,7 @@ const PAGES = [
   { slug: 'challenge/', file: 'challenge.html', name: 'The Challenge' },
   { slug: 'approach/', file: 'approach.html', name: 'Our Approach' },
   { slug: 'team/', file: 'team.html', name: 'Who We Are' },
-  { slug: 'contact/', file: 'contact.html', name: 'Follow Our Work' }
+  { slug: 'follow/', file: 'follow.html', name: 'Follow Our Work' }
 ];
 
 // The runtime pulls React and Babel from unpkg on boot. Mirror them into the staged
