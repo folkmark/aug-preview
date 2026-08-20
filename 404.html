@@ -32,15 +32,13 @@
 <link rel="stylesheet" href="/_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/base.css">
 <link rel="stylesheet" href="/_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/styles.css">
 <script src="/_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/_ds_bundle.js"></script>
-<!-- The falling-blocks hero. Deliberately a standalone custom element with its own
+<!-- The falling-blocks CTA. Deliberately a standalone custom element with its own
      stylesheet rather than page CSS and a method on the component below: it drives
      markup it does not build and touches no runtime API, so the same two files and
      the same markup work in any host. Nothing else on the page depends on it, and it
      degrades to the still <img> in its markup if this script never runs. -->
 <link rel="stylesheet" href="/assets/falling-blocks.css">
 <script src="/assets/falling-blocks.js" defer></script>
-<link rel="stylesheet" href="/assets/approach.css">
-<script src="/assets/approach.js" defer></script>
 <style>
   body { margin: 0; background: var(--surface-page); }
   /* The intrinsic width/height attributes are there to reserve the box before the
@@ -127,30 +125,17 @@
   @media (max-width: 991px) {
     .kit-grid { grid-template-columns: 1fr !important; row-gap: 2rem; }
   }
-  /* The Approach act runs everywhere; the stacked stills are its fallback, not the
-     mobile layout. The two are swapped by specificity rather than source order —
-     .at-mobile and .hero-static-block were both (0,1,0) with !important, so moving
-     either block would have silently handed squarish windows an empty section. */
-  .hero-static-block { display: none !important; }
-  /* The desktop presentation hangs a full-width 1.43 plate from the top of a
-     full-height stage, so a portrait or squarish desktop window leaves a dead band
-     beneath it. The phone presentation is a band cut to its own aspect and has no
-     such problem, which is why this is scoped to the width that uses the tall stage. */
-  @media (min-width: 992px) and (max-aspect-ratio: 5/4) {
-    approach-scrub { display: none !important; }
-    main .hero-static-block { display: grid !important; }
-  }
-  /* The component hides itself under reduced motion — see assets/approach.css — so
-     only the stack it falls back to needs saying here. */
-  [data-hero-static-mode="reduced"] .hero-static-block { display: grid !important; }
-
-
-  /* The header is sticky and 4.5rem tall, so the stage is a screen minus the header and
-     the rig is that plus the pin. The difference between the two is the scroll budget
-     the element measures, so 290 minus 100 is the 190svh over which the blocks rise —
-     roughly one-to-one with the page for the far plate, which is what keeps the scrub
-     feeling like scrolling rather than like a machine being driven. */
-  falling-blocks { --fb-sticky-top: 4.5rem; height: calc(290vh - 4.5rem); height: calc(290svh - 4.5rem); }
+  /* The header is sticky and 4.5rem tall, so the stage is a screen minus the header
+     and the rig is that plus the pin. The difference between the two is the scroll
+     budget the element measures: 170 minus 100 leaves 70svh over which the blocks
+     tumble past the closing copy — a quick pass, not the old hero's 190svh rise.
+     Static mode (reduced motion, save-data, no bitmap support) collapses to one
+     screen via falling-blocks.css's :not([data-fb-motion="on"]) rule, which outweighs
+     this bare type selector on purpose — keep this selector bare. */
+  falling-blocks { --fb-sticky-top: 4.5rem; height: calc(170vh - 4.5rem); height: calc(170svh - 4.5rem); }
+  /* falling-blocks.css slots an h1 between the plates (near plate in front of the
+     heading, far plate behind); the CTA's heading is an h2, so give it the same slot. */
+  falling-blocks [data-fb-copy] h2 { position: relative; z-index: 2; }
 
   [data-slot="button"]:not([data-variant^="link"]) { padding-left: 2.25rem !important; padding-right: 2.25rem !important; }
   [data-slot="button"][data-btn-size="sm"] { padding-left: 1.875rem !important; padding-right: 1.875rem !important; }
@@ -202,67 +187,36 @@
   </sc-if>
 
   <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
-  <main data-screen-label="Home" data-hero-static-mode="{{ heroStaticMode }}">
+  <main data-screen-label="Home">
 
-    <!-- The falling-blocks hero. stage-fill 0.93 is not a round number: it is the
-         share of the viewport the desks occupy in the Approach act further down, so
-         the blocks are held to the same measure as the artwork they belong to instead
-         of running off both edges of the screen.
-
-         Two depth plates of one camera view sandwich the
-         copy: "bottom" is the far and mid planes and sits behind the words, "top" is
-         the near plane and passes in front of them. They are not halves of a taller
-         image — both are the full 2560x3840 frame and they register 1:1, which is why
-         one cover-fit box drives both and they differ only in how far they travel.
-
-         The blocks in the plates only rotate; across the whole loop their centre of
-         mass drifts under 90px on a 3840-tall plate. Every bit of falling on screen is
-         the transform, and the 48 frames wrap seamlessly (48 -> 1 is 0.99x the size of
-         a normal step) so there is no crossfade and no special case at the seam.
-
-         Every canvas and every still is authored here rather than built by the script,
-         so the runtime owns these nodes and the element only drives them. With the
-         script absent or the element unsupported this is a static hero of two stills
-         and readable copy. -->
-    <falling-blocks base="/assets/falling-blocks/" width="1440" frames="48" layers="bottom,top" revolutions="0.6" budget-mb="128" min-width="0" stage-fill="0.93" content-bottom="0.273,0.700" content-top="0.183,0.775" speed-bottom="1" speed-top="1.25">
-      <div data-fb-stage="">
-
-        <div data-fb-layer="bottom" aria-hidden="true">
-          <canvas></canvas>
-          <img src="/assets/falling-blocks/w1440/bottom/fb0001.webp" alt="" width="1440" height="2160" loading="lazy" decoding="async">
+    <!-- Static hero: the copy over a still of the finished bridge. The falling-blocks
+         scrub that used to pin here now wraps the closing CTA, and the long Approach
+         act it led into is gone — the bridge lands next to the bridging headline, the
+         way the client reads the page. The still is an interim frame from the approach
+         sequence (alpha over the ecru plate); when the re-rendered plate or the short
+         frame sequence arrives, swap the <picture> inside [data-hero-visual] and
+         nothing else. -->
+    <section style="padding:clamp(3rem,5vw,4.5rem) 5% clamp(4rem,7vw,7rem)">
+      <div style="margin-inline:auto;max-width:48rem;text-align:center">
+        <h1 style="font-size:var(--text-h1);line-height:1.1;letter-spacing:-0.01em;font-weight:700;margin:0 0 1.5rem;text-wrap:pretty">Bridging frontier AI and the classroom.</h1>
+        <p style="font-size:var(--text-medium);line-height:1.5;margin:0;text-wrap:pretty">AugmentED is an R&amp;D organization closing the gap between what AI can do and what students need. We are teachers, researchers, and engineers working together to build and test the missing technology, and the evidence to trust it.</p>
+        <div style="margin-top:2.5rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1rem">
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" hint-size="160px,44px">Follow our work</x-import>
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary" onClick="{{ goApproach }}" hint-size="190px,44px">Explore our approach</x-import>
         </div>
-
-        <!-- The heading is the only thing the near plate crosses. The body and the
-             buttons sit above it in [data-fb-front]: they are what has to stay
-             readable and clickable, and a headline this size reads through a block
-             passing over it in a way a paragraph does not. -->
-        <div data-fb-copy="" style="max-width:48rem;text-align:center;padding-inline:5%">
-          <h1 style="font-size:var(--text-h1);line-height:1.1;letter-spacing:-0.01em;font-weight:700;margin:0 0 1.5rem;text-wrap:pretty">Bridging frontier AI and the classroom.</h1>
-          <div data-fb-front="">
-            <p style="font-size:var(--text-medium);line-height:1.5;margin:0;text-wrap:pretty">AugmentED is an R&amp;D organization closing the gap between what AI can do and what students need. We are teachers, researchers, and engineers working together to build and test the missing technology, and the evidence to trust it.</p>
-            <div style="margin-top:2.5rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1rem">
-              <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" hint-size="160px,44px">Follow our work</x-import>
-              <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary" onClick="{{ goApproach }}" hint-size="190px,44px">Explore our approach</x-import>
-            </div>
-          </div>
-        </div>
-
-        <!-- Lazy on both stills so the animated path does not pay for them: an image
-             with no layout box is never near the viewport, so a lazy one is skipped
-             where the canvas has replaced it, while the static path renders it in the
-             viewport and loads it at once. -->
-        <div data-fb-layer="top" aria-hidden="true">
-          <canvas></canvas>
-          <img src="/assets/falling-blocks/w1440/top/fb0001.webp" alt="" width="1440" height="2160" loading="lazy" decoding="async">
-        </div>
-
       </div>
-    </falling-blocks>
+      <div data-hero-visual="" data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin:clamp(2.5rem,5vw,4rem) auto 0;max-width:60rem">
+        <picture>
+          <source media="(max-width:1200px)" srcset="/assets/approach/ap0672m.webp" width="1147" height="888">
+          <img src="/assets/approach/ap0672.webp" alt="A wooden arch built from toy blocks bridging the gap between two school desks, with books resting on the finished span" width="2048" height="1432" decoding="async" style="width:100%;height:auto;object-fit:contain;background:var(--color-ecru-white);border-radius:var(--radius-image);display:block">
+        </picture>
+      </div>
+    </section>
 
     <section style="padding:clamp(4rem,7vw,7rem) 5%">
       <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:48rem;text-align:center">
         <p style="font-weight:600;font-size:var(--text-regular);margin:0 0 1rem">The Challenge</p>
-        <h2 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0;text-wrap:pretty">Frontier AI models weren't purpose-built for education, leaving a gap between what AI can do and what students need. Closing it requires a missing layer between those models and the apps they power: infrastructure built for learning, proven in classrooms, and worthy of trust.</h2>
+        <h2 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0;text-wrap:pretty">Frontier AI models weren't purpose-built for education, leaving a gap between what AI can do and what students need. Closing it requires a missing middle layer between those models and the apps they power: infrastructure built for learning, proven in classrooms, and worthy of trust.</h2>
         <div style="margin-top:2rem;display:flex;justify-content:center">
           <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" onClick="{{ goChallenge }}" hint-size="120px,28px">Learn More<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm" hint-size="20px,20px"></x-import></x-import>
         </div>
@@ -277,40 +231,161 @@
             <h2 style="font-size:var(--text-h2);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0;text-wrap:pretty">We treat AI in education as a science, not a gold rush.</h2>
           </div>
           <div data-approach-text="" style="">
-            <p style="font-size:var(--text-medium);line-height:1.5;margin:0;text-wrap:pretty">We run an iterative research and development cycle, with educators, researchers, and engineers as equal partners at every step. We don't start by asking what AI can do. We start by asking what teachers and students need. Then educators, researchers, and engineers work together to identify what's missing, build it, and test it in real classrooms. What we learn informs the next turn of the cycle.</p>
+            <p style="font-size:var(--text-medium);line-height:1.5;margin:0;text-wrap:pretty">We run an iterative research and development cycle, with educators, researchers, and engineers as equal partners at every step. We don't start by asking what AI can do. We start by asking what teachers and students need. Each cycle focuses on one role AI could play in meeting some of those needs. Then educators, researchers, and engineers work together to identify what's missing, build it, and test it in real classrooms. What we learn informs the next turn of the cycle.</p>
             <div style="margin-top:2rem;display:flex">
               <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" onClick="{{ goApproach }}" hint-size="120px,28px">Learn More<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm" hint-size="20px,20px"></x-import></x-import>
             </div>
           </div>
         </div>
 
-        <div class="hero-static-block" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));column-gap:clamp(2rem,4vw,4rem);row-gap:clamp(3rem,6vw,6rem)">
-          <div style="display:flex;flex-direction:column;gap:clamp(3rem,6vw,6rem)">
-            <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
-              <picture><source media="(max-width:1200px)" srcset="/assets/approach/ap0265m.webp" width="1147" height="888"><img src="/assets/approach/ap0265.webp" alt="A blueprint arch drawn in wireframe across the gap between two school desks, fully rendered and waiting to be built" loading="lazy" decoding="async" width="2048" height="1432" style="width:100%;height:auto;object-fit:contain;background:var(--color-ecru-white);border-radius:var(--radius-image);margin-bottom:2rem;display:block"></picture>
-              <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">01</p>
-              <h3 style="font-size:var(--text-h4);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem">Define the role</h3>
-              <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">AI can play many distinct roles in a classroom, and each requires its own standards, evidence, and safeguards. With each group of teachers and students, we identify a specific role AI could play to meet a real need, and what teachers uniquely bring alongside it. Then we study what that role requires, where its limits are, and what bar it must meet.</p>
+        <!-- The AugmentED R&D Cycle wheel, moved here from the Approach page in
+             place of the long scroll-scrubbed bridge build. Hover or focus a node to
+             preview its step in the hub; on this screen a click pins the step instead
+             of scrolling, because the step sections live on the Approach page. -->
+        <div data-diagram="" style="margin-inline:auto;max-width:70rem">
+          <div class="at-desktop" data-diagram-slot="" style="position:relative;width:100%;aspect-ratio:1120/780">
+          <div data-cycle="" data-active="{{ activeStep }}" onMouseLeave="{{ cycleClear }}" onBlur="{{ cycleClear }}" style="position:absolute;inset:0;container-type:inline-size">
+            <div data-spin="" style="position:absolute;inset:0">
+            <svg viewBox="0 0 1120 780" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">
+              <g stroke="#020408" stroke-opacity="0.3" stroke-width="1.5" stroke-dasharray="5 6" fill="none">
+                <path d="M 757.1 333.5 A 205 205 0 0 0 630.1 197.4"></path>
+                <path d="M 616.5 587.1 A 205 205 0 0 0 752.6 460.1"></path>
+                <path d="M 362.9 446.5 A 205 205 0 0 0 489.9 582.6"></path>
+                <path d="M 503.5 192.9 A 205 205 0 0 0 367.4 319.9"></path>
+              </g>
+              <g fill="#020408" fill-opacity="0.4">
+                <polygon points="630.1,197.4 640.6,194.8 636.5,206.1"></polygon>
+                <polygon points="752.6,460.1 755.2,470.6 743.9,466.5"></polygon>
+                <polygon points="489.9,582.6 479.4,585.2 483.5,573.9"></polygon>
+                <polygon points="367.4,319.9 364.8,309.4 376.1,313.5"></polygon>
+              </g>
+              <g data-arc="0">
+                <path d="M 628.9 149.7 A 250 250 0 0 1 800.3 321.1" fill="none" stroke="currentColor" stroke-width="2"></path>
+                <polygon points="800.3,321.1 790.1,312.6 804.5,308.4" fill="currentColor"></polygon>
+              </g>
+              <g data-arc="1">
+                <path d="M 800.3 458.9 A 250 250 0 0 1 628.9 630.3" fill="none" stroke="currentColor" stroke-width="2"></path>
+                <polygon points="628.9,630.3 637.4,620.1 641.6,634.5" fill="currentColor"></polygon>
+              </g>
+              <g data-arc="2">
+                <path d="M 491.1 630.3 A 250 250 0 0 1 319.7 458.9" fill="none" stroke="currentColor" stroke-width="2"></path>
+                <polygon points="319.7,458.9 329.9,467.4 315.5,471.6" fill="currentColor"></polygon>
+              </g>
+              <g data-arc="3">
+                <path d="M 319.7 321.1 A 250 250 0 0 1 491.1 149.7" fill="none" stroke="currentColor" stroke-width="2"></path>
+                <polygon points="491.1,149.7 482.6,159.9 478.4,145.5" fill="currentColor"></polygon>
+              </g>
+            </svg>
+
+            <button type="button" onClick="{{ cycleOn0 }}" onMouseEnter="{{ cycleHover0 }}" onFocus="{{ cycleHover0 }}" aria-label="Step 01, Define the role" data-node="0" style="position:absolute;transform:translate(-50%,-50%);width:calc(10.714% * var(--nodeScale, 1));aspect-ratio:1/1;padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;box-sizing:border-box;left:50%;top:17.95%">
+              <span data-upright="" style="display:flex;width:78%;height:78%"><svg viewBox="-60 -60 120 120" style="width:100%;height:100%;display:block"><g transform="scale(1.632) translate(0 -9.5)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" fill="#6689b7"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" fill="#255799"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" fill="#d3ddea"></polygon></g></svg></span>
+            </button>
+            <button type="button" onClick="{{ cycleOn1 }}" onMouseEnter="{{ cycleHover1 }}" onFocus="{{ cycleHover1 }}" aria-label="Step 02, Build the capabilities" data-node="1" style="position:absolute;transform:translate(-50%,-50%);width:calc(10.714% * var(--nodeScale, 1));aspect-ratio:1/1;padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;box-sizing:border-box;left:72.32%;top:50%">
+              <span data-upright="" style="display:flex;width:78%;height:78%"><svg viewBox="-60 -60 120 120" style="width:100%;height:100%;display:block"><g transform="scale(0.912) translate(-17 -19)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" fill="#6689b7"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" fill="#255799"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" fill="#d3ddea"></polygon><polygon points="0,9.5 17,19 17,38 0,28.5" fill="#255799"></polygon><polygon points="17,19 34,9.5 34,28.5 17,38" fill="#1d457a"></polygon><polygon points="17,0 34,9.5 17,19 0,9.5" fill="#e9eef4"></polygon><polygon points="17,19 34,28.5 34,47.5 17,38" fill="#6689b7"></polygon><polygon points="34,28.5 51,19 51,38 34,47.5" fill="#255799"></polygon><polygon points="34,9.5 51,19 34,28.5 17,19" fill="#d3ddea"></polygon></g></svg></span>
+            </button>
+            <button type="button" onClick="{{ cycleOn2 }}" onMouseEnter="{{ cycleHover2 }}" onFocus="{{ cycleHover2 }}" aria-label="Step 03, Co-design the tools with teachers" data-node="2" style="position:absolute;transform:translate(-50%,-50%);width:calc(10.714% * var(--nodeScale, 1));aspect-ratio:1/1;padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;box-sizing:border-box;left:50%;top:82.05%">
+              <span data-upright="" style="display:flex;width:78%;height:78%"><svg viewBox="-60 -60 120 120" style="width:100%;height:100%;display:block"><g transform="scale(0.912) translate(0 -14.3)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" fill="#6689b7"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" fill="#255799"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" fill="#d3ddea"></polygon><polygon points="0,9.5 17,19 17,38 0,28.5" fill="#255799"></polygon><polygon points="17,19 34,9.5 34,28.5 17,38" fill="#1d457a"></polygon><polygon points="17,0 34,9.5 17,19 0,9.5" fill="#e9eef4"></polygon><polygon points="-34,9.5 -17,19 -17,38 -34,28.5" fill="#6689b7"></polygon><polygon points="-17,19 0,9.5 0,28.5 -17,38" fill="#255799"></polygon><polygon points="-17,0 0,9.5 -17,19 -34,9.5" fill="#d3ddea"></polygon><polygon points="-17,-9.5 0,0 0,19 -17,9.5" fill="#255799"></polygon><polygon points="0,0 17,-9.5 17,9.5 0,19" fill="#1d457a"></polygon><polygon points="0,-19 17,-9.5 0,0 -17,-9.5" fill="#e9eef4"></polygon><polygon points="-17,19 0,28.5 0,47.5 -17,38" fill="#6689b7"></polygon><polygon points="0,28.5 17,19 17,38 0,47.5" fill="#255799"></polygon><polygon points="0,9.5 17,19 0,28.5 -17,19" fill="#d3ddea"></polygon></g></svg></span>
+            </button>
+            <button type="button" onClick="{{ cycleOn3 }}" onMouseEnter="{{ cycleHover3 }}" onFocus="{{ cycleHover3 }}" aria-label="Step 04, Test, learn, begin again" data-node="3" style="position:absolute;transform:translate(-50%,-50%);width:calc(10.714% * var(--nodeScale, 1));aspect-ratio:1/1;padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;box-sizing:border-box;left:27.68%;top:50%">
+              <span data-upright="" style="display:flex;width:78%;height:78%"><svg viewBox="-60 -60 120 120" style="width:100%;height:100%;display:block"><g transform="scale(0.919) translate(-8.5 -4.3)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" fill="#6689b7"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" fill="#255799"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" fill="#d3ddea"></polygon><polygon points="0,9.5 17,19 17,38 0,28.5" fill="#255799"></polygon><polygon points="17,19 34,9.5 34,28.5 17,38" fill="#1d457a"></polygon><polygon points="17,0 34,9.5 17,19 0,9.5" fill="#e9eef4"></polygon><polygon points="-17,-19.9 0,-10.4 0,8.6 -17,-0.9" fill="#6689b7"></polygon><polygon points="0,-10.4 17,-19.9 17,-0.9 0,8.6" fill="#255799"></polygon><polygon points="0,-29.4 17,-19.9 0,-10.4 -17,-19.9" fill="#d3ddea"></polygon></g></svg></span>
+            </button>
+
             </div>
-            <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
-              <picture><source media="(max-width:1200px)" srcset="/assets/approach/ap0601m.webp" width="1147" height="888"><img src="/assets/approach/ap0601.webp" alt="The finished arch with the force overlay resolved, every block carrying an annotation showing the load it takes" loading="lazy" decoding="async" width="2048" height="1432" style="width:100%;height:auto;object-fit:contain;background:var(--color-ecru-white);border-radius:var(--radius-image);margin-bottom:2rem;display:block"></picture>
-              <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">03</p>
-              <h3 style="font-size:var(--text-h4);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem">Co-design the applications</h3>
-              <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Teachers, researchers, engineers, and designers build classroom tools on those capabilities, along with new ways of teaching alongside them. They then test our work where it counts: in real classrooms.</p>
+            <div data-chrome="" style="position:absolute;inset:0;pointer-events:none;transition:opacity 160ms linear">
+            <div data-label="0" style="position:absolute;left:50%;top:0;transform:translateX(-50%);width:44%;text-align:center">
+              <p style="font-weight:600;font-size:max(0.72rem,1.05cqw);letter-spacing:0.1em;margin:0 0 0.4em;color:var(--brand-accent)">01</p>
+              <p style="font-size:max(1.15rem,2.1cqw);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0">Define the role</p>
+            </div>
+            <div data-label="1" style="position:absolute;left:79.46%;top:50%;transform:translateY(-50%);width:20%;text-align:left">
+              <p style="font-weight:600;font-size:max(0.72rem,1.05cqw);letter-spacing:0.1em;margin:0 0 0.4em;color:var(--brand-accent)">02</p>
+              <p style="font-size:max(1.15rem,2.1cqw);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0">Build the capabilities</p>
+            </div>
+            <div data-label="2" style="position:absolute;left:50%;top:91%;transform:translateX(-50%);width:44%;text-align:center">
+              <p style="font-weight:600;font-size:max(0.72rem,1.05cqw);letter-spacing:0.1em;margin:0 0 0.4em;color:var(--brand-accent)">03</p>
+              <p style="font-size:max(1.15rem,2.1cqw);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0">Co-design the tools with teachers</p>
+            </div>
+            <div data-label="3" style="position:absolute;right:79.46%;top:50%;transform:translateY(-50%);width:20%;text-align:right">
+              <p style="font-weight:600;font-size:max(0.72rem,1.05cqw);letter-spacing:0.1em;margin:0 0 0.4em;color:var(--brand-accent)">04</p>
+              <p style="font-size:max(1.15rem,2.1cqw);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0">Test, learn, begin again.</p>
+            </div>
+
+            <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:30%;text-align:center">
+              <sc-if value="{{ isCycleDefault }}" hint-placeholder-val="{{ true }}">
+                <div>
+                  <h3 style="font-size:max(1.4rem,2.6cqw);line-height:1.15;letter-spacing:-0.01em;font-weight:700;margin:0">AugmentED R&amp;D Cycle</h3>
+                  <div style="width:40px;height:1px;background:var(--color-neutral-darkest-15);margin:0.9em auto"></div>
+                  <p style="font-size:max(0.8rem,1.25cqw);line-height:1.5;margin:0;opacity:0.7">What we learn informs the next turn of the cycle.</p>
+                </div>
+              </sc-if>
+              <sc-if value="{{ isCycleStep0 }}" hint-placeholder-val="{{ false }}">
+                <div>
+                  <p style="font-weight:600;font-size:max(0.8rem,1.4cqw);margin:0 0 0.75em;color:var(--brand-accent)">Step 01</p>
+                  <h3 style="font-size:max(1.4rem,2.6cqw);line-height:1.15;letter-spacing:-0.01em;font-weight:700;margin:0">Define the role</h3>
+                  <div style="width:40px;height:1px;background:var(--color-neutral-darkest-15);margin:0.9em auto"></div>
+                  <p style="font-size:max(0.8rem,1.25cqw);line-height:1.5;margin:0;opacity:0.7;text-wrap:pretty">AI can play many distinct roles in a classroom, and each requires its own standards, evidence, and safeguards. With each group of teachers and students, we pinpoint a specific role AI could play to meet real needs, and what teachers uniquely bring alongside it. Then we form hypotheses: what the role requires, where its limits are, and what bar it must meet to play the role responsibly.</p>
+                </div>
+              </sc-if>
+              <sc-if value="{{ isCycleStep1 }}" hint-placeholder-val="{{ false }}">
+                <div>
+                  <p style="font-weight:600;font-size:max(0.8rem,1.4cqw);margin:0 0 0.75em;color:var(--brand-accent)">Step 02</p>
+                  <h3 style="font-size:max(1.4rem,2.6cqw);line-height:1.15;letter-spacing:-0.01em;font-weight:700;margin:0">Build the capabilities</h3>
+                  <div style="width:40px;height:1px;background:var(--color-neutral-darkest-15);margin:0.9em auto"></div>
+                  <p style="font-size:max(0.8rem,1.25cqw);line-height:1.5;margin:0;opacity:0.7;text-wrap:pretty">Much of the technology needed for AI to play these roles well doesn’t exist off the shelf. We build the missing layer between frontier AI models and classroom apps — validated capabilities that many different tools can build on, like computational methods that help AI measure students’ skills or track how concepts connect across a semester.</p>
+                </div>
+              </sc-if>
+              <sc-if value="{{ isCycleStep2 }}" hint-placeholder-val="{{ false }}">
+                <div>
+                  <p style="font-weight:600;font-size:max(0.8rem,1.4cqw);margin:0 0 0.75em;color:var(--brand-accent)">Step 03</p>
+                  <h3 style="font-size:max(1.4rem,2.6cqw);line-height:1.15;letter-spacing:-0.01em;font-weight:700;margin:0">Co-design the tools with teachers</h3>
+                  <div style="width:40px;height:1px;background:var(--color-neutral-darkest-15);margin:0.9em auto"></div>
+                  <p style="font-size:max(0.8rem,1.25cqw);line-height:1.5;margin:0;opacity:0.7;text-wrap:pretty">Teachers, researchers, and engineers build classroom tools on those capabilities, along with new ways of teaching alongside them. They then test our work where it counts: in real classrooms.</p>
+                </div>
+              </sc-if>
+              <sc-if value="{{ isCycleStep3 }}" hint-placeholder-val="{{ false }}">
+                <div>
+                  <p style="font-weight:600;font-size:max(0.8rem,1.4cqw);margin:0 0 0.75em;color:var(--brand-accent)">Step 04</p>
+                  <h3 style="font-size:max(1.4rem,2.6cqw);line-height:1.15;letter-spacing:-0.01em;font-weight:700;margin:0">Test, learn, begin again.</h3>
+                  <div style="width:40px;height:1px;background:var(--color-neutral-darkest-15);margin:0.9em auto"></div>
+                  <p style="font-size:max(0.8rem,1.25cqw);line-height:1.5;margin:0;opacity:0.7;text-wrap:pretty">Classroom data tells us whether the AI roles we selected and the capabilities and tools we built actually helped. Those lessons sharpen our hypotheses, strengthen our capabilities and tools, and inform our next cycle of R&amp;D.</p>
+                </div>
+              </sc-if>
+            </div>
+            </div>
             </div>
           </div>
-          <div style="display:flex;flex-direction:column;gap:clamp(3rem,6vw,6rem);margin-top:clamp(0rem,7vw,7rem)">
-            <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
-              <picture><source media="(max-width:1200px)" srcset="/assets/approach/ap0481m.webp" width="1147" height="888"><img src="/assets/approach/ap0481.webp" alt="The arch built solid and the roadway laid across the top, every block in place and the blueprint retired" loading="lazy" decoding="async" width="2048" height="1432" style="width:100%;height:auto;object-fit:contain;background:var(--color-ecru-white);border-radius:var(--radius-image);margin-bottom:2rem;display:block"></picture>
-              <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">02</p>
-              <h3 style="font-size:var(--text-h4);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem">Build the capabilities</h3>
-              <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Much of the technology needed for AI to play these roles well doesn’t exist off the shelf. We build the missing layer between frontier AI models and classroom apps — validated capabilities that tools can build on, like computational methods that help AI measure student skills or track how concepts connect across a semester.</p>
+
+          <div class="at-mobile" style="display:flex;flex-direction:column;gap:2.5rem">
+            <div style="display:flex;align-items:flex-start;gap:1.25rem">
+              <svg viewBox="-60 -60 120 120" aria-hidden="true" style="flex:0 0 3.5rem;width:3.5rem;height:3.5rem;display:block"><g transform="scale(1.632) translate(0 -9.5)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" fill="#6689b7"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" fill="#255799"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" fill="#d3ddea"></polygon></g></svg>
+              <div>
+                <p style="font-weight:600;font-size:var(--text-small);letter-spacing:0.1em;margin:0 0 0.5rem;color:var(--brand-accent)">01</p>
+                <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Define the role</h3>
+                <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">AI can play many distinct roles in a classroom, and each requires its own standards, evidence, and safeguards. With each group of teachers and students, we pinpoint a specific role AI could play to meet real needs, and what teachers uniquely bring alongside it. Then we form hypotheses: what the role requires, where its limits are, and what bar it must meet to play the role responsibly.</p>
+              </div>
             </div>
-            <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
-              <picture><source media="(max-width:1200px)" srcset="/assets/approach/ap0636m.webp" width="1147" height="888"><img src="/assets/approach/ap0636.webp" alt="The first book at rest on top of the finished arch, the span carrying its first load" loading="lazy" decoding="async" width="2048" height="1432" style="width:100%;height:auto;object-fit:contain;background:var(--color-ecru-white);border-radius:var(--radius-image);margin-bottom:2rem;display:block"></picture>
-              <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">04</p>
-              <h3 style="font-size:var(--text-h4);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem">Test, learn, begin again</h3>
-              <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Classroom data tells us whether the AI roles we selected and the capabilities and tools we built actually helped. Those lessons sharpen our hypotheses, strengthen our capabilities and tools, and inform our next cycle of R&amp;D.</p>
+            <div style="display:flex;align-items:flex-start;gap:1.25rem">
+              <svg viewBox="-60 -60 120 120" aria-hidden="true" style="flex:0 0 3.5rem;width:3.5rem;height:3.5rem;display:block"><g transform="scale(0.912) translate(-17 -19)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" fill="#6689b7"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" fill="#255799"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" fill="#d3ddea"></polygon><polygon points="0,9.5 17,19 17,38 0,28.5" fill="#255799"></polygon><polygon points="17,19 34,9.5 34,28.5 17,38" fill="#1d457a"></polygon><polygon points="17,0 34,9.5 17,19 0,9.5" fill="#e9eef4"></polygon><polygon points="17,19 34,28.5 34,47.5 17,38" fill="#6689b7"></polygon><polygon points="34,28.5 51,19 51,38 34,47.5" fill="#255799"></polygon><polygon points="34,9.5 51,19 34,28.5 17,19" fill="#d3ddea"></polygon></g></svg>
+              <div>
+                <p style="font-weight:600;font-size:var(--text-small);letter-spacing:0.1em;margin:0 0 0.5rem;color:var(--brand-accent)">02</p>
+                <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Build the capabilities</h3>
+                <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Much of the technology needed for AI to play these roles well doesn’t exist off the shelf. We build the missing layer between frontier AI models and classroom apps — validated capabilities that many different tools can build on, like computational methods that help AI measure students’ skills or track how concepts connect across a semester.</p>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:1.25rem">
+              <svg viewBox="-60 -60 120 120" aria-hidden="true" style="flex:0 0 3.5rem;width:3.5rem;height:3.5rem;display:block"><g transform="scale(0.912) translate(0 -14.3)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" fill="#6689b7"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" fill="#255799"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" fill="#d3ddea"></polygon><polygon points="0,9.5 17,19 17,38 0,28.5" fill="#255799"></polygon><polygon points="17,19 34,9.5 34,28.5 17,38" fill="#1d457a"></polygon><polygon points="17,0 34,9.5 17,19 0,9.5" fill="#e9eef4"></polygon><polygon points="-34,9.5 -17,19 -17,38 -34,28.5" fill="#6689b7"></polygon><polygon points="-17,19 0,9.5 0,28.5 -17,38" fill="#255799"></polygon><polygon points="-17,0 0,9.5 -17,19 -34,9.5" fill="#d3ddea"></polygon><polygon points="-17,-9.5 0,0 0,19 -17,9.5" fill="#255799"></polygon><polygon points="0,0 17,-9.5 17,9.5 0,19" fill="#1d457a"></polygon><polygon points="0,-19 17,-9.5 0,0 -17,-9.5" fill="#e9eef4"></polygon><polygon points="-17,19 0,28.5 0,47.5 -17,38" fill="#6689b7"></polygon><polygon points="0,28.5 17,19 17,38 0,47.5" fill="#255799"></polygon><polygon points="0,9.5 17,19 0,28.5 -17,19" fill="#d3ddea"></polygon></g></svg>
+              <div>
+                <p style="font-weight:600;font-size:var(--text-small);letter-spacing:0.1em;margin:0 0 0.5rem;color:var(--brand-accent)">03</p>
+                <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Co-design the tools with teachers</h3>
+                <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Teachers, researchers, and engineers build classroom tools on those capabilities, along with new ways of teaching alongside them. They then test our work where it counts: in real classrooms.</p>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:1.25rem">
+              <svg viewBox="-60 -60 120 120" aria-hidden="true" style="flex:0 0 3.5rem;width:3.5rem;height:3.5rem;display:block"><g transform="scale(0.919) translate(-8.5 -4.3)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" fill="#6689b7"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" fill="#255799"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" fill="#d3ddea"></polygon><polygon points="0,9.5 17,19 17,38 0,28.5" fill="#255799"></polygon><polygon points="17,19 34,9.5 34,28.5 17,38" fill="#1d457a"></polygon><polygon points="17,0 34,9.5 17,19 0,9.5" fill="#e9eef4"></polygon><polygon points="-17,-19.9 0,-10.4 0,8.6 -17,-0.9" fill="#6689b7"></polygon><polygon points="0,-10.4 17,-19.9 17,-0.9 0,8.6" fill="#255799"></polygon><polygon points="0,-29.4 17,-19.9 0,-10.4 -17,-19.9" fill="#d3ddea"></polygon></g></svg>
+              <div>
+                <p style="font-weight:600;font-size:var(--text-small);letter-spacing:0.1em;margin:0 0 0.5rem;color:var(--brand-accent)">04</p>
+                <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Test, learn, begin again.</h3>
+                <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Classroom data tells us whether the AI roles we selected and the capabilities and tools we built actually helped. Those lessons sharpen our hypotheses, strengthen our capabilities and tools, and inform our next cycle of R&amp;D.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -318,73 +393,11 @@
     </section>
 
 
-    <!-- The Approach act. The plate hangs from the top of the stage at its full width,
-         so the push-in always crops the desk legs and never the arch: in the last beat
-         two books come to rest on the keystone thirteen thousandths of a plate-height
-         from its top edge. Copy sits in the lower third, over the one band of the frame
-         that is legs and cream in every frame. -->
-    <approach-scrub base="/assets/approach/">
-      <div data-arch-stage="">
-
-        <div data-arch-box="">
-        <div data-arch-cam="" role="img" aria-label="Two school desks, a gap between them, and a wooden arch assembled across it — the load then travelling down through every block">
-          <!-- Two layers cross-faded by CSS, not one canvas blended in JS: plus-lighter over
-               an isolated group is an exact linear dissolve, where drawing both into a single
-               canvas at partial alpha washes out everything the two frames share — here, both
-               desks. isolation:isolate is load-bearing; without it plus-lighter blows out
-               against the page. -->
-          <canvas data-arch-layer="0" aria-hidden="true" width="2048" height="1432"></canvas>
-          <canvas data-arch-layer="1" aria-hidden="true" width="2048" height="1432"></canvas>
-        </div>
-
-        <!-- Page-coloured, not dark: the plates are alpha over cream, so this is invisible
-             wherever the frame is empty and only hazes the artwork where it is not. Two
-             corner wedges rather than one full-width band — the text lives in the bottom
-             corners, and a band dense enough to carry it there would fog the arch. The
-             shallow third gradient just grounds the desks so the legs do not end in a
-             hard line. Short viewports are what this is sized for: they scale the plate
-             up until the dark desk cubby sits behind the copy. -->
-        <div data-arch-scrim="" aria-hidden="true"></div>
-        </div>
-
-        <div data-arch-ticks="">
-          <button data-arch-tick="0" type="button"><span style="font-weight:600;font-size:var(--text-tiny,0.75rem)">01</span><span style="font-weight:600;font-size:var(--text-small);letter-spacing:-0.01em">Define the role</span></button>
-          <button data-arch-tick="1" type="button"><span style="font-weight:600;font-size:var(--text-tiny,0.75rem)">02</span><span style="font-weight:600;font-size:var(--text-small);letter-spacing:-0.01em">Build the capabilities</span></button>
-          <button data-arch-tick="2" type="button"><span style="font-weight:600;font-size:var(--text-tiny,0.75rem)">03</span><span style="font-weight:600;font-size:var(--text-small);letter-spacing:-0.01em">Co-design the applications</span></button>
-          <button data-arch-tick="3" type="button"><span style="font-weight:600;font-size:var(--text-tiny,0.75rem)">04</span><span style="font-weight:600;font-size:var(--text-small);letter-spacing:-0.01em">Test, learn, begin again</span></button>
-        </div>
-
-        <div data-arch-beats="" style="display:grid">
-          <div data-arch-copy="0">
-            <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">01</p>
-            <h3 style="font-size:min(var(--text-h3),5vh);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem;text-wrap:pretty">Define the role.</h3>
-            <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">AI can play many distinct roles in a classroom, and each requires its own standards, evidence, and safeguards.<span data-arch-more=""> With each group of teachers and students, we identify a specific role AI could play to meet a real need — and what teachers uniquely bring alongside it.</span></p>
-          </div>
-          <div data-arch-copy="1">
-            <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">02</p>
-            <h3 style="font-size:min(var(--text-h3),5vh);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem;text-wrap:pretty">Build the capabilities.</h3>
-            <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Much of the technology needed for AI to play these roles well doesn’t exist off the shelf.<span data-arch-more=""> We build the missing layer between frontier AI models and classroom apps: validated capabilities that tools can build on.</span></p>
-          </div>
-          <div data-arch-copy="2">
-            <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">03</p>
-            <h3 style="font-size:min(var(--text-h3),5vh);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem;text-wrap:pretty">Co-design the applications.</h3>
-            <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Teachers, researchers, engineers, and designers build classroom tools on those capabilities, along with new ways of teaching alongside them.<span data-arch-more=""> Then they test the work where it counts: in real classrooms.</span></p>
-          </div>
-          <div data-arch-copy="3">
-            <p style="font-weight:600;font-size:var(--text-small);margin:0 0 0.75rem;color:var(--brand-accent)">04</p>
-            <h3 style="font-size:min(var(--text-h3),5vh);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem;text-wrap:pretty">Test, learn, begin again.</h3>
-            <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Classroom data tells us whether the role we chose and the capabilities we built actually helped.<span data-arch-more=""> Those lessons sharpen our hypotheses and inform the next turn of the cycle.</span></p>
-          </div>
-        </div>
-
-      </div>
-    </approach-scrub>
-
     <section style="padding:clamp(4rem,7vw,7rem) 5%">
       <div style="margin-inline:auto;max-width:80rem">
         <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));column-gap:5rem;row-gap:2rem;margin-bottom:clamp(3rem,6vw,5rem)">
           <h2 style="font-size:var(--text-h2);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0;text-wrap:pretty">Turning classroom experiments into reusable infrastructure.</h2>
-          <p style="font-size:var(--text-medium);line-height:1.5;margin:0;text-wrap:pretty">Each co-design cycle produces more than prototypes. It creates evidence about what students need, what AI can do reliably, and what teachers need to use it well. AugmentED turns those lessons into research and technical foundations the field can trust and build on.</p>
+          <p style="font-size:var(--text-medium);line-height:1.5;margin:0;text-wrap:pretty">Each co-design cycle produces more than prototypes. It creates evidence about what students need, what AI can do reliably, and what teachers need to use it well. AugmentED turns those lessons into research, technical foundations, and tools the field can trust and build on.</p>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));column-gap:2rem;row-gap:3rem">
           <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
@@ -395,12 +408,12 @@
           <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
             <img src="/assets/illustrations/network.webp" alt="A sphere of interconnected code brackets and binary digits" style="aspect-ratio:3/2;width:100%;object-fit:contain;margin-bottom:2rem;display:block" width="810" height="540" loading="lazy" decoding="async">
             <h3 style="font-size:var(--text-h4);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem">Better foundations for AI tools.</h3>
-            <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Reusable infrastructure that future classroom tools can be built on, from validated AI capabilities to the datasets that power them. We build these to generalize and recombine to serve many subjects and types of schools.</p>
+            <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Reusable infrastructure that future classroom tools can be built on, from validated AI capabilities to the datasets that power them. We build these to generalize: the same capabilities can be recombined into many different tools, serve many subjects and types of schools, and give other ed tech organizations a foundation to build on.</p>
           </div>
           <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
             <img src="/assets/illustrations/laptop.webp" alt="A laptop beside a wooden arch built from the same toy blocks as the rest of the page" style="aspect-ratio:3/2;width:100%;object-fit:contain;margin-bottom:2rem;display:block" width="810" height="540" loading="lazy" decoding="async">
             <h3 style="font-size:var(--text-h4);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem">Better tools and classroom practices.</h3>
-            <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Tested classroom resources that help educators apply AI, including AI-powered applications, implementation guides, and proven methods for teaching alongside AI, all built with teachers to solve real challenges in their classrooms.</p>
+            <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Tested classroom resources that help educators apply AI, including AI-powered applications, implementation guides, and proven methods for teaching alongside AI, all built with teachers, not for them, to solve real challenges in their classrooms.</p>
           </div>
         </div>
       </div>
@@ -410,8 +423,8 @@
       <div style="margin-inline:auto;max-width:80rem">
         <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;max-width:48rem;margin-bottom:clamp(3rem,6vw,5rem)">
           <p style="font-weight:600;font-size:var(--text-regular);margin:0 0 1rem">Our Current Work</p>
-          <h2 style="font-size:var(--text-h2);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1.5rem;text-wrap:pretty">Examples of what we're building right now.</h2>
-          <p style="font-size:var(--text-medium);line-height:1.5;margin:0 0 1.5rem;text-wrap:pretty">In our first cohort, teachers from several pioneering high schools worked with researchers and engineers to co-design AI-powered tools. Each project below is a work in progress—and each one feeds reusable capabilities back into a foundation that others can build on.</p>
+          <h2 style="font-size:var(--text-h2);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1.5rem;text-wrap:pretty">Examples of what we're building together right now.</h2>
+          <p style="font-size:var(--text-medium);line-height:1.5;margin:0 0 1.5rem;text-wrap:pretty">In our first cohort, teachers from several pioneering high schools worked together with researchers and engineers to co-design AI-powered solutions. Each project below is a work in progress, not a finished product, and each one feeds reusable capabilities back into a foundation that others can build on.</p>
           <p style="font-size:var(--text-medium);line-height:1.5;margin:0;text-wrap:pretty">All three put the same AI role—AI as cognitive extender—to work. For teachers and students, the AI surfaces patterns hidden in more information than any person could track alone.</p>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));column-gap:2rem;row-gap:3rem">
@@ -431,7 +444,7 @@
           </article>
           <article data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out">
             <div role="img" aria-label="Photography to supply: a student mapping connected ideas at a whiteboard" style="aspect-ratio:3/2;width:100%;border-radius:var(--radius-image);margin-bottom:1.5rem;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:var(--color-ecru-white);text-align:center"><p style="font-weight:600;font-size:var(--text-small);line-height:1.5;margin:0;color:var(--text-muted);text-wrap:pretty">Photography to supply — a student mapping connected ideas at a whiteboard</p></div>
-            <p style="font-weight:600;font-size:var(--text-small);margin:0 0 1rem">Cross Town High</p>
+            <p style="font-weight:600;font-size:var(--text-small);margin:0 0 1rem">Crosstown High</p>
             <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.75rem">Connection Builder</h3>
             <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Students learn more deeply when new material connects to what they already know and care about. This tool maps a teacher’s course material to each student’s knowledge, experiences, and interests and then suggests personalized connections.</p>
             <div style="margin-top:1.5rem;display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" hint-size="120px,28px">Learn more<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm" hint-size="20px,20px"></x-import></x-import></div>
@@ -479,16 +492,48 @@
       </div>
     </section>
 
-    <section style="padding:clamp(5rem,9vw,9rem) 5%">
-      <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;margin-inline:auto;max-width:48rem;text-align:center">
-        <h2 style="font-size:var(--text-h2);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1.5rem;text-wrap:pretty">Join us in building better foundations for AI in education.</h2>
-        <p style="font-size:var(--text-medium);line-height:1.5;margin:0;text-wrap:pretty">We co-design with educators, publish what we learn, and build infrastructure for the whole field. If that's the future of AI in education you want, come build it with us.</p>
-        <div style="margin-top:2.5rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1rem">
-          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" onClick="{{ goTeam }}" hint-size="160px,44px">Meet the team</x-import>
-          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary" hint-size="160px,44px">Follow our work</x-import>
+    <!-- The falling-blocks CTA: the rig that used to be the hero, on a short 70svh
+         pin (see the falling-blocks height rule in the style block) so the blocks
+         tumble past quickly while the closing copy holds. stage-fill 0.93 and the
+         content/speed bounds are measured off the render — see falling-blocks.js.
+
+         Two depth plates of one camera view sandwich the copy: "bottom" is the far
+         and mid planes and sits behind the words, "top" is the near plane and passes
+         in front of the heading only — the body and buttons sit above everything in
+         [data-fb-front] so they stay readable and clickable. No data-reveal on the
+         copy: an animating opacity would create a stacking context and flatten the
+         between-the-plates z-order. Reduced-motion, save-data, and script-off
+         visitors get the frame-1 stills at one screen with the copy centered. -->
+    <falling-blocks base="/assets/falling-blocks/" width="1440" frames="48" layers="bottom,top" revolutions="0.6" budget-mb="128" min-width="0" stage-fill="0.93" content-bottom="0.273,0.700" content-top="0.183,0.775" speed-bottom="1" speed-top="1.25">
+      <div data-fb-stage="">
+
+        <div data-fb-layer="bottom" aria-hidden="true">
+          <canvas></canvas>
+          <img src="/assets/falling-blocks/w1440/bottom/fb0001.webp" alt="" width="1440" height="2160" loading="lazy" decoding="async">
         </div>
+
+        <div data-fb-copy="" style="max-width:48rem;text-align:center;padding-inline:5%">
+          <h2 style="font-size:var(--text-h2);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0 0 1.5rem;text-wrap:pretty">Join us in building better foundations for AI in education.</h2>
+          <div data-fb-front="">
+            <p style="font-size:var(--text-medium);line-height:1.5;margin:0;text-wrap:pretty">We co-design with educators, publish what we learn, and build infrastructure for the whole field. If that's the future of AI in education you want, come build it with us.</p>
+            <div style="margin-top:2.5rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1rem">
+              <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" onClick="{{ goTeam }}" hint-size="160px,44px">Meet the team</x-import>
+              <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary" hint-size="160px,44px">Follow our work</x-import>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lazy on both stills so the animated path does not pay for them: an image
+             with no layout box is never near the viewport, so a lazy one is skipped
+             where the canvas has replaced it, while the static path renders it in the
+             viewport and loads it at once. -->
+        <div data-fb-layer="top" aria-hidden="true">
+          <canvas></canvas>
+          <img src="/assets/falling-blocks/w1440/top/fb0001.webp" alt="" width="1440" height="2160" loading="lazy" decoding="async">
+        </div>
+
       </div>
-    </section>
+    </falling-blocks>
 
   </main>
   </sc-if>
@@ -635,157 +680,6 @@
           <div data-reveal="" style="opacity:0;transition:opacity 400ms ease-in-out;border-top:1px solid var(--color-neutral-darkest-15);padding-top:1.5rem">
             <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 1rem">Applications</h3>
             <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Research and capabilities only matter if they improve learning. We build and validate classroom tools and teaching methods alongside educators and students to demonstrate what works in practice.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section data-diagram="" style="padding:clamp(2rem,4vw,3rem) 5% clamp(4rem,7vw,7rem)">
-      <div style="margin-inline:auto;max-width:70rem">
-        <div class="at-desktop" data-diagram-slot="" style="position:relative;width:100%;aspect-ratio:1120/780">
-        <div data-cycle="" data-active="{{ activeStep }}" onMouseLeave="{{ cycleClear }}" onBlur="{{ cycleClear }}" style="position:absolute;inset:0;container-type:inline-size">
-          <div data-spin="" style="position:absolute;inset:0">
-          <svg viewBox="0 0 1120 780" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">
-            <g stroke="#020408" stroke-opacity="0.3" stroke-width="1.5" stroke-dasharray="5 6" fill="none">
-              <path d="M 757.1 333.5 A 205 205 0 0 0 630.1 197.4"></path>
-              <path d="M 616.5 587.1 A 205 205 0 0 0 752.6 460.1"></path>
-              <path d="M 362.9 446.5 A 205 205 0 0 0 489.9 582.6"></path>
-              <path d="M 503.5 192.9 A 205 205 0 0 0 367.4 319.9"></path>
-            </g>
-            <g fill="#020408" fill-opacity="0.4">
-              <polygon points="630.1,197.4 640.6,194.8 636.5,206.1"></polygon>
-              <polygon points="752.6,460.1 755.2,470.6 743.9,466.5"></polygon>
-              <polygon points="489.9,582.6 479.4,585.2 483.5,573.9"></polygon>
-              <polygon points="367.4,319.9 364.8,309.4 376.1,313.5"></polygon>
-            </g>
-            <g data-arc="0">
-              <path d="M 628.9 149.7 A 250 250 0 0 1 800.3 321.1" fill="none" stroke="currentColor" stroke-width="2"></path>
-              <polygon points="800.3,321.1 790.1,312.6 804.5,308.4" fill="currentColor"></polygon>
-            </g>
-            <g data-arc="1">
-              <path d="M 800.3 458.9 A 250 250 0 0 1 628.9 630.3" fill="none" stroke="currentColor" stroke-width="2"></path>
-              <polygon points="628.9,630.3 637.4,620.1 641.6,634.5" fill="currentColor"></polygon>
-            </g>
-            <g data-arc="2">
-              <path d="M 491.1 630.3 A 250 250 0 0 1 319.7 458.9" fill="none" stroke="currentColor" stroke-width="2"></path>
-              <polygon points="319.7,458.9 329.9,467.4 315.5,471.6" fill="currentColor"></polygon>
-            </g>
-            <g data-arc="3">
-              <path d="M 319.7 321.1 A 250 250 0 0 1 491.1 149.7" fill="none" stroke="currentColor" stroke-width="2"></path>
-              <polygon points="491.1,149.7 482.6,159.9 478.4,145.5" fill="currentColor"></polygon>
-            </g>
-          </svg>
-
-          <button type="button" onClick="{{ cycleOn0 }}" onMouseEnter="{{ cycleHover0 }}" onFocus="{{ cycleHover0 }}" aria-label="Step 01, Define the role" data-node="0" style="position:absolute;transform:translate(-50%,-50%);width:calc(10.714% * var(--nodeScale, 1));aspect-ratio:1/1;padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;box-sizing:border-box;left:50%;top:17.95%">
-            <span data-upright="" style="display:flex;width:78%;height:78%"><svg viewBox="-60 -60 120 120" style="width:100%;height:100%;display:block"><g transform="scale(1.632) translate(0 -9.5)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" fill="#6689b7"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" fill="#255799"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" fill="#d3ddea"></polygon></g></svg></span>
-          </button>
-          <button type="button" onClick="{{ cycleOn1 }}" onMouseEnter="{{ cycleHover1 }}" onFocus="{{ cycleHover1 }}" aria-label="Step 02, Build the capabilities" data-node="1" style="position:absolute;transform:translate(-50%,-50%);width:calc(10.714% * var(--nodeScale, 1));aspect-ratio:1/1;padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;box-sizing:border-box;left:72.32%;top:50%">
-            <span data-upright="" style="display:flex;width:78%;height:78%"><svg viewBox="-60 -60 120 120" style="width:100%;height:100%;display:block"><g transform="scale(0.912) translate(-17 -19)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" fill="#6689b7"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" fill="#255799"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" fill="#d3ddea"></polygon><polygon points="0,9.5 17,19 17,38 0,28.5" fill="#255799"></polygon><polygon points="17,19 34,9.5 34,28.5 17,38" fill="#1d457a"></polygon><polygon points="17,0 34,9.5 17,19 0,9.5" fill="#e9eef4"></polygon><polygon points="17,19 34,28.5 34,47.5 17,38" fill="#6689b7"></polygon><polygon points="34,28.5 51,19 51,38 34,47.5" fill="#255799"></polygon><polygon points="34,9.5 51,19 34,28.5 17,19" fill="#d3ddea"></polygon></g></svg></span>
-          </button>
-          <button type="button" onClick="{{ cycleOn2 }}" onMouseEnter="{{ cycleHover2 }}" onFocus="{{ cycleHover2 }}" aria-label="Step 03, Co-design the applications" data-node="2" style="position:absolute;transform:translate(-50%,-50%);width:calc(10.714% * var(--nodeScale, 1));aspect-ratio:1/1;padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;box-sizing:border-box;left:50%;top:82.05%">
-            <span data-upright="" style="display:flex;width:78%;height:78%"><svg viewBox="-60 -60 120 120" style="width:100%;height:100%;display:block"><g transform="scale(0.912) translate(0 -14.3)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" fill="#6689b7"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" fill="#255799"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" fill="#d3ddea"></polygon><polygon points="0,9.5 17,19 17,38 0,28.5" fill="#255799"></polygon><polygon points="17,19 34,9.5 34,28.5 17,38" fill="#1d457a"></polygon><polygon points="17,0 34,9.5 17,19 0,9.5" fill="#e9eef4"></polygon><polygon points="-34,9.5 -17,19 -17,38 -34,28.5" fill="#6689b7"></polygon><polygon points="-17,19 0,9.5 0,28.5 -17,38" fill="#255799"></polygon><polygon points="-17,0 0,9.5 -17,19 -34,9.5" fill="#d3ddea"></polygon><polygon points="-17,-9.5 0,0 0,19 -17,9.5" fill="#255799"></polygon><polygon points="0,0 17,-9.5 17,9.5 0,19" fill="#1d457a"></polygon><polygon points="0,-19 17,-9.5 0,0 -17,-9.5" fill="#e9eef4"></polygon><polygon points="-17,19 0,28.5 0,47.5 -17,38" fill="#6689b7"></polygon><polygon points="0,28.5 17,19 17,38 0,47.5" fill="#255799"></polygon><polygon points="0,9.5 17,19 0,28.5 -17,19" fill="#d3ddea"></polygon></g></svg></span>
-          </button>
-          <button type="button" onClick="{{ cycleOn3 }}" onMouseEnter="{{ cycleHover3 }}" onFocus="{{ cycleHover3 }}" aria-label="Step 04, Test, learn, begin again" data-node="3" style="position:absolute;transform:translate(-50%,-50%);width:calc(10.714% * var(--nodeScale, 1));aspect-ratio:1/1;padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;box-sizing:border-box;left:27.68%;top:50%">
-            <span data-upright="" style="display:flex;width:78%;height:78%"><svg viewBox="-60 -60 120 120" style="width:100%;height:100%;display:block"><g transform="scale(0.919) translate(-8.5 -4.3)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" fill="#6689b7"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" fill="#255799"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" fill="#d3ddea"></polygon><polygon points="0,9.5 17,19 17,38 0,28.5" fill="#255799"></polygon><polygon points="17,19 34,9.5 34,28.5 17,38" fill="#1d457a"></polygon><polygon points="17,0 34,9.5 17,19 0,9.5" fill="#e9eef4"></polygon><polygon points="-17,-19.9 0,-10.4 0,8.6 -17,-0.9" fill="#6689b7"></polygon><polygon points="0,-10.4 17,-19.9 17,-0.9 0,8.6" fill="#255799"></polygon><polygon points="0,-29.4 17,-19.9 0,-10.4 -17,-19.9" fill="#d3ddea"></polygon></g></svg></span>
-          </button>
-
-          </div>
-          <div data-chrome="" style="position:absolute;inset:0;pointer-events:none;transition:opacity 160ms linear">
-          <div data-label="0" style="position:absolute;left:50%;top:0;transform:translateX(-50%);width:44%;text-align:center">
-            <p style="font-weight:600;font-size:max(0.72rem,1.05cqw);letter-spacing:0.1em;margin:0 0 0.4em;color:var(--brand-accent)">01</p>
-            <p style="font-size:max(1.15rem,2.1cqw);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0">Define the role</p>
-          </div>
-          <div data-label="1" style="position:absolute;left:79.46%;top:50%;transform:translateY(-50%);width:20%;text-align:left">
-            <p style="font-weight:600;font-size:max(0.72rem,1.05cqw);letter-spacing:0.1em;margin:0 0 0.4em;color:var(--brand-accent)">02</p>
-            <p style="font-size:max(1.15rem,2.1cqw);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0">Build the capabilities</p>
-          </div>
-          <div data-label="2" style="position:absolute;left:50%;top:91%;transform:translateX(-50%);width:44%;text-align:center">
-            <p style="font-weight:600;font-size:max(0.72rem,1.05cqw);letter-spacing:0.1em;margin:0 0 0.4em;color:var(--brand-accent)">03</p>
-            <p style="font-size:max(1.15rem,2.1cqw);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0">Co-design the applications</p>
-          </div>
-          <div data-label="3" style="position:absolute;right:79.46%;top:50%;transform:translateY(-50%);width:20%;text-align:right">
-            <p style="font-weight:600;font-size:max(0.72rem,1.05cqw);letter-spacing:0.1em;margin:0 0 0.4em;color:var(--brand-accent)">04</p>
-            <p style="font-size:max(1.15rem,2.1cqw);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0">Test, learn, begin again.</p>
-          </div>
-
-          <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:25%;text-align:center">
-            <sc-if value="{{ isCycleDefault }}" hint-placeholder-val="{{ true }}">
-              <div>
-                <p style="font-weight:600;font-size:max(0.8rem,1.4cqw);margin:0 0 1em;color:var(--brand-accent)">Our Approach</p>
-                <h3 style="font-size:max(1.6rem,3.2cqw);line-height:1.15;letter-spacing:-0.01em;font-weight:700;margin:0">The Co-Design Cycle</h3>
-                <div style="width:40px;height:1px;background:var(--color-neutral-darkest-15);margin:1.2em auto"></div>
-                <p style="font-size:max(0.85rem,1.35cqw);line-height:1.5;margin:0;opacity:0.7">What we learn informs the next turn of the cycle.</p>
-              </div>
-            </sc-if>
-            <sc-if value="{{ isCycleStep0 }}" hint-placeholder-val="{{ false }}">
-              <div>
-                <p style="font-weight:600;font-size:max(0.8rem,1.4cqw);margin:0 0 1em;color:var(--brand-accent)">Step 01</p>
-                <h3 style="font-size:max(1.6rem,3.2cqw);line-height:1.15;letter-spacing:-0.01em;font-weight:700;margin:0">Define the role</h3>
-                <div style="width:40px;height:1px;background:var(--color-neutral-darkest-15);margin:1.2em auto"></div>
-                <p style="font-size:max(0.85rem,1.35cqw);line-height:1.5;margin:0;opacity:0.7;text-wrap:pretty">AI can play many distinct roles in a classroom, and each requires its own standards, evidence, and safeguards.</p>
-              </div>
-            </sc-if>
-            <sc-if value="{{ isCycleStep1 }}" hint-placeholder-val="{{ false }}">
-              <div>
-                <p style="font-weight:600;font-size:max(0.8rem,1.4cqw);margin:0 0 1em;color:var(--brand-accent)">Step 02</p>
-                <h3 style="font-size:max(1.6rem,3.2cqw);line-height:1.15;letter-spacing:-0.01em;font-weight:700;margin:0">Build the capabilities</h3>
-                <div style="width:40px;height:1px;background:var(--color-neutral-darkest-15);margin:1.2em auto"></div>
-                <p style="font-size:max(0.85rem,1.35cqw);line-height:1.5;margin:0;opacity:0.7;text-wrap:pretty">We build the missing layer between frontier AI models and classroom apps — validated capabilities that tools can build on.</p>
-              </div>
-            </sc-if>
-            <sc-if value="{{ isCycleStep2 }}" hint-placeholder-val="{{ false }}">
-              <div>
-                <p style="font-weight:600;font-size:max(0.8rem,1.4cqw);margin:0 0 1em;color:var(--brand-accent)">Step 03</p>
-                <h3 style="font-size:max(1.6rem,3.2cqw);line-height:1.15;letter-spacing:-0.01em;font-weight:700;margin:0">Co-design the applications</h3>
-                <div style="width:40px;height:1px;background:var(--color-neutral-darkest-15);margin:1.2em auto"></div>
-                <p style="font-size:max(0.85rem,1.35cqw);line-height:1.5;margin:0;opacity:0.7;text-wrap:pretty">Teachers, researchers, engineers, and designers build classroom tools on those capabilities, then test them where it counts.</p>
-              </div>
-            </sc-if>
-            <sc-if value="{{ isCycleStep3 }}" hint-placeholder-val="{{ false }}">
-              <div>
-                <p style="font-weight:600;font-size:max(0.8rem,1.4cqw);margin:0 0 1em;color:var(--brand-accent)">Step 04</p>
-                <h3 style="font-size:max(1.6rem,3.2cqw);line-height:1.15;letter-spacing:-0.01em;font-weight:700;margin:0">Test, learn, begin again.</h3>
-                <div style="width:40px;height:1px;background:var(--color-neutral-darkest-15);margin:1.2em auto"></div>
-                <p style="font-size:max(0.85rem,1.35cqw);line-height:1.5;margin:0;opacity:0.7;text-wrap:pretty">Classroom data tells us whether what we built actually helped. Those lessons inform our next cycle of R&amp;D.</p>
-              </div>
-            </sc-if>
-          </div>
-          </div>
-          </div>
-        </div>
-
-        <div class="at-mobile" style="display:flex;flex-direction:column;gap:2.5rem">
-          <div style="display:flex;align-items:flex-start;gap:1.25rem">
-            <svg viewBox="-60 -60 120 120" aria-hidden="true" style="flex:0 0 3.5rem;width:3.5rem;height:3.5rem;display:block"><g transform="scale(1.632) translate(0 -9.5)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" fill="#6689b7"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" fill="#255799"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" fill="#d3ddea"></polygon></g></svg>
-            <div>
-              <p style="font-weight:600;font-size:var(--text-small);letter-spacing:0.1em;margin:0 0 0.5rem;color:var(--brand-accent)">01</p>
-              <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Define the role</h3>
-              <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">AI can play many distinct roles in a classroom, and each requires its own standards, evidence, and safeguards.</p>
-            </div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:1.25rem">
-            <svg viewBox="-60 -60 120 120" aria-hidden="true" style="flex:0 0 3.5rem;width:3.5rem;height:3.5rem;display:block"><g transform="scale(0.912) translate(-17 -19)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" fill="#6689b7"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" fill="#255799"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" fill="#d3ddea"></polygon><polygon points="0,9.5 17,19 17,38 0,28.5" fill="#255799"></polygon><polygon points="17,19 34,9.5 34,28.5 17,38" fill="#1d457a"></polygon><polygon points="17,0 34,9.5 17,19 0,9.5" fill="#e9eef4"></polygon><polygon points="17,19 34,28.5 34,47.5 17,38" fill="#6689b7"></polygon><polygon points="34,28.5 51,19 51,38 34,47.5" fill="#255799"></polygon><polygon points="34,9.5 51,19 34,28.5 17,19" fill="#d3ddea"></polygon></g></svg>
-            <div>
-              <p style="font-weight:600;font-size:var(--text-small);letter-spacing:0.1em;margin:0 0 0.5rem;color:var(--brand-accent)">02</p>
-              <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Build the capabilities</h3>
-              <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">We build the missing layer between frontier AI models and classroom apps — validated capabilities that tools can build on.</p>
-            </div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:1.25rem">
-            <svg viewBox="-60 -60 120 120" aria-hidden="true" style="flex:0 0 3.5rem;width:3.5rem;height:3.5rem;display:block"><g transform="scale(0.912) translate(0 -14.3)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" fill="#6689b7"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" fill="#255799"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" fill="#d3ddea"></polygon><polygon points="0,9.5 17,19 17,38 0,28.5" fill="#255799"></polygon><polygon points="17,19 34,9.5 34,28.5 17,38" fill="#1d457a"></polygon><polygon points="17,0 34,9.5 17,19 0,9.5" fill="#e9eef4"></polygon><polygon points="-34,9.5 -17,19 -17,38 -34,28.5" fill="#6689b7"></polygon><polygon points="-17,19 0,9.5 0,28.5 -17,38" fill="#255799"></polygon><polygon points="-17,0 0,9.5 -17,19 -34,9.5" fill="#d3ddea"></polygon><polygon points="-17,-9.5 0,0 0,19 -17,9.5" fill="#255799"></polygon><polygon points="0,0 17,-9.5 17,9.5 0,19" fill="#1d457a"></polygon><polygon points="0,-19 17,-9.5 0,0 -17,-9.5" fill="#e9eef4"></polygon><polygon points="-17,19 0,28.5 0,47.5 -17,38" fill="#6689b7"></polygon><polygon points="0,28.5 17,19 17,38 0,47.5" fill="#255799"></polygon><polygon points="0,9.5 17,19 0,28.5 -17,19" fill="#d3ddea"></polygon></g></svg>
-            <div>
-              <p style="font-weight:600;font-size:var(--text-small);letter-spacing:0.1em;margin:0 0 0.5rem;color:var(--brand-accent)">03</p>
-              <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Co-design the applications</h3>
-              <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Teachers, researchers, engineers, and designers build classroom tools on those capabilities, then test them where it counts.</p>
-            </div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:1.25rem">
-            <svg viewBox="-60 -60 120 120" aria-hidden="true" style="flex:0 0 3.5rem;width:3.5rem;height:3.5rem;display:block"><g transform="scale(0.919) translate(-8.5 -4.3)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" fill="#6689b7"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" fill="#255799"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" fill="#d3ddea"></polygon><polygon points="0,9.5 17,19 17,38 0,28.5" fill="#255799"></polygon><polygon points="17,19 34,9.5 34,28.5 17,38" fill="#1d457a"></polygon><polygon points="17,0 34,9.5 17,19 0,9.5" fill="#e9eef4"></polygon><polygon points="-17,-19.9 0,-10.4 0,8.6 -17,-0.9" fill="#6689b7"></polygon><polygon points="0,-10.4 17,-19.9 17,-0.9 0,8.6" fill="#255799"></polygon><polygon points="0,-29.4 17,-19.9 0,-10.4 -17,-19.9" fill="#d3ddea"></polygon></g></svg>
-            <div>
-              <p style="font-weight:600;font-size:var(--text-small);letter-spacing:0.1em;margin:0 0 0.5rem;color:var(--brand-accent)">04</p>
-              <h3 style="font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em;font-weight:700;margin:0 0 0.5rem">Test, learn, begin again.</h3>
-              <p style="font-size:var(--text-regular);line-height:1.5;margin:0;text-wrap:pretty">Classroom data tells us whether what we built actually helped. Those lessons inform our next cycle of R&amp;D.</p>
-            </div>
           </div>
         </div>
       </div>
@@ -1147,11 +1041,6 @@ const ROUTES = [
 const clamp = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
 const smooth = (t) => { const c = clamp(t); return c * c * (3 - 2 * c); };
 
-// Read at module scope, not in componentDidMount: heroStaticMode is a render value,
-// so it is computed before mount, and a preference read afterwards would report
-// "responsive" on the first paint — handing a reduced-motion visitor the rig.
-const REDUCED = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-
 const TITLES = {
   home: "AugmentED | Bridging frontier AI and the classroom",
   challenge: "The Challenge | AugmentED",
@@ -1222,9 +1111,6 @@ class Component extends DCLogic {
     };
     this.syncApproachOffset();
     this.approachTimer = setInterval(this.syncApproachOffset, 250);
-
-    this.reduced = REDUCED;
-
 
     // The hero's rising block kit used to be driven from here. The falling-blocks
     // element replaced it and listens for its own scroll, so nothing carries
@@ -1353,17 +1239,23 @@ class Component extends DCLogic {
     };
     for (let i = 0; i < 4; i++) {
       cycle["isCycleStep" + i] = active === i;
-      // Hovering a node previews its step in the centre panel; clicking scrolls to it.
+      // Hovering a node previews its step in the centre panel. Clicking jumps to the
+      // step's own section where one exists (the Approach page); on screens without
+      // step sections (Home) the click pins the step in the panel instead. The
+      // querySelector doubles as the screen test: sc-if unmounts inactive branches,
+      // so [data-step] simply does not exist away from the Approach page.
       cycle["cycleOn" + i] = () => {
         const el = document.querySelector('[data-step="' + i + '"]');
-        if (!el) return;
-        window.scrollTo({ top: el.getBoundingClientRect().top + (window.scrollY || 0) - 96, behavior: "smooth" });
+        if (el) {
+          window.scrollTo({ top: el.getBoundingClientRect().top + (window.scrollY || 0) - 96, behavior: "smooth" });
+          return;
+        }
+        this.setState({ cycleStep: i });
       };
       cycle["cycleHover" + i] = () => this.setState({ cycleStep: i });
     }
     return {
       ...cycle,
-      heroStaticMode: this.reduced ? "reduced" : "responsive",
       setBuildAt: (e) => {
         const btn = e.target && e.target.closest ? e.target.closest("[data-build]") : null;
         if (!btn) return;
