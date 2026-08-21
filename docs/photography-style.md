@@ -169,3 +169,37 @@ master and `width: 1080` for a card or `1264` for a full-width box, run
 `npm i --no-save sharp && node tools/encode-images.mjs`, then replace the `<div role="img">`
 placeholder in `index.html` with an `<img>` carrying real alt text. The encoder's comments
 explain why the crop is set per-image rather than left to `object-fit`.
+
+## What batch one changed
+
+Twelve frames against the six slots, two per placeholder, Nano Banana Pro at 2k with all
+three references attached. Eleven returned, six were worth keeping. The recipe above
+survived, with five corrections that only running it could produce.
+
+- **Name the casting or it drifts.** Left unspecified the model returns white men of
+  similar age — four of them in one frame, three in another. The references show a wide
+  range. Write the mix into the subject line.
+- **Foreground occlusion has to lead the subject line.** Trait 2 is the most recognisable
+  thing about the real photographs and it landed in about half the frames while it sat in
+  the style block. It gets outvoted there.
+- **Ask for a worse photograph.** Everything came back tidier, better lit and more evenly
+  composed than the masters. Push the clipped windows, the tilt, the person half out of
+  frame.
+- **For the student frames, restate the faces-away constraint in the subject line.** Two
+  frames carried an identical style block and only one complied — the other put both
+  students square to the lens. Left to the style block alone it is a coin flip, so write it
+  twice and check every result before use.
+- **Three variants, not two.** Two gave a clear winner four times out of six; where both
+  shared a fault there was nothing to choose from.
+
+Two mechanical notes. Body-part phrasing next to *fills the frame* — "a colleague's
+shoulder and upper back filling the lower-left foreground" — trips the content filter on an
+otherwise innocuous scene; naming the person and their jacket instead passes with no other
+change. And the jobs report back as `nano_banana_2` whatever `nano_banana_pro` was asked
+for, so do not read the returned model name as a failed request.
+
+Picks from the batch are the Higgsfield jobs `739c58a3` (945), `cd483dd6` (962), `bd6b0c82`
+(968), `475b8d94` (1029), `164a296a` (1045) and `0c29afd0` (1084). Nothing is committed
+yet — a chosen master belongs in `source-material/image-sources/images/` as a quality-90
+JPEG rather than the 9 MB PNG the API returns, which is how the school photographs are
+already stored.
