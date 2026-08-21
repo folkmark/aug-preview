@@ -86,12 +86,52 @@
   [data-cycle][data-active="1"] [data-label]:not([data-label="1"]),
   [data-cycle][data-active="2"] [data-label]:not([data-label="2"]),
   [data-cycle][data-active="3"] [data-label]:not([data-label="3"]) { opacity: 0.45; }
-  /* The header's height, and the only thing the page has to tell the hero scrub: it
-     reads the pin back off its own stage, and hero-bridge.css derives the stage's
-     height and the element's from the same number. Nothing else here — the section's
-     height, the cuts and the budget are the component's own, and a page that sets
-     them from here would put the pacing in two files. */
-  hero-bridge { --hb-pin: var(--space-18); }
+  /* The two things the page has to tell the hero scrub, and they are both about the page
+     rather than about the sequence. --hb-pin is the header's height; the element reads it
+     back off its own stage, and hero-bridge.css derives the stage's height, the approach's
+     length and the element's own from the same number.
+
+     --hb-entry-top is where the plate's top edge sits while the copy below is on screen.
+     The plate is pinned from load and the copy is laid over it, so during the approach the
+     plate is held small and low — its top edge on this line, its bottom on the fold — and
+     the band above belongs to the words.
+
+     Both derive from --hero-band, which is the one number here that was measured rather
+     than picked. The hero copy block renders 380px tall on every desktop width (the h1
+     wraps identically inside --container-lg at any of them), 290px at 768 and 479px on a
+     phone, where the type scale changes and the lede runs to more lines. 440px is that
+     380 with air around it, and the svh term takes over on a tall screen so the copy does
+     not end up marooned at the top of it.
+
+     The plate starts 70px ABOVE the band rather than below it, and that is deliberate:
+     its own top 22.6% is empty page colour on the frame the approach holds — the blocks
+     that eventually fly in through it enter much later in the sequence — so there is no
+     reason to keep the words off it. 70 is inside that sky at every viewport measured —
+     108px of sky at 1440x900, 143 at 1920x1080, 189 at 2560x1440 — bar one: 1440x700,
+     where the entry plate is 258px tall and its sky only 58, so the last line of copy sits
+     over the very top of the plate rather than over the page. It reads as page colour
+     either way, which is the point; that is what makes the 70 safe to spend.
+
+     Nothing else here — the cuts, the budget and the scrub's own pacing are the
+     component's, and a page that set them from here would put them in two files. */
+  .scheme-1 { --hero-band: max(44svh, 440px); }
+  hero-bridge { --hb-pin: var(--space-18); --hb-entry-top: calc(var(--hero-band) - 70px); }
+  @media (max-width: 560px) { .scheme-1 { --hero-band: max(44svh, 520px); } }
+  /* The hero copy, laid over the pinned plate and then scrolled away. Absolute so it
+     contributes no height of its own: what it scrolls through is the hero's own approach
+     budget, which hero-bridge.css sizes to a screen, so the scrub starts at the scroll
+     position where the last of these words has left. align-content rather than
+     place-items, because the block inside sets its own measure and centres itself
+     horizontally — this only has to place it vertically in the band. */
+  [data-hero-copy] {
+    position: absolute;
+    inset: 0 0 auto;
+    height: var(--hero-band);
+    display: grid;
+    align-content: center;
+    padding-inline: var(--page-gutter);
+    z-index: 2;
+  }
   /* The header is sticky and 4.5rem tall, so the stage is a screen minus the header
      and the rig is that plus the pin. The difference between the two is the scroll
      budget the element measures: 170 minus 100 leaves 70svh over which the blocks
@@ -156,22 +196,28 @@
   <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
   <main data-screen-label="Home">
 
-    <!-- The hero: the copy above the bridge assembling. The plate pins under the header
-         while the arch builds across the gap between the server rack and the school
-         desk, holds on the closed span, then scrolls on. 70svh of budget — a quick pass,
-         not the old hero's 190svh rise. The falling-blocks scrub that used to pin here
-         now wraps the closing CTA, and the long Approach act it led into is gone: the
-         bridge lands next to the bridging headline, the way the client reads the page.
+    <!-- The hero: the copy laid OVER the bridge assembling. The plate is pinned from the
+         moment the page loads, so the first screen is the artwork with the headline on top
+         of it, and the copy scrolls away to start the scrub. The falling-blocks rig that
+         used to pin here now wraps the closing CTA, and the long Approach act it led into
+         is gone: the bridge lands next to the bridging headline, the way the client reads
+         the page.
 
-         The plate runs full bleed and is CROPPED to the pinned stage rather than shrunk
-         to fit it — 1.43:1 artwork does not fit a 1.6 laptop, so 17.8% goes off the ends.
-         Where the window sits is measured, not chosen: the completed bridge occupies
-         y 0.100-0.945 of the plate, and --hb-anchor puts its centre at the stage's centre,
-         which costs about 1% off each end at 1440x900. Blocks in flight are allowed to
-         clip at the top; the structure they land on is not. See assets/hero-bridge.css.
+         Three phases, and the budget is split between them in hero-bridge.css: the plate
+         holds low and small under the copy, settles up to full size as the last of the copy
+         leaves, then scrubs for 70svh while the arch builds. --hb-entry-top above is what
+         keeps the words and the picture off each other during the first of those.
+
+         The plate runs EDGE TO EDGE and is never clipped by a box. It is 1.43:1 and taller
+         than a 1.6 laptop screen, so its stage takes the plate's height rather than the
+         screen's: the bottom of the picture is below the fold while the arch builds — the
+         desk's feet and the rack's base, everything past y 0.82 at 1440x900 — and scrolling
+         on reveals it whole. The rig this replaced cropped to the stage instead, which
+         looked identical while pinned and then dragged a hard cut up through the ground
+         shadow the moment the stage released. See assets/hero-bridge.css.
 
          The plate's alpha sits straight on the page colour, so the section carries no
-         side gutter and nothing behind the artwork: the copy above supplies its own.
+         side gutter and nothing behind the artwork: the copy over it supplies its own.
 
          from/to name the span of the manifest that is actually played. This sequence was
          delivered in three renders and only 276-417 carries the soft ground shadow — the
@@ -186,8 +232,8 @@
          save-data, and in the seconds before the first frame decodes — and it is the LCP
          element in every one of those cases. Its positioning belongs to hero-bridge.css;
          do not give it an inline style back. -->
-    <section style="padding:clamp(var(--space-12),5vw,var(--space-18)) 0 clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg))">
-      <div style="padding-inline:var(--page-gutter)">
+    <section style="position:relative;padding:0 0 clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg))">
+      <div data-hero-copy="">
       <div style="margin-inline:auto;max-width:var(--container-lg);text-align:center">
         <h1 style="font-size:var(--text-h1);line-height:var(--text-h1-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">Bridging frontier AI and the classroom.</h1>
         <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">AugmentED is an R&amp;D organization closing the gap between what AI can do and what students need. We are teachers, researchers, and engineers working together to build and test the missing technology, and the evidence to trust it.</p>
@@ -197,7 +243,7 @@
         </div>
       </div>
       </div>
-      <div data-hero-visual="" data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-top:clamp(var(--space-10),5vw,var(--space-16))">
+      <div data-hero-visual="" data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
         <hero-bridge base="assets/hero-bridge/" from="276" to="417">
           <div data-hb-stage="">
             <div data-hb-box="">

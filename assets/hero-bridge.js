@@ -38,6 +38,15 @@
    as its stage and nothing pins — the plate simply sits in the page as a still. That is
    a CSS decision, not a code change.
 
+   That budget is spent on two things in order, and only the second one is frames. The
+   plate is pinned from the moment the page loads, so a host can lay a screen of copy over
+   it — which is what this hero does — and the APPROACH is the scroll that copy takes to
+   leave. Through it the plate is held small and low, sitting on the fold under the words,
+   and settles up to full size as the last of them goes; then the SCRUB starts, on a plate
+   that has been on screen the whole time. How long the approach lasts is --hb-entry-span
+   and where the plate sits during it is --hb-entry-top, both in hero-bridge.css: a host
+   with more or less copy to clear changes those and nothing here.
+
    Attributes, all optional except base:
      base        URL prefix ending in "/"                    (required)
      manifest    manifest URL                     (base + "manifest.json")
@@ -51,6 +60,7 @@
   if (!window.customElements || customElements.get('hero-bridge')) return;
 
   var clamp01 = function (v) { return v < 0 ? 0 : v > 1 ? 1 : v; };
+  var smooth = function (t) { var c = clamp01(t); return c * c * (3 - 2 * c); };
 
   // The scrub is linear, deliberately, and this is the one place to say why. approach.js
   // runs on a glide() curve because that section alternates moves with reading holds and
@@ -65,6 +75,14 @@
   // and settled before the page moves on. Same reasoning as approach.js's TAIL_W, and
   // like it, it is paid for out of the motion: raising it makes the scrub faster.
   var TAIL = 0.15;
+
+  // How much of the APPROACH the plate spends held exactly where it entered, before it
+  // settles up into place. The copy laid over it is what the reader is reading for that
+  // stretch, and a picture drifting under running text is a distraction rather than an
+  // effect — so it does not move at all until the copy is most of the way gone, and then
+  // the whole move happens in one gesture as the words clear. Paid for out of the same
+  // scroll: raising it makes the settle faster, not longer.
+  var HOLD = 0.6;
 
   // Four in flight keeps the window filling faster than a scroll can outrun it without
   // making the whole machine slow. Decoding competes with the compositor for the same
@@ -120,6 +138,11 @@
       // one is a lie that hides the still behind two blank canvases.
       this.cvs.forEach(function (cv) { delete cv.dataset.f; });
       this.removeAttribute('data-hb-ready');
+      // The entry transform goes with them, and for the same reason. It is one viewport's
+      // geometry in pixels, so a serialised copy of it is wrong on any other screen — and
+      // under reduced motion nothing ever runs to overwrite it, which leaves the still
+      // shrunk into the bottom corner of a section that is not even pinned.
+      this.box.style.transform = '';
       // Cleared alongside the attribute, not just the attribute. boot() runs again after a
       // disconnect and reconnect — a host framework moving this element in the DOM does
       // exactly that — and a flag left standing would mean the attribute is never written
@@ -137,6 +160,12 @@
       this.inflight = 0;
       this.head = 0;
       this.p = -1;
+      // Seeded together: entry is where the approach has got to, e is what settle() last
+      // saw. Starting e at a value entry can never take is what guarantees the first tick
+      // after a boot counts as movement and writes the entry transform, rather than idling
+      // out against a stale match and leaving the plate at full size over the copy.
+      this.entry = 0;
+      this.e = -1;
       this.N = 0;
       // Cleared with the rest of the state, and it has to be. win is what frame()'s
       // "else if (!this.win) this.plan()" bootstrap tests, so a value left standing from
@@ -273,6 +302,11 @@
       removeEventListener('orientationchange', this.onResize);
       cancelAnimationFrame(this.raf);
       this.raf = 0;
+      // The inline transform goes with them. It outranks the stylesheet's static-mode
+      // reset, so a hero that stops mid-approach — reduced motion switched on, or the
+      // element detached — would otherwise keep its still shrunk into the bottom corner
+      // of a stage that is no longer pinned.
+      if (this.box) this.box.style.transform = '';
       this.evictAll();
     }
 
@@ -295,6 +329,25 @@
     budgetWanted() {
       var v = parseFloat(getComputedStyle(this).getPropertyValue('--hb-budget'));
       return (isFinite(v) && v > 0 ? v : num(this, 'budget-mb', 96)) * 1048576;
+    }
+
+    // How far below the header the plate's top edge sits during the approach, and how much
+    // scroll that approach costs. Both in pixels, both read out of the stylesheet like
+    // variant() and budgetWanted(), and for the same reason: a host's own copy is what they
+    // are sized against, the host writes its CSS, and a second copy of either number here
+    // would be free to drift from the layout it describes.
+    //
+    // Both resolve to pixels only because hero-bridge.css registers them with @property; a
+    // plain custom property would hand back its token text. Where that is unsupported each
+    // has a fallback that is right wherever the plate is not taller than the screen, and
+    // close enough where it is.
+    entryTop() {
+      var v = parseFloat(getComputedStyle(this).getPropertyValue('--hb-entry-top'));
+      return isFinite(v) && v > 0 ? v : (innerHeight || 800) * 0.4;
+    }
+    entrySpan() {
+      var v = parseFloat(getComputedStyle(this).getPropertyValue('--hb-entry-span'));
+      return isFinite(v) && v > 0 ? v : this.stage.offsetHeight;
     }
 
     load() {
@@ -393,12 +446,22 @@
         this.bits[i] = null;
       }
 
-      // Fetch in the same ranking, so the nearest frames arrive first. This is what makes
-      // a hero with no runway above it work at all: there is no section overhead to
-      // preload against — the reader is looking at this element the moment the page
-      // loads — so the sequence cannot be fetched ahead of time, only fetched in the
-      // right order. Head-first means the opening frame lands first and the scrub is
-      // playable from the top of the pin while the rest of it is still arriving.
+      // Fetch in the same ranking, so the nearest frames arrive first. The reader is
+      // looking at this element the moment the page loads, so there is no section above to
+      // preload against and the sequence cannot be fetched ahead of time — only fetched in
+      // the right order. Head-first means the opening frame lands first and the scrub is
+      // playable from the moment it starts while the rest is still arriving.
+      //
+      // The approach is the closest thing to a runway this hero has ever had: a screen of
+      // scroll in which the plate is on show but no frame past the first is wanted yet.
+      // It is not preloading — plan() still ranks around a head that has not moved — but
+      // it is a screen's worth of time in which the window fills at four requests a time
+      // before the scrub asks for anything, and it is worth what it looks like it is worth.
+      // Measured at 1440x900 on a cold load, counting only the paints where the scrub is
+      // actually advancing so the approach's own resident-frame ticks cannot flatter the
+      // average: 19.5% of them wanted a frame that was not resident before, 4.2% after,
+      // and the substitutions that remain land 1.29 positions from the wanted frame
+      // rather than 4.03. Four runs each.
       //
       // MAX_INFLIGHT, not the budget, is the constraint that actually bites here.
       // Measured at 1440x900 on a reading scroll: doubling the ceiling to 192 MB widened
@@ -465,6 +528,7 @@
         this.cvs.forEach(function (cv) { delete cv.dataset.f; });
       }
       this.p = -1;
+      this.e = -1;
       this.wake();
     }
 
@@ -492,20 +556,38 @@
     // view" rather than "fully scrolled past" is the whole point of the choice: the arch
     // has to close while the reader can still see it.
     //
-    // This page pins at every width — the plate runs full bleed and is cropped to the
-    // stage rather than shrunk to fit it, with the crop anchored on the completed bridge.
-    // That is entirely hero-bridge.css's business and this method never learns about it.
+    // This page pins at every width — the plate is edge to edge and the stage takes the
+    // plate's own height, so on a desk screen the stage hangs below the fold and nothing
+    // is ever clipped. That is entirely hero-bridge.css's business and this method never
+    // learns about it; all it needs is that the two heights differ.
     //
     // The in-place branch is therefore not what the hero uses; it is what makes the
     // header's "make the element the same height as its stage and nothing pins" true.
     // Before it existed that configuration divided by a guarded 1 and produced a progress
     // value in pixels, which clamps to 0 or 1 and reads as a sequence that will not
     // scrub — a documented arrangement that silently did not work.
+    //
+    // The pinned budget is spent on two things, and this is where it is divided. The first
+    // --hb-entry-span of it is the APPROACH — the scroll the host's copy takes to leave the
+    // screen it is laid over — and is banked on this.entry for settle(); everything after
+    // it is the scrub, and is what this returns. The split is measured off the stylesheet
+    // rather than kept as a fraction here, so the length of the approach and the height of
+    // the copy that defines it stay one setting.
     progress() {
       var rect = this.getBoundingClientRect();
       var span = this.offsetHeight - this.stage.offsetHeight;
-      if (span > 0) return clamp01((this.pin() - rect.top) / span);
+      if (span > 0) {
+        var raw = clamp01((this.pin() - rect.top) / span);
+        // Guarded below 1 as well as above 0: an approach that swallowed the whole budget
+        // would leave the scrub dividing by zero and the arch never building.
+        var share = Math.min(0.95, Math.max(0, this.entrySpan() / span));
+        this.entry = share > 0 ? clamp01(raw / share) : 1;
+        return clamp01((raw - share) / (1 - share));
+      }
 
+      // No pin, so no approach either: the plate is in flow and there is nothing laid over
+      // it to clear. settle() reads this as "already arrived" and writes no transform.
+      this.entry = 1;
       var vh = innerHeight || 800;
       var travel = this.offsetHeight;
       return clamp01((vh - rect.top) / (travel || 1));
@@ -518,8 +600,13 @@
       if (!this.N || !this.motion || !this.offsetHeight) return false;
 
       var p = this.progress();
-      var moved = p !== this.p;
+      // The approach counts as movement even though the scrub does not advance through it.
+      // Without this the pump idles out six frames into a settle that is still running,
+      // and the plate freezes halfway up with the transform it happened to stop on.
+      var moved = p !== this.p || this.entry !== this.e;
       this.p = p;
+      this.e = this.entry;
+      this.settle();
 
       // Linear across the moving share, then still for the tail. want is a render-frame
       // NUMBER rather than an index, and the search below converts it — so a sequence
@@ -560,6 +647,44 @@
         this._ready = true;
         this.setAttribute('data-hb-ready', '');
       }
+    }
+
+    // Where the plate sits while the host's copy is still on screen, and how it gets from
+    // there to where the scrub wants it. The one piece of geometry in this file rather than
+    // in the stylesheet, for the reason approach.js's camera() is: it is a function of
+    // scroll, and CSS cannot read scroll.
+    //
+    // At entry the plate is scaled about its own bottom edge — transform-origin does that,
+    // see hero-bridge.css — and that bottom is lifted onto the fold. So the picture sits
+    // low and small under the copy, showing the rack's top, the desk and its cubby, with
+    // everything above --hb-entry-top belonging to the words. It holds there for HOLD of
+    // the approach and then grows to full size in one move as the copy clears.
+    //
+    // rest is measured against the VIEWPORT and not against the stage, and that is not
+    // interchangeable: the stage is the plate's own height, which on a desk screen is
+    // taller than the viewport, so the stage's own bottom is below the fold. Anchoring the
+    // entry to it would put the plate's bottom off-screen and hide the ground shadow at
+    // exactly the moment the composition is meant to be readable.
+    //
+    // offsetTop rather than a second getBoundingClientRect: it is untransformed, so it
+    // reports where the box RESTS rather than where this method last moved it, and the
+    // calculation cannot feed on its own output.
+    settle() {
+      var box = this.box;
+      if (!box) return;
+      var s = smooth(clamp01((this.entry - HOLD) / (1 - HOLD)));
+      // Arrived. Cleared rather than written as an identity transform, so the scrub runs
+      // against a box with no transform at all — and so the stylesheet's static-mode reset
+      // is not fighting an inline style for the rest of the session.
+      if (s >= 1) { if (box.style.transform) box.style.transform = ''; return; }
+
+      var ih = innerHeight || 800;
+      var bh = box.offsetHeight;
+      if (!bh) return;
+      var k = Math.min(1, (ih - this.pin() - this.entryTop()) / bh);
+      var rest = this.stage.getBoundingClientRect().top + box.offsetTop + bh;
+      box.style.transform = 'translateY(' + ((1 - s) * (ih - rest)).toFixed(1) + 'px)' +
+                            ' scale(' + (k + (1 - k) * s).toFixed(4) + ')';
     }
 
     put(n, k) {

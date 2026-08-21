@@ -134,6 +134,25 @@ for (const p of PAGES) {
       const st = fb.querySelector('[data-fb-stage]');
       if (st) { st.removeAttribute('data-fb-box'); st.removeAttribute('style'); }
     });
+    // The same for the hero. It writes more than falling-blocks does, and one piece of it
+    // is actively dangerous to export: data-hb-ready plus a data-f tag on a canvas means
+    // "a frame has been drawn into this session's canvases", which is a lie in a
+    // serialised page — the element trusts it and leaves the still hidden behind two blank
+    // layers. boot() clears all of this at runtime for exactly this reason (see the cache
+    // note in hero-bridge.js), but the handoff is meant to read as authored markup, and a
+    // porter copying an entry transform out of it would inherit one viewport's geometry.
+    doc.querySelectorAll('hero-bridge').forEach((hb) => {
+      hb.removeAttribute('data-hb-motion');
+      hb.removeAttribute('data-hb-ready');
+      const box = hb.querySelector('[data-hb-box]');
+      if (box) box.removeAttribute('style');
+      hb.querySelectorAll('canvas').forEach((c) => {
+        c.removeAttribute('data-f');
+        c.removeAttribute('style');
+        c.removeAttribute('width');
+        c.removeAttribute('height');
+      });
+    });
     const rootEl = doc.querySelector('#dc-root');
     const body = doc.querySelector('body');
     if (rootEl && body) { while (rootEl.firstChild) body.appendChild(rootEl.firstChild); rootEl.remove(); }

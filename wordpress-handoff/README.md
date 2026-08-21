@@ -165,19 +165,38 @@ committed and final, so nothing in this handoff depends on it — but a re-rende
 ## 5a. The hero bridge scrub — already portable
 
 > **Status.** New. The home page hero used to be a still of the finished bridge; it is
-> now `<hero-bridge>`, scrubbing the arch's assembly as the plate pins under the header.
-> The still is still in the markup and is what a reader gets with scripting off.
+> now `<hero-bridge>`, pinned under the header from the moment the page loads with the
+> hero copy laid over it, and scrubbing the arch's assembly once that copy has scrolled
+> away. The still is still in the markup and is what a reader gets with scripting off.
 
 Built to the same doctrine as §5 and §6, and portable for the same reasons: a
 dependency-free custom element that touches no runtime API and drives markup it does not
 build. Porting it is `assets/hero-bridge.js`, `assets/hero-bridge.css`, the frame
 directory, and the block of markup in the hero — copy all four and it works.
 
-**What the host has to supply.** One custom property, `--hb-pin`, set to the height of
-the sticky header — this site sets it to `4.5rem` in the page's own stylesheet. The
-element reads the pin back off its stage's computed `top`, so CSS and JS cannot disagree,
-and a theme with a taller header, no header, or a WordPress admin bar needs no code
-change.
+**What the host has to supply.** Two custom properties and one overlay.
+
+`--hb-pin` is the height of the sticky header — this site sets it to `4.5rem` in the
+page's own stylesheet. The element reads the pin back off its stage's computed `top`, so
+CSS and JS cannot disagree, and a theme with a taller header, no header, or a WordPress
+admin bar needs no code change.
+
+`--hb-entry-top` is a **length**: how far below the header the plate's top edge sits
+while the host's copy is still on screen. It is the one geometric value that has to be set
+against the host's own layout, because what has to fit above the plate is a block of text
+whose height is in pixels. This site derives it from `--hero-band`, which is the measured
+height of its hero copy with air around it — 380px on any desktop width, 479px on a phone.
+
+The **overlay** is the host's, not the component's: an absolutely-positioned block over the
+first screen holding the headline, lede and buttons, which scrolls away while the plate
+holds. `--hb-entry-span` in `hero-bridge.css` is one screen and is what pays for that
+scroll, so the scrub starts exactly where the last of the copy leaves. A theme that wants
+no copy over the hero can set `--hb-entry-top` to `0px` and drop the overlay; the plate
+then simply arrives at full size and scrubs.
+
+Two of these three are registered with `@property` so they resolve to pixels for the
+script. If a theme's build strips `@property` rules, the element falls back to its stage's
+height and 40% of the viewport, which is sane rather than correct — do not strip them.
 
 **What is load-bearing, and what breaks quietly:**
 
@@ -195,13 +214,22 @@ change.
   because only that span carries the ground shadow — see
   [`docs/hero-bridge-render.md`](../docs/hero-bridge-render.md). Widen the span and the
   arch visibly changes colour mid-scrub.
-- **The plate is cropped, and the crop is anchored.** It runs full bleed at the plate's
-  own 1.4302:1, which is taller than any desktop stage, so `overflow: hidden` on the stage
-  trims it and `--hb-anchor` decides where. 52.2% is the completed bridge's own measured
-  centre, not a round number — move it and the arch or the feet leave the frame. The box is
-  absolutely positioned for this: a centring stage gets its `center` clamped to `start` by
-  the browser because `overflow: hidden` makes it a scroll container, which silently puts
-  the entire crop on one edge.
+- **The plate is never clipped by a box, and that is the whole arrangement.** It runs edge
+  to edge at the plate's own 1.4302:1, which is taller than any desktop screen, so the
+  **stage takes the plate's height rather than the screen's** and hangs below the fold.
+  Do not put `overflow: hidden` back on the stage as a tidy-up: while the stage is pinned
+  a clip rectangle hides at the bottom of the screen, and the moment it releases it walks
+  up the viewport as a hard line through the ground shadow. That is what this replaced.
+- **The stage's height is declared, not left to its content.** A sticky box is constrained
+  to its parent's *content* box, so putting the scroll budget in padding gives the stage a
+  sticky range of zero and the hero simply scrolls past without pinning. Both heights are
+  written in `hero-bridge.css` and their difference is the budget.
+- **The bottom 4% is masked, and it is not decoration.** The render's last row carries the
+  ground-shadow plane at alpha 2.4/255 and ends there, which composited on a page colour is
+  a step across the full width of the screen. The mask sits on `[data-hb-box]` rather than
+  on the layers, so it applies after the two canvases have blended — masking them separately
+  fades each contribution before `plus-lighter` adds them, which is a different picture
+  during a cross-fade.
 - **The section's height is the scroll budget.** `assets/hero-bridge.css` sets it, the
   element measures its own height minus its stage's, and the scrub divides that among the
   frames the manifest offers. Frame count and height are one setting in two files: encode
