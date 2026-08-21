@@ -140,6 +140,11 @@
   .scheme-1 {
     --hero-gap: min(max(130px, 14svh), 20svh);
     --hero-copy: 380px;
+    /* How many lines the headline sets in, measured alongside --hero-copy and used by the
+       toys clearance below. It cannot be derived: the clearance has to know the headline's
+       height before the headline has been laid out. Two everywhere the type is at desktop
+       scale, three on a phone and four at 320, where "Bridging" gets a line of its own. */
+    --hero-h1-lines: 2;
     --hero-band: min(calc(var(--hero-gap) + var(--hero-copy) + 24px), 84svh);
     /* The hero section's own bottom padding, named because two things need it: the section
        sets it, and [data-hero-copy] subtracts it so the box the headline is pinned inside
@@ -158,8 +163,8 @@
     --hb-entry-span: var(--hero-band);
   }
   @media (max-width: 991px) { .scheme-1 { --hero-copy: 320px; } }
-  @media (max-width: 560px) { .scheme-1 { --hero-copy: 500px; } }
-  @media (max-width: 360px) { .scheme-1 { --hero-copy: 580px; } }
+  @media (max-width: 560px) { .scheme-1 { --hero-copy: 500px; --hero-h1-lines: 3; } }
+  @media (max-width: 360px) { .scheme-1 { --hero-copy: 580px; --hero-h1-lines: 4; } }
   /* The hero copy, laid over the pinned plate. Absolute so it contributes no height of
      its own, and it spans the WHOLE hero rather than just the copy's band — because that
      box is the headline's containing block, and position: sticky can only hold an element
@@ -178,20 +183,75 @@
   [data-hero-copy] {
     position: absolute;
     inset: 0 0 var(--hero-tail);
+    margin-inline: auto;
+    max-width: var(--container-xxl);
+    /* content-box so the page gutter sits OUTSIDE the 1280 measure, which is how every
+       other container on this page is built — see the wrapper at the Our Approach split. */
+    box-sizing: content-box;
     padding-top: var(--hero-gap);
     padding-inline: var(--page-gutter);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
     z-index: 2;
     pointer-events: none;
   }
   /* Both children take the measure the old wrapper used to carry. They are siblings rather
      than one block because the headline has to pin and the body has to leave, and a
      transform on a shared parent would become the sticky element's containing block and
-     kill the pin outright. */
+     kill the pin outright.
+
+     Left-aligned, and that is the whole point of this arrangement rather than a detail.
+     The headline sat off-centre by accident — an inline `margin` shorthand on the h1 zeroed
+     the side margins the stylesheet was setting to auto — and centre-ragged text inside an
+     off-centre column is exactly what made it read as a bug. Committed asymmetry wants a
+     rag. The inline shorthand is now a margin-block that cannot zero the sides, so none of
+     this depends on a specificity collision any more. */
   [data-hero-copy] > * {
-    margin-inline: auto;
+    margin-inline: 0;
     max-width: var(--container-lg);
-    text-align: center;
+    text-align: left;
     pointer-events: auto;
+  }
+  /* The button row carries an inline justify-content:center from the shared hero markup, so
+     this needs the weight to beat it. Flush left with everything else on the rail. */
+  [data-hero-actions] { justify-content: flex-start !important; }
+
+  /* THE SPLIT, which is the layout the rest of the site already uses — the Our Approach
+     header, the research rows, the team blocks: heading left, body right, --space-20 between.
+
+     2fr/1fr rather than the house 1fr/1fr, and that is forced rather than chosen. The
+     content grid caps at --container-xxl, so an even split is a 600px headline column at
+     every width from 1280 up, and "Bridging frontier AI" alone measures ~750px at the h1's
+     84px. An even split would mean dropping the hero headline to h2 scale — the same size
+     as every section heading on the page. 2fr gives it 800px and it sets in two lines.
+
+     The 1400px floor is derived from that: two lines needs ~768px, so (content - 80) x 2/3
+     >= 768 puts the content at 1232 and the viewport at ~1370. Measured, 1400 gives a 786px
+     column and 1366 already wraps to three. The min-height is the other half of the same
+     sum — the split's taller copy band eats the plate's room on a short screen, taking the
+     entry plate from 0.82 scale to 0.62 at 1440x750. Below either bound the layout stacks,
+     which is the same left rail with the body under the headline instead of beside it.
+
+     --hero-copy rises with it because the block genuinely is taller here: 410.4px measured
+     against the stacked arm's 380. The stacked arm keeps --container-lg on both children so
+     its four measured values still hold; only this arm hands the measure to the columns. */
+  @media (min-width: 1400px) and (min-height: 800px) {
+    .scheme-1 { --hero-copy: 416px; }
+    [data-hero-copy] {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      column-gap: var(--space-20);
+    }
+    [data-hero-copy] > * { max-width: none; }
+    /* The body sits against the MIDDLE of the heading beside it — the same idea as
+       syncApproachOffset further down this file, which does it for the Our Approach split.
+       That one measures the heading in JS because it wraps to an unpredictable number of
+       lines; this one does not need to, because the split only runs where the h1 is exactly
+       two lines. Half of two lines is one line-height, and CSS can say that outright. */
+    [data-hero-body] {
+      align-self: start;
+      margin-top: calc(var(--text-h1) * var(--text-h1-line-height));
+    }
   }
 
   /* THE HEADLINE STAYS AND THE BODY LEAVES, and the whole thing is CSS with no JavaScript
@@ -225,9 +285,40 @@
   @keyframes hero-dissolve { 60%, to { opacity: 0; pointer-events: none; } }
   @supports (animation-timeline: scroll()) {
     @media not (prefers-reduced-motion: reduce) {
+      /* THE HEADLINE NEVER CROSSES THE RACK'S TOP TOYS, which sit at plate y 0.269. Pinning
+         it at the gap alone collides below about 1680px — at 1440 the headline's bottom is
+         387 against a toys line at 343 — so the lock is the lower of the two, and where the
+         clearance binds the headline rises to it over the first ~64px of scroll and then
+         holds. That is long before the plate lands at --hero-band, so the two never contend.
+
+         --toys covers both plate cases in ONE term rather than a media query, and getting
+         that wrong cost a round: --stage-h is the larger of the screen and the plate, so the
+         slack term is zero where the plate is taller than the stage (a desk screen, plate
+         top = the pin) and half the slack where it is shorter and therefore centred (phones,
+         tablets). Gating this on aspect instead was wrong precisely because a SHORT plate is
+         centred, so its toys sit high too — 992x900 collided by 61px that way.
+
+         The subtrahend is the headline's own height, derived from the type rather than
+         written as a number, so it tracks --text-h1 across the 992px scale break by itself.
+
+         The max() floor is not belt and braces. Without it a narrow viewport solves to a
+         lock above the header — 19.8px at 390 — and the headline hides behind an opaque nav. */
       [data-hero-copy] h1 {
         position: sticky;
-        top: calc(var(--space-18) + var(--hero-gap));
+        /* Not stretch, which is the grid default and was silently wrong: the row is as tall
+           as the body beside it, so the headline's BOX came out 386px against 185px of text
+           and the clearance below — which reasons about the text — let it fall 182px into
+           the rack's toys. */
+        align-self: start;
+        --plate-h: calc(min(100vw, 2880px) / 1.4302);
+        --stage-h: max(calc(100svh - var(--space-18)), var(--plate-h));
+        --toys: calc(var(--space-18) + (var(--stage-h) - var(--plate-h)) / 2
+                     + 0.269 * var(--plate-h));
+        top: max( calc(var(--space-18) + 8px),
+                  min( calc(var(--space-18) + var(--hero-gap)),
+                       calc(var(--toys)
+                            - (var(--hero-h1-lines) * var(--text-h1) * var(--text-h1-line-height))
+                            - 20px) ) );
       }
       [data-hero-body] {
         animation: hero-float linear both, hero-dissolve linear both;
@@ -329,7 +420,7 @@
     
     <section style="position: relative; padding: 0 0 var(--hero-tail);">
       <div data-hero-copy="">
-        <h1 style="font-size: var(--text-h1); line-height: var(--text-h1-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-6); text-wrap: pretty;">Bridging frontier AI and the classroom.</h1>
+        <h1 style="font-size: var(--text-h1); line-height: var(--text-h1-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin-block: 0 var(--space-6); text-wrap: pretty;">Bridging frontier AI and the classroom.</h1>
         <div data-hero-body="">
           <p style="font-size: var(--text-medium); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">AugmentED is an R&amp;D organization closing the gap between what AI can do and what students need. We are teachers, researchers, and engineers working together to build and test the missing technology, and the evidence to trust it.</p>
           <div data-hero-actions="" style="margin-top: var(--space-10); display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space-4);">
