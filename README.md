@@ -61,8 +61,24 @@ that line, its own empty top behind the words, and its bottom off the fold where
 does not fit — and rises from there into place. On every desktop screen it is already at
 full edge-to-edge width when it does, with the desk's top surface and the rack's lid
 above the fold, so the rise is a move rather than a zoom; only a short screen makes it
-grow as well. Then it **scrubs** for 70svh while the arch builds, holds on the closed
-span, and scrolls on.
+grow as well. Then it **scrubs** for `--hb-scrub` (70svh) while the arch builds, holds on
+the closed span for `--hb-exit`, and **eases out**.
+
+That last phase is a phase rather than an afterthought, and it exists because the release
+used to be a cliff. While the stage is pinned the picture does not move at all; the instant
+it is not, it moves at the speed of the page — measured at 1440x900 that is 0 to 1 in a
+single frame. Position is continuous and velocity is not, and the eye reads velocity, so
+the whole hero appeared to be yanked off the screen. `--hb-exit` (40svh here) buys the two
+things that fix it: a real beat of stillness on the finished bridge — 232 to 332px measured,
+against about 95 before — and then the run-in of a ramp that blends the picture's velocity
+from nothing to page speed across a window straddling the release. By the time the sticky
+lets go the picture is already travelling at half page speed, so the release itself is not
+an event. Measured, the drawn picture tracks that curve to within 0.6px at every width, and
+the worst single-frame change in velocity falls from 1.00 to 0.11.
+
+The ramp only ever moves the picture **up**, never slows it, and that is forced: the next
+section's top sits only `--hero-tail` below the plate's bottom the whole way out, so a
+picture eased out by lagging the page would be run into by the content behind it.
 
 The approach is exactly as long as the hero copy takes to leave — `--hb-entry-span` and
 `--hb-entry-clear` are set to the same number — so the plate's rise and the copy's exit
@@ -81,11 +97,19 @@ sloppy: the approach holds on that frame throughout, and the camera moves later 
 sequence — the same desk edge has slid to 0.386–0.404 by frame 417.
 
 Over it, **the headline stays and the body leaves**. The h1 is `position: sticky` and
-holds the spot it loaded in — `--hero-gap` under the header — for the whole hero: the
-body going, the plate rising, and all 70svh of the scrub, releasing only as the plate
-itself scrolls away. The picture is what moves out of its way, not the other way round;
-`--hb-arch-clear` below is how. The lede and buttons float 5rem further than the page
-scrolls and dissolve as they go.
+holds the spot it loaded in — `--hero-gap` under the header — through the body going, the
+plate rising, the whole sequence and the beat after it. The picture is what moves out of
+its way, not the other way round; `--hb-arch-clear` below is how. The lede and buttons
+float 5rem further than the page scrolls and dissolve as they go.
+
+**And the headline lets go on the same pixel the plate does**, which is the arithmetic in
+`[data-hero-copy]`'s `bottom`. It used to end at the plate's own bottom — which sounds like
+the same thing and is nearly a thousand pixels away from it, because the plate's stage is
+so much taller than the headline. The picture started leaving ~870px before the words did,
+the finished bridge rode up through the type undoing the 30px it is placed to keep, and the
+headline then got a hard release of its own over a page the picture had already left. Both
+now ease out together on the same curve, which the component writes through the `exit-with`
+attribute on the element.
 
 It is a self-contained block of CSS in `index.html` using a scroll-driven animation — no
 JavaScript and no coupling to the component, so a theme rebuilding this page copies the
@@ -101,7 +125,7 @@ ground shadow the moment the stage released. The render ends in a faint edge of 
 own — the last row carries the shadow plane at alpha 2.4/255 — so the bottom 4% is
 feathered out, below the desk's feet at y 0.94 and touching no object.
 
-Three custom properties are the page's business rather than the component's. `--hb-pin`
+Five custom properties are the page's business rather than the component's. `--hb-pin`
 is the header's height. `--hb-entry-clear` is how much room the page's own copy needs:
 the page builds it from `--hero-gap` — the air between the nav and the first line, 130px
 growing on a tall screen — plus the copy's own height, which is 380px on any stacked
@@ -168,6 +192,14 @@ It is gone: clearing the arch clears the furniture under it by 30px plus 0.169 o
 plate's height, and having both made the layout circular — the headline's lock was derived
 from the plate and the plate is now derived from the lock. The headline simply pins at
 `--hero-gap` under the header at every width.
+
+`--hb-scrub` and `--hb-exit` are the last two, and the page names them because the page
+needs them too, not only the component: the headline's own release has to land on the same
+pixel as the plate's, and that point is `--hero-band + --hero-scrub + --hero-exit` up from
+the bottom of the element. A page that could not name all three could not compute it — and
+a page that hard-coded 70svh beside a component that changed it would have a hero that
+comes apart at the seam. They are set from `.scheme-1` values the copy overlay also reads,
+which is the same one-setting-two-uses pattern as `--hero-band` → `--hb-entry-span`.
 
 Above 1400px the copy is a two-column split — heading left, lede and buttons right, the
 same `--space-20` pattern as the Our Approach header and the research rows — and the

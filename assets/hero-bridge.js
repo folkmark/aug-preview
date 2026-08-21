@@ -127,6 +127,23 @@
       this._booted = true;
 
       this.stage = stage; this.box = box; this.cvs = [l0, l1];
+      // WHAT ELSE LEAVES WHEN THIS DOES. A host that pins copy over the plate has a second
+      // thing releasing at the same seam, and smoothing only this element's release would
+      // pull the two apart at exactly the moment they most need to look like one thing. So
+      // the host names its pinned copy and leave() writes it the same curve.
+      //
+      // Resolved against the OWNER DOCUMENT, not against this element: what rides along is
+      // by definition not inside the component. Resolved once here rather than per tick,
+      // because a querySelectorAll at 60fps for the length of a scroll is exactly the sort
+      // of thing that shows up as jank in the one place this component is trying to remove
+      // some. Elements are held rather than the selector, so a host that replaces its copy
+      // has to re-mount the element — which is the same contract as the layers above.
+      this.riders = [];
+      var sel = this.getAttribute('exit-with');
+      if (sel) {
+        try { this.riders = Array.prototype.slice.call(document.querySelectorAll(sel)); }
+        catch (e) { this.riders = []; }
+      }
       this.base = this.getAttribute('base') || '';
       this.from = num(this, 'from', -Infinity);
       this.to = num(this, 'to', Infinity);
@@ -161,12 +178,13 @@
       this.inflight = 0;
       this.head = 0;
       this.p = -1;
-      // Seeded together: entry is where the approach has got to, e is what settle() last
-      // saw. Starting e at a value entry can never take is what guarantees the first tick
-      // after a boot counts as movement and writes the entry transform, rather than idling
-      // out against a stale match and leaving the plate at full size over the copy.
-      this.entry = 0;
+      // Seeded together: scrolled is how far into the pinned budget the reader is, e is
+      // what settle() last saw. Starting e at a value scrolled can never take is what
+      // guarantees the first tick after a boot counts as movement and writes the entry
+      // transform, rather than idling out against a stale match and leaving the plate at
+      // full size over the copy.
       this.scrolled = 0;
+      this.span = 0;
       this.e = -1;
       this.N = 0;
       // Cleared with the rest of the state, and it has to be. win is what frame()'s
@@ -205,6 +223,11 @@
       if (!this._booted) return;
       this._booted = false;
       this.stop();
+      // The riders are the host's elements, not this element's, so they outlive it and
+      // would keep whatever mid-ramp transform the last tick happened to leave on them.
+      // Handed back the way they were found.
+      for (var i = 0; i < (this.riders || []).length; i++) this.ride(this.riders[i], '');
+      this.riders = [];
       this.dropMq(this.mqMotion);
     }
 
@@ -366,6 +389,13 @@
     entrySpan() {
       var v = parseFloat(getComputedStyle(this).getPropertyValue('--hb-entry-span'));
       return isFinite(v) && v > 0 ? v : this.stage.offsetHeight;
+    }
+    // The exit budget, floored at zero rather than defaulted to anything: a host that does
+    // not set it, or a build that stripped the @property registration, gets the cliff the
+    // element shipped with rather than a ramp sized from a number nobody chose.
+    exitSpan() {
+      var v = parseFloat(getComputedStyle(this).getPropertyValue('--hb-exit'));
+      return isFinite(v) && v > 0 ? v : 0;
     }
 
     load() {
@@ -585,32 +615,39 @@
     // value in pixels, which clamps to 0 or 1 and reads as a sequence that will not
     // scrub — a documented arrangement that silently did not work.
     //
-    // The pinned budget is spent on two things, and this is where it is divided. The first
-    // --hb-entry-span of it is the APPROACH — the scroll the host's copy takes to leave the
-    // screen it is laid over — and is banked on this.entry for settle(); everything after
-    // it is the scrub, and is what this returns. The split is measured off the stylesheet
-    // rather than kept as a fraction here, so the length of the approach and the height of
-    // the copy that defines it stay one setting.
+    // The pinned budget is spent on three things and this is where it is divided: the
+    // APPROACH, --hb-entry-span of scroll in which the host's copy leaves the screen it is
+    // laid over and the plate settles under it; the SEQUENCE, --hb-scrub, which is what this
+    // returns and what the frames are paced against; and the EXIT, --hb-exit, in which the
+    // finished picture is held and then eased into the speed of the page. All three are
+    // measured off the stylesheet rather than kept as fractions here, so each stays one
+    // setting shared with whatever the host sized it against.
+    //
+    // Divided by subtraction and not by shares, which is what the two ends being named
+    // buys. The share arithmetic this replaced divided the WHOLE post-approach span among
+    // the frames, so adding an exit budget would have stretched the sequence over it
+    // instead of leaving it alone — the frames would have finished later and the beat the
+    // exit exists to create would never have appeared.
+    //
+    // Guarded at 1px rather than at 0: an approach and an exit that between them swallowed
+    // the budget would leave this dividing by zero and the arch never building.
     progress() {
       var rect = this.getBoundingClientRect();
       var span = this.offsetHeight - this.stage.offsetHeight;
       if (span > 0) {
-        // Banked in pixels as well as as a fraction. settle() is drawn across a distance in
-        // px rather than a share of the approach — see below — and deriving it back out of
-        // raw would multiply by a span this method has already divided by.
+        // Banked in pixels, because settle() and leave() are both drawn across distances in
+        // px rather than shares of anything — see each for why.
         this.scrolled = Math.max(0, this.pin() - rect.top);
-        var raw = clamp01(this.scrolled / span);
-        // Guarded below 1 as well as above 0: an approach that swallowed the whole budget
-        // would leave the scrub dividing by zero and the arch never building.
-        var share = Math.min(0.95, Math.max(0, this.entrySpan() / span));
-        this.entry = share > 0 ? clamp01(raw / share) : 1;
-        return clamp01((raw - share) / (1 - share));
+        this.span = span;
+        var entry = this.entrySpan();
+        return clamp01((this.scrolled - entry) / Math.max(1, span - entry - this.exitSpan()));
       }
 
-      // No pin, so no approach either: the plate is in flow and there is nothing laid over
-      // it to clear. settle() reads this as "already arrived" and writes no transform.
-      this.entry = 1;
+      // No pin, so no approach and no exit either: the plate is in flow and there is nothing
+      // laid over it to clear. settle() reads this as "already arrived" and writes no
+      // transform, and leave() has no release to smooth.
       this.scrolled = Infinity;
+      this.span = 0;
       var vh = innerHeight || 800;
       var travel = this.offsetHeight;
       return clamp01((vh - rect.top) / (travel || 1));
@@ -623,15 +660,17 @@
       if (!this.N || !this.motion || !this.offsetHeight) return false;
 
       var p = this.progress();
-      // The approach counts as movement even though the scrub does not advance through it.
-      // Without this the pump idles out six frames into a rise that is still running, and
-      // the plate freezes halfway up with the transform it happened to stop on. Tested on
-      // scrolled rather than on entry because scrolled is what settle() is drawn against —
-      // the two move together, but only one of them is the thing that has to be awake.
+      // The approach and the exit both count as movement even though the scrub does not
+      // advance through either. Without this the pump idles out six frames into a rise that
+      // is still running, and the plate freezes halfway up with the transform it happened
+      // to stop on — and at the other end it would idle out mid-ramp, which is the exact
+      // jar the ramp exists to remove. Tested on scrolled rather than on p because scrolled
+      // is what settle() and leave() are both drawn against.
       var moved = p !== this.p || this.scrolled !== this.e;
       this.p = p;
       this.e = this.scrolled;
       this.settle();
+      this.leave();
 
       // Linear across the moving share, then still for the tail. want is a render-frame
       // NUMBER rather than an index, and the search below converts it — so a sequence
@@ -783,6 +822,66 @@
       var dy = Math.max(0, top - rest);
       box.style.transform = 'translateY(' + ((1 - s) * dy).toFixed(1) + 'px)' +
                             ' scale(' + (k + (1 - k) * s).toFixed(4) + ')';
+    }
+
+    // WHERE THE PIN LETS GO, AND WHY THAT NEEDED SMOOTHING. While the stage is pinned the
+    // picture does not move; the instant it is not, it moves at the speed of the page.
+    // Measured at 1440x900 that is 0 to 1 in a single frame — position is continuous and
+    // velocity is not, and the eye reads velocity, so the whole hero appears to be yanked
+    // off the screen.
+    //
+    // So the picture's screen velocity is blended from nothing to page speed across a window
+    // straddling the release, and the transform is whatever it takes to make that true:
+    //
+    //   U = (s + a) / 2a          s is scroll relative to the release, the window is [-a, a]
+    //   G = 2a (U^3 - U^4 / 2)    the integral of smoothstep, in px
+    //   T = -G + max(0, s)        minus what the page is already doing after the release
+    //
+    // T is exactly 0 at both ends, so nothing has to be unwound and the element carries no
+    // transform outside the window. At the release itself T is -0.1875a: the picture has
+    // lifted that far and is already travelling at half page speed, so the moment the sticky
+    // lets go is the moment nothing happens.
+    //
+    // THE TWO HALVES HAVE TO BE EQUAL and that is arithmetic rather than taste. For T to
+    // come back to zero the mean of the velocity curve across the window has to equal the
+    // post-release half's share of it, and for a monotone S-curve that only holds when the
+    // halves match. Weight it forward and the velocity ramps steeply at the start; weight it
+    // back and the step is still there at the release. Either way the jar moves rather than
+    // goes. --hb-exit is therefore spent half on the beat before the ramp and half on the
+    // ramp's run-in, and the run-out is paid for by the scroll that was always there.
+    //
+    // T IS NEVER POSITIVE, which is the property that keeps this safe: the picture always
+    // leads its natural position and never trails it. It cannot trail — the next section's
+    // top sits only the host's section padding below the plate's bottom the whole way out,
+    // so a picture that lagged the page would be run into by the content behind it.
+    //
+    // On the STAGE and not the box. settle() owns the box and the stylesheet's static-mode
+    // reset already has an opinion about it; two writers on one property collide at the
+    // boundaries, and "the scrub runs against a box with no transform at all" is worth
+    // keeping. Transforming a sticky element is safe — it is a paint offset, applied after
+    // the sticky position is resolved, and the stage goes on pinning at pin + T.
+    leave() {
+      var a = this.exitSpan() / 2;
+      var s = this.scrolled - this.span;
+      var t = '';
+      if (a > 0 && this.span > 0 && s > -a && s < a) {
+        var U = (s + a) / (2 * a);
+        var G = 2 * a * (U * U * U - U * U * U * U / 2);
+        t = 'translateY(' + (Math.max(0, s) - G).toFixed(1) + 'px)';
+      }
+      this.ride(this.stage, t);
+      // The host's own pinned copy rides the same curve, named by exit-with. It is not
+      // enough on its own: whatever is named has to STOP BEING PINNED at the same scroll
+      // the stage does, or this only lends it a bump and it snaps loose later anyway. The
+      // host arranges that in its own stylesheet — see index.html, where the copy overlay's
+      // bottom is placed so its sticky range and this element's run out together.
+      for (var i = 0; i < this.riders.length; i++) this.ride(this.riders[i], t);
+    }
+    // Written only when it changes, and cleared to nothing rather than to a zero translate,
+    // so an element outside the window is left exactly as its stylesheet wrote it.
+    ride(el, t) {
+      if (!el) return;
+      if (el.style.transform !== t) el.style.transform = t;
     }
 
     put(n, k) {

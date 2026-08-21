@@ -174,7 +174,7 @@ dependency-free custom element that touches no runtime API and drives markup it 
 build. Porting it is `assets/hero-bridge.js`, `assets/hero-bridge.css`, the frame
 directory, and the block of markup in the hero — copy all four and it works.
 
-**What the host has to supply.** Four custom properties and one overlay.
+**What the host has to supply.** Six custom properties and one overlay.
 
 `--hb-pin` is the height of the sticky header — this site sets it to `4.5rem` in the
 page's own stylesheet. The element reads the pin back off its stage's computed `top`, so
@@ -277,6 +277,40 @@ see "the script never ran" and 240px of blank page above an unpinned still is no
 And **do not reintroduce a rule that moves the headline instead**: this site had one, to
 clear the rack's top blocks, and having both made the layout circular — a lock derived from
 the plate and a plate derived from the lock.
+
+`--hb-scrub` and `--hb-exit` are the last two, and they are the element's pacing after the
+copy has gone: how long the sequence plays, and how much scroll is spent holding the finished
+picture and easing the pin's release. `--hb-scrub` defaults to 70svh, which is the number
+`docs/hero-bridge-render.md` ties to the frame count — change one and change the other, or
+the assembly plays at a different speed. `--hb-exit` defaults to 24svh and is spent half on
+a beat of stillness and half on the run-in of a velocity ramp; setting it to `0px` restores
+the release this shipped with, which was a cliff.
+
+**Why the exit is not optional if you pin copy over the plate.** While the stage is pinned
+the picture does not move; the instant it is not, it moves at the speed of the page. That
+step is 0 to 1 in a single frame — position is continuous, velocity is not, and the eye
+reads velocity. The ramp blends the two across a window straddling the release so that by
+the time the sticky lets go the picture is already at half page speed. It only ever moves
+the picture **up**: the section behind sits barely a padding below the plate's bottom, so a
+picture eased out by lagging the page would be run into by it.
+
+**Two things the host owns in that handoff, and both are easy to miss.**
+
+*The pinned copy has to stop being pinned on the same pixel the element does.* Sticky holds
+an element for as far as its containing block reaches, and a copy overlay tall enough to
+cover the hero reaches much further than the element's stage does — so the picture leaves
+and the words stay, for the best part of a thousand pixels. Place the overlay's bottom at
+`100% - <approach> - <scrub> - <exit> - <the copy's own top offset and height>`; percentages
+resolve against the section, so that expression *is* the element's own release point and no
+plate geometry has to be restated. Two gotchas: sticky is constrained by the **margin** box,
+so include the heading's bottom margin or it lets go early; and the heading's height cannot
+be derived at that point, so it has to be a declared number.
+
+*Then name it.* `exit-with="<selector>"` on the element takes anything that should ride the
+same curve — resolved against the owner document at boot, since by definition it is not
+inside the component, and written the identical transform. Releasing together is not the
+same as releasing gently; this is the second half. Under reduced motion or with scripting
+off there is no pin to release, so no ramp is written at all.
 
 `--hb-entry-span`, `--hb-entry-clear`, `--hb-entry-zoom` and `--hb-max` are registered
 with `@property` so they resolve to numbers and pixels for the script. If a theme's build
