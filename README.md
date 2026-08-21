@@ -67,11 +67,19 @@ than a zoom, except on a short screen where it also has to grow. Then it **scrub
 
 How big it can be at entry follows from two constants measured off the first played
 frame. `--hb-entry-sky` (0.226) is the share of the plate that is empty at the top, and
-is what lets the words overlap it. `--hb-entry-keep` (0.5) is the share that must stay
-above the fold, and it is not a round number: counting opaque pixels per row across the
-desk, the count runs 229 at y 0.49 and 45 at y 0.50 — that step is the underside of the
-cubby, and everything below it is legs. So the entry keeps the desktop, the books, the
-cubby and its lip, and spends the legs.
+is what lets the words overlap it. `--hb-entry-keep` (0.4) is the share that must stay
+above the fold, and it is the lower edge of the two **top surfaces** — classified by
+colour, the desk's slab ends at y 0.380 and the rack's lid at y 0.396. 0.4 clears both,
+keeping the desktop whole with its front edge and spending the cubby and the legs below
+it. Both numbers describe frame 276 and only frame 276, which is correct rather than
+sloppy: the approach holds on that frame throughout, and the camera moves later in the
+sequence — the same desk edge has slid to 0.386–0.404 by frame 417.
+
+The copy over it **drifts up as the body and buttons dissolve**, and that is a
+self-contained block of CSS in `index.html` using a scroll-driven animation — no
+JavaScript and no coupling to the component, so a theme rebuilding this page copies the
+block and the markup it selects and needs nothing else. Engines without scroll-driven
+animations get the copy scrolling away without fading, which is what this shipped as.
 
 The plate runs edge to edge and is never clipped by a box — its stage takes the
 plate's own height rather than the screen's, so on a desk screen the bottom of the
@@ -84,9 +92,17 @@ feathered out, below the desk's feet at y 0.94 and touching no object.
 
 Two custom properties are the page's business rather than the component's: `--hb-pin`
 is the header's height, and `--hb-entry-clear` is how much room the page's own copy
-needs. Both are set in `index.html` from the measured height of the hero copy — 380px
-on any desktop width, 290px at 768, 479px on a phone and 558px at 320, where the h1
-goes to four lines.
+needs. The page builds the second from `--hero-gap` — the air between the nav and the
+first line, 130px growing on a tall screen — plus the copy's own measured height: 380px
+on any desktop width, 290px from the 992px type-scale break down to about 600, 479px on
+a phone and 558px at 320, where the h1 goes to four lines. The copy is aligned to the
+**start** of that band rather than centred in it, because splitting the gap would cost
+twice the band for the same air above the words, and that difference is what keeps the
+plate at full width on an 800px-tall screen.
+
+Below 560px of viewport height there is no overlay at all: a landscape phone leaves
+303px under the header against a copy that wants 290, so the copy goes back into flow
+above the plate and `--hb-entry-clear` drops to nothing.
 
 Its frames are in `assets/hero-bridge/`, named by their Blender frame number so a
 file, [`docs/hero-bridge-render.md`](docs/hero-bridge-render.md) and the manifest

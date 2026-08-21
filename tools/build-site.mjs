@@ -246,7 +246,12 @@ function refsIn(html) {
   // the mistake this is really here to catch: it costs nothing at runtime, because the
   // element simply filters it away and scrubs a shorter sequence, and it would ship a hero
   // quietly missing its opening or its closing frames with nothing 404-ing to say so.
-  const hero = html.match(/<hero-bridge\b([^>]*)>/);
+  // Comments stripped first, and that is not fussiness: this scans raw HTML, so an
+  // authoring comment that merely NAMES the element in prose matched ahead of the element
+  // itself and failed the build with "hero-bridge has no base attribute" — which is true
+  // of a sentence and useless as a diagnostic. The page carries long explanatory comments
+  // by house style, so the two were always going to collide.
+  const hero = html.replace(/<!--[\s\S]*?-->/g, "").match(/<hero-bridge\b([^>]*)>/);
   if (hero && !heroManifest) {
     problems.push("the hero-bridge element is on the page but its manifest is unreadable");
   } else if (hero) {

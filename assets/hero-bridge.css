@@ -90,19 +90,38 @@ hero-bridge {
      Content begins at y 0.238 on the desk side and y 0.270 on the rack side; 0.226 is
      inside both, so the words can overlap that band and nothing shows through.
 
-     --hb-entry-keep is the share that must stay above the fold, and 0.5 is not a round
-     number — it is where the desk stops being a desk. Counting opaque pixels per row
-     across the desk's x-range, the count runs 229 at y 0.49 and 45 at y 0.50: that step is
-     the underside of the cubby, and everything below it is four legs. So 0.5 keeps the
-     desktop, the books, the cubby and its bottom lip, and spends the legs — which is the
-     largest the picture can be drawn while still showing the thing it is there to show.
+     --hb-entry-keep is the share that must stay above the fold, and 0.4 is not a round
+     number either — it is the lower edge of the two TOP SURFACES, which are the things
+     this composition exists to show. Classified by colour rather than by alpha (wood is
+     alpha>=200 with R>=110, R-G>=14 and G-B>=14; the cubby's interior is alpha>=200 with
+     R+G+B<=170), across the desk's x-range on the 1600-wide cut:
+
+       y 0.363   the desktop plane ends — the bright specular crease along its far edge
+       y 0.380   the slab's front face ends and the dark cubby begins  (row 425 of 1119,
+                 and it is genuinely horizontal: 450 of 486 columns land on that row)
+       y 0.396   the rack's top plate ends  (row 443)
+
+     0.4 clears both. Cutting at 0.363 would slice the desk slab through its own 18px
+     thickness, which reads as damage rather than as a crop; 0.4 keeps the desktop whole
+     with its front edge, keeps the rack's lid, and spends the cubby and the legs below —
+     which is the largest the picture can be drawn while still showing the thing it is
+     there to show.
+
+     THESE NUMBERS DESCRIBE FRAME 276 AND ONLY FRAME 276, and that is correct rather than
+     sloppy: --hb-entry-keep governs the approach, and the approach holds on the first
+     played frame throughout — head does not move until the scrub starts, by which point
+     the plate is at full size and carries no transform at all. Re-measuring on a later
+     frame would give a different and irrelevant answer, because the camera moves: the same
+     desk edge is a flat 0.380 at frame 276 but slopes 0.386 to 0.404 by frame 417.
 
      Between them these two set how big the plate is at entry: it is scaled so that
      --hb-entry-keep of it fits between --hb-entry-clear and the fold, and never scaled up
-     past its natural size. On every desktop screen that arithmetic comes out above 1, so
-     the plate enters edge to edge and the approach is a pure vertical rise. */
+     past its natural size. That cap is load-bearing — content spans x 0.000-0.999, so even
+     a 1.05 scale cuts the rack's left edge and the desk's right, and edge to edge is
+     already as big as this artwork goes. On every desktop screen the arithmetic comes out
+     above 1, so the plate enters edge to edge and the approach is a pure vertical rise. */
   --hb-entry-sky: 0.226;
-  --hb-entry-keep: 0.5;
+  --hb-entry-keep: 0.4;
 
   /* The floor under that scale, and it exists because the alternative is not a small plate
      but a broken one. On a viewport shorter than the copy needs there is no room below the
