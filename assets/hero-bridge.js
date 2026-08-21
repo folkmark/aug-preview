@@ -26,7 +26,7 @@
    Frame URLs are base + "hb<0000><cut>.webp", where cut is "" for the 1600-wide plate and
    "m" for the 1200-wide one phones scrub. Both cuts are the whole plate — this sequence
    cannot crop for mobile the way the Approach section did, because blocks fly in from the
-   top and the right for the whole run and content spans x 0.004-0.959. Which cut is
+   top and the right for the whole run and content spans x 0.000-0.999. Which cut is
    loaded is read from the --hb-variant custom property in hero-bridge.css, so the
    breakpoint that sizes the stage is also the one that picks the file and there is no
    second copy of it here to drift. The frame list and both cuts' dimensions come from
@@ -135,10 +135,22 @@
       this.bits = [];
       this.pend = [];
       this.inflight = 0;
-      this.gen = 0;
       this.head = 0;
       this.p = -1;
       this.N = 0;
+      // Cleared with the rest of the state, and it has to be. win is what frame()'s
+      // "else if (!this.win) this.plan()" bootstrap tests, so a value left standing from
+      // before a disconnect means the first tick after re-mounting finds head unchanged
+      // AND win non-zero, never calls plan(), and never fetches anything: the hero sits
+      // on its still with no download in progress until the reader scrolls far enough to
+      // move the head. Borrowed from approach.js, where boot() really is a one-shot and
+      // the omission cannot bite.
+      this.win = 0;
+      this.wanted = null;
+      // Never reset to zero, only ever advanced. Requests captured a generation before
+      // this boot and are still in flight; restarting the count at 0 would hand them the
+      // number they are holding and let them repopulate state that was just torn down.
+      this.gen = (this.gen || 0) + 1;
 
       // Three separate signals, evaluated separately and never merged into one flag. They
       // mean different things: a preference, a bandwidth preference, and a capability.
@@ -238,8 +250,24 @@
       this.wake();
     }
 
+    // Stopping has to invalidate the work in flight, not just the work already done.
+    // Closing the bitmaps alone is not enough: four requests are typically outstanding, and
+    // each one's success path re-populates this.bits and its tail calls plan() again. On a
+    // detached element that runs the whole plan to completion — fetching frames after
+    // removal from the DOM and ending up holding the full budget of ImageBitmaps that
+    // nothing will ever close again. Under reduced motion it is the same leak on exactly
+    // the preference that is meant to release the memory.
+    //
+    // So the generation is advanced, which strands every request already issued, and
+    // wanted is cleared so any that slip through keep() close their own bitmap. inflight
+    // is reset in the same breath because those stranded requests no longer decrement it.
     stop() {
       this.running = false;
+      this.gen++;
+      this.wanted = null;
+      this.win = 0;
+      this.inflight = 0;
+      this.pend = [];
       removeEventListener('scroll', this.onScroll, { capture: true });
       removeEventListener('resize', this.onResize);
       removeEventListener('orientationchange', this.onResize);
@@ -331,7 +359,7 @@
     // is added to a number that was supposed to be a ceiling. Ranking and spending costs
     // one sort of forty-odd entries per head move and makes the number mean what it says.
     plan() {
-      if (!this.N || !this.motion) return;
+      if (!this.N || !this.motion || !this.running) return;
 
       this.budget = this.budgetWanted();
       var head = this.head, i;
@@ -402,7 +430,16 @@
           self.wake();
         })
         .catch(function () { /* left empty on purpose: nearest() covers it */ })
-        .then(function () { self.pend[i] = 0; self.inflight--; if (gen === self.gen) self.plan(); });
+        .then(function () {
+          // Guarded as a whole, not just around plan(). boot() and stop() reset inflight
+          // and pend under any request still outstanding, so a stale tail decrementing
+          // that counter drives it below zero and over-subscribes MAX_INFLIGHT for the
+          // life of the element.
+          if (gen !== self.gen) return;
+          self.pend[i] = 0;
+          self.inflight--;
+          self.plan();
+        });
     }
 
     // The nearest decoded frame at or before i, else the nearest after. A gap in the
@@ -439,9 +476,39 @@
       return isFinite(t) ? t : 0;
     }
 
+    // Two ways to spend scroll, and which one is in force is a CSS decision — the header
+    // above already promised this ("make the element the same height as its stage and
+    // nothing pins"); this is where that promise is kept.
+    //
+    // PINNED, when the element is taller than its stage. The stage sticks and the
+    // difference between the two heights is the budget. This is the better rig when the
+    // plate fits the pinned stage, because the artwork holds still while it changes.
+    //
+    // IN PLACE, when they are the same height. There is no pin and no extra page height:
+    // the plate is in normal flow and the scrub is spent on its own travel through the
+    // viewport, from the moment its top enters the bottom of the screen to the moment its
+    // bottom arrives there — that is, it finishes exactly as the whole plate lands in
+    // view, and then holds on the closed arch while it scrolls away. Ending on "fully in
+    // view" rather than "fully scrolled past" is the whole point of the choice: the arch
+    // has to close while the reader can still see it.
+    //
+    // This page pins at every width — the plate runs full bleed and is cropped to the
+    // stage rather than shrunk to fit it, with the crop anchored on the completed bridge.
+    // That is entirely hero-bridge.css's business and this method never learns about it.
+    //
+    // The in-place branch is therefore not what the hero uses; it is what makes the
+    // header's "make the element the same height as its stage and nothing pins" true.
+    // Before it existed that configuration divided by a guarded 1 and produced a progress
+    // value in pixels, which clamps to 0 or 1 and reads as a sequence that will not
+    // scrub — a documented arrangement that silently did not work.
     progress() {
+      var rect = this.getBoundingClientRect();
       var span = this.offsetHeight - this.stage.offsetHeight;
-      return clamp01((this.pin() - this.getBoundingClientRect().top) / (span || 1));
+      if (span > 0) return clamp01((this.pin() - rect.top) / span);
+
+      var vh = innerHeight || 800;
+      var travel = this.offsetHeight;
+      return clamp01((vh - rect.top) / (travel || 1));
     }
 
     frame() {

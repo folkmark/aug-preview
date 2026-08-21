@@ -52,8 +52,11 @@ old SHAs; nothing in this repository points at them any more.
 The home page opens on `<hero-bridge>` — `assets/hero-bridge.js` and
 `assets/hero-bridge.css` — a scroll-scrubbed sequence of alpha plates in which a
 toy-block arch assembles between a server rack and a school desk and closes. The
-plate pins under the header for 70svh while it builds, holds on the closed span,
-then scrolls on.
+plate runs full bleed, pins under the header for 70svh while it builds, holds on
+the closed span, then scrolls on. It is cropped to the pinned stage rather than
+scaled into it — the artwork is 1.43:1 and a laptop is 1.6 — with the crop
+centred on the completed bridge so the arch, both supports and the ground shadow
+stay in frame.
 
 Its frames are in `assets/hero-bridge/`, named by their Blender frame number so a
 file, [`docs/hero-bridge-render.md`](docs/hero-bridge-render.md) and the manifest
