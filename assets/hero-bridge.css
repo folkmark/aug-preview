@@ -41,15 +41,23 @@
    simply centred in a stage a screen tall, with no crop of any kind to reconcile. There is
    no media query for that case any more, because there is nothing left for it to say. */
 
-/* Both entry properties have to be readable from script as PIXELS, and a plain custom
+/* The lengths here have to be readable from script as PIXELS, and a plain custom
    property computes to its token text — "calc(100svh - 4.5rem)" — not to a length.
    Registering them is what makes getComputedStyle resolve the calc, so the entry can be
    written here against the heights it is derived from rather than as constants in the
    script that would be free to drift from them. Every engine that supports
    mix-blend-mode: plus-lighter, which this component already requires for its cross-fade,
-   supports @property; hero-bridge.js has a fallback for each where it is missing. */
+   supports @property; hero-bridge.js has a fallback for each where it is missing.
+
+   --hb-max is registered for the same reason and it is newly load-bearing: settle() now
+   reads it, because the entry may scale the plate UP and the ceiling on how wide the
+   artwork may be drawn has to apply to the drawn width and not only to the box. --hb-max
+   is a plain length today, so parseFloat would cope — registering it means a host may
+   write it as a calc, like everything else here, without silently breaking the entry. */
 @property --hb-entry-span { syntax: "<length>"; inherits: true; initial-value: 0px; }
 @property --hb-entry-clear { syntax: "<length>"; inherits: true; initial-value: 0px; }
+@property --hb-entry-zoom { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --hb-max { syntax: "<length>"; inherits: true; initial-value: 2880px; }
 
 hero-bridge {
   /* Where the stage pins. One number drives the sticky offset, the stage's height, the
@@ -58,12 +66,22 @@ hero-bridge {
   --hb-pin: 0px;
   --hb-variant: "";
 
-  /* The width ceiling. The plate runs edge to edge below this and stops growing above it,
-     which is what keeps a very wide screen from stretching the artwork across a metre of
-     desk. It is above every common width on purpose — 2560 and 3440 panels both take the
-     full viewport — so in practice it only bites on a 5K. Note that the shipped cut is
-     1600px, so a box at this ceiling is a 1.8x upscale; docs/hero-bridge-render.md costs
-     out a 2048 cut if that ever starts to show. */
+  /* THE WIDTH CEILING, and it is now two ceilings written as one number. The box runs edge
+     to edge below this and stops growing above it, which is what keeps a very wide screen
+     from stretching the artwork across a metre of desk. It is above every common width on
+     purpose — 2560 and 3440 panels both take the full viewport — so as a BOX width it only
+     bites on a 5K.
+
+     It also caps the width the plate is DRAWN at, which is a different thing since
+     --hb-entry-zoom below: settle() reads this back and will not scale the plate past it,
+     so on a 1920 screen the entry stops at 1.50 rather than the 1.81 the geometry would
+     allow. That is a resolution limit rather than a compositional one. The shipped cut is
+     1600px, so this ceiling is a 1.8x upscale — the figure docs/hero-bridge-render.md
+     already names as the point where a 2048 cut starts to be worth cutting. Raising this
+     without raising the cut just makes the entry soft, and this render has grille mesh,
+     cable bundles and LED rows in it. Note also that the sequence masters are NOT in this
+     repository's history, only nine beat plates at 98d0243, so a bigger cut means new
+     renders rather than a re-encode. */
   --hb-max: 2880px;
 
   /* HOW MUCH ROOM THE HOST'S COPY NEEDS, measured from under the header. It is the one
@@ -115,13 +133,33 @@ hero-bridge {
      desk edge is a flat 0.380 at frame 276 but slopes 0.386 to 0.404 by frame 417.
 
      Between them these two set how big the plate is at entry: it is scaled so that
-     --hb-entry-keep of it fits between --hb-entry-clear and the fold, and never scaled up
-     past its natural size. That cap is load-bearing — content spans x 0.000-0.999, so even
-     a 1.05 scale cuts the rack's left edge and the desk's right, and edge to edge is
-     already as big as this artwork goes. On every desktop screen the arithmetic comes out
-     above 1, so the plate enters edge to edge and the approach is a pure vertical rise. */
+     --hb-entry-keep of it fits between --hb-entry-clear and the fold. What it may NOT
+     exceed is --hb-entry-zoom below. */
   --hb-entry-sky: 0.226;
   --hb-entry-keep: 0.4;
+
+  /* HOW FAR PAST EDGE TO EDGE THE ENTRY MAY GROW, and 1 — do not — is the component's
+     default because it is the only value that costs nothing.
+
+     This used to be a hard cap in the script with a comment saying it was load-bearing,
+     and the argument was sound as far as it went: content spans x 0.000-0.999, so any
+     scale above 1 crops the rack's left edge and the desk's right, and edge to edge is as
+     big as this artwork goes. What that misses is that a host laying copy over the plate
+     is already spending most of the screen on words, and the plate is sized from what is
+     left — so "edge to edge" is a ceiling it often cannot reach anyway, and a host that
+     would rather crop the sides than shrink the picture has no way to say so.
+
+     What it costs is the sides, and how much depends on the screen rather than on this
+     number, because the geometry usually binds first. Measured on this site: 1.07 at
+     1512x780 shows plate x 0.03-0.97 and only kisses the rack's left edge; 1.35 at
+     1920x955 shows x 0.13-0.87 and takes about a quarter off each object; 1.50 at
+     1920x1080 shows x 0.17-0.83 and takes rather more. It also costs sharpness, which is
+     what --hb-max above bounds.
+
+     It does not cost the scrub anything. The scale runs down to exactly 1 across the
+     approach and the box carries no transform at all by the time the first frame is
+     wanted, so the arch assembles at the plate's own size however this is set. */
+  --hb-entry-zoom: 1;
 
   /* The floor under that scale, and it exists because the alternative is not a small plate
      but a broken one. On a viewport shorter than the copy needs there is no room below the
@@ -190,10 +228,19 @@ hero-bridge *, hero-bridge *::before, hero-bridge *::after { box-sizing: border-
    plate is, because --hb-stage-h above is the larger of the two. That is what makes the
    picture unclippable, so:
 
-   NO overflow: hidden. There is nothing to clip — the stage is sized to hold the plate,
-   and the entry transform below only ever scales DOWN — and a clip rectangle here is the
-   exact artefact this arrangement exists to avoid. Putting one back as a "safety net"
-   reintroduces the edge.
+   NO overflow: hidden, and no overflow: clip either. The stage is sized to hold the plate
+   at rest, and a clip rectangle here is the exact artefact this arrangement exists to
+   avoid: it sits on the bottom edge of the screen while the stage is pinned, where nobody
+   can see it, and then walks up the page as the stage releases. Putting one back as a
+   "safety net" reintroduces the edge.
+
+   Which matters more now than it did, because with --hb-entry-zoom above the entry
+   transform can scale UP as well as down and the plate genuinely overhangs this box during
+   the approach. Overhanging is the intent — the viewport is what crops it, and cropping by
+   the viewport is invisible. Sideways that overhang would extend the page's scrollable
+   width, so the HOST has to be the one that clips it, at the full width of the page where
+   the cut lands off-screen: this site does it with overflow-x: clip on its page wrapper,
+   which is not a scroll container and so leaves the stage's sticky intact.
 
    place-items rather than an absolutely-positioned child, which is the reverse of what
    this file used to do. The old note was right that a browser clamps `center` to `start`
@@ -219,10 +266,15 @@ hero-bridge [data-hb-stage] {
    element's own width and cannot do that.
 
    transform-origin at the TOP edge is what the entry is built on: hero-bridge.js places
-   this box's top below the host's copy and, where it has to, scales it down about that
-   same top — so the picture hangs from a line under the words and rises to fill the stage,
-   rather than growing out of its own middle. It resolves to no transform at all by the
-   time the scrub starts.
+   this box's top below the host's copy and scales it about that same top — so the picture
+   hangs from a line under the words and settles into the stage, rather than growing out of
+   its own middle. It resolves to no transform at all by the time the scrub starts.
+
+   Which direction it scales depends on --hb-entry-zoom. At the default 1 it only ever
+   scales down and the approach is a pure rise. Above it the plate can start LARGER than
+   the stage and settle back, and the top origin is what keeps that legible: the extra
+   height goes off the bottom of the screen where the viewport swallows it, not into the
+   copy above.
 
    The top edge and not the bottom, which is what this was first built with. Anchoring the
    bottom to the fold forces the WHOLE plate to fit between the copy and the fold, and at

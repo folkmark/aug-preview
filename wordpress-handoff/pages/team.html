@@ -123,6 +123,17 @@
      number it can read beats a number it has to instrument for. It is also what the static
      export ships, which has no script to measure with.
 
+     Those four are the STACKED arm. Above 1400px the copy is two columns and the block is
+     a different shape, so --hero-copy is derived there from the offset that makes it —
+     see THE SPLIT below. Both arms still answer the same question, and the assertion is
+     the same either way: the measured block must fit inside --hero-copy, or the body
+     lands on the plate.
+
+     THE BAND IS THE PLATE'S BUDGET AS WELL AS THE COPY'S, and the exchange rate is steep.
+     hero-bridge sizes the entry from the room left under this band and divides by
+     (--hb-entry-keep - --hb-entry-sky) = 0.174, so a pixel here is 5.75px of picture.
+     Anything that grows the copy shrinks the plate by nearly six times as much.
+
      --hero-gap is the air between the nav and the first line, and it sits ABOVE the copy
      rather than around it: the copy is aligned to the START of its band, not centred in
      it, because splitting a 130px gap would cost 260px of band and that difference is what
@@ -161,6 +172,29 @@
     --hb-pin: var(--space-18);
     --hb-entry-clear: var(--hero-band);
     --hb-entry-span: var(--hero-band);
+    /* Enter as much larger than edge to edge as the composition allows, up to twice. Two
+       things bind before it does and both are the component's, so this number is a request
+       rather than a setting: --hb-entry-keep holds the desk's top edge above the fold,
+       which is the binding one on a laptop, and --hb-max holds the drawn width to 1.8x the
+       1600 cut, which is the binding one from 1920x1080 up. Measured, the entry lands
+       between 1.07 and 1.51 — see §The hero animation in README.md for the table.
+
+       What it spends is the sides: content spans plate x 0.000-0.999, so anything above 1
+       crops the rack's left edge and the desk's right. At 1.07 that is a kiss, at 1.35 it
+       is about a quarter of each object, at 1.51 rather more. It is a deliberate trade of
+       the outer edges of the picture for the size of it.
+
+       DESKTOP ONLY, at the design system's own breakpoint — the one this component already
+       switches its cut and its budget on. Not because a phone cannot afford the pixels: the
+       mobile cut is 1200 wide against a 780px drawn plate at 390, so it is sharper there
+       than anywhere. It is that this trade was made for the hero with copy laid across it in
+       two columns, and a phone shows the same picture with none of that pressure on it — the
+       plate already has all the room it needs, so cropping half the width off it buys
+       nothing and spends the rack's left and the desk's right for no reason. */
+    --hb-entry-zoom: 1;
+  }
+  @media (min-width: 992px) {
+    hero-bridge { --hb-entry-zoom: 2; }
   }
   @media (max-width: 991px) { .scheme-1 { --hero-copy: 320px; } }
   @media (max-width: 560px) { .scheme-1 { --hero-copy: 500px; --hero-h1-lines: 3; } }
@@ -227,30 +261,59 @@
      as every section heading on the page. 2fr gives it 800px and it sets in two lines.
 
      The 1400px floor is derived from that: two lines needs ~768px, so (content - 80) x 2/3
-     >= 768 puts the content at 1232 and the viewport at ~1370. Measured, 1400 gives a 786px
-     column and 1366 already wraps to three. The min-height is the other half of the same
-     sum — the split's taller copy band eats the plate's room on a short screen, taking the
-     entry plate from 0.82 scale to 0.62 at 1440x750. Below either bound the layout stacks,
-     which is the same left rail with the body under the headline instead of beside it.
+     >= 768 puts the content at 1232 and the viewport at ~1370. Measured, 1400 gives a 787px
+     column and 1330 wraps to three. 1366 measures two lines in a 766px column and would be
+     worth having — it is a very common laptop width — but an earlier round measured it as
+     three, the two readings have not been reconciled, and a headline that wraps to three
+     lines at 84px is a worse failure than a stacked rail. Left at 1400 until it is settled.
 
-     --hero-copy rises with it because the block genuinely is taller here: 410.4px measured
-     against the stacked arm's 380. The stacked arm keeps --container-lg on both children so
-     its four measured values still hold; only this arm hands the measure to the columns. */
-  @media (min-width: 1400px) and (min-height: 800px) {
-    .scheme-1 { --hero-copy: 416px; }
+     THERE IS NO LONGER A min-height ON THIS, and it is worth knowing why there was one.
+     The split's copy block measured 410px against the stacked arm's 380, the extra 30px
+     cost 172px of plate, and at 1440x750 the entry dropped from 0.82 to 0.62 — so the
+     layout was gated to screens that could afford it, which turned out to be no MacBook
+     with browser chrome open. Now that --hero-drop scales with the viewport the split arm
+     is the SHORTER of the two on exactly those screens — 328px at 1400x720 against 380
+     stacked — so there is nothing left for a height bound to protect. Below 560px of
+     height the no-overlay arm further down still takes the whole overlay off.
+
+     The stacked arm keeps --container-lg on both children so its four measured --hero-copy
+     values still hold; only this arm hands the measure to the columns and derives the band
+     from it. */
+  @media (min-width: 1400px) {
+    /* THE BODY SITS AGAINST THE MIDDLE OF THE HEADING BESIDE IT — the same idea as
+       syncApproachOffset further down this file, which does it for the Our Approach split.
+       That one measures the heading in JS because it wraps to an unpredictable number of
+       lines; this one does not need to, because the split only runs where the h1 is exactly
+       two lines. Half of two lines is one line-height, and CSS can say that outright.
+
+       It scales with the SCREEN rather than being that flat 92.4px everywhere, and the
+       reason is the plate. The copy band is subtracted from the room the plate is sized
+       into, and the divisor there is (--hb-entry-keep - --hb-entry-sky) = 0.174 — so every
+       pixel of band costs 5.75px of plate height, and a flat offset costs 530px of picture
+       on a screen that has none to spare. Full offset from about 885px of viewport height
+       up; 80px at 860, 40px at 780, 32px at 764, nothing at 700 and below, where the two
+       simply top-align. 700 is the floor because that is where the split's block stops
+       being taller than the stacked arm's 380px.
+
+       ONE property, used twice. --hero-copy is the band and has to include the offset or
+       the body collides with the plate — that shortfall is exactly the bug the flat 416px
+       was patching — so it is derived here rather than hand-set. 324px is the measured
+       offset-free block height, and it is a constant worth trusting: 318px at every width
+       from 1400 to 2560, because the container caps at --container-xxl so the body column
+       is 400px at all of them, plus 6px of margin. */
+    .scheme-1 {
+      --hero-drop: clamp(0px, calc((100svh - 700px) / 2),
+                         calc(var(--text-h1) * var(--text-h1-line-height)));
+      --hero-copy: calc(324px + var(--hero-drop));
+    }
     [data-hero-copy] {
       grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
       column-gap: var(--space-20);
     }
     [data-hero-copy] > * { max-width: none; }
-    /* The body sits against the MIDDLE of the heading beside it — the same idea as
-       syncApproachOffset further down this file, which does it for the Our Approach split.
-       That one measures the heading in JS because it wraps to an unpredictable number of
-       lines; this one does not need to, because the split only runs where the h1 is exactly
-       two lines. Half of two lines is one line-height, and CSS can say that outright. */
     [data-hero-body] {
       align-self: start;
-      margin-top: calc(var(--text-h1) * var(--text-h1-line-height));
+      margin-top: var(--hero-drop);
     }
   }
 
@@ -403,7 +466,7 @@
         <a href="/challenge/">The Challenge</a>
         <a href="/approach/">Our Approach</a>
         <a href="/team/">Who We Are</a>
-        <div class="sc-host-x" style="display: contents;"><div class="sc-placeholder" title="AugmentEDDesignSystem_191b99.Button" style="width: 100%; height: 60px;"></div></div>
+        <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="default" data-btn-size="sm" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border-width: 1px; border-style: solid; border-color: var(--color-st-tropaz); border-image: initial; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-st-tropaz); color: var(--color-scheme-btn-text, var(--color-white)); padding: 0.25rem 0.625rem; font-weight: var(--font-weight-medium);">Follow our work</button></div>
       </nav>
       <button class="at-mobile" aria-label="Menu" aria-expanded="false" aria-controls="site-menu" style="display: flex; flex-direction: column; justify-content: center; gap: 6px; width: 44px; height: 44px; padding: 0px; border: 0px; background: transparent; cursor: pointer;">
         <span style="display: block; width: 22px; height: 2px; background: var(--color-neutral-darkest); transition: transform 300ms ease-in-out; transform-origin: center center; transform: none;"></span>
@@ -710,8 +773,8 @@
         <h2 style="font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-6); text-wrap: pretty;">Join us in building better foundations for AI in education.</h2>
         <p style="font-size: var(--text-medium); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">We co-design with educators, publish what we learn, and build infrastructure for the whole field.</p>
         <div style="margin-top: var(--space-10); display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space-4);">
-          <div class="sc-host-x" style="display: contents;"><div class="sc-placeholder" title="AugmentEDDesignSystem_191b99.Button" style="width: 100%; height: 60px;"></div></div>
-          <div class="sc-host-x" style="display: contents;"><div class="sc-placeholder" title="AugmentEDDesignSystem_191b99.Button" style="width: 100%; height: 60px;"></div></div>
+          <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="default" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border-width: 1px; border-style: solid; border-color: var(--color-st-tropaz); border-image: initial; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-st-tropaz); color: var(--color-scheme-btn-text, var(--color-white)); padding: 0.375rem 0.75rem; font-weight: var(--font-weight-medium);">Follow our work</button></div>
+          <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="secondary" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-neutral-darkest-5); color: inherit; padding: 0.375rem 0.75rem; font-weight: var(--font-weight-medium); backdrop-filter: blur(var(--blur-glass));">Explore our approach</button></div>
         </div>
       </div>
     </section>
@@ -731,7 +794,7 @@
             <div style="flex: 1 1 12rem;">
               <div class="sc-host-x" style="display: contents;"><div style="position: relative; display: flex; width: 100%; align-items: center;"><input data-slot="input" type="email" placeholder="Your email" style="display: flex; width: 100%; min-height: 2rem; padding: 0.5rem 0px; background: transparent; border-top: 0px; border-right: 0px; border-bottom: 1px solid var(--color-neutral-darkest-15); border-left: 0px; border-image: initial; color: var(--color-scheme-text, var(--text-body)); font-family: var(--font-body); font-size: var(--text-regular); line-height: var(--text-body-line-height); outline: none; transition: all var(--transition-fast);"></div></div>
             </div>
-            <div class="sc-host-x" style="display: contents;"><div class="sc-placeholder" title="AugmentEDDesignSystem_191b99.Button" style="width: 100%; height: 60px;"></div></div>
+            <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="secondary" type="submit" data-btn-size="sm" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-neutral-darkest-5); color: inherit; padding: 0.25rem 0.625rem; font-weight: var(--font-weight-medium); backdrop-filter: blur(var(--blur-glass));">Subscribe</button></div>
           </form>
           <p style="font-size: var(--text-tiny); line-height: var(--text-body-line-height); margin: 0px; max-width: 24rem;">By subscribing you agree to our Privacy Policy and consent to receive updates from AugmentED.</p>
         </div>

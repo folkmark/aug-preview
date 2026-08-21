@@ -105,6 +105,26 @@ for (const p of PAGES) {
   }, null, { timeout: 30000 });
   await page.waitForTimeout(600);
 
+  // AND WAIT FOR THE DESIGN SYSTEM'S OWN COMPONENTS, which the heading check above does
+  // not cover: the page's markup renders first and each <x-import> hydrates after, so the
+  // wait that is long enough for a heading is a race for a Button. It loses often enough
+  // to matter — every export is a coin toss over which pages come out whole, and this
+  // repo already ships four lost buttons in team.html from a run that lost it.
+  //
+  // What it leaves behind is a .sc-placeholder div, and a placeholder is worse than a
+  // blank page because it looks like a page. It is a full-width 60px block where an
+  // inline button was, so a handoff page that has one is both wrong to look at and wrong
+  // to measure against — a copy block measures 95px taller at 1280 with two of them in it.
+  //
+  // Reported and not thrown: the export is still useful with a placeholder in it, and a
+  // build that fails on a slow machine helps nobody. A line on stderr is what makes the
+  // difference between a known gap and a silent one.
+  const stuck = await page.waitForFunction(
+    () => document.querySelectorAll('.sc-placeholder').length === 0,
+    null, { timeout: 15000 }
+  ).then(() => 0).catch(() => page.evaluate(() => document.querySelectorAll('.sc-placeholder').length));
+  if (stuck) console.error(`  ! ${p.slug}: ${stuck} component(s) never hydrated, exported as placeholders`);
+
   const html = await page.evaluate(() => {
     const doc = document.documentElement.cloneNode(true);
     // The template source, the runtime, and the CDN mirror are all scaffolding for a
