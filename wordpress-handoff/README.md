@@ -187,11 +187,21 @@ change.
   frame 404s while the still keeps showing and nothing looks broken. Same rule as §5 and
   §6. Put the directory on disk and point `base` at it.
 - **`base` must stay a single quoted attribute value beginning `assets/`.** The build's
-  reference check and its route-relative rewriting both scan for exactly that shape.
+  reference check and `absolutise()` both scan for exactly that shape — the latter rewrites
+  every `assets/` reference to an absolute path so a client-side navigation cannot resolve
+  it against the wrong URL. Build it from pieces and both miss it, and every route 404s on
+  all 96 frames while the home page looks fine.
 - **`from` and `to` are not decoration.** The page plays 276–417 of an encoded 276–468,
   because only that span carries the ground shadow — see
   [`docs/hero-bridge-render.md`](../docs/hero-bridge-render.md). Widen the span and the
   arch visibly changes colour mid-scrub.
+- **The plate is cropped, and the crop is anchored.** It runs full bleed at the plate's
+  own 1.4302:1, which is taller than any desktop stage, so `overflow: hidden` on the stage
+  trims it and `--hb-anchor` decides where. 52.2% is the completed bridge's own measured
+  centre, not a round number — move it and the arch or the feet leave the frame. The box is
+  absolutely positioned for this: a centring stage gets its `center` clamped to `start` by
+  the browser because `overflow: hidden` makes it a scroll container, which silently puts
+  the entire crop on one edge.
 - **The section's height is the scroll budget.** `assets/hero-bridge.css` sets it, the
   element measures its own height minus its stage's, and the scrub divides that among the
   frames the manifest offers. Frame count and height are one setting in two files: encode
@@ -280,7 +290,7 @@ falling-blocks { --fb-sticky-top: 4.5rem; height: calc(290svh - 4.5rem); }
 
 `--fb-sticky-top` is the fixed header's height; the stage pins below it. The element's
 height minus the stage's height is the scroll budget — here 290 minus 100 is 190svh of
-pin. That single number sets both how long the hero holds and how fast the blocks
+pin. That single number sets both how long the section holds and how fast the blocks
 travel, so there is no second value to keep in step. Make the element the same height
 as its stage and nothing pins: the copy just scrolls away while the blocks move.
 
@@ -337,8 +347,8 @@ The full markup contract and every attribute are documented at the top of
 ## 6. The Approach scrub — also portable, but not currently mounted
 
 > **Status.** The home page no longer runs this. The client found scrolling through
-> the arch's many stages hard going, so the hero now carries a still of the finished
-> bridge and the R&D cycle wheel sits where the scrub used to be. `assets/approach.js`,
+> the arch's many stages hard going, so the hero now runs the shorter `<hero-bridge>`
+> sequence (§5a) and the R&D cycle wheel sits where the scrub used to be. `assets/approach.js`,
 > `assets/approach.css` and the frames are all still in the repository, kept for the
 > shortened sequence that replaces it — so everything below still describes the
 > component accurately. Do not port it as part of rebuilding the page as it stands.
@@ -534,8 +544,10 @@ listed in §4. They only matter if the artwork itself is being re-rendered, and 
 masters that are no longer in the repository; each one prints the exact path to restore if
 you run it without them. The root `README.md` lists those paths.
 
-To change the hero's resolution, edit `WIDTHS` at the top of
+To change the closing CTA's resolution, edit `WIDTHS` at the top of
 `tools/encode-falling-blocks.mjs` and re-run — it rewrites the frame directory and the
-manifest together. Adding a second width (640 is the useful one, ~1.4 MB) is a one-line
+manifest together. (The hero is a different sequence with a different encoder: its widths
+are `FULL_W` and `CROP_W` in `tools/encode-hero-bridge.mjs`. Editing `WIDTHS` here changes
+the closing CTA and does nothing to the hero.) Adding a second width (640 is the useful one, ~1.4 MB) is a one-line
 change and would let the element serve a smaller set to slow connections instead of
 falling back to the still.
