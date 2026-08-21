@@ -101,15 +101,57 @@ ground shadow the moment the stage released. The render ends in a faint edge of 
 own — the last row carries the shadow plane at alpha 2.4/255 — so the bottom 4% is
 feathered out, below the desk's feet at y 0.94 and touching no object.
 
-Two custom properties are the page's business rather than the component's: `--hb-pin`
-is the header's height, and `--hb-entry-clear` is how much room the page's own copy
-needs. The page builds the second from `--hero-gap` — the air between the nav and the
-first line, 130px growing on a tall screen — plus the copy's own measured height: 380px
-on any desktop width, 290px from the 992px type-scale break down to about 600, 479px on
-a phone and 558px at 320, where the h1 goes to four lines. The copy is aligned to the
-**start** of that band rather than centred in it, because splitting the gap would cost
-twice the band for the same air above the words, and that difference is what keeps the
-plate at full width on an 800px-tall screen.
+Three custom properties are the page's business rather than the component's. `--hb-pin`
+is the header's height. `--hb-entry-clear` is how much room the page's own copy needs:
+the page builds it from `--hero-gap` — the air between the nav and the first line, 130px
+growing on a tall screen — plus the copy's own height, which is 380px on any stacked
+desktop width, 290px from the 992px type-scale break down to about 600, 479px on a phone
+and 558px at 320 where the h1 goes to four lines, and is derived rather than measured in
+the two-column arm (below). The copy is aligned to the **start** of that band rather
+than centred in it, because splitting the gap would cost twice the band for the same air
+above the words.
+
+**That band is the plate's budget too, and the exchange rate is steep.** The entry is
+sized from the room left under the band and divided by `--hb-entry-keep` minus
+`--hb-entry-sky` = 0.174, so one pixel of copy costs 5.75px of picture. Every decision
+about the hero's copy is also a decision about how big the artwork is.
+
+`--hb-entry-zoom` is the third, and it is how far past edge to edge the entry may grow.
+The component defaults to 1 — never larger than the artwork's own width — because
+content spans plate x 0.000–0.999, so anything above 1 crops the rack's left edge and
+the desk's right. This page asks for 2 above the 992px breakpoint and takes whatever the
+geometry allows, which is never the full 2:
+
+| viewport | entry scale | drawn width | what is cropped |
+|---|---|---|---|
+| 2560×1300 | 1.13 | 2880 (`--hb-max`) | x 0.06–0.94 |
+| 1920×1080 | 1.50 | 2880 (`--hb-max`) | x 0.17–0.83 |
+| 1920×955 | 1.32 | 2538 | x 0.12–0.88 |
+| 1440×900 | 1.47 | 2117 | x 0.16–0.84 |
+| 1512×860 | 1.25 | 1891 | x 0.10–0.90 |
+| 1512×780 | 1.03 | 1562 | x 0.01–0.99 |
+| 1440×764 | 1.04 | 1496 | x 0.02–0.98 |
+| 1280×800 | 1.25 | 1594 | x 0.10–0.90 |
+| ≤991px | 1.00 | edge to edge | nothing |
+
+Two ceilings bind before `--hb-entry-zoom` does, and knowing which is which is what
+makes the numbers above predictable. On a laptop it is **`--hb-entry-keep`**: the desk's
+top edge has to stay above the fold, and on a 780px-tall screen the copy band has already
+taken 518 of those pixels. From 1920×1080 up it is **`--hb-max`**, which now caps the
+width the plate is *drawn* at rather than only the width of its box — 2880px is a 1.8×
+upscale of the 1600 cut, and past that the entry is visibly soft. Going further needs a
+bigger cut, and the sequence masters are not in this repository's history — only nine
+beat plates at `98d0243` — so that means new renders rather than a re-encode.
+
+Above 1400px the copy is a two-column split — heading left, lede and buttons right, the
+same `--space-20` pattern as the Our Approach header and the research rows — and the
+body sits against the middle of the heading beside it, as `syncApproachOffset` does for
+that section. That offset scales with the viewport rather than being a flat 92.4px,
+because of the exchange rate above: a full half-heading on a 780px screen would cost
+530px of plate. Full offset from about 885px of height, 40px at 780, nothing at 700 and
+below. `--hero-copy` is derived from it in that arm — 324px of offset-free block, which
+is constant from 1400 to 2560 because the container caps at `--container-xxl` — so the
+band cannot drift out of step with the offset that sets it.
 
 Below 560px of viewport height there is no overlay at all: a landscape phone leaves
 303px under the header against a copy that wants 290, so the copy goes back into flow

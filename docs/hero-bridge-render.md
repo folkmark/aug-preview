@@ -165,10 +165,24 @@ the 1184 an earlier contained rig gave it. The 1600 cut is therefore the right o
 every desktop width; the 1200 cut would be an upscale there, and it is kept for the
 991px breakpoint and below.
 
-Note that the ceiling is 2880px, which is well above the encoded width. The stage's
-height caps the plate's width long before it on every common screen, so 2880 only binds
-on a 5K panel — where the 1600 cut is a 1.8× upscale. That is the case a 2048 cut would
-answer; the payload table above costs it at 110 KB a frame.
+Note that the ceiling is 2880px, which is well above the encoded width. As a ceiling on
+the *box* it only binds on a 5K panel — where the 1600 cut is a 1.8× upscale.
+
+**It binds far more often as a ceiling on the DRAWN width, which is what it now also is.**
+`--hb-entry-zoom` lets the entry scale the plate past edge to edge, and the site asks for
+2× above 991px, so the box is scaled rather than widened and the upscale goes up with it.
+2880 is exactly 1.8× the 1600 cut, so the ceiling holds the entry at the same sharpness
+this file already calls the limit — and it is what stops a 1920×1080 screen from taking
+the 1.81 the geometry would otherwise allow, capping it at 1.50. At 2560×1300 it is the
+difference between 1.72 and 1.13.
+
+So the 2048 cut this file costs at 110 KB a frame is now the lever on how large the hero
+can enter, not only on how it looks on a 5K. **It needs new renders.** The sequence
+masters have never been in this repository — `98d0243` carries `project/renders/hero-frames`,
+which is nine beat plates, not the 66-frame sequence — so unlike the Approach cuts this
+one cannot be re-encoded from the history. Only the entry actually needs the resolution:
+the approach holds on frame 276 throughout and the plate is back at 1× before the scrub
+starts, so a single 2048 plate of frame 276 would buy most of it.
 
 What the hero does *not* need from a re-render is the bottom edge tidied. The plate's last
 row carries the shadow plane at alpha 2.4/255 and is still 2.3 nine rows in, which composited

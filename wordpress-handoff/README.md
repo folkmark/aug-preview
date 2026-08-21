@@ -174,7 +174,7 @@ dependency-free custom element that touches no runtime API and drives markup it 
 build. Porting it is `assets/hero-bridge.js`, `assets/hero-bridge.css`, the frame
 directory, and the block of markup in the hero — copy all four and it works.
 
-**What the host has to supply.** Two custom properties and one overlay.
+**What the host has to supply.** Three custom properties and one overlay.
 
 `--hb-pin` is the height of the sticky header — this site sets it to `4.5rem` in the
 page's own stylesheet. The element reads the pin back off its stage's computed `top`, so
@@ -184,8 +184,15 @@ admin bar needs no code change.
 `--hb-entry-clear` is a **length**: how much room the host's copy needs, measured from
 under the header. It is the one geometric value that has to be set against the host's own
 layout, because what has to fit there is a block of text whose height is in pixels. This
-site derives it from `--hero-band`, the measured height of its hero copy with air around
-it — 380px on any desktop width, 290px at 768, 479px on a phone, 558px at 320.
+site derives it from `--hero-band`, the height of its hero copy with air around it —
+380px on any stacked desktop width, 290px at 768, 479px on a phone, 558px at 320, and
+derived from the body's own offset in the two-column arm above 1400px.
+
+**Budget this line carefully: it is the plate's size as well as the copy's.** The entry is
+solved from the room left under it and divided by `--hb-entry-keep` minus
+`--hb-entry-sky` = 0.174, so a pixel spent here costs 5.75px of picture. A theme whose
+hero copy is taller than this site's will get a visibly smaller plate, and the fix is the
+copy rather than the component.
 
 Note it is the plate's **content** that clears this line, not the plate's top edge: the
 plate's own empty top (`--hb-entry-sky`, 0.226 of its height on the frame the approach
@@ -197,6 +204,17 @@ two are properties of this artwork measured on the frame the approach holds — 
 swapping in a different sequence re-measures them, on **its** first played frame, not on a
 later one: the camera moves during this scrub and the same desk edge reads 0.386–0.404 by
 frame 417.
+
+`--hb-entry-zoom` is the third host property: how far past edge to edge the entry may
+grow, as a **number**. It defaults to `1`, which is the safe value and means "never larger
+than the artwork's own width" — content spans plate x 0.000–0.999, so anything above 1
+crops the rack's left edge and the desk's right. This site sets `2` above 991px and gets
+between 1.03 and 1.50 of it, because two other things bind first: `--hb-entry-keep`, which
+holds the desk's top edge above the fold and is what binds on a laptop, and `--hb-max`,
+which now caps the width the plate is **drawn** at and not only the width of its box.
+2880px there is a 1.8× upscale of the 1600 cut, so raising it without a bigger cut just
+makes the entry soft. Below 992px this site leaves the zoom at 1: a phone has no copy
+pressing on the plate, so cropping it buys nothing.
 
 **The copy animation is the host's, not the component's.** The headline pins and holds for
 the whole hero while the lede and buttons float up and dissolve, and it is a self-contained
@@ -237,10 +255,18 @@ scroll, so the scrub starts exactly where the last of the copy leaves. A theme t
 no copy over the hero can set `--hb-entry-clear` to `0px` and drop the overlay; the plate
 then simply arrives at full size and scrubs.
 
-`--hb-entry-span` and `--hb-entry-clear` are registered with `@property` so they resolve
-to pixels for the script. If a theme's build strips `@property` rules, the element falls
-back to its stage's height and 40% of the viewport, which is sane rather than correct — do
-not strip them.
+`--hb-entry-span`, `--hb-entry-clear`, `--hb-entry-zoom` and `--hb-max` are registered
+with `@property` so they resolve to numbers and pixels for the script. If a theme's build
+strips `@property` rules, the element falls back to its stage's height, 40% of the
+viewport, no zoom and a 2880px ceiling — sane rather than correct, so do not strip them.
+
+**The host also has to clip sideways.** With `--hb-entry-zoom` above 1 the plate is wider
+than the screen during the approach, and a transform that overhangs extends the page's
+scrollable width. Nothing inside the component may clip it — an `overflow` on the stage is
+the exact edge artefact the whole rig avoids — so the host clips at the full width of the
+page, where the cut lands off-screen. This site uses `overflow-x: clip` on its page
+wrapper. `clip` and not `hidden`: `hidden` creates a scroll container and breaks the
+stage's `position: sticky`.
 
 **The scale floor is not optional.** `--hb-entry-min` exists because the entry solves for
 how big the plate can be in the room below the copy, and on a viewport shorter than the

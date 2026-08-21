@@ -353,7 +353,14 @@
         clear: clear > 0 ? clear : (innerHeight || 800) * 0.4,
         sky: Math.min(0.9, Math.max(0, num('--hb-entry-sky', 0.226))),
         keep: Math.min(1, Math.max(0.05, num('--hb-entry-keep', 0.5))),
-        min: Math.min(1, Math.max(0.05, num('--hb-entry-min', 0.25)))
+        min: Math.min(1, Math.max(0.05, num('--hb-entry-min', 0.25))),
+        // Floored at 1 rather than at 0: a host that writes 0 or a negative number means
+        // "no zoom", and letting that through would scale the plate to nothing or mirror
+        // it, which is the same failure --hb-entry-min exists to prevent at the other end.
+        zoom: Math.max(1, num('--hb-entry-zoom', 1)),
+        // The ceiling on the DRAWN width, so it has to be a real length. Guarded above
+        // zero because a host that unsets it would otherwise cap the plate at nothing.
+        max: Math.max(1, num('--hb-max', 2880))
       };
     }
     entrySpan() {
@@ -675,11 +682,18 @@
     // At entry the plate hangs from a line under the copy: its first pixel of ARTWORK sits
     // at --hb-entry-clear, its empty top is allowed to fall behind the words, and it runs
     // off the bottom of the screen wherever it is too tall to fit. It is scaled about its
-    // own TOP edge — transform-origin does that, see hero-bridge.css — and only as far as
-    // it must be for --hb-entry-keep of it to stay above the fold. On every desktop screen
-    // that solve comes out above 1, so the plate enters at its full edge-to-edge width and
-    // the approach is a pure vertical rise, drawn across --hb-entry-clear pixels of scroll
-    // so that it runs in step with whatever the host is doing with its copy over the top.
+    // own TOP edge — transform-origin does that, see hero-bridge.css — as far as
+    // --hb-entry-keep of it staying above the fold allows, and no further than
+    // --hb-entry-zoom. The rise is drawn across --hb-entry-clear pixels of scroll so that
+    // it runs in step with whatever the host is doing with its copy over the top.
+    //
+    // Which way it moves is the host's choice and not this method's. At --hb-entry-zoom 1
+    // the solve almost always comes out above 1 on a desk screen, the plate enters at its
+    // full edge-to-edge width and the approach is a pure vertical rise. Above 1 the plate
+    // can enter LARGER than the stage and settle back into it, cropped at the sides by the
+    // viewport, and on a tall screen — where its own empty top no longer fits above the
+    // fold — the rise flattens out entirely and the approach is a pull-back with no
+    // vertical travel at all. Both end in the same place: no transform, before the scrub.
     //
     // Anchoring the top rather than the bottom is the whole reason the plate is big enough
     // to be worth looking at. Putting its bottom on the fold instead forces the WHOLE
@@ -722,17 +736,40 @@
       var bh = box.offsetHeight;
       if (!bh) return;
 
-      // The largest the plate can be drawn with e.keep of it still above the fold. The
-      // denominator is what the plate gains in VISIBLE height per unit of its own height:
-      // it hangs from clear and grows downward, so each unit adds (keep - sky) of visible
-      // artwork. A keep at or below sky would ask for an infinite plate — guarded here,
-      // though nothing the stylesheet can say produces it.
+      var rest = this.stage.getBoundingClientRect().top + box.offsetTop;
+
+      // THE LARGEST THE PLATE CAN BE DRAWN WITH e.keep OF IT STILL ABOVE THE FOLD, and it
+      // takes two solves rather than one because the plate is never lifted above rest —
+      // see the dy clamp below. Which of them binds is a question about the plate's own
+      // empty top:
+      //
+      //   while e.sky of it still fits between rest and clear, the plate hangs from clear
+      //   and each unit of its height buys (keep - sky) of visible artwork;
+      //
+      //   once it does not, the clamp pins the plate at rest instead, its sky stops paying
+      //   for itself, and each unit of height buys keep.
+      //
+      // Solving only the first and letting the clamp move the result is what looks right
+      // and is wrong: at 2560x1300 the first solve wants a plate whose sky alone is 727px
+      // against 616px of room above it, the clamp pulls it back down to rest, and the desk
+      // lands 96px BELOW the fold — the one promise this method exists to keep, broken
+      // silently. A keep at or below sky would ask for an infinite plate; guarded, though
+      // nothing the stylesheet can say produces it.
       var room = Math.max(0, ih - clear);
-      var h = Math.min(bh, room / Math.max(0.05, e.keep - e.sky));
+      var h = room / Math.max(0.05, e.keep - e.sky);
+      if (clear - e.sky * h < rest) h = Math.max(0, ih - rest) / e.keep;
+
+      // Two ceilings, and they mean different things. e.zoom is the host's compositional
+      // limit — how far past edge to edge it is willing to crop the sides. e.max is the
+      // resolution limit, applied to the width the reader actually sees rather than to the
+      // box, because a box inside --hb-max that is then scaled to twice it is exactly the
+      // upscale that ceiling exists to prevent. offsetWidth and not the stylesheet's
+      // min(100%, --hb-max): it is the box as laid out, so the ratio is measured rather
+      // than re-derived.
+      h = Math.min(h, e.zoom * bh, (e.max / Math.max(1, box.offsetWidth)) * bh);
       if (h < bh * e.min) h = bh * e.min;
 
       var k = h / bh;
-      var rest = this.stage.getBoundingClientRect().top + box.offsetTop;
       var top = clear - e.sky * h;
 
       // The entry only ever holds the plate LOWER than where it rests, never higher, and
