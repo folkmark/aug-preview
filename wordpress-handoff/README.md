@@ -181,22 +181,38 @@ page's own stylesheet. The element reads the pin back off its stage's computed `
 CSS and JS cannot disagree, and a theme with a taller header, no header, or a WordPress
 admin bar needs no code change.
 
-`--hb-entry-top` is a **length**: how far below the header the plate's top edge sits
-while the host's copy is still on screen. It is the one geometric value that has to be set
-against the host's own layout, because what has to fit above the plate is a block of text
-whose height is in pixels. This site derives it from `--hero-band`, which is the measured
-height of its hero copy with air around it — 380px on any desktop width, 479px on a phone.
+`--hb-entry-clear` is a **length**: how much room the host's copy needs, measured from
+under the header. It is the one geometric value that has to be set against the host's own
+layout, because what has to fit there is a block of text whose height is in pixels. This
+site derives it from `--hero-band`, the measured height of its hero copy with air around
+it — 380px on any desktop width, 290px at 768, 479px on a phone, 558px at 320.
+
+Note it is the plate's **content** that clears this line, not the plate's top edge: the
+plate's own empty top (`--hb-entry-sky`, 0.226 of its height on the frame the approach
+holds) is allowed to sit behind the words. That is worth more than it sounds — it is what
+lets the plate enter at full edge-to-edge width instead of scaled to 45% of it. The
+component also owns `--hb-entry-keep` (0.5, where the desk stops being a desk and becomes
+legs) and `--hb-entry-min` (0.25, the scale floor). Those two are properties of this
+artwork; a theme swapping in a different sequence would re-measure them.
 
 The **overlay** is the host's, not the component's: an absolutely-positioned block over the
 first screen holding the headline, lede and buttons, which scrolls away while the plate
 holds. `--hb-entry-span` in `hero-bridge.css` is one screen and is what pays for that
 scroll, so the scrub starts exactly where the last of the copy leaves. A theme that wants
-no copy over the hero can set `--hb-entry-top` to `0px` and drop the overlay; the plate
+no copy over the hero can set `--hb-entry-clear` to `0px` and drop the overlay; the plate
 then simply arrives at full size and scrubs.
 
-Two of these three are registered with `@property` so they resolve to pixels for the
-script. If a theme's build strips `@property` rules, the element falls back to its stage's
-height and 40% of the viewport, which is sane rather than correct — do not strip them.
+`--hb-entry-span` and `--hb-entry-clear` are registered with `@property` so they resolve
+to pixels for the script. If a theme's build strips `@property` rules, the element falls
+back to its stage's height and 40% of the viewport, which is sane rather than correct — do
+not strip them.
+
+**The scale floor is not optional.** `--hb-entry-min` exists because the entry solves for
+how big the plate can be in the room below the copy, and on a viewport shorter than the
+copy needs that room is negative. An unclamped solve makes the scale negative with it, and
+a negative scale *reflects* the box about its origin: the plate is drawn mirrored and
+entirely off the bottom of the screen, so the hero reads as blank for the whole hold. A
+phone in landscape — 667x375 leaves 303px under the header — is the case that finds it.
 
 **What is load-bearing, and what breaks quietly:**
 
