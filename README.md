@@ -55,15 +55,20 @@ toy-block arch assembles between a server rack and a school desk and closes. The
 plate is pinned under the header from the moment the page loads, and the hero copy
 is laid over it: the first screen is the artwork with the headline on top of it.
 
-It runs in three phases, and the element's height is split between them. Through the
-**approach** — one screen, the scroll the copy takes to leave — the plate hangs from a
-line under the copy: its first pixel of artwork on that line, its own empty top behind
-the words, and its bottom off the fold wherever it does not fit. On every desktop
-screen that leaves it at full edge-to-edge width from the first paint, with the rack,
-the desk and the desk's cubby all above the fold. It holds there for 60% of the
-approach and then **rises** into place as the last of the copy clears — a move rather
-than a zoom, except on a short screen where it also has to grow. Then it **scrubs** for
-70svh while the arch builds, holds on the closed span, and scrolls on.
+It runs in two phases, and the element's height is split between them. Through the
+**approach** the plate hangs from a line under the copy — its first pixel of artwork on
+that line, its own empty top behind the words, and its bottom off the fold wherever it
+does not fit — and rises from there into place. On every desktop screen it is already at
+full edge-to-edge width when it does, with the desk's top surface and the rack's lid
+above the fold, so the rise is a move rather than a zoom; only a short screen makes it
+grow as well. Then it **scrubs** for 70svh while the arch builds, holds on the closed
+span, and scrolls on.
+
+The approach is exactly as long as the hero copy takes to leave — `--hb-entry-span` and
+`--hb-entry-clear` are set to the same number — so the plate's rise and the copy's exit
+run in one window and the scrub picks up the instant both are done. Leave the component's
+default one screen in place instead and the two finish 294px apart at 1440x900, which is
+a third of a screen of scrolling in which nothing at all moves.
 
 How big it can be at entry follows from two constants measured off the first played
 frame. `--hb-entry-sky` (0.226) is the share of the plate that is empty at the top, and
@@ -75,8 +80,14 @@ it. Both numbers describe frame 276 and only frame 276, which is correct rather 
 sloppy: the approach holds on that frame throughout, and the camera moves later in the
 sequence — the same desk edge has slid to 0.386–0.404 by frame 417.
 
-The copy over it **drifts up as the body and buttons dissolve**, and that is a
-self-contained block of CSS in `index.html` using a scroll-driven animation — no
+Over it, **the headline stays and the body leaves**. The h1 is `position: sticky` and
+holds the spot it loaded in for the whole hero — the body going, the plate rising, and
+all 70svh of the scrub — releasing only as the plate itself scrolls away. That is a
+deliberate composition with a cost: at 1440x900 the finished arch peaks at screen y 172
+and the headline occupies about y 202 to 390, so the blocks assemble behind the words.
+The lede and buttons float 5rem further than the page scrolls and dissolve as they go.
+
+It is a self-contained block of CSS in `index.html` using a scroll-driven animation — no
 JavaScript and no coupling to the component, so a theme rebuilding this page copies the
 block and the markup it selects and needs nothing else. Engines without scroll-driven
 animations get the copy scrolling away without fading, which is what this shipped as.
