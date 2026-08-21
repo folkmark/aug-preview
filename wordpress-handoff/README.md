@@ -191,9 +191,27 @@ Note it is the plate's **content** that clears this line, not the plate's top ed
 plate's own empty top (`--hb-entry-sky`, 0.226 of its height on the frame the approach
 holds) is allowed to sit behind the words. That is worth more than it sounds — it is what
 lets the plate enter at full edge-to-edge width instead of scaled to 45% of it. The
-component also owns `--hb-entry-keep` (0.5, where the desk stops being a desk and becomes
-legs) and `--hb-entry-min` (0.25, the scale floor). Those two are properties of this
-artwork; a theme swapping in a different sequence would re-measure them.
+component also owns `--hb-entry-keep` (0.4, the lower edge of the desk's top slab at
+y 0.380 and the rack's lid at y 0.396) and `--hb-entry-min` (0.25, the scale floor). Those
+two are properties of this artwork measured on the frame the approach holds — a theme
+swapping in a different sequence re-measures them, on **its** first played frame, not on a
+later one: the camera moves during this scrub and the same desk edge reads 0.386–0.404 by
+frame 417.
+
+**The copy animation is the host's, not the component's.** The hero copy drifts up while
+the lede and buttons dissolve, and it is a self-contained block of CSS in the page using
+`animation-timeline: scroll(root block)` over `--hero-band` — no JavaScript, and no
+reference to `<hero-bridge>` at all. Copy that block and the markup it selects
+(`[data-hero-copy]`, and `[data-hero-actions]` on the button row) and it works. Two things
+it depends on: the whole block is inside `@supports (animation-timeline: scroll())` so
+older engines get a plain scroll-away, and inside `@media not (prefers-reduced-motion:
+reduce)` so the animation is never *started* under that preference rather than started and
+reset — there is then no end state stranded at `opacity: 0` to clean up.
+
+Do not put the site's `data-reveal` attribute on the hero copy or anything inside it. That
+mechanism writes `style.opacity = "1"` on a timer and latches once it reads exactly `"1"`,
+and its paired `transition: opacity` smears every scrubbed value. The two cannot share an
+element.
 
 The **overlay** is the host's, not the component's: an absolutely-positioned block over the
 first screen holding the headline, lede and buttons, which scrolls away while the plate

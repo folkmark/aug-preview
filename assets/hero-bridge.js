@@ -721,7 +721,17 @@
       var k = h / bh;
       var rest = this.stage.getBoundingClientRect().top + box.offsetTop;
       var top = clear - e.sky * h;
-      box.style.transform = 'translateY(' + ((1 - s) * (top - rest)).toFixed(1) + 'px)' +
+
+      // The entry only ever holds the plate LOWER than where it rests, never higher, and
+      // the clamp is what makes that true. top is a viewport position, which is the right
+      // frame of reference while the stage is pinned and the wrong one before it is: a
+      // host that mounts this below the fold — or the same host on a screen too short to
+      // lay copy over the plate, where the copy goes back into flow above it — has a rest
+      // position far below the pin, and an unclamped shift would haul the plate up out of
+      // its own box and over whatever is above it. Clamped, that case simply produces no
+      // transform and the plate scrolls in the way any other element would.
+      var dy = Math.max(0, top - rest);
+      box.style.transform = 'translateY(' + ((1 - s) * dy).toFixed(1) + 'px)' +
                             ' scale(' + (k + (1 - k) * s).toFixed(4) + ')';
     }
 

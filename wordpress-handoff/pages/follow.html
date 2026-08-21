@@ -114,24 +114,38 @@
      words — its first pixel of artwork on that line, its own empty top behind them, and
      its bottom off the fold wherever it does not fit.
 
-     Both are --hero-band, which is the one number here that was measured rather than
-     picked. The hero copy block renders 380px tall on every desktop width (the h1 wraps
-     identically inside --container-lg at any of them), 290px at 768 and 479px on a phone,
-     where the type scale changes and the lede runs to more lines; it reaches 558px at
-     320px wide, where the h1 goes to four lines. Each band is its copy with air around it.
+     --hero-band is the gap plus the copy's own measured height plus 24px of tail, and the
+     copy heights are the numbers that had to be measured: 380px on every desktop width
+     (the h1 wraps identically inside --container-lg at any of them), 290px from the 992px
+     type-scale break down to about 600, 479px on a phone and 558px at 320, where the h1
+     goes to four lines. Kept in CSS rather than measured at runtime on purpose — this is
+     the one part of the hero a porting theme has to re-derive for its own copy, and a
+     number it can read beats a number it has to instrument for. It is also what the static
+     export ships, which has no script to measure with.
 
-     The svh terms are the two ends of the same problem. 44svh takes over on a tall screen
-     so the copy is not marooned at the top of it; the ceiling takes over on a short one,
-     where a band bigger than the screen would push the copy up behind the header and leave
-     the plate nothing at all. A phone in landscape is the case that hits it.
+     --hero-gap is the air between the nav and the first line, and it sits ABOVE the copy
+     rather than around it: the copy is aligned to the START of its band, not centred in
+     it, because splitting a 130px gap would cost 260px of band and that difference is what
+     keeps the plate at full width on an 800px-tall screen.
+
+     Its shape is two clamps for two different screens. 14svh grows the gap on a tall one
+     so the copy is not marooned at the top; the 20svh ceiling shrinks it on a short one,
+     where 130px of air is a fifth of everything there is. The 84svh ceiling on the band is
+     the far end of the same problem: a band bigger than the screen would push the copy up
+     behind the header and leave the plate nothing at all. A phone in landscape hits both.
 
      Nothing else here — the cuts, the budget, the artwork constants the entry is composed
      against and the scrub's own pacing are the component's, and a page that set them from
      here would put them in two files. */
-  .scheme-1 { --hero-band: min(max(44svh, 440px), 78svh); }
+  .scheme-1 {
+    --hero-gap: min(max(130px, 14svh), 20svh);
+    --hero-copy: 380px;
+    --hero-band: min(calc(var(--hero-gap) + var(--hero-copy) + 24px), 84svh);
+  }
   hero-bridge { --hb-pin: var(--space-18); --hb-entry-clear: var(--hero-band); }
-  @media (max-width: 560px) { .scheme-1 { --hero-band: min(max(44svh, 520px), 78svh); } }
-  @media (max-width: 360px) { .scheme-1 { --hero-band: min(max(44svh, 600px), 84svh); } }
+  @media (max-width: 991px) { .scheme-1 { --hero-copy: 320px; } }
+  @media (max-width: 560px) { .scheme-1 { --hero-copy: 500px; } }
+  @media (max-width: 360px) { .scheme-1 { --hero-copy: 580px; } }
   /* The hero copy, laid over the pinned plate and then scrolled away. Absolute so it
      contributes no height of its own: what it scrolls through is the hero's own approach
      budget, which hero-bridge.css sizes to a screen, so the scrub starts at the scroll
@@ -139,21 +153,87 @@
      place-items, because the block inside sets its own measure and centres itself
      horizontally — this only has to place it vertically in the band.
 
-     "safe center" is the load-bearing half of that, and the plain center above it is the
-     fallback for engines that do not know the keyword. Centring a block TALLER than its
-     band splits the overflow both ways, and the half that goes upward disappears behind
-     the sticky header — measured at 320px wide, where the h1 takes four lines and the top
-     of "Bridging" landed 19px behind it. safe alignment falls back to start instead, so
-     the copy can only ever overflow downward, where it is merely close to the plate. */
+     Aligned to START with the gap as padding, not centred. Two reasons, and the second is
+     the one that matters: centring a block TALLER than its band splits the overflow both
+     ways and the upward half disappears behind the sticky header, which is what happened
+     at 320px before the band was measured; and centring spends twice the band for the same
+     gap above the words, which is room the plate needs. Starting the copy makes the gap
+     exact and the band as small as it can be.
+
+     No data-reveal on this element or anything inside it. The page's own sweep() writes
+     el.style.opacity = "1" on those and then abandons the element once it reads exactly
+     "1", and the inline transition it pairs with would smear every value the scroll
+     animation below writes. The two mechanisms cannot share an element. */
   [data-hero-copy] {
     position: absolute;
     inset: 0 0 auto;
     height: var(--hero-band);
     display: grid;
-    align-content: center;
-    align-content: safe center;
+    align-content: start;
+    padding-top: var(--hero-gap);
     padding-inline: var(--page-gutter);
     z-index: 2;
+  }
+
+  /* WHERE THERE IS NO ROOM TO OVERLAY, DO NOT OVERLAY. Below about 560px of viewport the
+     copy wants more than the whole screen under the header: a landscape phone at 667x375
+     leaves 303px, and the copy alone is 290 of it. Every arrangement that keeps the words
+     over the plate there is a collision dressed up as a layout, so this one drops the
+     overlay instead — the copy goes back into flow, takes the screen it needs, and the
+     plate follows it down the page exactly as it does with scripting off. --hb-entry-clear
+     goes with it: with nothing laid over the plate there is nothing for it to clear. */
+  @media (max-height: 560px) {
+    [data-hero-copy] {
+      position: static;
+      height: auto;
+      padding-block: var(--hero-gap) var(--space-10);
+    }
+    hero-bridge { --hb-entry-clear: 24px; }
+  }
+
+  /* THE COPY DRIFTS UP AND THE BODY DISSOLVES, and it is deliberately pure CSS with no
+     JavaScript and no knowledge of the hero-bridge element at all. A scroll-driven
+     whole mechanism: a theme rebuilding this page copies this block and the markup it
+     selects, and needs nothing else. Driving it from the component was the alternative and
+     is worse for that — [data-hero-copy] is a SIBLING of the component, so a custom
+     property written on the component would not even inherit to it.
+
+     The drift is on top of the copy's own scroll — 80px of it by the end, so the block
+     moves 5rem further than the page does and the words pull away from the plate rather
+     than riding down with it. The h1 does not fade at all: it keeps drifting and tucks
+     behind the nav, which is opaque. A heading that dims at the same rate as its own body
+     copy reads as the page going dark rather than as a transition.
+
+     The range is the band, which is exactly how far the copy has to travel to leave the
+     screen, so the animation finishes at the moment the copy is gone whatever the viewport
+     does. Note what that means against the component's own clock: the band is shorter than
+     the approach — 534px against 828 at 1440x900 — so the whole of this plays across the
+     first 65% of the approach, and the lede and buttons are at zero opacity by 39% of it.
+     The plate does not start rising until 60% (HOLD in hero-bridge.js). The two motions
+     are therefore sequential rather than simultaneous, which is the point: the words leave,
+     and then the picture moves.
+
+     @supports is the fallback, and the fallback is fine: an engine without scroll-driven
+     animations gets the copy scrolling away without fading, which is what this shipped as.
+     Chrome has had these since 115, Safari since 26 and Firefox since 144. Reduced motion
+     is handled by never starting the animation rather than by resetting it — there is then
+     no end state stranded at opacity 0 for the element to clean up. */
+  @keyframes hero-drift { to { transform: translateY(-5rem); } }
+  @keyframes hero-dissolve { 60%, to { opacity: 0; } }
+  @supports (animation-timeline: scroll()) {
+    @media not (prefers-reduced-motion: reduce) {
+      [data-hero-copy] > *,
+      [data-hero-copy] p,
+      [data-hero-copy] [data-hero-actions] {
+        animation-timeline: scroll(root block);
+        animation-range: 0 var(--hero-band);
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+      }
+      [data-hero-copy] > * { animation-name: hero-drift; will-change: transform; }
+      [data-hero-copy] p,
+      [data-hero-copy] [data-hero-actions] { animation-name: hero-dissolve; will-change: opacity; }
+    }
   }
   /* The header is sticky and 4.5rem tall, so the stage is a screen minus the header
      and the rig is that plus the pin. The difference between the two is the scroll
