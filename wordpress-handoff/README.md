@@ -198,15 +198,32 @@ swapping in a different sequence re-measures them, on **its** first played frame
 later one: the camera moves during this scrub and the same desk edge reads 0.386–0.404 by
 frame 417.
 
-**The copy animation is the host's, not the component's.** The hero copy drifts up while
-the lede and buttons dissolve, and it is a self-contained block of CSS in the page using
-`animation-timeline: scroll(root block)` over `--hero-band` — no JavaScript, and no
-reference to `<hero-bridge>` at all. Copy that block and the markup it selects
-(`[data-hero-copy]`, and `[data-hero-actions]` on the button row) and it works. Two things
-it depends on: the whole block is inside `@supports (animation-timeline: scroll())` so
-older engines get a plain scroll-away, and inside `@media not (prefers-reduced-motion:
-reduce)` so the animation is never *started* under that preference rather than started and
-reset — there is then no end state stranded at `opacity: 0` to clean up.
+**The copy animation is the host's, not the component's.** The headline pins and holds for
+the whole hero while the lede and buttons float up and dissolve, and it is a self-contained
+block of CSS in the page — `position: sticky` for the headline and
+`animation-timeline: scroll(root block)` over `--hero-band` for the body. No JavaScript,
+and no reference to `<hero-bridge>` at all. Copy that block and the markup it selects
+(`[data-hero-copy]`, `[data-hero-body]`, `[data-hero-actions]`) and it works.
+
+Four things it depends on, and all four are load-bearing:
+
+- **The headline is a direct child of `[data-hero-copy]`, not of a wrapper shared with the
+  body.** `position: sticky` can only hold an element for as far as its containing block
+  reaches; inside a wrapper sized to the copy that is about 195px. The two are siblings so
+  the headline's containing block is the tall box.
+- **Nothing between them may carry a `transform`.** A transformed ancestor becomes the
+  sticky element's containing block and kills the pin outright, which is why the float is
+  on `[data-hero-body]` alone rather than on anything above it.
+- **`[data-hero-copy]` spans the hero and takes `pointer-events: none`**, handing them back
+  to its two children. At `z-index: 2` over the whole hero it would otherwise swallow every
+  click. The dissolve sets `pointer-events: none` at its end too: the body reaches
+  `opacity: 0` having travelled only ~370px, so without it the buttons are invisible and
+  still clickable.
+- **The guards.** The whole arrangement — pin included — sits inside
+  `@supports (animation-timeline: scroll())` and `@media not (prefers-reduced-motion:
+  reduce)`, so one fallback covers all of it: a band-height box and copy that simply scrolls
+  away. The animation is never *started* under reduced motion rather than started and
+  reset, so nothing is left stranded at `opacity: 0`.
 
 Do not put the site's `data-reveal` attribute on the hero copy or anything inside it. That
 mechanism writes `style.opacity = "1"` on a timer and latches once it reads exactly `"1"`,

@@ -141,24 +141,35 @@
     --hero-gap: min(max(130px, 14svh), 20svh);
     --hero-copy: 380px;
     --hero-band: min(calc(var(--hero-gap) + var(--hero-copy) + 24px), 84svh);
+    /* The hero section's own bottom padding, named because two things need it: the section
+       sets it, and [data-hero-copy] subtracts it so the box the headline is pinned inside
+       ends where the plate does rather than a padding later. */
+    --hero-tail: clamp(var(--section-pad-y), 7vw, var(--section-pad-y-lg));
   }
-  hero-bridge { --hb-pin: var(--space-18); --hb-entry-clear: var(--hero-band); }
+  /* --hb-entry-span is the component's default one screen; this page overrides it to the
+     band so the approach lasts exactly as long as the copy takes to leave. The plate's rise
+     is driven off --hb-entry-clear, which is the same number, so the scrub picks up at the
+     instant the copy is gone AND the plate has landed. Leave the default in place and the
+     two finish 294px apart at 1440x900 — a third of a screen of scrolling in which the
+     headline is pinned, the plate is pinned, and nothing at all moves. */
+  hero-bridge {
+    --hb-pin: var(--space-18);
+    --hb-entry-clear: var(--hero-band);
+    --hb-entry-span: var(--hero-band);
+  }
   @media (max-width: 991px) { .scheme-1 { --hero-copy: 320px; } }
   @media (max-width: 560px) { .scheme-1 { --hero-copy: 500px; } }
   @media (max-width: 360px) { .scheme-1 { --hero-copy: 580px; } }
-  /* The hero copy, laid over the pinned plate and then scrolled away. Absolute so it
-     contributes no height of its own: what it scrolls through is the hero's own approach
-     budget, which hero-bridge.css sizes to a screen, so the scrub starts at the scroll
-     position where the last of these words has left. align-content rather than
-     place-items, because the block inside sets its own measure and centres itself
-     horizontally — this only has to place it vertically in the band.
+  /* The hero copy, laid over the pinned plate. Absolute so it contributes no height of
+     its own, and it spans the WHOLE hero rather than just the copy's band — because that
+     box is the headline's containing block, and position: sticky can only hold an element
+     for as far as its containing block reaches. Bounded at the bottom by --hero-tail, the
+     section's own padding, so the box ends where the plate ends: the headline releases as
+     the plate scrolls away rather than a padding's worth of scrolling later.
 
-     Aligned to START with the gap as padding, not centred. Two reasons, and the second is
-     the one that matters: centring a block TALLER than its band splits the overflow both
-     ways and the upward half disappears behind the sticky header, which is what happened
-     at 320px before the band was measured; and centring spends twice the band for the same
-     gap above the words, which is room the plate needs. Starting the copy makes the gap
-     exact and the band as small as it can be.
+     pointer-events go with the size. A box this big at z-index 2 would otherwise sit over
+     the entire hero swallowing clicks, so it takes none and hands them back to the two
+     children that want them.
 
      No data-reveal on this element or anything inside it. The page's own sweep() writes
      el.style.opacity = "1" on those and then abandons the element once it reads exactly
@@ -166,13 +177,71 @@
      animation below writes. The two mechanisms cannot share an element. */
   [data-hero-copy] {
     position: absolute;
-    inset: 0 0 auto;
-    height: var(--hero-band);
-    display: grid;
-    align-content: start;
+    inset: 0 0 var(--hero-tail);
     padding-top: var(--hero-gap);
     padding-inline: var(--page-gutter);
     z-index: 2;
+    pointer-events: none;
+  }
+  /* Both children take the measure the old wrapper used to carry. They are siblings rather
+     than one block because the headline has to pin and the body has to leave, and a
+     transform on a shared parent would become the sticky element's containing block and
+     kill the pin outright. */
+  [data-hero-copy] > * {
+    margin-inline: auto;
+    max-width: var(--container-lg);
+    text-align: center;
+    pointer-events: auto;
+  }
+
+  /* THE HEADLINE STAYS AND THE BODY LEAVES, and the whole thing is CSS with no JavaScript
+     and no knowledge of the hero-bridge element at all. A theme rebuilding this page copies
+     this block and the markup it selects and needs nothing else — which is the point, and
+     the reason it is not driven from the component: [data-hero-copy] is a SIBLING of the
+     component, so a custom property written there would not even inherit to it.
+
+     The headline pins at the position it loads in and holds it for the entire hero — the
+     body leaving, the plate growing, and all 70svh of the frame scrub — releasing only as
+     the plate itself scrolls away. It is a deliberate choice with a cost: at 1440x900 the
+     finished arch peaks at screen y 172 and the headline occupies about y 202 to 390, so
+     the blocks assemble behind the words. If that ever reads badly the smallest lever is a
+     second keyframe fading the h1 during the scrub; nothing structural has to move.
+
+     The body floats 5rem further than the page scrolls, so it pulls up and away from the
+     headline rather than riding down with it, and dissolves as it goes. Both run on the
+     same 0-to-band range as the plate's own growth, so the copy leaving and the picture
+     arriving are one move rather than two — see --hb-entry-span above.
+
+     pointer-events in the dissolve is not decoration. The body reaches opacity 0 at 60% of
+     the range having travelled only ~370px, so without it the buttons are still over the
+     viewport and still clickable while completely invisible.
+
+     @supports carries the pin as well as the animation, deliberately: one guard, one
+     fallback. An engine without scroll-driven animations gets the band-height box and copy
+     that simply scrolls away, which is what this shipped as. Chrome has had these since
+     115, Safari since 26, Firefox since 144. Reduced motion is handled by never starting
+     any of it rather than by resetting it, so nothing is left stranded at opacity 0. */
+  @keyframes hero-float { to { transform: translateY(-5rem); } }
+  @keyframes hero-dissolve { 60%, to { opacity: 0; pointer-events: none; } }
+  @supports (animation-timeline: scroll()) {
+    @media not (prefers-reduced-motion: reduce) {
+      [data-hero-copy] h1 {
+        position: sticky;
+        top: calc(var(--space-18) + var(--hero-gap));
+      }
+      [data-hero-body] {
+        animation: hero-float linear both, hero-dissolve linear both;
+        animation-timeline: scroll(root block), scroll(root block);
+        animation-range: 0 var(--hero-band), 0 var(--hero-band);
+        will-change: transform, opacity;
+      }
+    }
+  }
+  @supports not (animation-timeline: scroll()) {
+    [data-hero-copy] { inset: 0 0 auto; height: var(--hero-band); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-hero-copy] { inset: 0 0 auto; height: var(--hero-band); }
   }
 
   /* WHERE THERE IS NO ROOM TO OVERLAY, DO NOT OVERLAY. Below about 560px of viewport the
@@ -180,60 +249,23 @@
      leaves 303px, and the copy alone is 290 of it. Every arrangement that keeps the words
      over the plate there is a collision dressed up as a layout, so this one drops the
      overlay instead — the copy goes back into flow, takes the screen it needs, and the
-     plate follows it down the page exactly as it does with scripting off. --hb-entry-clear
-     goes with it: with nothing laid over the plate there is nothing for it to clear. */
+     plate follows it down the page exactly as it does with scripting off.
+
+     Everything the overlay arrangement adds comes off with it. --hb-entry-clear, because
+     with nothing laid over the plate there is nothing for it to clear. The pin, because a
+     headline stuck to the top of a page that is not holding anything behind it is just a
+     headline that will not go away. Last in the file on purpose: it has to outrank the
+     @supports block above, and these two carry equal specificity. */
   @media (max-height: 560px) {
     [data-hero-copy] {
       position: static;
+      inset: auto;
       height: auto;
       padding-block: var(--hero-gap) var(--space-10);
+      pointer-events: auto;
     }
+    [data-hero-copy] h1 { position: static; }
     hero-bridge { --hb-entry-clear: 24px; }
-  }
-
-  /* THE COPY DRIFTS UP AND THE BODY DISSOLVES, and it is deliberately pure CSS with no
-     JavaScript and no knowledge of the hero-bridge element at all. A scroll-driven
-     whole mechanism: a theme rebuilding this page copies this block and the markup it
-     selects, and needs nothing else. Driving it from the component was the alternative and
-     is worse for that — [data-hero-copy] is a SIBLING of the component, so a custom
-     property written on the component would not even inherit to it.
-
-     The drift is on top of the copy's own scroll — 80px of it by the end, so the block
-     moves 5rem further than the page does and the words pull away from the plate rather
-     than riding down with it. The h1 does not fade at all: it keeps drifting and tucks
-     behind the nav, which is opaque. A heading that dims at the same rate as its own body
-     copy reads as the page going dark rather than as a transition.
-
-     The range is the band, which is exactly how far the copy has to travel to leave the
-     screen, so the animation finishes at the moment the copy is gone whatever the viewport
-     does. Note what that means against the component's own clock: the band is shorter than
-     the approach — 534px against 828 at 1440x900 — so the whole of this plays across the
-     first 65% of the approach, and the lede and buttons are at zero opacity by 39% of it.
-     The plate does not start rising until 60% (HOLD in hero-bridge.js). The two motions
-     are therefore sequential rather than simultaneous, which is the point: the words leave,
-     and then the picture moves.
-
-     @supports is the fallback, and the fallback is fine: an engine without scroll-driven
-     animations gets the copy scrolling away without fading, which is what this shipped as.
-     Chrome has had these since 115, Safari since 26 and Firefox since 144. Reduced motion
-     is handled by never starting the animation rather than by resetting it — there is then
-     no end state stranded at opacity 0 for the element to clean up. */
-  @keyframes hero-drift { to { transform: translateY(-5rem); } }
-  @keyframes hero-dissolve { 60%, to { opacity: 0; } }
-  @supports (animation-timeline: scroll()) {
-    @media not (prefers-reduced-motion: reduce) {
-      [data-hero-copy] > *,
-      [data-hero-copy] p,
-      [data-hero-copy] [data-hero-actions] {
-        animation-timeline: scroll(root block);
-        animation-range: 0 var(--hero-band);
-        animation-timing-function: linear;
-        animation-fill-mode: both;
-      }
-      [data-hero-copy] > * { animation-name: hero-drift; will-change: transform; }
-      [data-hero-copy] p,
-      [data-hero-copy] [data-hero-actions] { animation-name: hero-dissolve; will-change: opacity; }
-    }
   }
   /* The header is sticky and 4.5rem tall, so the stage is a screen minus the header
      and the rig is that plus the pin. The difference between the two is the scroll
@@ -295,16 +327,16 @@
   <main data-screen-label="Home">
 
     
-    <section style="position: relative; padding: 0 0 clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg));">
+    <section style="position: relative; padding: 0 0 var(--hero-tail);">
       <div data-hero-copy="">
-      <div style="margin-inline: auto; max-width: var(--container-lg); text-align: center;">
         <h1 style="font-size: var(--text-h1); line-height: var(--text-h1-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-6); text-wrap: pretty;">Bridging frontier AI and the classroom.</h1>
-        <p style="font-size: var(--text-medium); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">AugmentED is an R&amp;D organization closing the gap between what AI can do and what students need. We are teachers, researchers, and engineers working together to build and test the missing technology, and the evidence to trust it.</p>
-        <div data-hero-actions="" style="margin-top: var(--space-10); display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space-4);">
-          <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="default" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border-width: 1px; border-style: solid; border-color: var(--color-st-tropaz); border-image: initial; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-st-tropaz); color: var(--color-scheme-btn-text, var(--color-white)); padding: 0.375rem 0.75rem; font-weight: var(--font-weight-medium);">Follow our work</button></div>
-          <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="secondary" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-neutral-darkest-5); color: inherit; padding: 0.375rem 0.75rem; font-weight: var(--font-weight-medium); backdrop-filter: blur(var(--blur-glass));">Explore our approach</button></div>
+        <div data-hero-body="">
+          <p style="font-size: var(--text-medium); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">AugmentED is an R&amp;D organization closing the gap between what AI can do and what students need. We are teachers, researchers, and engineers working together to build and test the missing technology, and the evidence to trust it.</p>
+          <div data-hero-actions="" style="margin-top: var(--space-10); display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space-4);">
+            <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="default" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border-width: 1px; border-style: solid; border-color: var(--color-st-tropaz); border-image: initial; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-st-tropaz); color: var(--color-scheme-btn-text, var(--color-white)); padding: 0.375rem 0.75rem; font-weight: var(--font-weight-medium);">Follow our work</button></div>
+            <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="secondary" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-neutral-darkest-5); color: inherit; padding: 0.375rem 0.75rem; font-weight: var(--font-weight-medium); backdrop-filter: blur(var(--blur-glass));">Explore our approach</button></div>
+          </div>
         </div>
-      </div>
       </div>
       <div data-hero-visual="" data-reveal="" style="opacity: 1; transition: opacity var(--transition-fade);">
         <hero-bridge base="../../assets/hero-bridge/" from="276" to="417">

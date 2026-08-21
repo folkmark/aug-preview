@@ -133,10 +133,11 @@ hero-bridge {
      a picture rising into place. */
   --hb-entry-min: 0.25;
 
-  /* How much of the scroll budget the approach spends before the scrub starts. One screen:
-     it is exactly the height of the copy overlay the host lays over the pinned plate, so
-     the scrub begins on the scroll position where the last of that copy leaves the top of
-     the screen. Read back as a length by hero-bridge.js — see the @property above. */
+  /* How much of the scroll budget the approach spends before the scrub starts, and the
+     window the plate's rise is drawn across. One screen is the default because it is a
+     sane one for a bare mount; a host that lays copy over the plate will usually want it
+     to be however far that copy has to travel, which is what this site sets it to. Read
+     back as a length by hero-bridge.js — see the @property above. */
   --hb-entry-span: calc(100vh - var(--hb-pin));
   --hb-entry-span: calc(100svh - var(--hb-pin));
 
@@ -165,8 +166,13 @@ hero-bridge {
   --hb-stage-h: max(calc(100svh - var(--hb-pin)), calc(min(100vw, var(--hb-max)) * 1432 / 2048));
 
   /* THE SCROLL BUDGET is the difference between the two, which is what progress() measures
-     as offsetHeight minus the stage's. 170 is one screen of approach (--hb-entry-span,
-     above) and 70svh of scrub. The scrub half is unchanged: 70svh across 48 render frames
+     as offsetHeight minus the stage's, and it is the approach plus the scrub written as
+     exactly that. --hb-entry-span used to be spelled out here as a hard 100svh, which was
+     fine while it was always one screen and wrong the moment a host shortened it: the
+     element kept the screen it no longer spent and handed the difference to nobody, so the
+     hero simply stopped moving for a third of a screen. Naming it means a host that
+     retimes the approach retimes the element with it. The scrub half is unchanged:
+     70svh across 48 render frames
      is about 13px of scroll per frame at 1440x900, deliberately a quick pass rather than
      the Approach section's 45px-per-frame crawl. If the full stride-1 delivery lands
      (142 frames — see docs/hero-bridge-render.md), the 70 has to rise with it or the whole
@@ -175,8 +181,8 @@ hero-bridge {
      The plain-vh lines are the fallback for engines without svh; svh rather than dvh
      because dvh changes as mobile chrome hides, and a budget that moved mid-gesture would
      snap the scrub. */
-  height: calc(var(--hb-stage-h) + 170vh - var(--hb-pin));
-  height: calc(var(--hb-stage-h) + 170svh - var(--hb-pin));
+  height: calc(var(--hb-stage-h) + var(--hb-entry-span) + 70vh);
+  height: calc(var(--hb-stage-h) + var(--hb-entry-span) + 70svh);
 }
 hero-bridge *, hero-bridge *::before, hero-bridge *::after { box-sizing: border-box; }
 

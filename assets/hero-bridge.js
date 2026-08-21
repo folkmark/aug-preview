@@ -42,11 +42,12 @@
    plate is pinned from the moment the page loads, so a host can lay a screen of copy over
    it — which is what this hero does — and the APPROACH is the scroll that copy takes to
    leave. Through it the plate hangs from a line under the words, edge to edge on a desktop
-   screen with only its bottom off the fold, and rises into place as the last of them goes;
-   then the SCRUB starts, on a plate that has been on screen the whole time. How long the
-   approach lasts is --hb-entry-span and how much room the copy needs is --hb-entry-clear,
-   both in hero-bridge.css: a host with more or less copy to clear changes those and
-   nothing here.
+   screen with only its bottom off the fold, and rises into place across exactly the
+   distance that copy takes to go; then the SCRUB starts, on a plate that has been on screen
+   the whole time. How long the approach lasts is --hb-entry-span and how much room the copy
+   needs is --hb-entry-clear, both in hero-bridge.css — set them to the same distance and
+   the copy leaving and the plate arriving are one move. A host with more or less copy to
+   clear changes those and nothing here.
 
    Attributes, all optional except base:
      base        URL prefix ending in "/"                    (required)
@@ -77,13 +78,12 @@
   // like it, it is paid for out of the motion: raising it makes the scrub faster.
   var TAIL = 0.15;
 
-  // How much of the APPROACH the plate spends held exactly where it entered, before it
-  // settles up into place. The copy laid over it is what the reader is reading for that
-  // stretch, and a picture drifting under running text is a distraction rather than an
-  // effect — so it does not move at all until the copy is most of the way gone, and then
-  // the whole move happens in one gesture as the words clear. Paid for out of the same
-  // scroll: raising it makes the settle faster, not longer.
-  var HOLD = 0.6;
+  // The rise used to hold for the first 60% of the approach and then happen in one gesture
+  // as the words cleared, which made the copy leaving and the picture arriving two moves in
+  // sequence. They are one move now: the rise is drawn across --hb-entry-clear pixels of
+  // scroll, which is the same distance the host's copy takes to leave, so the two start and
+  // finish together. Nothing here paces it any more — the stylesheet does, and the host
+  // sets that number against its own copy.
 
   // Four in flight keeps the window filling faster than a scroll can outrun it without
   // making the whole machine slow. Decoding competes with the compositor for the same
@@ -166,6 +166,7 @@
       // after a boot counts as movement and writes the entry transform, rather than idling
       // out against a stale match and leaving the plate at full size over the copy.
       this.entry = 0;
+      this.scrolled = 0;
       this.e = -1;
       this.N = 0;
       // Cleared with the rest of the state, and it has to be. win is what frame()'s
@@ -587,7 +588,11 @@
       var rect = this.getBoundingClientRect();
       var span = this.offsetHeight - this.stage.offsetHeight;
       if (span > 0) {
-        var raw = clamp01((this.pin() - rect.top) / span);
+        // Banked in pixels as well as as a fraction. settle() is drawn across a distance in
+        // px rather than a share of the approach — see below — and deriving it back out of
+        // raw would multiply by a span this method has already divided by.
+        this.scrolled = Math.max(0, this.pin() - rect.top);
+        var raw = clamp01(this.scrolled / span);
         // Guarded below 1 as well as above 0: an approach that swallowed the whole budget
         // would leave the scrub dividing by zero and the arch never building.
         var share = Math.min(0.95, Math.max(0, this.entrySpan() / span));
@@ -598,6 +603,7 @@
       // No pin, so no approach either: the plate is in flow and there is nothing laid over
       // it to clear. settle() reads this as "already arrived" and writes no transform.
       this.entry = 1;
+      this.scrolled = Infinity;
       var vh = innerHeight || 800;
       var travel = this.offsetHeight;
       return clamp01((vh - rect.top) / (travel || 1));
@@ -611,11 +617,13 @@
 
       var p = this.progress();
       // The approach counts as movement even though the scrub does not advance through it.
-      // Without this the pump idles out six frames into a settle that is still running,
-      // and the plate freezes halfway up with the transform it happened to stop on.
-      var moved = p !== this.p || this.entry !== this.e;
+      // Without this the pump idles out six frames into a rise that is still running, and
+      // the plate freezes halfway up with the transform it happened to stop on. Tested on
+      // scrolled rather than on entry because scrolled is what settle() is drawn against —
+      // the two move together, but only one of them is the thing that has to be awake.
+      var moved = p !== this.p || this.scrolled !== this.e;
       this.p = p;
-      this.e = this.entry;
+      this.e = this.scrolled;
       this.settle();
 
       // Linear across the moving share, then still for the tail. want is a render-frame
@@ -670,8 +678,8 @@
     // own TOP edge — transform-origin does that, see hero-bridge.css — and only as far as
     // it must be for --hb-entry-keep of it to stay above the fold. On every desktop screen
     // that solve comes out above 1, so the plate enters at its full edge-to-edge width and
-    // the approach is a pure vertical rise. It holds there for HOLD of the approach and
-    // then rises into place in one move as the copy clears.
+    // the approach is a pure vertical rise, drawn across --hb-entry-clear pixels of scroll
+    // so that it runs in step with whatever the host is doing with its copy over the top.
     //
     // Anchoring the top rather than the bottom is the whole reason the plate is big enough
     // to be worth looking at. Putting its bottom on the fold instead forces the WHOLE
@@ -697,7 +705,14 @@
     settle() {
       var box = this.box;
       if (!box) return;
-      var s = smooth(clamp01((this.entry - HOLD) / (1 - HOLD)));
+      var e = this.entry_();
+      var clear = this.pin() + e.clear;
+      // Drawn across the clearance in PIXELS, not across a share of the approach. That
+      // distance is how far the host's copy has to travel to leave, so the rise runs in
+      // exactly the window the copy's own float and fade run in and the two read as one
+      // move. It also means the rise is over the moment the copy is gone, which is what
+      // lets --hb-entry-span be that same number and the scrub pick up immediately.
+      var s = smooth(clamp01(this.scrolled / Math.max(1, e.clear)));
       // Arrived. Cleared rather than written as an identity transform, so the scrub runs
       // against a box with no transform at all — and so the stylesheet's static-mode reset
       // is not fighting an inline style for the rest of the session.
@@ -706,8 +721,6 @@
       var ih = innerHeight || 800;
       var bh = box.offsetHeight;
       if (!bh) return;
-      var e = this.entry_();
-      var clear = this.pin() + e.clear;
 
       // The largest the plate can be drawn with e.keep of it still above the fold. The
       // denominator is what the plate gains in VISIBLE height per unit of its own height:
