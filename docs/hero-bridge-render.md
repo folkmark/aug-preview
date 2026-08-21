@@ -159,9 +159,20 @@ So both cuts are the whole plate, at 1600 and 1200 wide. 1200 matches what the h
 already ships for its still, `assets/images/hero-bridge-m.webp`.
 
 Which of the two a viewport loads is not a phone-or-desktop decision, and
-`assets/hero-bridge.css` explains the arithmetic. The pinned plate is *contained* in its
-stage, so the box is narrower than the viewport — 1184px on a 1440×900 laptop — and the
-1200 cut is the correctly-sized plate there, not a degraded one. Measured: it holds 24
-frames in the same budget where the 1600 cut holds 14, and halves the ticks that want a
-frame not yet decoded. Screens above 1× density keep the 1600 cut, because the same box
-wants 2368 device pixels there.
+`assets/hero-bridge.css` explains the arithmetic. The pinned plate runs **edge to edge**,
+so the box is the page's full width up to `--hb-max` — 1440px on a 1440×900 laptop, not
+the 1184 an earlier contained rig gave it. The 1600 cut is therefore the right one at
+every desktop width; the 1200 cut would be an upscale there, and it is kept for the
+991px breakpoint and below.
+
+Note that the ceiling is 2880px, which is well above the encoded width. The stage's
+height caps the plate's width long before it on every common screen, so 2880 only binds
+on a 5K panel — where the 1600 cut is a 1.8× upscale. That is the case a 2048 cut would
+answer; the payload table above costs it at 110 KB a frame.
+
+What the hero does *not* need from a re-render is the bottom edge tidied. The plate's last
+row carries the shadow plane at alpha 2.4/255 and is still 2.3 nine rows in, which composited
+on the page colour is a step from 250.6 to 253.0 across the width of the screen — visible as
+a straight line when the hero scrolls away. `assets/hero-bridge.css` feathers the bottom 4%
+out instead, which is below the desk's feet at y 0.94 and touches no object. Taking it out of
+the render would be tidier and is not worth a delivery on its own.

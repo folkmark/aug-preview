@@ -104,12 +104,52 @@
   [data-cycle][data-active="1"] [data-label]:not([data-label="1"]),
   [data-cycle][data-active="2"] [data-label]:not([data-label="2"]),
   [data-cycle][data-active="3"] [data-label]:not([data-label="3"]) { opacity: 0.45; }
-  /* The header's height, and the only thing the page has to tell the hero scrub: it
-     reads the pin back off its own stage, and hero-bridge.css derives the stage's
-     height and the element's from the same number. Nothing else here — the section's
-     height, the cuts and the budget are the component's own, and a page that sets
-     them from here would put the pacing in two files. */
-  hero-bridge { --hb-pin: var(--space-18); }
+  /* The two things the page has to tell the hero scrub, and they are both about the page
+     rather than about the sequence. --hb-pin is the header's height; the element reads it
+     back off its own stage, and hero-bridge.css derives the stage's height, the approach's
+     length and the element's own from the same number.
+
+     --hb-entry-top is where the plate's top edge sits while the copy below is on screen.
+     The plate is pinned from load and the copy is laid over it, so during the approach the
+     plate is held small and low — its top edge on this line, its bottom on the fold — and
+     the band above belongs to the words.
+
+     Both derive from --hero-band, which is the one number here that was measured rather
+     than picked. The hero copy block renders 380px tall on every desktop width (the h1
+     wraps identically inside --container-lg at any of them), 290px at 768 and 479px on a
+     phone, where the type scale changes and the lede runs to more lines. 440px is that
+     380 with air around it, and the svh term takes over on a tall screen so the copy does
+     not end up marooned at the top of it.
+
+     The plate starts 70px ABOVE the band rather than below it, and that is deliberate:
+     its own top 22.6% is empty page colour on the frame the approach holds — the blocks
+     that eventually fly in through it enter much later in the sequence — so there is no
+     reason to keep the words off it. 70 is inside that sky at every viewport measured —
+     108px of sky at 1440x900, 143 at 1920x1080, 189 at 2560x1440 — bar one: 1440x700,
+     where the entry plate is 258px tall and its sky only 58, so the last line of copy sits
+     over the very top of the plate rather than over the page. It reads as page colour
+     either way, which is the point; that is what makes the 70 safe to spend.
+
+     Nothing else here — the cuts, the budget and the scrub's own pacing are the
+     component's, and a page that set them from here would put them in two files. */
+  .scheme-1 { --hero-band: max(44svh, 440px); }
+  hero-bridge { --hb-pin: var(--space-18); --hb-entry-top: calc(var(--hero-band) - 70px); }
+  @media (max-width: 560px) { .scheme-1 { --hero-band: max(44svh, 520px); } }
+  /* The hero copy, laid over the pinned plate and then scrolled away. Absolute so it
+     contributes no height of its own: what it scrolls through is the hero's own approach
+     budget, which hero-bridge.css sizes to a screen, so the scrub starts at the scroll
+     position where the last of these words has left. align-content rather than
+     place-items, because the block inside sets its own measure and centres itself
+     horizontally — this only has to place it vertically in the band. */
+  [data-hero-copy] {
+    position: absolute;
+    inset: 0 0 auto;
+    height: var(--hero-band);
+    display: grid;
+    align-content: center;
+    padding-inline: var(--page-gutter);
+    z-index: 2;
+  }
   /* The header is sticky and 4.5rem tall, so the stage is a screen minus the header
      and the rig is that plus the pin. The difference between the two is the scroll
      budget the element measures: 170 minus 100 leaves 70svh over which the blocks
@@ -170,8 +210,8 @@
   <main data-screen-label="Home">
 
     
-    <section style="padding: clamp(var(--space-12),5vw,var(--space-18)) 0 clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg));">
-      <div style="padding-inline: var(--page-gutter);">
+    <section style="position: relative; padding: 0 0 clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg));">
+      <div data-hero-copy="">
       <div style="margin-inline: auto; max-width: var(--container-lg); text-align: center;">
         <h1 style="font-size: var(--text-h1); line-height: var(--text-h1-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-6); text-wrap: pretty;">Bridging frontier AI and the classroom.</h1>
         <p style="font-size: var(--text-medium); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">AugmentED is an R&amp;D organization closing the gap between what AI can do and what students need. We are teachers, researchers, and engineers working together to build and test the missing technology, and the evidence to trust it.</p>
@@ -181,12 +221,12 @@
         </div>
       </div>
       </div>
-      <div data-hero-visual="" data-reveal="" style="opacity: 1; transition: opacity var(--transition-fade); margin-top: clamp(var(--space-10),5vw,var(--space-16));">
-        <hero-bridge base="../../assets/hero-bridge/" from="276" to="417" data-hb-motion="on" data-hb-ready="">
+      <div data-hero-visual="" data-reveal="" style="opacity: 1; transition: opacity var(--transition-fade);">
+        <hero-bridge base="../../assets/hero-bridge/" from="276" to="417">
           <div data-hb-stage="">
             <div data-hb-box="">
-              <canvas data-hb-layer="0" aria-hidden="true" style="opacity: 1;" width="1200" height="839" data-f=":0"></canvas>
-              <canvas data-hb-layer="1" aria-hidden="true" style="opacity: 0;" width="1200" height="839" data-f=":1"></canvas>
+              <canvas data-hb-layer="0" aria-hidden="true"></canvas>
+              <canvas data-hb-layer="1" aria-hidden="true"></canvas>
               
               <img src="../../assets/images/hero-bridge.webp" srcset="../../assets/images/hero-bridge-m.webp 1200w, ../../assets/images/hero-bridge.webp 2048w" sizes="100vw" alt="An arch of toy blocks under construction between a server rack and a school desk, carrying the span from one to the other as the last blocks fall into place" width="2048" height="1432" decoding="async">
             </div>
@@ -212,7 +252,7 @@
             <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-regular); margin: 0 0 var(--space-4);">Our Approach</p>
             <h2 style="font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0px; text-wrap: pretty;">We treat AI in education as a science, not a gold rush.</h2>
           </div>
-          <div data-approach-text="" style="margin-top: 239.5px;">
+          <div data-approach-text="" style="margin-top: 276.5px;">
             <p style="font-size: var(--text-medium); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">We run an iterative research and development cycle, with educators, researchers, and engineers as equal partners at every step. We don't start by asking what AI can do. We start by asking what teachers and students need. Each cycle focuses on one role AI could play in meeting some of those needs. Then educators, researchers, and engineers work together to identify what's missing, build it, and test it in real classrooms. What we learn informs the next turn of the cycle.</p>
             <div style="margin-top: var(--space-8); display: flex;">
               <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="link" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background: none; color: var(--color-scheme-text, var(--text-body)); padding: 0.375rem 0.75rem;">Learn more<div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 20px; width: 20px; height: 20px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 20;">chevron_right</span></div></button></div>

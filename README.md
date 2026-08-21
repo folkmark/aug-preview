@@ -52,11 +52,30 @@ old SHAs; nothing in this repository points at them any more.
 The home page opens on `<hero-bridge>` — `assets/hero-bridge.js` and
 `assets/hero-bridge.css` — a scroll-scrubbed sequence of alpha plates in which a
 toy-block arch assembles between a server rack and a school desk and closes. The
-plate runs full bleed, pins under the header for 70svh while it builds, holds on
-the closed span, then scrolls on. It is cropped to the pinned stage rather than
-scaled into it — the artwork is 1.43:1 and a laptop is 1.6 — with the crop
-centred on the completed bridge so the arch, both supports and the ground shadow
-stay in frame.
+plate is pinned under the header from the moment the page loads, and the hero copy
+is laid over it: the first screen is the artwork with the headline on top of it.
+
+It runs in three phases, and the element's height is split between them. Through the
+**approach** — one screen, the scroll the copy takes to leave — the plate is held
+small and low, its bottom on the fold and its top under the words, so the rack, the
+desk and the desk's cubby are all above the fold from the first paint. It holds that
+framing for 60% of the approach and then **settles** up to full size as the last of
+the copy clears. Then it **scrubs** for 70svh while the arch builds, holds on the
+closed span, and scrolls on.
+
+The plate runs edge to edge and is never clipped by a box — its stage takes the
+plate's own height rather than the screen's, so on a desk screen the bottom of the
+picture is simply below the fold while the arch builds and scrolling on reveals it
+whole. That matters more than it sounds: the rig this replaced cropped to the pinned
+stage, which looked identical while pinned and then dragged a hard cut up through the
+ground shadow the moment the stage released. The render ends in a faint edge of its
+own — the last row carries the shadow plane at alpha 2.4/255 — so the bottom 4% is
+feathered out, below the desk's feet at y 0.94 and touching no object.
+
+Two custom properties are the page's business rather than the component's:
+`--hb-pin` is the header's height, and `--hb-entry-top` is where the plate's top
+edge sits while the copy is still on screen. Both are set in `index.html` from the
+measured height of the hero copy — 380px on any desktop width, 479px on a phone.
 
 Its frames are in `assets/hero-bridge/`, named by their Blender frame number so a
 file, [`docs/hero-bridge-render.md`](docs/hero-bridge-render.md) and the manifest
@@ -72,10 +91,12 @@ disk. `tools/build-site.mjs` checks both bounds against the manifest and every
 frame of the span, in both cuts, against disk.
 
 Two numbers move together and there is no build step that will catch them drifting:
-the section's height in `assets/hero-bridge.css` is the scroll budget, and the scrub
-spends it across however many frames the manifest offers. The full stride-1 delivery
-the render doc asks for is 142 frames, which is three times what ships — dropped in
-without raising the height, it would play three times faster.
+the 70svh scrub share of the element's height in `assets/hero-bridge.css` is the
+scroll budget, and the scrub spends it across however many frames the manifest offers.
+The full stride-1 delivery the render doc asks for is 142 frames, which is three times
+what ships — dropped in without raising the height, it would play three times faster.
+The other share, the approach, is one screen and is sized to the copy laid over it,
+not to the frames.
 
 ## The Approach animation
 

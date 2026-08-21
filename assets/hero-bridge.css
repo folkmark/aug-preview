@@ -3,126 +3,219 @@
 
    Host-agnostic: no design tokens, no project class names, no assumption about the page
    around it. A host supplies the frame directory, and may set --hb-pin to a fixed
-   header's height and this element's height to change how long the hero pins.
+   header's height and --hb-entry-top to however much of the screen its own copy needs.
 
-   Everything geometric lives here rather than in JS, including the two things JS reads
-   back: --hb-variant tells the element which cut of the plate to load and --hb-budget how
-   much decoded image to hold, so the breakpoint that sizes the stage is also the one that
-   picks the file and sizes the memory. */
+   Everything geometric lives here rather than in JS, including the four things JS reads
+   back: --hb-variant tells the element which cut of the plate to load, --hb-budget how
+   much decoded image to hold, --hb-entry-span how much scroll the approach costs and
+   --hb-entry-top how far down the screen the plate sits while that approach runs. So the
+   breakpoint that sizes the stage is also the one that picks the file, sizes the memory
+   and paces the entry, and there is no second copy of any of it in the script. */
 
-/* THE PLATE RUNS FULL BLEED, AND IS CROPPED TO DO IT.
+/* THE PLATE IS NEVER CLIPPED BY A BOX. THAT IS THE WHOLE ARRANGEMENT.
 
-   The plate is 2048x1432, or 1.4302:1. At 100vw it is 100vw/1.4302 tall, which fits inside
-   a pinned stage only on a viewport whose aspect is 1.4302 or narrower. A 1440x900 laptop
-   is 1.6 and a 1920x1080 is 1.78, so on a desk the plate is always taller than the stage —
-   1007px against 828px at 1440x900 — and 17.8% of it has to go off the ends.
+   The plate is 2048x1432, or 1.4302:1, and it runs edge to edge — so on any desk screen it
+   is taller than the screen under the header: 1007px against 828px at 1440x900, 1342px
+   against 1008px at 1920x1080. Something has to give, and there are only two ways to give.
 
-   Full bleed is the brief, so it is cropped rather than shrunk, and the only question is
-   where the window sits. That is --hb-anchor, and it is measured rather than picked: across
-   the 48 played frames the completed bridge occupies y 0.100 to 0.945 of the plate, centred
-   on 0.522. Putting 0.522 at the middle of the stage costs about 1% off each end of the
-   structure at 1440x900 and keeps the arch, both supports and the ground shadow in frame.
+   The previous rig cropped it: overflow:hidden on the stage, with --hb-anchor placing the
+   window. That looks right while the stage is pinned, because the cut sits exactly on the
+   bottom edge of the screen where nobody can see it. It stops looking right the instant the
+   stage releases — the clip rectangle then walks up the screen, and a hard horizontal line
+   crosses the ground shadow on the way out. Cropping by the VIEWPORT is invisible; cropping
+   by a BOX is an edge, and only one of those is acceptable here.
 
-   Blocks in flight are a different matter and are deliberately allowed to clip. The topmost
-   solid pixel reaches y 0.00 on twelve of the 48 frames, because blocks enter from above the
-   plate's own top edge — no window short of the whole plate can hold them, and a block
-   passing behind the top edge on its way in is what the crop is for. What must never clip is
-   the structure they land on, which is what the anchor protects.
+   So the stage takes the plate's own height instead of the screen's. The plate is in flow
+   and gives the stage that height, nothing anywhere clips, and the bottom of the picture is
+   simply below the fold while the arch builds — 18% of it at 1440x900, 25% at 1920x1080.
+   Scrolling on reveals the feet and the shadow, in one piece, as the section leaves.
 
-   Below 5/4 the plate is shorter than the stage and none of this applies: see the narrow
-   arm at the bottom of this file, which drops the crop and the anchor together. */
+   What that costs is the desk's feet and the rack's base during the scrub: content below
+   y 0.82 of the plate is off-screen while pinned at 1440x900. That is deliberate and was
+   chosen over side margins — the alternative, fitting the whole plate into the screen,
+   leaves the artwork 1184px wide inside a 1440px viewport with 128px of page colour each
+   side, and this hero is meant to run edge to edge.
+
+   Below about 5/4 the plate is shorter than the screen and none of this applies: it is
+   simply centred in a stage a screen tall, with no crop of any kind to reconcile. There is
+   no media query for that case any more, because there is nothing left for it to say. */
+
+/* Both entry properties have to be readable from script as PIXELS, and a plain custom
+   property computes to its token text — "calc(100svh - 4.5rem)" — not to a length.
+   Registering them is what makes getComputedStyle resolve the calc, so the entry can be
+   written here against the heights it is derived from rather than as constants in the
+   script that would be free to drift from them. Every engine that supports
+   mix-blend-mode: plus-lighter, which this component already requires for its cross-fade,
+   supports @property; hero-bridge.js has a fallback for each where it is missing. */
+@property --hb-entry-span { syntax: "<length>"; inherits: true; initial-value: 0px; }
+@property --hb-entry-top { syntax: "<length>"; inherits: true; initial-value: 0px; }
 
 hero-bridge {
-  /* Where the stage pins. One number drives the sticky offset, the stage's height and the
-     element's, and the element reads it back off the stage — so a host with a taller
-     header, or none, sets this and nothing else. */
+  /* Where the stage pins. One number drives the sticky offset, the stage's height, the
+     approach's length and the element's padding, and the element reads it back off the
+     stage — so a host with a taller header, or none, sets this and nothing else. */
   --hb-pin: 0px;
   --hb-variant: "";
-  /* The point of the PLATE, as a fraction of its height, that sits at the middle of the
-     stage. 50% is a plain centre crop; 52.2% is the completed bridge's own centre. Change
-     this and nothing else moves — the box below converts it to a shift. */
-  --hb-anchor: 52.2%;
+
+  /* The width ceiling. The plate runs edge to edge below this and stops growing above it,
+     which is what keeps a very wide screen from stretching the artwork across a metre of
+     desk. It is above every common width on purpose — 2560 and 3440 panels both take the
+     full viewport — so in practice it only bites on a 5K. Note that the shipped cut is
+     1600px, so a box at this ceiling is a 1.8x upscale; docs/hero-bridge-render.md costs
+     out a 2048 cut if that ever starts to show. */
+  --hb-max: 2880px;
+
+  /* How far below the header the plate's TOP EDGE sits while the hero is being approached.
+     The plate is scaled down to fit under that line and sits on the fold, so this is really
+     "how much of the first screen belongs to the host's copy" — which is why it is the one
+     geometric value a host is expected to set against its own layout rather than leave at
+     the default. A length and not a percentage: what has to fit above the plate is a block
+     of text, whose height is in pixels and barely moves with the viewport, so a share of
+     the screen would be far too small on a short one and wasteful on a tall one.
+
+     40svh is a placeholder that keeps a bare mount sensible. This site sets it from the
+     measured height of its own hero copy — see the note beside --hb-pin in index.html. */
+  --hb-entry-top: 40svh;
+
+  /* How much of the scroll budget the approach spends before the scrub starts. One screen:
+     it is exactly the height of the copy overlay the host lays over the pinned plate, so
+     the scrub begins on the scroll position where the last of that copy leaves the top of
+     the screen. Read back as a length by hero-bridge.js — see the @property above. */
+  --hb-entry-span: calc(100vh - var(--hb-pin));
+  --hb-entry-span: calc(100svh - var(--hb-pin));
+
   display: block;
   position: relative;
   box-sizing: border-box;
-  /* Taller than the stage, and the difference is the scroll budget: the plate pins while
-     the arch assembles, and the hero only scrolls on once it has closed. This one number
-     therefore sets both how long the hero holds and how fast the arch builds — there is
-     no second place to keep in step.
 
-     70svh of budget across 48 render frames is about 13px of scroll per frame at
-     1440x900. That is deliberately a quick pass rather than the Approach section's
-     45px-per-frame crawl: this is the first thing on the page and it should not ask for
-     three screens of thumb before the reader reaches a word of copy. If the full
-     stride-1 delivery lands (142 frames — see docs/hero-bridge-render.md), this height
-     has to rise with it or the whole assembly plays three times faster; frames and height
-     are one setting in two files.
+  /* THE STAGE'S HEIGHT, written here rather than left to the plate, and the reason is
+     position: sticky. A sticky box is constrained to its containing block, which is its
+     parent's CONTENT box — padding on this element does not extend it. Give the stage its
+     height from its content and put the scroll budget in padding and the sticky range
+     works out to zero: the stage never pins and the whole hero simply scrolls past. So
+     both heights are declared, and their difference is the budget.
 
-     The plain-vh line is the fallback for engines without svh; svh rather than dvh
+     The plate is min(100%, --hb-max) wide at 1.4302:1, and this has to be at least that
+     tall or the stage clips it — which is the one thing this arrangement must never do.
+     100vw and not 100% here because a percentage height would resolve against this
+     element's own height, which is what is being defined. 100vw counts the classic
+     scrollbar, so on an engine that has one this comes out a few pixels TALLER than the
+     plate rather than shorter — the safe direction, costing a hairline of page colour
+     above and below a plate that is centred in it anyway.
+
+     max() and not min(): below about 5/4 the plate is shorter than the screen, and the
+     stage stays a full screen with the plate centred in it. */
+  --hb-stage-h: max(calc(100vh - var(--hb-pin)), calc(min(100vw, var(--hb-max)) * 1432 / 2048));
+  --hb-stage-h: max(calc(100svh - var(--hb-pin)), calc(min(100vw, var(--hb-max)) * 1432 / 2048));
+
+  /* THE SCROLL BUDGET is the difference between the two, which is what progress() measures
+     as offsetHeight minus the stage's. 170 is one screen of approach (--hb-entry-span,
+     above) and 70svh of scrub. The scrub half is unchanged: 70svh across 48 render frames
+     is about 13px of scroll per frame at 1440x900, deliberately a quick pass rather than
+     the Approach section's 45px-per-frame crawl. If the full stride-1 delivery lands
+     (142 frames — see docs/hero-bridge-render.md), the 70 has to rise with it or the whole
+     assembly plays three times faster; frames and height are one setting in two files.
+
+     The plain-vh lines are the fallback for engines without svh; svh rather than dvh
      because dvh changes as mobile chrome hides, and a budget that moved mid-gesture would
      snap the scrub. */
-  height: calc(170vh - var(--hb-pin));
-  height: calc(170svh - var(--hb-pin));
+  height: calc(var(--hb-stage-h) + 170vh - var(--hb-pin));
+  height: calc(var(--hb-stage-h) + 170svh - var(--hb-pin));
 }
 hero-bridge *, hero-bridge *::before, hero-bridge *::after { box-sizing: border-box; }
 
-/* overflow:hidden is what makes the crop a crop rather than the plate drawing over the
-   sections either side of it. */
+/* The stage pins under the header and is AT LEAST a screen tall — taller wherever the
+   plate is, because --hb-stage-h above is the larger of the two. That is what makes the
+   picture unclippable, so:
+
+   NO overflow: hidden. There is nothing to clip — the stage is sized to hold the plate,
+   and the entry transform below only ever scales DOWN — and a clip rectangle here is the
+   exact artefact this arrangement exists to avoid. Putting one back as a "safety net"
+   reintroduces the edge.
+
+   place-items rather than an absolutely-positioned child, which is the reverse of what
+   this file used to do. The old note was right that a browser clamps `center` to `start`
+   for an item larger than its alignment container, so that overflow cannot become
+   unreachable — but that only applies to a scroll container, and without overflow:hidden
+   the stage is not one. Nor is the item ever larger than it. Centring matters only where
+   the plate is shorter than a screen, which is every phone and tablet in portrait. */
 hero-bridge [data-hb-stage] {
   position: sticky;
   top: var(--hb-pin);
-  height: calc(100vh - var(--hb-pin));
-  height: calc(100svh - var(--hb-pin));
-  overflow: hidden;
+  height: var(--hb-stage-h);
+  display: grid;
+  place-items: center;
 }
 
-/* Full bleed at the plate's own aspect. aspect-ratio rather than a height, so the box is
+/* Edge to edge at the plate's own aspect. aspect-ratio rather than a height, so the box is
    the plate whatever the viewport does and there is no second number to keep in step with
-   the render. Never scaled to fit — the crop above is what reconciles it with the stage.
+   the render.
 
-   top:50% puts the box's TOP EDGE at the middle of the stage; translateY then lifts it by
-   the anchor's share of its own height, which lands the plate's anchor fraction exactly at
-   the stage's middle. translateY resolves percentages against the element's own height —
-   the plate's height — so this one expression is correct at every viewport with no media
-   query and no JavaScript.
+   min(100%, …) and not min(100vw, …): 100vw counts the classic scrollbar, so it is a
+   handful of pixels wider than the content box, and in a stage that no longer clips those
+   pixels would push the plate sideways instead of being quietly swallowed. 100% is the
+   element's own width and cannot do that.
 
-   Absolutely positioned, and that is not incidental. The obvious version of this is a
-   centring stage — display:grid, place-items:center — with the transform shifting off that
-   centre. It does not work: overflow:hidden makes the stage a scroll container, and a
-   browser clamps `center` to `start` for an item larger than its alignment container so
-   that overflow cannot become unreachable. The baseline is silently top-aligned, and the
-   whole crop lands on the bottom edge — measured at 1440x900, 10.1% off the bottom of the
-   bridge and nothing off the top. Out of flow, there is no alignment step to be clamped.
+   transform-origin at the bottom edge is what the entry is built on: hero-bridge.js scales
+   this box down about its own bottom and lifts that bottom onto the fold, so the plate
+   arrives from below the copy rather than growing out of the middle of it. It resolves to
+   no transform at all by the time the scrub starts.
 
-   No will-change and no translateZ: this never animates. It is a static offset, and
-   promoting it to its own layer would cost memory on the one element already holding two
-   multi-megapixel canvases.
+   will-change is set, and the note that used to sit here saying this never animates is why
+   it is worth flagging: it does now, once, over the approach. It is left on rather than
+   toggled because the element already promotes two canvas layers for their opacity
+   cross-fade, so this adds no layer that is not there for the length of the section anyway.
 
    Content spans x 0.000-0.999 and y 0.000-0.999 of this plate, measured over all 48 played
    frames at the lossless-alpha encode: the ground shadow reaches the bottom edge and blocks
-   fly in from the top and the right for the whole run. There is no transparent margin, which
-   is why the crop is anchored on the structure rather than on a transparent edge. (The older
-   figure quoted here, x 0.004-0.959, was measured on the alphaQuality 70 frames, which had
-   destroyed the softest pixels at the edges — see the render doc.)
+   fly in from the top and the right for the whole run. There is no transparent margin — so
+   there is nothing to trim off before the picture starts, and every edge of this box is
+   artwork. Which is the argument for not clipping any of them.
 
    isolation is load-bearing: it makes the two canvases their own blending group, and
    without it plus-lighter blends against the page and blows out to white. An ancestor
    with a filter, an opacity below 1, or its own mix-blend-mode creates a competing
    stacking context — the hero's [data-reveal] wrapper animates opacity, so it is one of
-   these, and this is what contains the group against it. */
+   these, and this is what contains the group against it.
+
+   THE MASK IS THE LAST FOUR PERCENT, AND IT IS WHAT KEEPS THE BOTTOM EDGE INVISIBLE.
+   Not clipping the plate is only half of "no edge": the render itself ends in one. Measured
+   on the shipped frames, the last row of the plate carries a black wash at alpha 2.4/255,
+   still 2.3 nine rows in — the far tail of the ground-shadow plane, which the frame simply
+   stops in the middle of. Composited on this site's page colour that is a step from 250.6
+   to 253.0 across the full width of the screen, and it walks up the viewport as the hero
+   scrolls away. Small, but it is a perfectly straight line the width of the page, which is
+   the kind of small the eye is best at.
+
+   Four percent is chosen against the artwork, not picked: the desk's feet rest at y 0.94
+   and everything below y 0.96 is shadow tail, so the ramp touches no object. Across 40px
+   at 1440x900 it takes 2.4 levels of alpha to zero — a gradient of 0.06 levels per pixel,
+   which no display resolves.
+
+   Only the bottom. The top row measures alpha 0.01 and needs nothing, and the sides carry
+   real artwork — the rack's reflection reaches the left edge at alpha 59 — so a feather
+   there would erode the picture rather than an artefact. Their edges also sit off-screen
+   at every width below --hb-max.
+
+   The mask goes on this element and not on the layers because it has to apply AFTER the
+   two canvases have blended: masking them separately would fade each one's contribution
+   before plus-lighter added them, which is a different and wrong picture during a
+   cross-fade. */
 hero-bridge [data-hb-box] {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 100%;
+  position: relative;
+  width: min(100%, var(--hb-max));
   aspect-ratio: 2048 / 1432;
-  transform: translateY(calc(0% - var(--hb-anchor)));
+  transform-origin: 50% 100%;
+  will-change: transform;
   isolation: isolate;
+  mask-image: linear-gradient(to bottom, #000 96%, transparent 100%);
 }
 
 /* One box, three stacked pictures: the two scrub layers and the still they replace. They
    register 1:1 because they are the same plate at three sizes, so nothing here can drift
-   out of alignment as the browser picks a srcset candidate. */
+   out of alignment as the browser picks a srcset candidate. Absolute against a box that
+   carries its own aspect-ratio, so none of the three contributes layout and the box's
+   height is the render's shape rather than whichever file arrived. */
 hero-bridge [data-hb-box] > canvas,
 hero-bridge [data-hb-box] > img {
   position: absolute;
@@ -152,29 +245,37 @@ hero-bridge[data-hb-motion="on"][data-hb-ready] [data-hb-box] > img { visibility
 
 /* Static presentation, and the default: the attribute is absent until the element decides
    it can animate, so a page whose script never runs, or has not run yet, renders the hero
-   exactly as it shipped before this component existed — the still at full width, in flow,
-   no pin and no extra screens to scroll past.
+   as a plain full-width still in flow, with no pin and no extra screens to scroll past.
 
    Reduced motion lands here too, but is decided in JS rather than by a media query in this
    file. It is one of three signals — a preference, save-data, and whether the engine can
    decode a bitmap at all — and only the element sees the other two, so all three resolve
    in one place.
 
-   The crop goes with the pin. A still has no animation to play, so there is nothing to
-   trade a cropped composition for: the reader gets the whole plate at full width, in flow,
-   which is exactly what this hero shipped as before the sequence existed. Hence the
-   transform reset — without it the still would sit 2.2% high inside an uncropped box. */
-hero-bridge:not([data-hb-motion="on"]) { height: auto; }
-hero-bridge:not([data-hb-motion="on"]) [data-hb-stage] { position: static; height: auto; display: block; overflow: visible; }
-hero-bridge:not([data-hb-motion="on"]) [data-hb-box] { position: static; width: 100%; aspect-ratio: auto; transform: none; }
-hero-bridge:not([data-hb-motion="on"]) [data-hb-box] > canvas { display: none; }
-hero-bridge:not([data-hb-motion="on"]) [data-hb-box] > img { position: static; height: auto; }
+   The screen of padding is the important line and is easy to mistake for decoration. The
+   host lays a screen of copy OVER the pinned plate, and with no pin there is nothing to
+   lay it over — so the still drops below that screen instead of underneath the words. It
+   is also what the first paint looks like on every load, before boot decides anything,
+   which is why the copy never jumps: the arrangement is legible in both states and the
+   transition between them changes only the plate's position.
 
-/* The cut follows the box, and now that the box is full bleed the box IS the viewport
-   width. This rule used to derive it from a contained stage and pick the 1200 cut on a
-   1440x900 laptop, which was right when the box there was 1184px wide and is wrong now
-   that it is 1440: the same cut would be a 1.2x upscale of the artwork the site is built
-   around. Wide viewports take the 1600 cut.
+   PADDING and not margin, which is not interchangeable here. A top margin on this element
+   collapses up through the host's wrapper and out of the section, taking the section's own
+   top with it — and the copy overlay is positioned against that section, so it travels the
+   full screen downwards too and lands back on top of the still. Padding cannot collapse,
+   and with height:auto it adds to the element exactly as intended. */
+hero-bridge:not([data-hb-motion="on"]) {
+  height: auto;
+  padding-top: calc(100vh - var(--hb-pin));
+  padding-top: calc(100svh - var(--hb-pin));
+}
+hero-bridge:not([data-hb-motion="on"]) [data-hb-stage] { position: static; height: auto; display: block; }
+hero-bridge:not([data-hb-motion="on"]) [data-hb-box] { transform: none; will-change: auto; }
+hero-bridge:not([data-hb-motion="on"]) [data-hb-box] > canvas { display: none; }
+
+/* The cut follows the box, and the box is the page's full width up to --hb-max. Wide
+   viewports take the 1600 cut: a 1440x900 laptop wants 1440 device pixels at 1x, and the
+   1200 cut there would be a 1.2x upscale of the artwork the site is built around.
 
    That costs what it costs, and the number to watch is not memory. Decoded size is
    width x height x 4 whatever the file weighs, so the 1600 cut is 7.2 MiB a frame against
@@ -184,7 +285,14 @@ hero-bridge:not([data-hb-motion="on"]) [data-hb-box] > img { position: static; h
    falls back on land 6.7 positions away instead of 3.0, because the same four in-flight
    slots are spread over twice the requests. If ticks-waiting-on-a-frame needs improving
    the levers are the encoded width or the shadow's share of the bytes, which
-   docs/hero-bridge-render.md costs out — not this number. */
+   docs/hero-bridge-render.md costs out — not this number.
+
+   Note that the approach moved those numbers, and they were re-measured for it: over the
+   paints where the scrub is advancing, 19.5% wanted a frame that was not resident under
+   the old rig against 4.2% now, and the substitutions land 1.29 frames away rather than
+   4.03. Nothing about the budget or the cut changed — what changed is that there is a
+   screen of scroll before the first frame is wanted, so the head-first fetch order in
+   plan() has somewhere to work. */
 
 /* Below the design system's own breakpoint, the smaller cut. A 991px box at 1x wants
    991 device pixels and the 1200 cut covers it; phones at 2-3x are undersampled by both
@@ -197,38 +305,4 @@ hero-bridge:not([data-hb-motion="on"]) [data-hb-box] > img { position: static; h
    48 MB holds 12, which is the same coverage at half the cost. */
 @media (max-width: 991px) {
   hero-bridge { --hb-variant: "m"; --hb-budget: 48; }
-}
-
-/* THE CROP COMES OFF where the plate already fits — a viewport narrower than the plate's
-   own 1.4302, which is every phone and tablet in portrait and nothing on a desk. There the
-   full-bleed plate is far shorter than the screen, so there is no overflow to place and
-   nothing to protect: the stage becomes a band at the plate's own height, sticks under the
-   header, and the page scrolls past it. Cropping a plate that fits, or holding two-thirds
-   of an empty screen still around it, would both be worse than this.
-
-   The anchor goes back to a plain 50% with the crop. It is a shift into overflow, and with
-   no overflow it would just push the band 2.2% up its own stage for no reason.
-
-   5/4 rather than 2048/1432 as the line: the stage is a screen MINUS the header, so the
-   true fit condition is aspect <= 1.4302 x (1 - pin/height), which works out around 1.31
-   on a phone and 1.35 on a tablet. 1.25 sits safely inside both and is already the site's
-   own breakpoint, so there is no new constant to keep in step.
-
-   Gated on aspect and not on width, deliberately: a 991x500 phone in landscape is aspect
-   1.98, where the plate is 693px against 428px of stage. It needs the desktop's crop, not
-   this, and a max-width rule here would have given it the wrong one.
-
-   130svh of element against a band-height stage gives the scrub about the same
-   px-per-frame the cropped rig gets on a laptop. */
-@media (max-aspect-ratio: 5/4) {
-  hero-bridge {
-    --hb-anchor: 50%;
-    height: 130vh;
-    height: 130svh;
-  }
-  hero-bridge [data-hb-stage] { height: auto; overflow: visible; }
-  /* Back into flow, and this is what gives the auto-height stage its height. The wide
-     rig's box is absolutely positioned so the crop cannot be clamped by alignment; leave
-     it that way here and the stage collapses to nothing, taking the sticky band with it. */
-  hero-bridge [data-hb-box] { position: relative; top: auto; transform: none; }
 }
