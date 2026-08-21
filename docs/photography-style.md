@@ -91,20 +91,24 @@ naming, because they are the failure modes a generator will drift back to on its
   diagonal composition, and a laptop screen rendering plausible-looking nonsense. It reads
   bought, not taken.
 
-## Still to fill
+## The six slots, and what fills them
 
-Six placeholders, all `<div role="img">` blocks in `index.html` with the intent in the
-`aria-label`. Five are 3:2; the last is 3:1, which matters — it cannot be cropped out of a
-3:2 frame without throwing away half the picture.
+All six are filled, by generated frames rather than photographs. The masters are in
+`source-material/image-sources/generated/` — kept apart from `images/` so nothing in
+there is ever mistaken for something somebody took — and that directory's README
+records which Higgsfield job produced each one.
 
-| line | box | intent |
-|---|---|---|
-| 945 | 3:2 | (unspecified) beside "Nobody knows the right way for AI to enter the classroom" |
-| 962 | 3:2 | a researcher and engineer reviewing a prototype |
-| 968 | 3:2 | a teacher working alongside two students |
-| 1029 | 3:2 | an engineer and a teacher reviewing a tool together |
-| 1045 | 3:2 | four students working on a group project |
-| 1084 | **3:1** | educators and a researcher in a co-design workshop |
+| line | box | file | what it is |
+|---|---|---|---|
+| 945 | 3:2 | `whiteboard-discussion.webp` | educators at a whiteboard, one mid-gesture with a marker |
+| 962 | 3:2 | `prototype-review.webp` | a researcher and an engineer at a laptop |
+| 968 | 3:2 | `teacher-with-students.webp` | a teacher crouched beside two students |
+| 1029 | 3:2 | `tool-review.webp` | an engineer and a teacher at an open laptop |
+| 1045 | 3:2 | `student-group-work.webp` | four students at a wall of sticky notes |
+| 1084 | **3:1** | `workshop-room-wide.webp` | the closing banner, generated at 21:9 |
+
+The 3:1 banner is the one that cannot be re-cut from a 3:2 frame without throwing away
+half the picture, so it is generated at 21:9 and cropped down.
 
 ## Generating replacements with Higgsfield
 
@@ -163,12 +167,22 @@ shoulder angles and let the work on the table carry the picture.
 
 ## Landing a generated frame
 
-Same path as the real ones. Drop the master into `source-material/image-sources/images/`,
-add a job to `JOBS` in `tools/encode-images.mjs` with the crop box measured against that
-master and `width: 1080` for a card or `1264` for a full-width box, run
-`npm i --no-save sharp && node tools/encode-images.mjs`, then replace the `<div role="img">`
-placeholder in `index.html` with an `<img>` carrying real alt text. The encoder's comments
-explain why the crop is set per-image rather than left to `object-fit`.
+Drop the master into `source-material/image-sources/generated/` — generated frames do not
+go in `images/` beside the photographs — add a job to `JOBS` in `tools/encode-images.mjs`
+with the crop box measured against that master and `width: 1264` for a half-container box
+or `2560` for the full-container banner, run `npm i --no-save sharp && node
+tools/encode-images.mjs`, then write the `<img>` into `index.html` with real alt text. The
+encoder's comments explain why the crop is set per-image rather than left to `object-fit`.
+
+**Put `height:auto` in the style attribute.** The `width` and `height` attributes on an
+`<img>` are presentational hints for the CSS `width` and `height` properties. A `width:100%`
+in the style attribute beats the width hint, but nothing beats the height hint — so an
+`<img>` carrying `aspect-ratio:3/2` *and* `height="843"` renders 616x843, not 616x411, and
+`object-fit: cover` then crops away the sides of a frame that was cropped to 3:2 precisely
+so it would not be cropped again. Measured in Chromium against the live markup. The images
+that were already on the page have the same shape and the same problem — `student-notes`
+renders 616x848 against a declared 3:2 — and are left alone here, since fixing them changes
+what the page looks like today.
 
 ## What batch one changed
 

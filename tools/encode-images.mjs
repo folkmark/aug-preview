@@ -56,6 +56,24 @@ const JOBS = [
   { in: 'schools/high-tech-high-workshop.jpg', out: 'images/high-tech-high-workshop.webp', width: 1080, crop: [200, 624, 3600, 2400] },
   { in: 'schools/crosstown-workshop.jpg',      out: 'images/crosstown-workshop.webp',      width: 1080, crop: [0, 300, 5712, 3808] },
 
+  // The six generated frames that fill what was never photographed — see
+  // source-material/image-sources/generated/README.md, and docs/photography-style.md for
+  // the recipe. They are not photographs and are kept in their own directory so nobody
+  // mistakes them for the co-design shots above.
+  //
+  // Every one is generated at 4:3 and cropped to 3:2 here rather than asked for at 3:2,
+  // which is the same shape the real frames arrive in and leaves the same crop latitude.
+  // The box takes more off the top than the bottom, for the reason given above: the
+  // ceiling is the expendable part and the people are not. 1264 matches the two other
+  // photographs in a half-container box; the banner is the only full-container image on
+  // the page, so it ships at twice its 1280 px box rather than three times a phone's.
+  { in: 'generated/whiteboard-discussion.jpg', out: 'images/whiteboard-discussion.webp', width: 1264, crop: [0, 115, 2400, 1600] },
+  { in: 'generated/prototype-review.jpg',      out: 'images/prototype-review.webp',      width: 1264, crop: [0, 115, 2400, 1600] },
+  { in: 'generated/teacher-with-students.jpg', out: 'images/teacher-with-students.webp', width: 1264, crop: [0, 115, 2400, 1600] },
+  { in: 'generated/tool-review.jpg',           out: 'images/tool-review.webp',           width: 1264, crop: [0, 115, 2400, 1600] },
+  { in: 'generated/student-group-work.jpg',    out: 'images/student-group-work.webp',    width: 1264, crop: [0, 115, 2400, 1600] },
+  { in: 'generated/workshop-room-wide.jpg',    out: 'images/workshop-room-wide.webp',    width: 2560, crop: [0, 173, 3168, 1056] },
+
   // Headshots in a square cell: 165 CSS px on a phone, ~200 on desktop.
   //
   // Most of these come from the "Website Bio tracking" sheet, where each person's photo is
