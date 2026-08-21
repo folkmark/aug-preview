@@ -143,17 +143,27 @@
        written as a number, so it tracks --text-h1 across the 992px scale break. */
     --hero-h1: calc(var(--hero-h1-lines) * var(--text-h1) * var(--text-h1-line-height));
     --hero-band: min(calc(var(--hero-gap) + var(--hero-copy) + 24px), 84svh);
-    /* The two budgets the component spends after the copy has gone, named here because the
-       PAGE needs them as well: the point at which the headline stops being pinned has to be
-       the point at which the plate does, and that lands --hero-band + --hero-scrub +
-       --hero-exit from the bottom of the element. See [data-hero-copy]'s bottom below.
+    /* The three budgets the component spends after the copy has gone, named here because
+       the PAGE needs them as well: the point at which the headline stops being pinned has to
+       be the point at which the plate does, and that lands --hero-band + --hero-scrub +
+       --hero-hold + --hero-exit from the bottom of the element. See [data-hero-copy]'s
+       bottom below.
 
-       --hero-scrub is the component's own default written out. --hero-exit is the beat on
-       the finished bridge plus the run-in of the ramp that eases the pin's release; the
-       component defaults it to 24svh and this hero spends more, because the picture is a
-       full screen of it and a full screen is what gets yanked away. */
-    --hero-scrub: 70svh;
-    --hero-exit: 40svh;
+       --hero-scrub is twice the component's 70svh default. 48 frames across it is 22.8px of
+       scroll a frame at 1440x900 once TAIL's hold is taken off, where 70svh gave 11.4 and
+       read as rushed. It is the same rate the closing CTA runs at, which nobody minded.
+
+       --hero-hold is the beat on the finished bridge, on top of the ~95px TAIL already
+       holds. --hero-exit is the ramp's HALF-WINDOW, spent once here and once out of the
+       scroll after the release; the component defaults it to 24svh and this hero spends
+       nearly twice that, because the picture is a full screen and a full screen is what gets
+       yanked away. The peak rate the velocity changes at is 0.75 / --hero-exit, so this is
+       the number to raise if the release still reads as abrupt — 45svh is 405px at 1440x900
+       and 7px of frame-to-frame change for a reader moving 60px a frame, against 15px at the
+       180px this first shipped with. */
+    --hero-scrub: 140svh;
+    --hero-hold: 20svh;
+    --hero-exit: 45svh;
     /* The hero section's own bottom padding, and the gap between the bottom of the plate
        and the top of whatever follows. Worth knowing while reading leave(): it is all the
        clearance the exit has, which is why the ramp there only ever moves the picture UP.
@@ -171,6 +181,7 @@
     --hb-entry-clear: var(--hero-band);
     --hb-entry-span: var(--hero-band);
     --hb-scrub: var(--hero-scrub);
+    --hb-hold: var(--hero-hold);
     --hb-exit: var(--hero-exit);
     /* Enter as much larger than edge to edge as the composition allows, up to twice. Two
        things bind before it does and both are the component's, so this number is a request
@@ -250,8 +261,8 @@
   [data-hero-copy] {
     position: absolute;
     inset: 0 0 auto;
-    bottom: calc(100% - var(--hero-band) - var(--hero-scrub) - var(--hero-exit)
-                 - var(--hero-gap) - var(--hero-h1) - var(--space-6));
+    bottom: calc(100% - var(--hero-band) - var(--hero-scrub) - var(--hero-hold)
+                 - var(--hero-exit) - var(--hero-gap) - var(--hero-h1) - var(--space-6));
     margin-inline: auto;
     max-width: var(--container-xxl);
     /* content-box so the page gutter sits OUTSIDE the 1280 measure, which is how every
@@ -360,7 +371,7 @@
 
      The headline pins at the position it loads in — --hero-gap under the header, the same
      air it loads with — and holds it for the entire hero: the body leaving, the plate
-     growing, and all 70svh of the frame scrub, releasing only as the plate itself scrolls
+     growing, and every frame of the sequence, releasing only as the plate itself scrolls
      away. THE PICTURE IS WHAT MOVES OUT OF ITS WAY, not the other way round: --hb-arch-clear
      below tells the component where the finished bridge has to land, and the component
      drops the plate to put it there.
@@ -456,12 +467,21 @@
   }
   /* The header is sticky and 4.5rem tall, so the stage is a screen minus the header
      and the rig is that plus the pin. The difference between the two is the scroll
-     budget the element measures: 170 minus 100 leaves 70svh over which the blocks
-     tumble past the closing copy — a quick pass, not the old hero's 190svh rise.
+     budget the element measures: 240 minus 100 leaves 140svh, over which revolutions="0.6"
+     of 48 frames turn — 45px of scroll a frame at 1440x900, the same rate the Approach
+     section runs at.
+
+     It was 170, which is 70svh and 22.5px a frame. The complaint was not the rate as such:
+     this rig sits 9,380px down a page that ends at 11,363, straight after Recent Research
+     with no empty run-up, so a reader arrives carrying whatever speed the page above has
+     built and the whole thing went past in a blink. Rate alone does not answer that — the
+     length of the pin is the only thing that buys time against a fling, so the pin doubled.
+     If it now reads as a crawl rather than an arrival, this is the number.
+
      Static mode (reduced motion, save-data, no bitmap support) collapses to one
      screen via falling-blocks.css's :not([data-fb-motion="on"]) rule, which outweighs
      this bare type selector on purpose — keep this selector bare. */
-  falling-blocks { --fb-sticky-top: var(--space-18); height: calc(170vh - var(--space-18)); height: calc(170svh - var(--space-18)); }
+  falling-blocks { --fb-sticky-top: var(--space-18); height: calc(240vh - var(--space-18)); height: calc(240svh - var(--space-18)); }
   /* falling-blocks.css slots an h1 between the plates (near plate in front of the
      heading, far plate behind); the CTA's heading is an h2, so give it the same slot. */
   falling-blocks [data-fb-copy] h2 { position: relative; z-index: 2; }
@@ -527,7 +547,7 @@
 
          Three phases, and the budget is split between them in hero-bridge.css: the plate
          hangs from a line under the copy, rises into place as the last of the copy leaves,
-         then scrubs for 70svh while the arch builds. --hb-entry-clear above is what keeps
+         then scrubs for --hero-scrub while the arch builds. --hb-entry-clear above is what keeps
          the words and the picture off each other during the first of those. On a desktop
          screen the plate is already edge to edge while it hangs there — only its bottom is
          off the fold — so the rise is a move rather than a zoom.
@@ -863,9 +883,10 @@
       </div>
     </section>
 
-    <!-- The falling-blocks CTA: the rig that used to be the hero, on a short 70svh
-         pin (see the falling-blocks height rule in the style block) so the blocks
-         tumble past quickly while the closing copy holds. stage-fill 0.93 and the
+    <!-- The falling-blocks CTA: the rig that used to be the hero, on a 140svh pin (see
+         the falling-blocks height rule in the style block) so the blocks have time to
+         tumble past while the closing copy holds. It was half that and went by too fast
+         to read, for reasons the height rule explains. stage-fill 0.93 and the
          content/speed bounds are measured off the render — see falling-blocks.js.
 
          Two depth plates of one camera view sandwich the copy: "bottom" is the far

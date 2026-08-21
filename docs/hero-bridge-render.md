@@ -62,7 +62,9 @@ encoder is the whole job; the span on the page is one attribute.
 Note that the stride is the one thing the shipped hero cannot make up for. 48 frames is
 every third frame of a 4.7-second move, and the page cross-fades between them to cover it;
 at stride 1 the fade stops doing that work and the assembly is genuinely continuous.
-`--hb-scrub` sets how much scroll the sequence plays over — 70svh, defaulted in
+`--hb-scrub` sets how much scroll the sequence plays over — 140svh on this page, twice the
+component's default, which puts the 48 frames at 22.8px of scroll each at 1440×900 once
+`TAIL`'s hold is taken off. It is defaulted in
 `assets/hero-bridge.css` and set from `index.html` because the page's own copy overlay has
 to release on the same pixel the element does — and the frame count and that budget are one
 setting in two files — 142 frames scrubbed over the height 48 are scrubbed over now plays three times

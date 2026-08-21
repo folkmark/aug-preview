@@ -273,8 +273,8 @@
       // a host framework's own DOM work — under React it runs from the mutation that
       // appends our children — and that framework's next commit reconciles this element's
       // attributes back to the ones it knows about, silently dropping this one. The hero
-      // would then sit at its full pinned height with the still showing and 70svh of
-      // nothing under it. Watching for the removal and putting it back costs nothing when
+      // would then sit at its full pinned height with the still showing and the whole of its
+      // scroll budget as nothing under it. Watching for the removal and putting it back costs nothing when
       // nobody touches it, and no loop is possible because mark() only writes when the
       // value is actually wrong.
       if (!this.attrMo) {
@@ -390,9 +390,13 @@
       var v = parseFloat(getComputedStyle(this).getPropertyValue('--hb-entry-span'));
       return isFinite(v) && v > 0 ? v : this.stage.offsetHeight;
     }
-    // The exit budget, floored at zero rather than defaulted to anything: a host that does
-    // not set it, or a build that stripped the @property registration, gets the cliff the
-    // element shipped with rather than a ramp sized from a number nobody chose.
+    // The beat and the ramp, both floored at zero rather than defaulted to anything: a host
+    // that does not set them, or a build that stripped the @property registrations, gets the
+    // cliff the element shipped with rather than a ramp sized from a number nobody chose.
+    holdSpan() {
+      var v = parseFloat(getComputedStyle(this).getPropertyValue('--hb-hold'));
+      return isFinite(v) && v > 0 ? v : 0;
+    }
     exitSpan() {
       var v = parseFloat(getComputedStyle(this).getPropertyValue('--hb-exit'));
       return isFinite(v) && v > 0 ? v : 0;
@@ -615,13 +619,14 @@
     // value in pixels, which clamps to 0 or 1 and reads as a sequence that will not
     // scrub — a documented arrangement that silently did not work.
     //
-    // The pinned budget is spent on three things and this is where it is divided: the
+    // The pinned budget is spent on four things and this is where it is divided: the
     // APPROACH, --hb-entry-span of scroll in which the host's copy leaves the screen it is
     // laid over and the plate settles under it; the SEQUENCE, --hb-scrub, which is what this
-    // returns and what the frames are paced against; and the EXIT, --hb-exit, in which the
-    // finished picture is held and then eased into the speed of the page. All three are
-    // measured off the stylesheet rather than kept as fractions here, so each stays one
-    // setting shared with whatever the host sized it against.
+    // returns and what the frames are paced against; the BEAT, --hb-hold, in which the
+    // finished picture is held perfectly still; and the RAMP, --hb-exit, in which it is
+    // eased into the speed of the page. All four are measured off the stylesheet rather than
+    // kept as fractions here, so each stays one setting shared with whatever the host sized
+    // it against.
     //
     // Divided by subtraction and not by shares, which is what the two ends being named
     // buys. The share arithmetic this replaced divided the WHOLE post-approach span among
@@ -633,14 +638,26 @@
     // the budget would leave this dividing by zero and the arch never building.
     progress() {
       var rect = this.getBoundingClientRect();
-      var span = this.offsetHeight - this.stage.offsetHeight;
+      // FRACTIONAL, and offsetHeight is not — which cost a real artefact rather than a
+      // rounding pedantry. leave() centres its ramp on scrolled == span, and scrolled comes
+      // from rect.top, which is fractional; a span rounded to whole pixels therefore puts
+      // the ramp's centre up to a pixel away from where the pin actually lets go, and what
+      // is left at the seam is a position step the size of the error. Measured across eight
+      // viewports the worst velocity step tracked |error| exactly: 0.038-0.050 where the
+      // rounding happened to cancel, 0.074-0.088 at 0.4px, 0.112 at 0.59px.
+      //
+      // Heights and not tops, so the stage's own exit transform cannot feed back into the
+      // number that positions it: a translate moves a rect without changing its height. If
+      // leave() ever scales instead of translating, this stops being true.
+      var span = rect.height - this.stage.getBoundingClientRect().height;
       if (span > 0) {
         // Banked in pixels, because settle() and leave() are both drawn across distances in
         // px rather than shares of anything — see each for why.
         this.scrolled = Math.max(0, this.pin() - rect.top);
         this.span = span;
         var entry = this.entrySpan();
-        return clamp01((this.scrolled - entry) / Math.max(1, span - entry - this.exitSpan()));
+        var still = this.holdSpan() + this.exitSpan();
+        return clamp01((this.scrolled - entry) / Math.max(1, span - entry - still));
       }
 
       // No pin, so no approach and no exit either: the plate is in flow and there is nothing
@@ -847,8 +864,15 @@
     // post-release half's share of it, and for a monotone S-curve that only holds when the
     // halves match. Weight it forward and the velocity ramps steeply at the start; weight it
     // back and the step is still there at the release. Either way the jar moves rather than
-    // goes. --hb-exit is therefore spent half on the beat before the ramp and half on the
-    // ramp's run-in, and the run-out is paid for by the scroll that was always there.
+    // goes. So --hb-exit is the half-window, spent once before the release out of the
+    // element's own height and once after it out of the scroll that was always there — and
+    // the beat is --hb-hold, which is a different thing and is budgeted separately.
+    //
+    // HOW BIG IT WANTS TO BE is not a yes-or-no. The velocity is continuous at any a above
+    // zero, but the peak rate at which it changes is 0.75 / a — a reader moving V px a frame
+    // sees the picture's step change by 0.75 V^2 / a between frames, so 60px a frame over
+    // a 180px half-window is a 15px change and over 405px is 7px. The first version of this
+    // shipped at 180 and still read as a little jarring.
     //
     // T IS NEVER POSITIVE, which is the property that keeps this safe: the picture always
     // leads its natural position and never trails it. It cannot trail — the next section's
@@ -861,13 +885,18 @@
     // keeping. Transforming a sticky element is safe — it is a paint offset, applied after
     // the sticky position is resolved, and the stage goes on pinning at pin + T.
     leave() {
-      var a = this.exitSpan() / 2;
+      var a = this.exitSpan();
       var s = this.scrolled - this.span;
       var t = '';
       if (a > 0 && this.span > 0 && s > -a && s < a) {
         var U = (s + a) / (2 * a);
         var G = 2 * a * (U * U * U - U * U * U * U / 2);
-        t = 'translateY(' + (Math.max(0, s) - G).toFixed(1) + 'px)';
+        // Two decimals and not one. A tenth of a pixel is invisible on its own, but this is
+        // a curve being differentiated by the eye: quantising it to 0.1px puts a floor of
+        // about 0.025 under the frame-to-frame velocity change, which is the same order as
+        // what the ramp is built to remove. Two decimals put that floor ten times lower for
+        // three characters.
+        t = 'translateY(' + (Math.max(0, s) - G).toFixed(2) + 'px)';
       }
       this.ride(this.stage, t);
       // The host's own pinned copy rides the same curve, named by exit-with. It is not

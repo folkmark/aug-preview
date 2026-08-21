@@ -61,17 +61,18 @@ that line, its own empty top behind the words, and its bottom off the fold where
 does not fit — and rises from there into place. On every desktop screen it is already at
 full edge-to-edge width when it does, with the desk's top surface and the rack's lid
 above the fold, so the rise is a move rather than a zoom; only a short screen makes it
-grow as well. Then it **scrubs** for `--hb-scrub` (70svh) while the arch builds, holds on
-the closed span for `--hb-exit`, and **eases out**.
+grow as well. Then it **scrubs** for `--hb-scrub` (140svh) while the arch builds — 22.8px
+of scroll a frame at 1440×900 — holds on the closed span for `--hb-hold`, and **eases out**
+across `--hb-exit`.
 
 That last phase is a phase rather than an afterthought, and it exists because the release
 used to be a cliff. While the stage is pinned the picture does not move at all; the instant
 it is not, it moves at the speed of the page — measured at 1440x900 that is 0 to 1 in a
 single frame. Position is continuous and velocity is not, and the eye reads velocity, so
-the whole hero appeared to be yanked off the screen. `--hb-exit` (40svh here) buys the two
-things that fix it: a real beat of stillness on the finished bridge — 232 to 332px measured,
-against about 95 before — and then the run-in of a ramp that blends the picture's velocity
-from nothing to page speed across a window straddling the release. By the time the sticky
+the whole hero appeared to be yanked off the screen. Two budgets buy what fixes it.
+`--hb-hold` (20svh here) is a real beat of stillness on the finished bridge — 312 to 440px
+measured, against about 95 before — and `--hb-exit` (45svh) is the half-window of a ramp
+that blends the picture's velocity from nothing to page speed across the release. By the time the sticky
 lets go the picture is already travelling at half page speed, so the release itself is not
 an event. Measured, the drawn picture tracks that curve to within 0.6px at every width, and
 the worst single-frame change in velocity falls from 1.00 to 0.11.
@@ -125,7 +126,7 @@ ground shadow the moment the stage released. The render ends in a faint edge of 
 own — the last row carries the shadow plane at alpha 2.4/255 — so the bottom 4% is
 feathered out, below the desk's feet at y 0.94 and touching no object.
 
-Five custom properties are the page's business rather than the component's. `--hb-pin`
+Six custom properties are the page's business rather than the component's. `--hb-pin`
 is the header's height. `--hb-entry-clear` is how much room the page's own copy needs:
 the page builds it from `--hero-gap` — the air between the nav and the first line, 130px
 growing on a tall screen — plus the copy's own height, which is 380px on any stacked
@@ -193,11 +194,12 @@ plate's height, and having both made the layout circular — the headline's lock
 from the plate and the plate is now derived from the lock. The headline simply pins at
 `--hero-gap` under the header at every width.
 
-`--hb-scrub` and `--hb-exit` are the last two, and the page names them because the page
-needs them too, not only the component: the headline's own release has to land on the same
-pixel as the plate's, and that point is `--hero-band + --hero-scrub + --hero-exit` up from
-the bottom of the element. A page that could not name all three could not compute it — and
-a page that hard-coded 70svh beside a component that changed it would have a hero that
+`--hb-scrub`, `--hb-hold` and `--hb-exit` are the last three, and the page names them
+because the page needs them too, not only the component: the headline's own release has to land on the same
+pixel as the plate's, and that point is `--hero-band + --hero-scrub + --hero-hold +
+--hero-exit` up from the bottom of the element. A page that could not name all four could
+not compute it — and
+a page keeping its own copy of them beside a component that changed them would have a hero that
 comes apart at the seam. They are set from `.scheme-1` values the copy overlay also reads,
 which is the same one-setting-two-uses pattern as `--hero-band` → `--hb-entry-span`.
 
@@ -229,8 +231,8 @@ disk. `tools/build-site.mjs` checks both bounds against the manifest and every
 frame of the span, in both cuts, against disk.
 
 Two numbers move together and there is no build step that will catch them drifting:
-the 70svh scrub share of the element's height in `assets/hero-bridge.css` is the
-scroll budget, and the scrub spends it across however many frames the manifest offers.
+`--hb-scrub` is the scroll budget, and the scrub spends it across however many frames the
+manifest offers.
 The full stride-1 delivery the render doc asks for is 142 frames, which is three times
 what ships — dropped in without raising the height, it would play three times faster.
 The other share, the approach, is one screen and is sized to the copy laid over it,
