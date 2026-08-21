@@ -81,11 +81,11 @@ sloppy: the approach holds on that frame throughout, and the camera moves later 
 sequence — the same desk edge has slid to 0.386–0.404 by frame 417.
 
 Over it, **the headline stays and the body leaves**. The h1 is `position: sticky` and
-holds the spot it loaded in for the whole hero — the body going, the plate rising, and
-all 70svh of the scrub — releasing only as the plate itself scrolls away. That is a
-deliberate composition with a cost: at 1440x900 the finished arch peaks at screen y 172
-and the headline occupies about y 202 to 390, so the blocks assemble behind the words.
-The lede and buttons float 5rem further than the page scrolls and dissolve as they go.
+holds the spot it loaded in — `--hero-gap` under the header — for the whole hero: the
+body going, the plate rising, and all 70svh of the scrub, releasing only as the plate
+itself scrolls away. The picture is what moves out of its way, not the other way round;
+`--hb-arch-clear` below is how. The lede and buttons float 5rem further than the page
+scrolls and dissolve as they go.
 
 It is a self-contained block of CSS in `index.html` using a scroll-driven animation — no
 JavaScript and no coupling to the component, so a theme rebuilding this page copies the
@@ -125,9 +125,9 @@ geometry allows, which is never the full 2:
 | viewport | entry scale | drawn width | what is cropped |
 |---|---|---|---|
 | 2560×1300 | 1.13 | 2880 (`--hb-max`) | x 0.06–0.94 |
-| 1920×1080 | 1.50 | 2880 (`--hb-max`) | x 0.17–0.83 |
-| 1920×955 | 1.32 | 2538 | x 0.12–0.88 |
-| 1440×900 | 1.47 | 2117 | x 0.16–0.84 |
+| 1920×1080 | 1.44 | 2773 | x 0.15–0.85 |
+| 1920×955 | 1.24 | 2391 | x 0.10–0.90 |
+| 1440×900 | 1.45 | 2088 | x 0.16–0.84 |
 | 1512×860 | 1.25 | 1891 | x 0.10–0.90 |
 | 1512×780 | 1.03 | 1562 | x 0.01–0.99 |
 | 1440×764 | 1.04 | 1496 | x 0.02–0.98 |
@@ -142,6 +142,32 @@ width the plate is *drawn* at rather than only the width of its box — 2880px i
 upscale of the 1600 cut, and past that the entry is visibly soft. Going further needs a
 bigger cut, and the sequence masters are not in this repository's history — only nine
 beat plates at `98d0243` — so that means new renders rather than a re-encode.
+
+`--hb-arch-clear` is the fourth, and it is what keeps the finished bridge out of the
+headline. The arch rises **over** the gap between the rack and the desk, so the top of the
+assembled span sits at plate y 0.100 — above the rack's top at 0.257 and the desk's at
+0.245 — and with the headline pinned for the whole hero the deck used to run straight
+through both lines of type. The page asks for the bridge to land 30px under the headline
+(`--hero-gap + --hero-h1 + 30px`) and the component moves the **plate** down to put it
+there, by 208–255px on a desktop screen, as a static offset in the stylesheet rather than
+anything the script does.
+
+That is bought with the bottom of the picture: 44–58% of the plate is below the fold while
+pinned, against 15–25% before. **The desk's top edge is what the offset is capped against**
+and is above the fold at every width; the cubby survives except on the two shortest
+laptops; the legs and the ground shadow go under and come back as the section scrolls away.
+Nothing is ever cut by a box.
+
+It also cost the entry a little on tall screens, because `settle()` now solves against a
+lower resting position: 1.50 → 1.44 at 1920×1080, 1.32 → 1.24 at 1920×955. Every laptop
+case is unchanged, and the approach's vertical rise is mostly spent — 290px → 83px at
+1512×780, and nothing at 1920 and above, where the settle is a pure scale.
+
+The rule this replaced pulled the *headline* up instead, to clear the rack's top blocks.
+It is gone: clearing the arch clears the furniture under it by 30px plus 0.169 of the
+plate's height, and having both made the layout circular — the headline's lock was derived
+from the plate and the plate is now derived from the lock. The headline simply pins at
+`--hero-gap` under the header at every width.
 
 Above 1400px the copy is a two-column split — heading left, lede and buttons right, the
 same `--space-20` pattern as the Our Approach header and the research rows — and the

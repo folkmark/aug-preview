@@ -174,7 +174,7 @@ dependency-free custom element that touches no runtime API and drives markup it 
 build. Porting it is `assets/hero-bridge.js`, `assets/hero-bridge.css`, the frame
 directory, and the block of markup in the hero — copy all four and it works.
 
-**What the host has to supply.** Three custom properties and one overlay.
+**What the host has to supply.** Four custom properties and one overlay.
 
 `--hb-pin` is the height of the sticky header — this site sets it to `4.5rem` in the
 page's own stylesheet. The element reads the pin back off its stage's computed `top`, so
@@ -254,6 +254,29 @@ holds. `--hb-entry-span` in `hero-bridge.css` is one screen and is what pays for
 scroll, so the scrub starts exactly where the last of the copy leaves. A theme that wants
 no copy over the hero can set `--hb-entry-clear` to `0px` and drop the overlay; the plate
 then simply arrives at full size and scrubs.
+
+`--hb-arch-clear` is the fourth, and it is the only one that moves the plate rather than
+sizing it: **how far below the header the top of the FINISHED bridge has to land.** The
+component owns the other half — `--hb-arch`, 0.1001, the top of the assembled span as a
+share of the plate's height, measured on frame 417 — and solves the two into a static
+offset that pushes the plate down. Default `0px`, meaning "leave the plate where it rests".
+
+A host needs this the moment it pins copy over the picture, because the arch rises *over*
+the gap: the deck ends up at plate y 0.100, above the rack's top at 0.257 and the desk's
+at 0.245, so a headline that clears the furniture does not clear the bridge. This site asks
+for 30px of clearance and pays 208–255px of plate position for it, which is why the offset
+is capped against `--hb-entry-keep` — pushing the plate down spends exactly the promise
+that keeps the desk's top edge above the fold, and an uncapped drop would break it on a
+short screen. What it does spend is the bottom of the picture: 44–58% of the plate is below
+the fold while pinned. Nothing is clipped by a box, so scrolling on reveals it whole.
+
+Two things to get right when porting it. **Gate it on whether the headline actually pins** —
+this site sets it inside the same `@supports` and `prefers-reduced-motion` guards as the pin
+itself, and the component clears it again in its own static-mode reset, because CSS cannot
+see "the script never ran" and 240px of blank page above an unpinned still is not a layout.
+And **do not reintroduce a rule that moves the headline instead**: this site had one, to
+clear the rack's top blocks, and having both made the layout circular — a lock derived from
+the plate and a plate derived from the lock.
 
 `--hb-entry-span`, `--hb-entry-clear`, `--hb-entry-zoom` and `--hb-max` are registered
 with `@property` so they resolve to numbers and pixels for the script. If a theme's build

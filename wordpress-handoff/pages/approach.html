@@ -151,11 +151,15 @@
   .scheme-1 {
     --hero-gap: min(max(130px, 14svh), 20svh);
     --hero-copy: 380px;
-    /* How many lines the headline sets in, measured alongside --hero-copy and used by the
-       toys clearance below. It cannot be derived: the clearance has to know the headline's
-       height before the headline has been laid out. Two everywhere the type is at desktop
-       scale, three on a phone and four at 320, where "Bridging" gets a line of its own. */
+    /* How many lines the headline sets in, measured alongside --hero-copy. It cannot be
+       derived: --hero-h1 below has to know the headline's height before the headline has
+       been laid out. Two everywhere the type is at desktop scale, three on a phone and
+       four at 320, where "Bridging" gets a line of its own. */
     --hero-h1-lines: 2;
+    /* The headline's height, which is what --hb-arch-clear is built from — how far below
+       the header the finished bridge has to land. Derived from the type rather than
+       written as a number, so it tracks --text-h1 across the 992px scale break. */
+    --hero-h1: calc(var(--hero-h1-lines) * var(--text-h1) * var(--text-h1-line-height));
     --hero-band: min(calc(var(--hero-gap) + var(--hero-copy) + 24px), 84svh);
     /* The hero section's own bottom padding, named because two things need it: the section
        sets it, and [data-hero-copy] subtracts it so the box the headline is pinned inside
@@ -197,8 +201,22 @@
     hero-bridge { --hb-entry-zoom: 2; }
   }
   @media (max-width: 991px) { .scheme-1 { --hero-copy: 320px; } }
-  @media (max-width: 560px) { .scheme-1 { --hero-copy: 500px; --hero-h1-lines: 3; } }
-  @media (max-width: 360px) { .scheme-1 { --hero-copy: 580px; --hero-h1-lines: 4; } }
+  @media (max-width: 560px) { .scheme-1 { --hero-copy: 500px; } }
+  @media (max-width: 360px) { .scheme-1 { --hero-copy: 580px; } }
+  /* --hero-h1-lines has its own breakpoints, and it did not used to: it rode along on the
+     band's, which are 560 and 360, and neither is where the headline actually wraps. It
+     sets in three lines from 358px and four at 357 and below, measured a pixel at a time.
+     That mismatch was harmless while the only consumer was a clearance rule that could
+     afford to be conservative. It is not harmless now — --hero-h1 is what --hb-arch-clear
+     moves the plate by, so a line too many put the finished bridge 53px lower than asked
+     at 360x780, and a line too few would put it 53px too high, which is the direction that
+     lands blocks on the words.
+
+     Rounded outward on purpose where the boundary is fuzzy: 479 rather than the measured
+     477, 357 rather than 358. Over-declaring costs a line-height of extra clearance and
+     under-declaring costs the collision, so the two errors are not worth the same. */
+  @media (max-width: 479px) { .scheme-1 { --hero-h1-lines: 3; } }
+  @media (max-width: 357px) { .scheme-1 { --hero-h1-lines: 4; } }
   /* The hero copy, laid over the pinned plate. Absolute so it contributes no height of
      its own, and it spans the WHOLE hero rather than just the copy's band — because that
      box is the headline's containing block, and position: sticky can only hold an element
@@ -323,12 +341,21 @@
      the reason it is not driven from the component: [data-hero-copy] is a SIBLING of the
      component, so a custom property written there would not even inherit to it.
 
-     The headline pins at the position it loads in and holds it for the entire hero — the
-     body leaving, the plate growing, and all 70svh of the frame scrub — releasing only as
-     the plate itself scrolls away. It is a deliberate choice with a cost: at 1440x900 the
-     finished arch peaks at screen y 172 and the headline occupies about y 202 to 390, so
-     the blocks assemble behind the words. If that ever reads badly the smallest lever is a
-     second keyframe fading the h1 during the scrub; nothing structural has to move.
+     The headline pins at the position it loads in — --hero-gap under the header, the same
+     air it loads with — and holds it for the entire hero: the body leaving, the plate
+     growing, and all 70svh of the frame scrub, releasing only as the plate itself scrolls
+     away. THE PICTURE IS WHAT MOVES OUT OF ITS WAY, not the other way round: --hb-arch-clear
+     below tells the component where the finished bridge has to land, and the component
+     drops the plate to put it there.
+
+     That replaced a rule that pulled the headline UP instead, to clear the rack's top toys
+     at plate y 0.269. It is gone, and not because it stopped working — it is that the
+     finished arch is a strictly harder constraint than the furniture under it. The bridge
+     arcs OVER the gap, so its deck sits at y 0.100, above both the rack's top at 0.257 and
+     the desk's at 0.245. Anything clearing the arch clears the toys by 30px plus 0.169 of
+     the plate's height, which is 200px at 1440x900. Two rules for one requirement, and the
+     weaker of them was the one making the layout circular: the lock was derived from the
+     plate, and the plate is now derived from the lock.
 
      The body floats 5rem further than the page scrolls, so it pulls up and away from the
      headline rather than riding down with it, and dissolves as it goes. Both run on the
@@ -348,40 +375,29 @@
   @keyframes hero-dissolve { 60%, to { opacity: 0; pointer-events: none; } }
   @supports (animation-timeline: scroll()) {
     @media not (prefers-reduced-motion: reduce) {
-      /* THE HEADLINE NEVER CROSSES THE RACK'S TOP TOYS, which sit at plate y 0.269. Pinning
-         it at the gap alone collides below about 1680px — at 1440 the headline's bottom is
-         387 against a toys line at 343 — so the lock is the lower of the two, and where the
-         clearance binds the headline rises to it over the first ~64px of scroll and then
-         holds. That is long before the plate lands at --hero-band, so the two never contend.
+      /* WHERE THE FINISHED BRIDGE HAS TO LAND, handed to the component. Measured from under
+         the header, like --hb-entry-clear beside it and for the same reason: nothing in
+         hero-bridge.css can know how tall this headline is. The component owns the other
+         half — --hb-arch, the top of the assembled bridge as a share of the plate — and
+         solves the two into a static offset that moves the plate down.
 
-         --toys covers both plate cases in ONE term rather than a media query, and getting
-         that wrong cost a round: --stage-h is the larger of the screen and the plate, so the
-         slack term is zero where the plate is taller than the stage (a desk screen, plate
-         top = the pin) and half the slack where it is shorter and therefore centred (phones,
-         tablets). Gating this on aspect instead was wrong precisely because a SHORT plate is
-         centred, so its toys sit high too — 992x900 collided by 61px that way.
-
-         The subtrahend is the headline's own height, derived from the type rather than
-         written as a number, so it tracks --text-h1 across the 992px scale break by itself.
-
-         The max() floor is not belt and braces. Without it a narrow viewport solves to a
-         lock above the header — 19.8px at 390 — and the headline hides behind an opaque nav. */
+         It is set HERE, inside the pin's own guards, rather than beside --hb-pin further
+         up. The clearance exists because the headline holds over the picture; an engine
+         without scroll-driven animations, or a reader who asked for less motion, gets copy
+         that simply scrolls away, and moving the plate for a headline that has already gone
+         would be spending the desk's feet on nothing. */
+      hero-bridge {
+        --hb-arch-clear: calc(var(--hero-gap) + var(--hero-h1) + 30px);
+      }
       [data-hero-copy] h1 {
         position: sticky;
         /* Not stretch, which is the grid default and was silently wrong: the row is as tall
            as the body beside it, so the headline's BOX came out 386px against 185px of text
-           and the clearance below — which reasons about the text — let it fall 182px into
-           the rack's toys. */
+           — and the clearance rule that used to live here reasoned about the text. Still
+           load-bearing now that the rule is gone: a stretched sticky item pins by its box,
+           so the headline would hold a position 200px above its own first line. */
         align-self: start;
-        --plate-h: calc(min(100vw, 2880px) / 1.4302);
-        --stage-h: max(calc(100svh - var(--space-18)), var(--plate-h));
-        --toys: calc(var(--space-18) + (var(--stage-h) - var(--plate-h)) / 2
-                     + 0.269 * var(--plate-h));
-        top: max( calc(var(--space-18) + 8px),
-                  min( calc(var(--space-18) + var(--hero-gap)),
-                       calc(var(--toys)
-                            - (var(--hero-h1-lines) * var(--text-h1) * var(--text-h1-line-height))
-                            - 20px) ) );
+        top: calc(var(--space-18) + var(--hero-gap));
       }
       [data-hero-body] {
         animation: hero-float linear both, hero-dissolve linear both;
@@ -419,7 +435,7 @@
       pointer-events: auto;
     }
     [data-hero-copy] h1 { position: static; }
-    hero-bridge { --hb-entry-clear: 24px; }
+    hero-bridge { --hb-entry-clear: 24px; --hb-arch-clear: 0px; }
   }
   /* The header is sticky and 4.5rem tall, so the stage is a screen minus the header
      and the rig is that plus the pin. The difference between the two is the scroll
