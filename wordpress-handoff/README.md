@@ -174,7 +174,7 @@ dependency-free custom element that touches no runtime API and drives markup it 
 build. Porting it is `assets/hero-bridge.js`, `assets/hero-bridge.css`, the frame
 directory, and the block of markup in the hero — copy all four and it works.
 
-**What the host has to supply.** Six custom properties and one overlay.
+**What the host has to supply.** Seven custom properties and one overlay.
 
 `--hb-pin` is the height of the sticky header — this site sets it to `4.5rem` in the
 page's own stylesheet. The element reads the pin back off its stage's computed `top`, so
@@ -278,13 +278,24 @@ And **do not reintroduce a rule that moves the headline instead**: this site had
 clear the rack's top blocks, and having both made the layout circular — a lock derived from
 the plate and a plate derived from the lock.
 
-`--hb-scrub` and `--hb-exit` are the last two, and they are the element's pacing after the
-copy has gone: how long the sequence plays, and how much scroll is spent holding the finished
-picture and easing the pin's release. `--hb-scrub` defaults to 70svh, which is the number
-`docs/hero-bridge-render.md` ties to the frame count — change one and change the other, or
-the assembly plays at a different speed. `--hb-exit` defaults to 24svh and is spent half on
-a beat of stillness and half on the run-in of a velocity ramp; setting it to `0px` restores
-the release this shipped with, which was a cliff.
+`--hb-scrub`, `--hb-hold` and `--hb-exit` are the last three, and they are the element's
+pacing after the copy has gone.
+
+`--hb-scrub` is how long the sequence plays and the number to reach for when it reads as too
+fast. It defaults to 70svh, which is what `docs/hero-bridge-render.md` ties to the frame
+count — change one and change the other, or the assembly plays at a different speed. The
+rate is `--hb-scrub x 0.85 / (frames - 1)`, the 0.85 being `TAIL`'s hold on the last frame.
+
+`--hb-hold` is a beat of stillness on the finished picture, on top of that hold. `--hb-exit`
+is the **half-window** of the velocity ramp — spent once out of the element's height before
+the release and once out of the scroll after it. Setting either to `0px` restores the
+release this shipped with, which was a cliff.
+
+**How big the ramp wants to be is not a yes-or-no.** The velocity is continuous at any size
+above zero, but its peak rate of change is `0.75 / --hb-exit`, and a reader moving V px a
+frame sees the picture's step change by `0.75 V² / --hb-exit` between frames. At a 180px
+half-window that is 15px for someone scrolling 60px a frame, which still read as a little
+abrupt; at 405px it is 7px. Raise this, not `--hb-hold`, if the release is what feels wrong.
 
 **Why the exit is not optional if you pin copy over the plate.** While the stage is pinned
 the picture does not move; the instant it is not, it moves at the speed of the page. That
@@ -388,9 +399,12 @@ runs at all, so a page with no JavaScript renders the finished hero rather than 
 ## 5. The falling-blocks rig — already portable
 
 > **Status.** This moved. It was the hero; it now wraps the closing call to action,
-> on a much shorter pin (about 70svh rather than 190svh) so the blocks tumble past
-> quickly. Same element, same frames, same contract — only the height and where it
-> sits on the page changed.
+> on a shorter pin — 140svh against 190svh — so the blocks tumble past a little more
+> briskly. It was set to 70svh at first, which turned out to be too quick to read: the
+> rig sits nine thousand pixels down the page, so a reader arrives carrying whatever
+> speed the page above has built and the whole thing went by in a blink. Rate alone does
+> not answer that; the length of the pin is what buys time against a fling. Same element,
+> same frames, same contract — only the height and where it sits on the page changed.
 
 This one was built for the move. It is a dependency-free custom element with no
 framework, no build step and no assumption about its host. To use it in WordPress:

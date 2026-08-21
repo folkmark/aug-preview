@@ -59,6 +59,7 @@
 @property --hb-entry-zoom { syntax: "<number>"; inherits: true; initial-value: 1; }
 @property --hb-max { syntax: "<length>"; inherits: true; initial-value: 2880px; }
 @property --hb-scrub { syntax: "<length>"; inherits: true; initial-value: 0px; }
+@property --hb-hold { syntax: "<length>"; inherits: true; initial-value: 0px; }
 @property --hb-exit { syntax: "<length>"; inherits: true; initial-value: 0px; }
 
 hero-bridge {
@@ -283,9 +284,11 @@ hero-bridge {
   --hb-stage-h: max(var(--hb-screen-h),
                     calc(var(--hb-plate-h) + var(--hb-slack) + var(--hb-arch-drop)));
 
-  /* HOW LONG THE SEQUENCE PLAYS. 48 render frames across this, which is about 13px of
-     scroll a frame at 1440x900 — deliberately a quick pass rather than the Approach
-     section's 45px-per-frame crawl. If the full stride-1 delivery lands (142 frames, see
+  /* HOW LONG THE SEQUENCE PLAYS, and the number to reach for when it reads as too fast.
+     48 render frames across it, of which TAIL holds the last for the final 15%, so the rate
+     is budget x 0.85 / 47 — 11.4px of scroll a frame at 1440x900 on the 70svh this
+     defaults to. (An earlier note here said 13px; that divided by the whole budget and
+     forgot the tail.) If the full stride-1 delivery lands (142 frames, see
      docs/hero-bridge-render.md) this has to rise with it or the whole assembly plays three
      times faster: frames and budget are one setting in two files.
 
@@ -293,29 +296,42 @@ hero-bridge {
      promotion on principle — the host needs the number. Where a host lays pinned copy over
      the plate, the point at which its copy stops being pinned has to line up with the point
      at which this element stops being pinned, and that lands `--hb-entry-span + --hb-scrub
-     + --hb-exit` from the bottom of the element. A host that cannot name those three cannot
-     compute it, and a host that hard-codes 70svh beside a component that changed it has a
-     hero that comes apart at the seam. See §5a of the WordPress handoff. */
+     + --hb-hold + --hb-exit` from the bottom of the element. A host that cannot name all
+     four cannot compute it, and one that keeps its own copy of them beside a component that
+     changed them has a hero that comes apart at the seam. See §5a of the WordPress
+     handoff. */
   --hb-scrub: 70vh;
   --hb-scrub: 70svh;
 
-  /* SCROLL SPENT AFTER THE SEQUENCE FINISHES AND BEFORE THE PIN LETS GO, and it exists
-     because the release used to be a cliff. While the stage is pinned the picture does not
+  /* THE BEAT ON THE FINISHED PICTURE, held still before anything starts moving again. The
+     scrub's own TAIL already holds the last frame for 15% of --hb-scrub — about 95px at
+     1440x900 — which is enough to stop the sequence but not enough to read as an arrival.
+     This is on top of it. Nothing at all happens here: no frame changes, no transform.
+
+     Separate from --hb-exit below, and it used to be one number split in half by a `/2` in
+     leave(). Two properties that each mean one thing beat one that means two, and they were
+     wanted at different sizes the first time either was tuned. */
+  --hb-hold: 12vh;
+  --hb-hold: 12svh;
+
+  /* THE RAMP'S HALF-WINDOW, which is the other thing the release needed, and it exists
+     because that release used to be a cliff. While the stage is pinned the picture does not
      move at all; the instant it is not, the picture moves at the speed of the page. Measured
      at 1440x900 that step is 0 to 1 in a single frame, and it reads as the whole hero being
      yanked off the screen — position is continuous, velocity is not, and the eye is reading
      velocity.
 
-     This budget is what leave() spends smoothing it, half and half. The first half is a beat
-     of stillness on the finished bridge, which is the payoff and previously got about 95px
-     of it; the second half is the run-in of a velocity ramp that carries on the same
-     distance past the release, by which point the picture is already travelling at the speed
-     of the page and the release changes nothing. See leave() in hero-bridge.js for the
-     curve and why its two halves have to be equal.
+     leave() blends the two across a window this long on EITHER side of the release: this
+     much is spent before it, held in the element's height, and the same distance after it is
+     paid for by the scroll that was always there. See leave() in hero-bridge.js for the
+     curve and why the halves have to match.
 
-     24svh keeps a bare mount sensible. Below about 12svh there is not enough run-in for the
-     ramp to be worth having and the beat disappears with it; 0 turns the whole thing off and
-     restores the cliff. */
+     BIGGER IS GENTLER, AND THE RELATIONSHIP IS WORTH KNOWING because "smooth" is not a
+     yes-or-no. The velocity is continuous at any size above zero, but its peak rate of
+     change is 0.75 / this — so at 180px a reader moving 60px a frame sees the picture's
+     step change by 15px between frames, and at 405px by 7px. Doubling this halves that.
+
+     24svh keeps a bare mount sensible; 0 turns the ramp off and restores the cliff. */
   --hb-exit: 24vh;
   --hb-exit: 24svh;
 
@@ -331,7 +347,8 @@ hero-bridge {
      The plain-vh lines are the fallback for engines without svh; svh rather than dvh
      because dvh changes as mobile chrome hides, and a budget that moved mid-gesture would
      snap the scrub. */
-  height: calc(var(--hb-stage-h) + var(--hb-entry-span) + var(--hb-scrub) + var(--hb-exit));
+  height: calc(var(--hb-stage-h) + var(--hb-entry-span) + var(--hb-scrub)
+               + var(--hb-hold) + var(--hb-exit));
 }
 hero-bridge *, hero-bridge *::before, hero-bridge *::after { box-sizing: border-box; }
 
