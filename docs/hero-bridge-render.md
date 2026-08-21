@@ -184,7 +184,33 @@ one cannot be re-encoded from the history. Only the entry actually needs the res
 the approach holds on frame 276 throughout and the plate is back at 1× before the scrub
 starts, so a single 2048 plate of frame 276 would buy most of it.
 
-What the hero does *not* need from a re-render is the bottom edge tidied. The plate's last
+## What the composition is measured against
+
+Three constants in `assets/hero-bridge.css` describe this artwork rather than the code, and
+each is measured on the frame it governs — measure a replacement sequence the same way
+rather than carrying these over.
+
+| constant | frame | value | what it is |
+|---|---|---|---|
+| `--hb-entry-sky` | 276 | 0.226 | empty page colour above the artwork. Content really starts at y 0.2368 on the desk side and 0.270 on the rack side; 0.226 sits inside both so words may overlap the band |
+| `--hb-entry-keep` | 276 | 0.400 | the lower edge of the two top surfaces — desktop plane ends 0.363, the slab's front face 0.380, the rack's lid 0.396. What must stay above the fold |
+| `--hb-arch` | **417** | 0.1001 | the top of the assembled bridge |
+
+`--hb-arch` is measured on the last frame the page plays because that is the state it
+describes, and the answer is a line rather than a peak: the deck is flat at y 0.100–0.105
+across x 0.30–0.68. **It sits above both objects it spans** — the rack's top is 0.257 and
+the desk's 0.245 — which is the whole reason it needs its own constant, since anything that
+clears the furniture does not clear the bridge.
+
+Two caveats. The last few frames of settling reach a little higher than the final position:
+topmost content is y 0.092 at frame 411 against 0.1001 at 417, so a host asking for 30px of
+clearance gets about 21 at the tightest moment. And blocks fly in from the top for the whole
+run — the picture reaches y 0.000 mid-assembly — so only the end state is addressable by an
+offset.
+
+## What the hero does not need
+
+What it does *not* need from a re-render is the bottom edge tidied. The plate's last
 row carries the shadow plane at alpha 2.4/255 and is still 2.3 nine rows in, which composited
 on the page colour is a step from 250.6 to 253.0 across the width of the screen — visible as
 a straight line when the hero scrolls away. `assets/hero-bridge.css` feathers the bottom 4%

@@ -179,6 +179,77 @@ hero-bridge {
   --hb-entry-span: calc(100vh - var(--hb-pin));
   --hb-entry-span: calc(100svh - var(--hb-pin));
 
+  /* The two lengths everything geometric below is built out of, named here rather than
+     spelled out at each use. --hb-screen-h carries the svh/vh fallback pair for all of
+     them, which is why it is worth extracting: it used to be written out three times and
+     each copy needed its own fallback line.
+
+     100vw and not 100% in the plate's height because a percentage would resolve against
+     this element's own height, which is what is being defined. 100vw counts the classic
+     scrollbar, so on an engine that has one this comes out a few pixels TALLER than the
+     plate rather than shorter — the safe direction, costing a hairline of page colour
+     rather than a clip. */
+  --hb-plate-h: calc(min(100vw, var(--hb-max)) * 1432 / 2048);
+  --hb-screen-h: calc(100vh - var(--hb-pin));
+  --hb-screen-h: calc(100svh - var(--hb-pin));
+
+  /* Where the plate rests inside a stage taller than it, which is every screen below about
+     5/4 — phones and tablets in portrait. place-items: center used to do this and cannot
+     any more, because there is now a second offset to add to it and a grid can only centre
+     or not. Written out, the two simply compose in the box's margin below. */
+  --hb-slack: max(0px, calc((var(--hb-screen-h) - var(--hb-plate-h)) / 2));
+
+  /* WHERE THE TOP OF THE ASSEMBLED BRIDGE SITS, as a share of the plate's height, and the
+     third artwork constant beside --hb-entry-sky and --hb-entry-keep. Measured on frame
+     417 — the last frame the page plays, and the one the scrub's tail holds on, so it is
+     the FINISHED bridge and not a moment during assembly.
+
+     0.1001, and it is a line rather than a peak: the deck is flat at y 0.100-0.105 across
+     x 0.30-0.68. Note it sits ABOVE both the rack's top at y 0.257 and the desk's at
+     y 0.245, because the arch rises over the gap between them — which is the whole reason
+     this constant is needed. Anything that clears the arch clears the furniture by a wide
+     margin, and nothing that clears the furniture clears the arch.
+
+     Blocks fly in from the top for the whole run, so DURING assembly the picture reaches
+     y 0.000 and no offset can hold them clear of a host's copy. Only the end state is
+     addressable, and that is what this describes. The last few frames of settling come
+     about 9px closer than the final position — topmost content is y 0.092 at frame 411
+     against 0.1001 at 417 — so a host asking for 30px of clearance gets 21 at the tightest
+     moment. */
+  --hb-arch: 0.1001;
+
+  /* HOW FAR BELOW THE HEADER THAT LINE HAS TO LAND, and the host's number rather than the
+     component's, exactly as --hb-entry-clear is: nothing here can know how tall a host's
+     headline is or whether it even holds over the plate.
+
+     0 is the default and means "leave the plate where it rests". A host that pins copy
+     over the picture sets this to where its copy ends, and the plate moves down to put
+     the finished bridge under it. This site sets the gap above its headline, plus the
+     headline, plus 30px. */
+  --hb-arch-clear: 0px;
+
+  /* WHAT THAT COSTS, SOLVED, and it is a static offset rather than anything the script
+     does: it is not a function of scroll, so it belongs here. hero-bridge.js picks it up
+     for free — settle() reads the plate's resting position out of offsetTop, and a margin
+     is in offsetTop.
+
+     The middle term is the ask: how far the arch is above where the host needs it, given
+     where the plate rests (--hb-slack) and where the arch sits inside it. Floored at 0 so
+     a host whose copy already clears the bridge moves nothing.
+
+     THE CEILING IS THE PROMISE --hb-entry-keep MAKES, and it is not decoration. Pushing
+     the plate down spends exactly the thing the entry exists to protect: the desk's top
+     edge staying above the fold. Uncapped, a short screen would take a 240px drop and put
+     the desk under the fold for the whole hold. It does not bind on a laptop — 1512x780
+     wants 239px against a ceiling of 285 — but a landscape phone would hit it. clamp()
+     resolves to its minimum where the ceiling falls below it, so the degenerate case
+     comes out as no drop rather than as a negative one. */
+  --hb-arch-drop: clamp(
+    0px,
+    calc(var(--hb-arch-clear) - var(--hb-slack) - var(--hb-arch) * var(--hb-plate-h)),
+    max(0px, calc(var(--hb-screen-h) - var(--hb-slack)
+                  - var(--hb-entry-keep) * var(--hb-plate-h))));
+
   display: block;
   position: relative;
   box-sizing: border-box;
@@ -199,9 +270,16 @@ hero-bridge {
      above and below a plate that is centred in it anyway.
 
      max() and not min(): below about 5/4 the plate is shorter than the screen, and the
-     stage stays a full screen with the plate centred in it. */
-  --hb-stage-h: max(calc(100vh - var(--hb-pin)), calc(min(100vw, var(--hb-max)) * 1432 / 2048));
-  --hb-stage-h: max(calc(100svh - var(--hb-pin)), calc(min(100vw, var(--hb-max)) * 1432 / 2048));
+     stage stays a full screen with the plate centred in it.
+
+     AND IT HAS TO GROW WITH --hb-arch-drop, which is easy to leave out and does not fail
+     until the very end of the hero. On a desk screen the stage is exactly the plate's
+     height, so a plate pushed down 244px overhangs it by 244px — invisible while the stage
+     is pinned, and then painted over whatever follows the hero the moment the sticky stage
+     bottoms out against this element. The host's section padding is nowhere near that:
+     --hero-tail is about 100px on this site. */
+  --hb-stage-h: max(var(--hb-screen-h),
+                    calc(var(--hb-plate-h) + var(--hb-slack) + var(--hb-arch-drop)));
 
   /* THE SCROLL BUDGET is the difference between the two, which is what progress() measures
      as offsetHeight minus the stage's, and it is the approach plus the scrub written as
@@ -246,14 +324,19 @@ hero-bridge *, hero-bridge *::before, hero-bridge *::after { box-sizing: border-
    this file used to do. The old note was right that a browser clamps `center` to `start`
    for an item larger than its alignment container, so that overflow cannot become
    unreachable — but that only applies to a scroll container, and without overflow:hidden
-   the stage is not one. Nor is the item ever larger than it. Centring matters only where
-   the plate is shorter than a screen, which is every phone and tablet in portrait. */
+   the stage is not one. Nor is the item ever larger than it.
+
+   START and not centre on the block axis, which is a change: the plate's vertical position
+   is now --hb-slack plus --hb-arch-drop, written on the box below. --hb-slack is exactly
+   what centring used to produce, so nothing moves where the drop is zero — but a grid can
+   only centre or not, and there is now a second offset to add to it. Doing it in one
+   margin is also what lets settle() read the whole thing back out of offsetTop. */
 hero-bridge [data-hb-stage] {
   position: sticky;
   top: var(--hb-pin);
   height: var(--hb-stage-h);
   display: grid;
-  place-items: center;
+  place-items: start center;
 }
 
 /* Edge to edge at the plate's own aspect. aspect-ratio rather than a height, so the box is
@@ -326,6 +409,13 @@ hero-bridge [data-hb-box] {
   position: relative;
   width: min(100%, var(--hb-max));
   aspect-ratio: 2048 / 1432;
+  /* Where the plate rests. --hb-slack is the centring the stage used to do; --hb-arch-drop
+     is how far the host's copy needs the finished bridge pushed down. A MARGIN and not a
+     transform or a `top`, for two reasons: it is in offsetTop, which is where settle()
+     reads the resting position from and how the entry learns about this without a line of
+     script; and it contributes layout, so the stage's height above genuinely accounts for
+     it rather than the plate overhanging into the next section. */
+  margin-top: calc(var(--hb-slack) + var(--hb-arch-drop));
   transform-origin: 50% 0%;
   will-change: transform;
   isolation: isolate;
@@ -391,7 +481,14 @@ hero-bridge:not([data-hb-motion="on"]) {
   padding-top: calc(100svh - var(--hb-pin));
 }
 hero-bridge:not([data-hb-motion="on"]) [data-hb-stage] { position: static; height: auto; display: block; }
-hero-bridge:not([data-hb-motion="on"]) [data-hb-box] { transform: none; will-change: auto; }
+/* margin-top goes with the rest of it, and it is easy to miss because the property that
+   drives it is guarded in the HOST's stylesheet rather than here. --hb-arch-clear buys room
+   for a headline pinned OVER the plate; a host can only guard it on what CSS can see, which
+   is @supports and prefers-reduced-motion — and neither of those is "the script never ran".
+   With scripting off the copy is in flow above a still that is not pinned at all, so the
+   drop is 240px of blank page between the words and the picture. --hb-slack goes with it:
+   there is nothing to centre in once the stage is display:block and height:auto. */
+hero-bridge:not([data-hb-motion="on"]) [data-hb-box] { transform: none; will-change: auto; margin-top: 0; }
 hero-bridge:not([data-hb-motion="on"]) [data-hb-box] > canvas { display: none; }
 
 /* The cut follows the box, and the box is the page's full width up to --hb-max. Wide
