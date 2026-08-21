@@ -56,12 +56,22 @@ plate is pinned under the header from the moment the page loads, and the hero co
 is laid over it: the first screen is the artwork with the headline on top of it.
 
 It runs in three phases, and the element's height is split between them. Through the
-**approach** — one screen, the scroll the copy takes to leave — the plate is held
-small and low, its bottom on the fold and its top under the words, so the rack, the
-desk and the desk's cubby are all above the fold from the first paint. It holds that
-framing for 60% of the approach and then **settles** up to full size as the last of
-the copy clears. Then it **scrubs** for 70svh while the arch builds, holds on the
-closed span, and scrolls on.
+**approach** — one screen, the scroll the copy takes to leave — the plate hangs from a
+line under the copy: its first pixel of artwork on that line, its own empty top behind
+the words, and its bottom off the fold wherever it does not fit. On every desktop
+screen that leaves it at full edge-to-edge width from the first paint, with the rack,
+the desk and the desk's cubby all above the fold. It holds there for 60% of the
+approach and then **rises** into place as the last of the copy clears — a move rather
+than a zoom, except on a short screen where it also has to grow. Then it **scrubs** for
+70svh while the arch builds, holds on the closed span, and scrolls on.
+
+How big it can be at entry follows from two constants measured off the first played
+frame. `--hb-entry-sky` (0.226) is the share of the plate that is empty at the top, and
+is what lets the words overlap it. `--hb-entry-keep` (0.5) is the share that must stay
+above the fold, and it is not a round number: counting opaque pixels per row across the
+desk, the count runs 229 at y 0.49 and 45 at y 0.50 — that step is the underside of the
+cubby, and everything below it is legs. So the entry keeps the desktop, the books, the
+cubby and its lip, and spends the legs.
 
 The plate runs edge to edge and is never clipped by a box — its stage takes the
 plate's own height rather than the screen's, so on a desk screen the bottom of the
@@ -72,10 +82,11 @@ ground shadow the moment the stage released. The render ends in a faint edge of 
 own — the last row carries the shadow plane at alpha 2.4/255 — so the bottom 4% is
 feathered out, below the desk's feet at y 0.94 and touching no object.
 
-Two custom properties are the page's business rather than the component's:
-`--hb-pin` is the header's height, and `--hb-entry-top` is where the plate's top
-edge sits while the copy is still on screen. Both are set in `index.html` from the
-measured height of the hero copy — 380px on any desktop width, 479px on a phone.
+Two custom properties are the page's business rather than the component's: `--hb-pin`
+is the header's height, and `--hb-entry-clear` is how much room the page's own copy
+needs. Both are set in `index.html` from the measured height of the hero copy — 380px
+on any desktop width, 290px at 768, 479px on a phone and 558px at 320, where the h1
+goes to four lines.
 
 Its frames are in `assets/hero-bridge/`, named by their Blender frame number so a
 file, [`docs/hero-bridge-render.md`](docs/hero-bridge-render.md) and the manifest

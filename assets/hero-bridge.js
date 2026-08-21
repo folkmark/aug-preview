@@ -41,11 +41,12 @@
    That budget is spent on two things in order, and only the second one is frames. The
    plate is pinned from the moment the page loads, so a host can lay a screen of copy over
    it — which is what this hero does — and the APPROACH is the scroll that copy takes to
-   leave. Through it the plate is held small and low, sitting on the fold under the words,
-   and settles up to full size as the last of them goes; then the SCRUB starts, on a plate
-   that has been on screen the whole time. How long the approach lasts is --hb-entry-span
-   and where the plate sits during it is --hb-entry-top, both in hero-bridge.css: a host
-   with more or less copy to clear changes those and nothing here.
+   leave. Through it the plate hangs from a line under the words, edge to edge on a desktop
+   screen with only its bottom off the fold, and rises into place as the last of them goes;
+   then the SCRUB starts, on a plate that has been on screen the whole time. How long the
+   approach lasts is --hb-entry-span and how much room the copy needs is --hb-entry-clear,
+   both in hero-bridge.css: a host with more or less copy to clear changes those and
+   nothing here.
 
    Attributes, all optional except base:
      base        URL prefix ending in "/"                    (required)
@@ -331,19 +332,28 @@
       return (isFinite(v) && v > 0 ? v : num(this, 'budget-mb', 96)) * 1048576;
     }
 
-    // How far below the header the plate's top edge sits during the approach, and how much
-    // scroll that approach costs. Both in pixels, both read out of the stylesheet like
-    // variant() and budgetWanted(), and for the same reason: a host's own copy is what they
-    // are sized against, the host writes its CSS, and a second copy of either number here
-    // would be free to drift from the layout it describes.
+    // Everything the entry is composed from, read out of the stylesheet like variant() and
+    // budgetWanted() and for the same reason: a host's own copy is what --hb-entry-clear is
+    // sized against, the host writes its CSS, and a second copy of any of these here would
+    // be free to drift from the layout they describe. The lengths resolve to pixels only
+    // because hero-bridge.css registers them with @property; a plain custom property hands
+    // back its token text, so there is a fallback for engines without it.
     //
-    // Both resolve to pixels only because hero-bridge.css registers them with @property; a
-    // plain custom property would hand back its token text. Where that is unsupported each
-    // has a fallback that is right wherever the plate is not taller than the screen, and
-    // close enough where it is.
-    entryTop() {
-      var v = parseFloat(getComputedStyle(this).getPropertyValue('--hb-entry-top'));
-      return isFinite(v) && v > 0 ? v : (innerHeight || 800) * 0.4;
+    // One getComputedStyle call and not four: settle() runs on every tick of the approach,
+    // and each getPropertyValue on a fresh style object is its own resolution.
+    entry_() {
+      var cs = getComputedStyle(this);
+      var num = function (name, dflt) {
+        var v = parseFloat(cs.getPropertyValue(name));
+        return isFinite(v) ? v : dflt;
+      };
+      var clear = num('--hb-entry-clear', 0);
+      return {
+        clear: clear > 0 ? clear : (innerHeight || 800) * 0.4,
+        sky: Math.min(0.9, Math.max(0, num('--hb-entry-sky', 0.226))),
+        keep: Math.min(1, Math.max(0.05, num('--hb-entry-keep', 0.5))),
+        min: Math.min(1, Math.max(0.05, num('--hb-entry-min', 0.25)))
+      };
     }
     entrySpan() {
       var v = parseFloat(getComputedStyle(this).getPropertyValue('--hb-entry-span'));
@@ -654,17 +664,32 @@
     // in the stylesheet, for the reason approach.js's camera() is: it is a function of
     // scroll, and CSS cannot read scroll.
     //
-    // At entry the plate is scaled about its own bottom edge — transform-origin does that,
-    // see hero-bridge.css — and that bottom is lifted onto the fold. So the picture sits
-    // low and small under the copy, showing the rack's top, the desk and its cubby, with
-    // everything above --hb-entry-top belonging to the words. It holds there for HOLD of
-    // the approach and then grows to full size in one move as the copy clears.
+    // At entry the plate hangs from a line under the copy: its first pixel of ARTWORK sits
+    // at --hb-entry-clear, its empty top is allowed to fall behind the words, and it runs
+    // off the bottom of the screen wherever it is too tall to fit. It is scaled about its
+    // own TOP edge — transform-origin does that, see hero-bridge.css — and only as far as
+    // it must be for --hb-entry-keep of it to stay above the fold. On every desktop screen
+    // that solve comes out above 1, so the plate enters at its full edge-to-edge width and
+    // the approach is a pure vertical rise. It holds there for HOLD of the approach and
+    // then rises into place in one move as the copy clears.
+    //
+    // Anchoring the top rather than the bottom is the whole reason the plate is big enough
+    // to be worth looking at. Putting its bottom on the fold instead forces the WHOLE
+    // picture between the copy and the fold — 458px for a 1007px plate at 1440x900, a 45%
+    // postage stamp. Letting it run off the bottom costs nothing, because the viewport
+    // cropping it there is invisible, and buys the other 55%.
+    //
+    // THE CLAMPS ARE NOT DECORATION. h is solved from the room BELOW the copy, and on a
+    // viewport shorter than the copy needs — a landscape phone: 667x375 leaves 303px under
+    // the header — that room is negative. Left unclamped the scale goes negative with it,
+    // and a negative scale REFLECTS the box about its origin: the plate is drawn mirrored,
+    // entirely off the bottom of the screen, and the hero reads as blank for the whole
+    // hold. So the room is floored at zero and the scale at --hb-entry-min, which trades
+    // the promise about --hb-entry-keep for a picture that is still a picture.
     //
     // rest is measured against the VIEWPORT and not against the stage, and that is not
     // interchangeable: the stage is the plate's own height, which on a desk screen is
-    // taller than the viewport, so the stage's own bottom is below the fold. Anchoring the
-    // entry to it would put the plate's bottom off-screen and hide the ground shadow at
-    // exactly the moment the composition is meant to be readable.
+    // taller than the viewport, so only the stage's own top is ever on screen.
     //
     // offsetTop rather than a second getBoundingClientRect: it is untransformed, so it
     // reports where the box RESTS rather than where this method last moved it, and the
@@ -681,9 +706,22 @@
       var ih = innerHeight || 800;
       var bh = box.offsetHeight;
       if (!bh) return;
-      var k = Math.min(1, (ih - this.pin() - this.entryTop()) / bh);
-      var rest = this.stage.getBoundingClientRect().top + box.offsetTop + bh;
-      box.style.transform = 'translateY(' + ((1 - s) * (ih - rest)).toFixed(1) + 'px)' +
+      var e = this.entry_();
+      var clear = this.pin() + e.clear;
+
+      // The largest the plate can be drawn with e.keep of it still above the fold. The
+      // denominator is what the plate gains in VISIBLE height per unit of its own height:
+      // it hangs from clear and grows downward, so each unit adds (keep - sky) of visible
+      // artwork. A keep at or below sky would ask for an infinite plate — guarded here,
+      // though nothing the stylesheet can say produces it.
+      var room = Math.max(0, ih - clear);
+      var h = Math.min(bh, room / Math.max(0.05, e.keep - e.sky));
+      if (h < bh * e.min) h = bh * e.min;
+
+      var k = h / bh;
+      var rest = this.stage.getBoundingClientRect().top + box.offsetTop;
+      var top = clear - e.sky * h;
+      box.style.transform = 'translateY(' + ((1 - s) * (top - rest)).toFixed(1) + 'px)' +
                             ' scale(' + (k + (1 - k) * s).toFixed(4) + ')';
     }
 
