@@ -6,9 +6,16 @@
    one value a host with a different header sets. */
 
 /* Two arms, one breakpoint. 992px is the design system's only type-scale break,
-   which is why it is the split everywhere on this site. */
-@media (max-width: 991px) { cycle-wheel [data-cycle-rig] { display: none; } }
-@media (min-width: 992px) { cycle-wheel [data-cycle-list] { display: none; } }
+   which is why it is the split everywhere on this site.
+
+   !important is load-bearing, not tidiness: the arms carry their own layout as
+   inline styles (the mobile arm is an inline display:flex), and an arm-switch
+   rule that loses to an inline style shows BOTH arms — the accordion rendered
+   under the ring on every desktop screen, which is exactly how this shipped
+   once. The page utility classes these rules replaced carried !important for
+   the same reason. */
+@media (max-width: 991px) { cycle-wheel [data-cycle-rig] { display: none !important; } }
+@media (min-width: 992px) { cycle-wheel [data-cycle-list] { display: none !important; } }
 
 /* The rig's height is the scroll budget: the pinned travel is height minus one
    stage, split into four equal beats by the script. Raise it and the ring builds

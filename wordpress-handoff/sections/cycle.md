@@ -246,6 +246,11 @@ The wheel's stylesheet is `assets/cycle-wheel.css`, scoped under the
 `cycle-wheel` element so it cannot leak into a host theme. The parts that look
 incidental and are not:
 
+- **The arm-switch rules carry `!important`, and it is load-bearing.** The arms
+  carry their own layout as inline styles (the mobile arm is an inline
+  `display: flex`), and an arm-switch rule that loses to an inline style shows
+  both arms — the accordion rendered under the ring on every desktop screen.
+
 - **Arcs** are `color: var(--brand-accent)` at opacity 0.55; the
   `data-active` arc is 1. Drawing uses `pathLength="100"` on each path so the
   script's dash-offset math is unit-free — keep that attribute.
