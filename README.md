@@ -335,6 +335,21 @@ phone, peaks at 719 one pixel before the split, and settles to a flat 600 from 1
 because 3x the phone box and 2x the desktop box have converged on the same number here.
 The set is 1.6 MB for both tiers, against 56 MB of master.
 
+Below that split every one of those rows leads with its photograph, and that is the
+markup rather than a rule: all seven carry the picture first in source order, so the
+stacked order costs no CSS, matches what a screen reader reads, and there is no browser
+that can get it wrong. Three of them used to carry their copy first — the alternation was
+done in source order — which is what put a photograph under its copy on a phone and ran
+two blocks of copy and then two photographs together at each turn.
+
+The alternation is what takes a rule now. `.media-row-flip` moves the picture to the
+second column on the three rows that want it on the right, under a container query on the
+section rather than a viewport media query: the width that decides the split is the row's
+720px and not the viewport's 800, and the two are not a fixed 90% apart, because a media
+query counts a classic scrollbar inside the viewport and a percentage gutter does not. A
+browser too old for container queries loses the alternation and keeps the stack, which is
+the right way round for that trade — the stack is what a phone sees.
+
 The three home-page illustrations — `assets/illustrations/{brain,blocks,laptop}.webp` —
 ship as rendered: the full 1200x1200 plate scaled to 810 square, nothing trimmed and
 nothing re-framed. The encoder used to trim each plate to its content and re-pad all
