@@ -5,9 +5,10 @@
 //   npm i --no-save sharp && node tools/encode-images.mjs
 //
 // The originals were dropped in as received: PNGs of soft-shaded 3D renders, 24-bit for
-// the photography and 48-bit for the icons, and headshots ranging from a 300-DPI print
-// export down to a 190px thumbnail. Every target below is set from the box the image
-// actually occupies, at roughly three device pixels per CSS pixel, which is what a phone
+// the photography, 48-bit for the three illustration plates and 32-bit for the four cycle
+// plates beside them, and headshots ranging from a 300-DPI print export down to a 190px
+// thumbnail. Every target below is set from the box the image actually occupies, at
+// roughly three device pixels per CSS pixel, which is what a phone
 // at DPR 3 can resolve and no more. The approach frames have their own encoder,
 // tools/encode-approach.mjs.
 
@@ -39,6 +40,52 @@ const JOBS = [
   // Full-width photography in a 3/2 box: 351 CSS px on a phone, ~640 on desktop.
   { in: 'images/classroom-morning.png', out: 'images/classroom-morning.webp', width: 1264 },
   { in: 'images/student-notes.png',     out: 'images/student-notes.webp',     width: 1264 },
+
+  // The seven portrait photographs on The Challenge and Our Approach, in a 4/5 box, two
+  // tiers each. These arrived in the build hotlinked to a generation CDN under a
+  // user-scoped path, at 1856x2304 and 6.4-9.2 MB apiece; that bucket is not a home for
+  // production images, so the masters are committed here and the page reads the encoded
+  // pair. 56 MB of source for 1.58 MB of shipped WebP across both tiers, and the trade is
+  // the point — the CDN copy can go away and nothing here notices.
+  //
+  // The box is worth measuring rather than assuming, because it does not break where the
+  // rest of the site does. The row is a `repeat(auto-fit, minmax(min(20rem,100%),1fr))`
+  // grid inside `--container-xxl` with an `--space-20` gap, so two tracks need
+  // 2x320 + 80 = 720px of content against a 90vw container: it splits at exactly 800px of
+  // viewport, not at the design system's 992. Measured in Chromium: 288px at 320,
+  // 351 at 390, 719 at 799 — the widest the box ever gets, one pixel before the split —
+  // then 320 at 800, 406 at 992, and a flat 600 from 1422 up, where the container caps.
+  //
+  // 1264 is the same width student-notes.webp already ships at in this exact grid: 2.1x
+  // the 600px desktop box, and above the 1053 a 390px phone at DPR 3 asks for. 800 is the
+  // smallest round width that still covers every DPR-1 viewport including the 719px peak,
+  // and a 430px phone at DPR 2 (774).
+  //
+  // Be clear about what the second tier does and does not buy. Phone-at-3x wants 1053-1161
+  // and desktop-at-2x wants 1200, so those two demands have converged on this box and a
+  // DPR-3 phone fetches the 1264 file either way. What 800 serves is DPR-1 desktops — most
+  // desktops — and DPR-2 phones, at about 40% of the bytes. A phone-specific third tier
+  // would need a third artifact each and save little; there is no room for it between 800
+  // and 1264.
+  //
+  // Two of the seven (codesign-tools, test-in-classrooms) arrived RGBA with every alpha
+  // sample at 255. sharp carries an existing alpha channel through regardless of the webp
+  // options below, so without the removeAlpha() in the non-alpha branch those two would
+  // ship a plane that describes nothing, and be the only two of the seven that did.
+  { in: 'images/student-notebook.png',     out: 'images/student-notebook.webp',     width: 1264 },
+  { in: 'images/student-notebook.png',     out: 'images/student-notebook-m.webp',   width: 800 },
+  { in: 'images/engineers-screens.png',    out: 'images/engineers-screens.webp',    width: 1264 },
+  { in: 'images/engineers-screens.png',    out: 'images/engineers-screens-m.webp',  width: 800 },
+  { in: 'images/teacher-two-students.png', out: 'images/teacher-two-students.webp', width: 1264 },
+  { in: 'images/teacher-two-students.png', out: 'images/teacher-two-students-m.webp', width: 800 },
+  { in: 'images/define-the-role.png',      out: 'images/define-the-role.webp',      width: 1264 },
+  { in: 'images/define-the-role.png',      out: 'images/define-the-role-m.webp',    width: 800 },
+  { in: 'images/build-capabilities.png',   out: 'images/build-capabilities.webp',   width: 1264 },
+  { in: 'images/build-capabilities.png',   out: 'images/build-capabilities-m.webp', width: 800 },
+  { in: 'images/codesign-tools.png',       out: 'images/codesign-tools.webp',       width: 1264 },
+  { in: 'images/codesign-tools.png',       out: 'images/codesign-tools-m.webp',     width: 800 },
+  { in: 'images/test-in-classrooms.png',   out: 'images/test-in-classrooms.webp',   width: 1264 },
+  { in: 'images/test-in-classrooms.png',   out: 'images/test-in-classrooms-m.webp', width: 800 },
 
   // The three co-design action shots in the Our Current Work row, one school each. 1080
   // is set off the card, which is the narrowest photographic box on the site: 351 CSS px
@@ -135,7 +182,31 @@ const JOBS = [
   // restyled.
   { in: 'icons/brain.png',  out: 'illustrations/brain.webp',  width: 810, alpha: true },
   { in: 'icons/blocks.png', out: 'illustrations/blocks.webp', width: 810, alpha: true },
-  { in: 'icons/laptop.png', out: 'illustrations/laptop.webp', width: 810, alpha: true }
+  { in: 'icons/laptop.png', out: 'illustrations/laptop.webp', width: 810, alpha: true },
+
+  // The four nodes of the home page's co-design cycle. Same 1200x1200 plates as the three
+  // illustrations above and the same rule applies: do not trim them. Measured, the alpha
+  // above 0 covers the whole canvas on all four — the same faint global haze, topping out
+  // at 12-16 in the outer 20px frame — while the real content sits in 657x845 to 982x895
+  // at a threshold of 16. There is no threshold between those. And here the padding is
+  // doing a second job: all four share a content baseline (top y 155-179, bottom 1021-1049),
+  // which is what lines the set up around the ring. Trim and they scatter.
+  //
+  // 320 against a 97.4px peak. The node is 18.5% of a slot that caps at 33rem, the icon is
+  // 86% of that, so the ceiling is 83.98px, and 1.16 of it when the selected node is also
+  // hovered — measured in Chromium, along with the 44px (2.75rem) row thumbnail the phone
+  // arm uses. That is 3.3x the one element a reader deliberately points at. The generosity
+  // is free: 4.18 MB of plate becomes 50 KB for the set.
+  //
+  // These live in assets/approach/ beside the arch frames, which is two families in one
+  // directory but is safe: tools/encode-approach.mjs only unlinks /^ap\d{4}m?\.webp$/, so
+  // re-encoding that sequence leaves these alone, and its manifest check walks the manifest
+  // to disk rather than the other way round. The name is the Blender render's, which is
+  // that directory's own convention.
+  { in: 'icons/cyc01_role_0001.png',         out: 'approach/cyc01_role_0001.webp',         width: 320, alpha: true },
+  { in: 'icons/cyc02_capabilities_0001.png', out: 'approach/cyc02_capabilities_0001.webp', width: 320, alpha: true },
+  { in: 'icons/cyc03_applications_0002.png', out: 'approach/cyc03_applications_0002.webp', width: 320, alpha: true },
+  { in: 'icons/cyc04_test_0001.png',         out: 'approach/cyc04_test_0001.webp',         width: 320, alpha: true }
 ];
 
 // A job whose source is missing is skipped, not fatal — see the note on SRC above.
@@ -170,12 +241,17 @@ for (const job of runnable) {
   } else {
     pipe.resize({ width: job.width, withoutEnlargement: true, kernel: 'lanczos3' });
   }
+  // job.alpha is a requirement in both directions. sharp carries a source's alpha channel
+  // through whatever the webp options say, so without this a photograph that happened to
+  // arrive RGBA ships a plane describing nothing — two of the seven 4/5 photographs did.
+  if (!job.alpha) pipe.removeAlpha();
   const info = await pipe
     .webp(job.alpha ? { quality: 82, alphaQuality: 100, effort: 6 } : { quality: 80, effort: 6 })
     .toFile(dst);
 
   const wrote = await sharp(dst).metadata();
   if (job.alpha && !wrote.hasAlpha) throw new Error(`${dst} lost its alpha channel`);
+  if (!job.alpha && wrote.hasAlpha) throw new Error(`${dst} kept an alpha channel it does not need`);
   const src_b = fs.statSync(src).size;
   before += src_b; after += info.size;
   const soft = job.width && wrote.width < job.width ? '  (source too small — ships soft)' : '';
