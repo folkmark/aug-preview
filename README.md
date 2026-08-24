@@ -249,7 +249,13 @@ replaces it, and the build only checks the frames when the element is actually
 mounted. The full build spec is at
 [`wordpress-handoff/sections/approach.md`](wordpress-handoff/sections/approach.md).
 
-Its frames live in `assets/approach/` and are named by their Blender frame
+`assets/approach/` also holds the four co-design cycle node renders —
+`cyc0*.webp`, 320px square with alpha, the icons the home page's ring is built from.
+They are not part of the sequence and nothing checks them against the manifest; they sit
+there because the page reads them from there. `tools/encode-approach.mjs` only unlinks
+`ap####.webp` and `ap####m.webp`, so re-encoding the sequence leaves them alone.
+
+The sequence's own frames live in `assets/approach/` and are named by their Blender frame
 number, so a file, the timeline marker in
 [`docs/approach-render-map.md`](docs/approach-render-map.md), and the manifest
 all refer to the same thing. The six beats are where the section comes to rest
@@ -311,6 +317,16 @@ from the designer.
 
 Each target size is set from the box the image actually occupies, at about three
 device pixels per CSS pixel — what a phone at DPR 3 can resolve and no more.
+
+The seven portrait photographs on The Challenge and Our Approach are the one set that
+ships in two tiers, `name.webp` at 1264 and `name-m.webp` at 800, picked by a `srcset`
+the same way the hero's placeholder still is. Their row splits from one column to two at
+exactly 800px of viewport rather than at the design system's 992 — two 20rem tracks and
+an `--space-20` gap need 720px against a 90vw container — so the box runs 351px on a
+phone, peaks at 719 one pixel before the split, and settles to a flat 600 from 1422 up.
+1264 covers that at 2x and 800 covers every DPR-1 screen; a DPR-3 phone fetches the 1264,
+because 3x the phone box and 2x the desktop box have converged on the same number here.
+The set is 1.6 MB for both tiers, against 56 MB of master.
 
 The three home-page illustrations — `assets/illustrations/{brain,blocks,laptop}.webp` —
 ship as rendered: the full 1200x1200 plate scaled to 810 square, nothing trimmed and

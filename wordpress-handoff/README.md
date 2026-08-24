@@ -127,6 +127,7 @@ host before deploying. `--font-heading` and `--font-body` both resolve to it.
 | `assets/falling-blocks/manifest.json` | what the encoder produced | frame count, padding, widths |
 | `assets/falling-blocks.js` / `.css` | the closing CTA's component | portable, see §5 |
 | `assets/approach/ap*.webp` | the Approach sequence, every frame in two cuts | filenames load-bearing — see §6 |
+| `assets/approach/cyc0*.webp` | the four co-design cycle node renders | 320px square, alpha kept — they sit on the page with no disc behind them |
 | `assets/approach/manifest.json` | what the encoder produced | frame list, beats, cut sizes |
 | `assets/approach.js` / `.css` | the Approach scrub | portable, see §6 |
 | `assets/images/`, `assets/team/`, `assets/icons/`, `assets/logo/` | photography, headshots, marks | plain images |
