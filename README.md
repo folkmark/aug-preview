@@ -255,6 +255,13 @@ They are not part of the sequence and nothing checks them against the manifest; 
 there because the page reads them from there. `tools/encode-approach.mjs` only unlinks
 `ap####.webp` and `ap####m.webp`, so re-encoding the sequence leaves them alone.
 
+The ring itself is `<cycle-wheel>` — `assets/cycle-wheel.js` and `assets/cycle-wheel.css`,
+a standalone custom element to the same doctrine as the hero and the CTA: it drives the
+markup the page authors, reads its sticky offset back off its own stage (`--cw-pin`), and
+latches once the reader has built the ring. The height of its `[data-cycle-rig]` is the
+scroll budget, split into four equal beats. The full spec, latch measurement included, is
+[`wordpress-handoff/sections/cycle.md`](wordpress-handoff/sections/cycle.md).
+
 The sequence's own frames live in `assets/approach/` and are named by their Blender frame
 number, so a file, the timeline marker in
 [`docs/approach-render-map.md`](docs/approach-render-map.md), and the manifest

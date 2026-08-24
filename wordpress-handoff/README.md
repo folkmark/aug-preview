@@ -1,65 +1,172 @@
-# AugmentED — WordPress handoff
+# AugmentED WordPress handoff
 
-Everything needed to rebuild this site in WordPress, and an honest account of what
-carries over untouched, what has to be ported, and what should simply be deleted.
+This package contains everything you need to rebuild the AugmentED marketing site in
+WordPress: the rendered markup of every page, the design system, the production
+assets, three portable animation components, and build specifications for the two
+sections that need them.
 
-The short version: **the design system, the assets and the page markup all transfer as
-they are. All three scroll-driven sections — the hero bridge scrub, the falling-blocks
-CTA and the Approach scrub — are already portable components. Everything else that moves
-on the page is written against a runtime that will not exist in WordPress and has to be
-rewritten; none of it is large, and none of what is left is intricate.**
+**Audience.** A WordPress developer rebuilding this site, most likely inside
+aerdf.org's existing custom theme. The package assumes you know WordPress theme
+development (enqueueing, page templates, custom post types) and modern CSS. It does
+not assume you have seen this codebase before; each section states what you need and
+where it lives.
 
----
+**Key points:**
 
-## 1. What this site currently is
+- The design system, the assets, and the page markup transfer as they are.
+- All four scroll behaviors — the hero, the closing CTA, the cycle wheel, and
+  the parked Approach scrub — are dependency-free custom elements. To port one,
+  copy its files, enqueue them, and emit its markup. Do not rewrite them.
+- The few page behaviors written against the prototype's runtime must be
+  rebuilt, and every one of them is small. See
+  [Behaviors to rebuild](#behaviors-to-rebuild).
+- Two decisions need an owner before work starts: where the site lives, and where
+  the Follow page's form submits. See [Decisions to make first](#decisions-to-make-first).
 
-`index.html` is not a page. It is a **single Claude Design (`<x-dc>`) template** holding
-all five pages at once, compiled in the browser by `support.js`, which fetches React and
-Babel from a CDN at load and mounts the result into `<div id="dc-root">`. Routing is
-client-side; `tools/build-site.mjs` emits one real file per route so a direct link still
-returns 200, but every one of those files is a byte-identical copy of the same template.
+**Reference site.** The finished site runs at
+[augmented2.folkmark.com](https://augmented2.folkmark.com). It rebuilds from `main`
+on every push. Every visual and behavioral question in this package has a ground
+truth there; when a spec and the site disagree, the site wins and the spec has a bug.
 
-Two consequences that shape this whole handoff:
+## Contents
 
-- **There is no page markup in the repository to read.** Opening `index.html` shows a
-  template and `{{ bindings }}`, not the site. That is what `pages/` below is for.
-- **With JavaScript disabled the entire site is blank** — nav, copy, footer and all. This
-  is pre-existing and worth knowing before anyone writes an SEO ticket about it. Moving
-  to WordPress fixes it for free, since PHP renders on the server.
-
----
-
-## 1a. `sections/` — per-section build specs
-
-Where a section is intricate enough that porting it needs more than "copy these files",
-it gets its own spec in [`sections/`](sections/). Each one is written so the section can
-be rebuilt in another stack **without reading the original source**: the asset contract,
-the maths, the responsive states, and — the part that earns the document — the decisions
-that look arbitrary and are load-bearing.
-
-| spec | covers |
+| Path | What it contains |
 |---|---|
-| [`sections/approach.md`](sections/approach.md) | the Approach scrub (§6) |
+| [`pages/`](pages/) | Each route as rendered HTML. Build templates from these files, not from `index.html`. |
+| [`content/`](content/) | The structured content as data: team, research, cycle steps, page metadata, redirects. See [its README](content/README.md). |
+| [`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php) | A drop-in for your theme that enqueues the design system and the components correctly. |
+| [`sections/hero-bridge.md`](sections/hero-bridge.md) | Build specification for the hero bridge. |
+| [`sections/falling-blocks.md`](sections/falling-blocks.md) | Build specification for the falling-blocks CTA. |
+| [`sections/cycle.md`](sections/cycle.md) | Build specification for the cycle wheel. |
+| [`sections/approach.md`](sections/approach.md) | Build specification for the Approach scrub (not currently mounted). |
+| `../_ds/augmented-design-system-*/` | The design system: tokens, stylesheet, fonts. |
+| `../assets/` | Production images, animation frames, and the three components. |
+| `../docs/approach-render-map.md`, `../docs/hero-bridge-render.md` | Render notes. The authority for frame numbers and for what a re-render needs. |
 
-The shape of that document is meant to be reused; the hero can be written up the same way
-if it ever needs it.
+## Key terms
+
+| Term | Meaning |
+|---|---|
+| **component** | One of the four self-contained custom elements: `<hero-bridge>`, `<falling-blocks>`, `<cycle-wheel>`, `<approach-scrub>`. |
+| **plate** | One rendered artwork image. The animation plates carry alpha and composite directly on the page color. |
+| **frame** | One WebP file in an animation sequence, named by its Blender frame number. |
+| **cut** (or **tier**) | A size variant of a sequence. Each sequence ships in two; a browser fetches one. |
+| **manifest** | The `manifest.json` a sequence's encoder writes beside its frames. Components read it at runtime. |
+| **stage** | The sticky inner box of a component, pinned below the header while the section scrolls. |
+| **scroll budget** | The component's height minus its stage's height: the scroll distance the animation plays across. |
+| **beat** | A frame the animation rests on while the visitor reads. |
+| **still** | The `<img>` fallback a component shows when it does not animate. |
 
 ---
 
-## 2. `pages/` — the rendered markup
+## Decisions to make first
 
-`pages/*.html` is each route as a visitor actually receives it: the template expanded,
-the design-system components resolved to real elements, and the runtime removed. This is
-the file to build a WordPress template from, not `index.html`.
+Settle these before development starts. Each one changes work downstream of it.
 
-> **`home.html` is one revision behind.** It still shows the hero as a plain `<img>`,
-> which is what the hero was before the bridge sequence was wired up. Re-run
-> `node tools/export-static.mjs` to bring it in step — it needs a machine that can reach
-> unpkg from a browser, because the export drives the real client-rendered site. Take the
-> hero markup from `index.html` in the meantime; §5a describes it. Nothing else in
-> `pages/` is affected.
+1. **Where the site lives.** Three options, with precedent for the first two on
+   aerdf.org today:
+   - *Pages inside aerdf.org's theme* (the existing AugmentED page's precedent).
+     Add page templates and page-scoped assets to the custom theme. Recommended
+     if you maintain that theme.
+   - *A separate WordPress install on its own domain* (the EF+Math precedent).
+     Cleanest isolation for a bespoke build, but it creates a second
+     hosting and maintenance owner. Name that owner as part of the decision.
+   - *An Elementor rebuild.* **Not recommended** for the animated pages:
+     Elementor's global CSS and generated wrappers conflict with the components'
+     sticky stages, `isolation`, and blend modes, and builder editing inside
+     component markup breaks contracts the elements depend on.
+2. **The final URL, and redirects.** Preview links to `augmented2.folkmark.com`
+   have circulated. Decide the production URL and plan redirects from the preview
+   domain and from the old long slugs (see [Redirects](#redirects)).
+3. **Where the form submits.** The Follow page's form currently discards
+   submissions. See [The Follow page form](#the-follow-page-form).
+4. **Who confirms the Avenir license.** See [Fonts](#fonts).
 
-| file | route | source in `index.html` |
+## Suggested build order
+
+The package supports any order, but this sequence means each step verifies the
+one before it:
+
+1. Skim this document once, then open
+   [the reference site](https://augmented2.folkmark.com) beside
+   `pages/home.html` so you know what "done" looks like.
+2. Settle the four decisions above with AugmentED.
+3. Copy the two asset directories into the theme and wire up
+   [`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php); its header
+   comment is the procedure. Verify with an empty page template: the design
+   system and both component scripts load, versioned and deferred, on an
+   AugmentED page and nowhere else.
+4. Build the static pages first — The Challenge, Who We Are, Follow Our Work,
+   Our Approach — as page templates from `pages/*.html`, rebuilding the small
+   behaviors as you go ([Behaviors to rebuild](#behaviors-to-rebuild)) and
+   modeling the team and research content from [`content/`](content/README.md).
+5. Build the home page last: the hero, the cycle wheel, and the falling-blocks
+   CTA all install per their sections below.
+6. Wire the form to its decided destination
+   ([The Follow page form](#the-follow-page-form)).
+7. Configure the environment: metadata from `content/pages.json`, redirects
+   from `content/redirects.csv`, and the exclusions in
+   [Protect the components from optimization plugins](#protect-the-components-from-optimization-plugins).
+8. Run the [Acceptance checklist](#acceptance-checklist) top to bottom.
+
+## The target environment: aerdf.org
+
+The following was observed directly on 2026-08-24 from aerdf.org's HTML, response
+headers, REST index, and theme stylesheet. Verify anything you depend on; installs
+change.
+
+aerdf.org runs WordPress on **WP Engine** behind **Cloudflare**, on a custom theme
+(`sessionwise-starter-master`, "AERDF" by SessionWise) with pages authored in
+**Elementor 4.2.3 + Pro**. Plugins present include JetEngine, CPT UI, Gravity Forms
+with reCAPTCHA, Yoast, Redirection, Wordfence, and **WP-Stateless**. The site also
+loads Google Tag Manager, CookieYes, the AccessiBe widget, and HubSpot form embeds.
+Avenir is already self-hosted there through the Use Any Font plugin.
+
+Consequences for this rebuild:
+
+- **WP-Stateless moves media library uploads to a Google Cloud Storage bucket.**
+  On this install, a frame uploaded through the media library is not only renamed
+  and resized; it is served from `storage.googleapis.com` at a URL the components
+  can never construct. This is the strongest form of the rule in
+  [Rules that apply to every component](#rules-that-apply-to-every-component).
+- **WP Engine caches server-side and disallows page-cache plugins**, so the
+  delay-JS class of breakage (see
+  [Protect the components from optimization plugins](#protect-the-components-from-optimization-plugins))
+  is unlikely today. It becomes likely after any host move. Keep the exclusions
+  documented anyway.
+- **AccessiBe rewrites the DOM and can suppress animation.** Run every acceptance
+  test with the widget active, including its "stop animations" mode, and confirm
+  each component lands in its documented fallback rather than a broken
+  intermediate state.
+- **Wordfence hardening can block direct requests to non-PHP theme files.** After
+  any security configuration change, confirm the manifests still return HTTP 200.
+- **If script consent-gating is ever added** (CookieYes is live), classify the
+  component scripts as strictly necessary. A consent-blocked `hero-bridge.js` is a
+  hero that never moves.
+- **JetEngine and CPT UI are already installed**, so model the content types in
+  [Content](#content) with those tools rather than introducing new ones.
+
+## What the prototype is
+
+`index.html` is not a page. It is a single Claude Design (`<x-dc>`) template that
+holds all five pages and is compiled in the browser by `support.js`, which loads
+React and Babel from a CDN at runtime. Two consequences shape this handoff:
+
+- **The repository's `index.html` is not readable page markup.** It is a template
+  with `{{ bindings }}`. The rendered markup is in [`pages/`](pages/).
+- **With JavaScript disabled, the prototype renders nothing.** This is a
+  pre-existing property of the prototype, not a requirement. WordPress renders on
+  the server, so the rebuild fixes it for free.
+
+None of the runtime carries over. See [What to delete](#what-to-delete).
+
+## The rendered pages
+
+`pages/*.html` is each route as a visitor receives it: the template expanded, the
+design-system components resolved to real elements, and the runtime removed. Build
+your WordPress templates from these files.
+
+| File | Route | Source in `index.html` |
 |---|---|---|
 | `home.html` | `/` | `<main data-screen-label="Home">` |
 | `challenge.html` | `/challenge/` | `<main data-screen-label="The Challenge">` |
@@ -67,379 +174,314 @@ the file to build a WordPress template from, not `index.html`.
 | `team.html` | `/team/` | `<main data-screen-label="Who We Are">` |
 | `follow.html` | `/follow/` | `<main data-screen-label="Get Involved">` |
 
-They open straight from disk — asset paths point up two levels at the real `assets/` and
-`_ds/` folders. Regenerate at any time with:
+The files open directly from disk; their asset paths point up two levels at the
+repository's own `assets/` and `_ds/`.
+
+**Check the export stamp before you build from a page.** The second line of each
+file records the commit it was exported from
+(`<!-- exported from <commit> by tools/export-static.mjs -->`). The build warns
+when `index.html` has moved past that commit; if you see the warning, or the
+stamped commit is not the head of `main`, regenerate before building templates:
 
 ```
-npm i --no-save playwright && node tools/export-static.mjs
+npm i --no-save playwright && node tools/export-static.mjs && node tools/export-content.mjs
 ```
 
-Note that `<x-import …Button>` in the template has become a real
-`<button data-slot="button" data-variant="…">` with its computed styles inlined. Those
-inline styles are the design system's own values — see §3 before deciding to keep or
+One property of the export to know about: design-system components such as
+`<x-import …Button>` are exported as real elements
+(`<button data-slot="button" …>`) with their computed styles inlined. Those
+inline styles are the design system's own values.
+
+**About the inline styles.** The exported markup styles elements with `style=""`
+attributes that resolve design-system custom properties. That is faithful to the
+source and acceptable for fixed sections in a first port. Content that editors will
+maintain (see [Content](#content)) should be re-expressed as theme markup and
+classes during the port, not left as inline-styled HTML in a rich-text field.
+
+## The design system
+
+`_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/` is the single
+source of truth for every color, size, radius, and font on the site. It is plain
+CSS with no build step. **Copy it; do not rewrite it** — and do not re-author the
+tokens into `theme.json`. Your theme is a classic theme, where enqueued token CSS
+is the correct mechanism. If you also want the tokens surfaced in the editor UI,
+add a `theme.json` mapping on top — never instead.
+
+To install the design system:
+
+1. Copy the design-system directory into the theme.
+2. Enqueue the eight stylesheets in this order:
+   `tokens/fonts.css`, `tokens/colors.css`, `tokens/typography.css`,
+   `tokens/layout.css`, `tokens/icons.css`, `tokens/schemes.css`,
+   `tokens/base.css`, `styles.css`.
+
+[`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php) implements this —
+the eight files dependency-chained so WordPress cannot reorder them, versioned
+with `filemtime()` so an edit busts the far-future caches WP Engine and
+Cloudflare apply — along with the component enqueues below. Its header comment
+is the install procedure.
+
+The files define roughly 150 custom properties on `:root`. Use the semantic
+aliases, not the raw ramps behind them:
+
+- **Color:** `--brand-accent`, `--brand-accent-hover`, `--text-body`,
+  `--text-muted`, `--text-inverse`, `--surface-page`, `--surface-card`,
+  `--surface-dark`, `--border-hairline`.
+- **Type:** `--text-h1`…`--text-h6`, `--text-large/medium/regular/small/tiny`, and
+  the matching `-line-height` properties. Every size is redeclared at
+  `@media (min-width: 992px)`, and that is the only breakpoint in the type scale —
+  which is why 992px appears throughout the page CSS.
+- **Layout:** `--radius-*`, `--space-1`…`--space-30`, `--page-gutter` (5%),
+  `--section-pad-y`, `--transition-fast` (200 ms ease-in-out).
+- **Schemes:** `.scheme-1`…`.scheme-4` and `.alternate` set per-section color
+  roles. Every section carries exactly one. Do not invent new schemes;
+  `schemes.css` says the same.
+
+### Fonts
+
+The site self-hosts **Avenir LT Pro** (WOFF2 in `_ds/…/assets/fonts/`) in three
+weights: Book 400, Medium 600, Heavy 700. `--font-heading` and `--font-body` both
+resolve to it.
+
+- **Avenir is commercially licensed.** aerdf.org already self-hosts Avenir, so a
+  license likely exists; before launch, confirm in writing that it covers the new
+  pages or domain, and record who confirmed it.
+- **Deploy only the WOFF2 files.** The OTF files beside them are desktop originals
+  kept as encoder inputs. Do not copy them to a web root.
+- The icon font is a five-glyph subset of Material Symbols (Apache 2.0). The
+  regeneration URL sits beside the `@font-face` rule in `tokens/icons.css`. Adding
+  an icon name means refetching that subset.
+
+## The assets
+
+Copy `assets/` verbatim. Nothing in it is hand-placed; five encoder scripts
+produce everything (see [Regenerating the artifacts](#regenerating-the-artifacts)).
+
+| Path | What it is | Notes |
+|---|---|---|
+| `assets/hero-bridge/hb*.webp` + `manifest.json` | Hero sequence: 66 frames × 2 cuts (1600 and 1200 wide). Full cut 10.9 MB, crop 7.0 MB. | The page plays frames 276–417: 9.1 MB full cut, 5.8 MB crop. Filenames are load-bearing. |
+| `assets/hero-bridge.js` / `.css` | The `<hero-bridge>` component. | See [The hero bridge](#the-hero-bridge-hero-bridge). |
+| `assets/falling-blocks/w1440/`, `w720/` + `manifest.json` | Closing CTA frames: 48 per layer × 2 layers × 2 tiers. w1440 = 3.4 MB, w720 = 1.5 MB. | The stylesheet picks the tier. Filenames are load-bearing. |
+| `assets/falling-blocks.js` / `.css` | The `<falling-blocks>` component. | See [The falling-blocks CTA](#the-falling-blocks-cta-falling-blocks). |
+| `assets/approach/ap*.webp` + `manifest.json` | Approach sequence: 122 frames × 2 cuts. 6.25 MB full, 4.05 MB crop. | Not currently mounted. Filenames are load-bearing. |
+| `assets/approach/cyc0*.webp` | The four cycle-wheel node icons, 320 px square with alpha. | Used by the home page wheel. Not part of the sequence; the manifest does not track them. |
+| `assets/cycle-wheel.js` / `.css` | The `<cycle-wheel>` component. | See [The cycle wheel](#the-cycle-wheel-cycle-wheel). |
+| `assets/approach.js` / `.css` | The `<approach-scrub>` component. | See [The Approach scrub](#the-approach-scrub-approach-scrub). |
+| `assets/images/`, `assets/team/`, `assets/icons/`, `assets/logo/` | Photography, headshots, marks. | Plain images. The seven portrait photos ship in two widths picked by `srcset`. |
+| `assets/illustrations/{brain,blocks,laptop}.webp` | The three home-page illustrations, 810 × 810 with alpha. | See the note below. |
+
+**The illustrations are framed plates; do not crop them.** Each carries its own
+framing and a soft cast shadow that fades over a faint full-canvas haze. Place them
+in equal boxes at `aspect-ratio: 1 / 1` with `object-fit: contain`. Any crop tight
+enough to change the framing slices the shadow off against a straight edge.
+
+**Master material is not in the repository.** The Blender plates, source PNG
+sequences, and frame archives (692 MB of a 702 MB checkout) were removed from
+history; they live with the designer. Nothing in this handoff depends on them —
+every encoder output is committed. They matter only for re-rendering artwork, and
+each encoder prints the restore path it needs if you run it without them. The hero
+sequence's masters are the one set that was never in the history at all. The render
+notes in `../docs/` stayed, and they are the authority for frame numbers.
+
+---
+
+## The components
+
+The page's four scroll behaviors are all portable. Each is a dependency-free
+custom element with no framework and no build step. Each one drives markup the
+page authors, so nothing a block editor does can leave it half-constructed, and
+each degrades safely when its script does not run: the canvas rigs to their
+still image, the cycle wheel to its reading column, which is real text either
+way.
+
+**Each component also has a full build specification in
+[`sections/`](sections/)** — the asset contract, the math, the design decisions,
+and a native-rebuild procedure — so the behavior survives even if a packaged
+element cannot be used in the target stack. Install from the sections below;
+open the specification when you change how a component behaves, or if one
+cannot run.
+
+### Rules that apply to every component
+
+- **Never upload frames through the media library.** WordPress renames files on
+  collision, appends `-scaled` past 2560 px, and generates size variants — and on
+  aerdf.org, WP-Stateless then serves uploads from a Google Cloud Storage URL. The
+  components address frames by exact name through string concatenation, so any of
+  those changes 404s frames silently: the still keeps showing and nothing looks
+  broken. Deploy the frame directories as files in the theme, and serve each
+  `manifest.json` from the same directory as its frames.
+- **Point `base` at the frame directory from PHP.** Emit it with
+  `esc_url(get_stylesheet_directory_uri() . '/…/')`. The value must end in `/`.
+  Never derive an asset base from a script's own URL; optimization plugins
+  relocate scripts. (In this repository the attribute must additionally stay a
+  single quoted value beginning `assets/`, because the build verifier and the
+  export's path rewriter scan for exactly that shape.)
+- **Enqueue with `filemtime()` versions and `'strategy' => 'defer'`.** The
+  scripts are defer-safe and order-independent.
+  [`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php) does this for both
+  mounted components, gates everything to the AugmentED pages, and adds the
+  optimizer opt-out attributes from
+  [Protect the components from optimization plugins](#protect-the-components-from-optimization-plugins).
+- **Full-page caching is safe because the components make it safe.** Each records
+  the frame a canvas holds in a `data-` attribute and clears those attributes on
+  boot. Without the clear, a cache that serializes the rendered DOM hands the next
+  visitor a blank canvas that claims to be drawn. Do not remove the boot-time
+  clear; the bug it prevents was real and was found through this repository's own
+  static export.
+- **The section height is the scroll budget.** Each component's height minus its
+  stage's height is the scroll distance its animation plays across, so height and
+  frame count are one setting in two places. Encode more frames without raising
+  the height and the animation plays proportionally faster. Nothing warns you.
+- **The stacking context is load-bearing.** The sequence components cross-fade two
+  canvases under `mix-blend-mode: plus-lighter` inside `isolation: isolate`. A
+  theme ancestor with a `filter`, an `opacity` below 1, a `transform`, or its own
+  `mix-blend-mode` can break the blend. If plates ever look washed out or blown
+  out, inspect the ancestor chain first.
+- **Degradation is deliberate.** Reduced motion, Save-Data or slow connections,
+  and missing browser features each collapse a component to its still. These are
+  separate checks because they mean different things; port them as they are.
+
+### The hero bridge (`<hero-bridge>`)
+
+The home page opens on a scroll-scrubbed sequence: a toy-block arch assembles
+between a server rack and a school desk. The plate is pinned under the header from
+load with the hero copy laid over it; the copy scrolls away, the arch builds across
+the scrub, holds, and eases out. The `<img>` inside the markup is the finished-hero
+still: it is what renders with scripting off, under reduced motion, on Save-Data,
+and before the first frame decodes — and it is the LCP element in each of those
+cases.
+
+To install it:
+
+1. Copy `assets/hero-bridge.js`, `assets/hero-bridge.css`, and the
+   `assets/hero-bridge/` directory into the theme.
+2. Enqueue the script and stylesheet per the shared rules.
+3. Copy the hero markup from `pages/home.html` (the `<section>` containing
+   `[data-hero-copy]` and `<hero-bridge>`), with `base` pointing at the frame
+   directory.
+4. Copy the hero-copy CSS block from the page head. The copy animation
+   (pinned headline, dissolving body) is the host page's, not the component's:
+   plain CSS using `position: sticky` and `animation-timeline: scroll()`, with no
+   JavaScript and no reference to the component.
+5. Set the seven host properties below against the theme's own header and copy.
+
+**Read [the build specification](sections/hero-bridge.md) before changing its
+behavior — or if the element cannot run in the target stack.** It documents the
+frame contract and the played-span measurements, the entry and exit math with
+every clamp's failure mode, the loading measurements, and a native-rebuild
+procedure with verification steps.
+
+**Host-supplied custom properties.** The first four size and place the plate; the
+last three pace it. All are registered with `@property`; if a build pipeline strips
+`@property` rules the element falls back to safe-but-wrong defaults, so do not
 strip them.
 
----
-
-## 3. The design system — copy it, do not rewrite it
-
-`_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/` is an exported design
-system and the single source of truth for every colour, size, radius and font on the
-site. It is plain CSS with no build step: enqueue the eight files in this order and
-everything in `pages/` renders correctly.
-
-```
-tokens/fonts.css  tokens/colors.css  tokens/typography.css  tokens/layout.css
-tokens/icons.css  tokens/schemes.css  tokens/base.css       styles.css
-```
-
-Roughly 150 custom properties on `:root`. The ones product code should use:
-
-- **Colour** — `--brand-accent`, `--brand-accent-hover`, `--text-body`, `--text-muted`,
-  `--text-inverse`, `--surface-page`, `--surface-card`, `--surface-dark`,
-  `--border-hairline`. The raw ramps behind them (`--color-st-tropaz-*`,
-  `--color-ecru-white-*`, `--color-neutral-*`) exist but the semantic aliases are what
-  `colors.css` itself tells you to prefer.
-- **Type** — `--text-h1`…`--text-h6`, `--text-large/medium/regular/small/tiny`, and the
-  matching `-line-height` properties. **Every size is redeclared at
-  `@media (min-width: 992px)`** and that is the only breakpoint in the type scale, which
-  is why 992px turns up all over the page CSS.
-- **Layout** — `--radius-button/card/image/…`, `--space-1`…`--space-30`,
-  `--page-gutter` (5%), `--section-pad-y`, `--transition-fast` (200ms ease-in-out).
-- **Schemes** — `.scheme-1`…`.scheme-4` and `.alternate` set per-section colour roles.
-  Every section carries exactly one. `schemes.css` says not to invent new ones.
-
-**Fonts are self-hosted Avenir LT Pro** (WOFF2 in `_ds/.../assets/fonts/`, OTF originals
-originals are no longer in the repository — see below). Avenir is licensed, not free — the
-WOFF2 here are a conversion of a licensed original, so confirm the licence covers the new
-host before deploying. `--font-heading` and `--font-body` both resolve to it.
-
----
-
-## 4. `assets/` — copy verbatim
-
-| path | what | notes |
+| Property | This site sets | What it is |
 |---|---|---|
-| `assets/hero-bridge/hb*.webp` | the hero sequence, 66 frames in two cuts, 9.5 MB | filenames are load-bearing — see §5a. The page plays 48 of them: 4.3 MB at the 1600 cut, 2.8 MB at 1200 |
-| `assets/hero-bridge/manifest.json` | what the encoder produced | frame list, cut sizes |
-| `assets/hero-bridge.js` / `.css` | the hero component | portable, see §5a |
-| `assets/falling-blocks/w1440/{bottom,top}/fb0001…0048.webp` | 96 frames for the closing CTA, 3.3 MB | filenames are load-bearing — see §5 |
-| `assets/falling-blocks/manifest.json` | what the encoder produced | frame count, padding, widths |
-| `assets/falling-blocks.js` / `.css` | the closing CTA's component | portable, see §5 |
-| `assets/approach/ap*.webp` | the Approach sequence, every frame in two cuts | filenames load-bearing — see §6 |
-| `assets/approach/cyc0*.webp` | the four co-design cycle node renders | 320px square, alpha kept — they sit on the page with no disc behind them |
-| `assets/approach/manifest.json` | what the encoder produced | frame list, beats, cut sizes |
-| `assets/approach.js` / `.css` | the Approach scrub | portable, see §6 |
-| `assets/images/`, `assets/team/`, `assets/icons/`, `assets/logo/` | photography, headshots, marks | plain images |
-| `assets/illustrations/{brain,blocks,laptop}.webp` | the three home-page icons, 116 KB | 810x810 with alpha — see the note below |
+| `--hb-pin` | `4.5rem` | The sticky header's height. The element reads it back off its stage's computed `top`, so CSS and JS cannot disagree, and an admin bar needs no code change. |
+| `--hb-entry-clear` | derived from `--hero-band` | How much room the host's copy needs under the header, as a length. **Budget it carefully:** the entry plate is solved from the room left under this line divided by 0.174, so one pixel of copy costs 5.75 px of picture. A theme with taller hero copy gets a visibly smaller plate; fix the copy, not the component. |
+| `--hb-entry-zoom` | `2` above 991 px, else `1` | How far past edge-to-edge the entry may grow. `1` is the safe default (artwork content spans the full plate width; more crops it). Two ceilings usually bind first: `--hb-entry-keep` on laptops, `--hb-max` on large screens. |
+| `--hb-arch-clear` | `--hero-gap + --hero-h1 + 30px` | Where the top of the *finished* bridge must land below the header. Needed the moment copy pins over the picture, because the arch tops out above the furniture (plate y 0.100). Default `0px` leaves the plate at rest. |
+| `--hb-scrub` | `140svh` (2× the component default) | How much scroll the sequence plays across. Tied to the frame count: change one, change the other, or the assembly plays at a different speed. |
+| `--hb-hold` | `20svh` | A beat of stillness on the finished bridge, on top of the scrub's built-in 15% tail hold. |
+| `--hb-exit` | `45svh` | The half-window of the velocity ramp that eases the release. See the warning below. |
 
-The three illustrations are square plates carrying their own framing and their own soft
-cast shadows, and they are shipped exactly as rendered. Drop them into equal boxes at
-`aspect-ratio: 1 / 1` with `object-fit: contain` and change nothing else. Do not crop
-them to their content to tighten the framing: the shadow fades out gradually over a faint
-haze that covers the whole plate, so any crop tight enough to help will cut the shadow off
-against a straight edge.
+The component owns the artwork constants — `--hb-entry-sky` 0.226,
+`--hb-entry-keep` 0.4, `--hb-entry-min` 0.25, `--hb-arch` 0.1001, `--hb-max` — all
+measured on this sequence's frames. If a different sequence ever replaces this one,
+re-measure them on *its* first played frame; the camera moves during the scrub, so
+a later frame gives wrong values.
 
-**Master material is not in the repository.** The Blender plates, source PNGs, the frame
-archive, the original Webflow export and the Avenir OTFs used to live under `project/` and
-`Falling Blocks/`. They were 692 MB of a 702 MB checkout and the site serves none of them —
-each is an *input* to a tool in `tools/`, and every output those tools produce is committed.
-They are now kept off the repository, so **nothing in this handoff depends on them**: every
-file listed above is present and final.
+**The copy overlay contract.** Four properties of the markup are load-bearing:
 
-The render notes did stay, because they are worth reading if anyone touches either arch
-animation. [`docs/approach-render-map.md`](../docs/approach-render-map.md) maps every Blender
-frame number to the beat and the message it carries, and is the source of the frame numbers
-in [`sections/approach.md`](sections/approach.md).
-[`docs/hero-bridge-render.md`](../docs/hero-bridge-render.md) does the same job for the hero:
-which frames the page plays and why, what a complete delivery of that sequence still needs,
-and the byte cost of the widths it was encoded at.
+- The `h1` is a direct child of `[data-hero-copy]`, a sibling of the body wrapper.
+  Sticky positioning holds an element only within its containing block; nesting the
+  headline in a copy-sized wrapper cuts its pin range to nothing.
+- No element between the overlay and the headline may carry a `transform`. A
+  transformed ancestor becomes the sticky element's containing block and kills the
+  pin.
+- `[data-hero-copy]` spans the hero with `pointer-events: none`, handing events
+  back to its children; the body's dissolve also ends at `pointer-events: none` so
+  invisible buttons are not clickable.
+- The whole arrangement sits inside `@supports (animation-timeline: scroll())` and
+  `@media not (prefers-reduced-motion: reduce)`. The fallback is copy that simply
+  scrolls away; nothing is ever left stranded at `opacity: 0`.
 
-One qualification to "master material is not in the repository": for the hero sequence it
-never was. The other renders were tracked once and are still reachable in the history; the
-hero bridge plates have only ever existed on the designer's machine, so that sequence is the
-one thing here that cannot be re-encoded from this repository alone. The encoded frames are
-committed and final, so nothing in this handoff depends on it — but a re-render does.
+The overlay must release on the same pixel the plate does: place its `bottom` at
+`100% − <entry> − <scrub> − <hold> − <exit> − <the copy's own top offset and height>`,
+include the heading's bottom margin (sticky is constrained by the margin box), and
+name the headline in the element's `exit-with` attribute so it rides the same ramp.
 
----
+> **Warning: do not set `--hb-exit` to `0px`.** While pinned the picture is
+> stationary; the instant the pin releases it moves at page speed. That is a step
+> from 0 to full velocity in one frame, and the eye reads velocity — the hero
+> appears yanked off screen. The ramp blends the two across a window straddling the
+> release. Its peak rate of velocity change is `0.75 / --hb-exit`; a reader
+> scrolling *V* px per frame sees a step of `0.75 V² / --hb-exit`, which is why the
+> half-window is 45svh. If the release feels abrupt, raise `--hb-exit`, not
+> `--hb-hold`.
 
-## 5a. The hero bridge scrub — already portable
+**Warnings:**
 
-> **Status.** New. The home page hero used to be a still of the finished bridge; it is
-> now `<hero-bridge>`, pinned under the header from the moment the page loads with the
-> hero copy laid over it, and scrubbing the arch's assembly once that copy has scrolled
-> away. The still is still in the markup and is what a reader gets with scripting off.
+- **`from="276" to="417"` is not decoration.** The manifest encodes 276–468, but
+  only 276–417 carries the soft ground shadow; the rest is an older render pass
+  with gray legs. Widen the span and the arch visibly changes color mid-scrub. See
+  [the hero render notes](../docs/hero-bridge-render.md).
+- **Never clip the plate with a box.** The stage takes the plate's height, not the
+  screen's, and hangs below the fold. Adding `overflow: hidden` to the stage as a
+  tidy-up recreates the exact bug this design replaced: a hard clip line walking up
+  through the ground shadow at release.
+- **The stage's height is declared in `hero-bridge.css`, not derived from
+  content.** A sticky box is constrained to its parent's content box; moving the
+  scroll budget into padding gives the stage a sticky range of zero and the hero
+  scrolls past without pinning.
+- **The bottom 4% of the plate is masked**, on `[data-hb-box]` rather than on the
+  canvas layers, because the render's last row carries the shadow plane at alpha
+  2.4/255 and composites as a hard step. Masking the layers separately changes the
+  picture during cross-fades.
+- **The host must clip sideways.** With `--hb-entry-zoom` above 1 the plate
+  overhangs the viewport during the entry. Clip at the page wrapper with
+  `overflow-x: clip` — `clip`, not `hidden`, because `hidden` creates a scroll
+  container and breaks the sticky stage.
+- **Keep `--hb-entry-min`.** On a viewport shorter than the copy needs, an
+  unclamped entry solve goes negative, and a negative scale mirrors the plate off
+  screen. A landscape phone finds this case.
+- **The still `<img>` carries no inline style.** Its positioning belongs to the
+  stylesheet; an inline `height:auto` breaks registration between the still and
+  the canvases.
+- **Do not put the page's `data-reveal` attribute on the hero copy.** That
+  mechanism latches `opacity` to 1 on a timer and its transition smears every
+  scrubbed value. The two cannot share an element.
 
-Built to the same doctrine as §5 and §6, and portable for the same reasons: a
-dependency-free custom element that touches no runtime API and drives markup it does not
-build. Porting it is `assets/hero-bridge.js`, `assets/hero-bridge.css`, the frame
-directory, and the block of markup in the hero — copy all four and it works.
+### The falling-blocks CTA (`<falling-blocks>`)
 
-**What the host has to supply.** Seven custom properties and one overlay.
+Two depth plates of falling toy blocks sandwich the closing call to action: the far
+plate sits behind the copy, the near plate passes in front of the heading and
+behind the body and buttons. The rig pins for 140svh while the blocks tumble
+through.
 
-`--hb-pin` is the height of the sticky header — this site sets it to `4.5rem` in the
-page's own stylesheet. The element reads the pin back off its stage's computed `top`, so
-CSS and JS cannot disagree, and a theme with a taller header, no header, or a WordPress
-admin bar needs no code change.
+To install it:
 
-`--hb-entry-clear` is a **length**: how much room the host's copy needs, measured from
-under the header. It is the one geometric value that has to be set against the host's own
-layout, because what has to fit there is a block of text whose height is in pixels. This
-site derives it from `--hero-band`, the height of its hero copy with air around it —
-380px on any stacked desktop width, 290px at 768, 479px on a phone, 558px at 320, and
-derived from the body's own offset in the two-column arm above 1400px.
+1. Copy `assets/falling-blocks.js`, `assets/falling-blocks.css`, and the
+   `assets/falling-blocks/` directory (both tiers and the manifest) into the theme.
+2. Enqueue the script and stylesheet per the shared rules.
+3. Emit the markup. Copy it from `pages/home.html` (or the current shape from
+   `index.html`); the element builds no DOM of its own. The live configuration is:
 
-**Budget this line carefully: it is the plate's size as well as the copy's.** The entry is
-solved from the room left under it and divided by `--hb-entry-keep` minus
-`--hb-entry-sky` = 0.174, so a pixel spent here costs 5.75px of picture. A theme whose
-hero copy is taller than this site's will get a visibly smaller plate, and the fix is the
-copy rather than the component.
-
-Note it is the plate's **content** that clears this line, not the plate's top edge: the
-plate's own empty top (`--hb-entry-sky`, 0.226 of its height on the frame the approach
-holds) is allowed to sit behind the words. That is worth more than it sounds — it is what
-lets the plate enter at full edge-to-edge width instead of scaled to 45% of it. The
-component also owns `--hb-entry-keep` (0.4, the lower edge of the desk's top slab at
-y 0.380 and the rack's lid at y 0.396) and `--hb-entry-min` (0.25, the scale floor). Those
-two are properties of this artwork measured on the frame the approach holds — a theme
-swapping in a different sequence re-measures them, on **its** first played frame, not on a
-later one: the camera moves during this scrub and the same desk edge reads 0.386–0.404 by
-frame 417.
-
-`--hb-entry-zoom` is the third host property: how far past edge to edge the entry may
-grow, as a **number**. It defaults to `1`, which is the safe value and means "never larger
-than the artwork's own width" — content spans plate x 0.000–0.999, so anything above 1
-crops the rack's left edge and the desk's right. This site sets `2` above 991px and gets
-between 1.03 and 1.50 of it, because two other things bind first: `--hb-entry-keep`, which
-holds the desk's top edge above the fold and is what binds on a laptop, and `--hb-max`,
-which now caps the width the plate is **drawn** at and not only the width of its box.
-2880px there is a 1.8× upscale of the 1600 cut, so raising it without a bigger cut just
-makes the entry soft. Below 992px this site leaves the zoom at 1: a phone has no copy
-pressing on the plate, so cropping it buys nothing.
-
-**The copy animation is the host's, not the component's.** The headline pins and holds for
-the whole hero while the lede and buttons float up and dissolve, and it is a self-contained
-block of CSS in the page — `position: sticky` for the headline and
-`animation-timeline: scroll(root block)` over `--hero-band` for the body. No JavaScript,
-and no reference to `<hero-bridge>` at all. Copy that block and the markup it selects
-(`[data-hero-copy]`, `[data-hero-body]`, `[data-hero-actions]`) and it works.
-
-Four things it depends on, and all four are load-bearing:
-
-- **The headline is a direct child of `[data-hero-copy]`, not of a wrapper shared with the
-  body.** `position: sticky` can only hold an element for as far as its containing block
-  reaches; inside a wrapper sized to the copy that is about 195px. The two are siblings so
-  the headline's containing block is the tall box.
-- **Nothing between them may carry a `transform`.** A transformed ancestor becomes the
-  sticky element's containing block and kills the pin outright, which is why the float is
-  on `[data-hero-body]` alone rather than on anything above it.
-- **`[data-hero-copy]` spans the hero and takes `pointer-events: none`**, handing them back
-  to its two children. At `z-index: 2` over the whole hero it would otherwise swallow every
-  click. The dissolve sets `pointer-events: none` at its end too: the body reaches
-  `opacity: 0` having travelled only ~370px, so without it the buttons are invisible and
-  still clickable.
-- **The guards.** The whole arrangement — pin included — sits inside
-  `@supports (animation-timeline: scroll())` and `@media not (prefers-reduced-motion:
-  reduce)`, so one fallback covers all of it: a band-height box and copy that simply scrolls
-  away. The animation is never *started* under reduced motion rather than started and
-  reset, so nothing is left stranded at `opacity: 0`.
-
-Do not put the site's `data-reveal` attribute on the hero copy or anything inside it. That
-mechanism writes `style.opacity = "1"` on a timer and latches once it reads exactly `"1"`,
-and its paired `transition: opacity` smears every scrubbed value. The two cannot share an
-element.
-
-The **overlay** is the host's, not the component's: an absolutely-positioned block over the
-first screen holding the headline, lede and buttons, which scrolls away while the plate
-holds. `--hb-entry-span` in `hero-bridge.css` is one screen and is what pays for that
-scroll, so the scrub starts exactly where the last of the copy leaves. A theme that wants
-no copy over the hero can set `--hb-entry-clear` to `0px` and drop the overlay; the plate
-then simply arrives at full size and scrubs.
-
-`--hb-arch-clear` is the fourth, and it is the only one that moves the plate rather than
-sizing it: **how far below the header the top of the FINISHED bridge has to land.** The
-component owns the other half — `--hb-arch`, 0.1001, the top of the assembled span as a
-share of the plate's height, measured on frame 417 — and solves the two into a static
-offset that pushes the plate down. Default `0px`, meaning "leave the plate where it rests".
-
-A host needs this the moment it pins copy over the picture, because the arch rises *over*
-the gap: the deck ends up at plate y 0.100, above the rack's top at 0.257 and the desk's
-at 0.245, so a headline that clears the furniture does not clear the bridge. This site asks
-for 30px of clearance and pays 208–255px of plate position for it, which is why the offset
-is capped against `--hb-entry-keep` — pushing the plate down spends exactly the promise
-that keeps the desk's top edge above the fold, and an uncapped drop would break it on a
-short screen. What it does spend is the bottom of the picture: 44–58% of the plate is below
-the fold while pinned. Nothing is clipped by a box, so scrolling on reveals it whole.
-
-Two things to get right when porting it. **Gate it on whether the headline actually pins** —
-this site sets it inside the same `@supports` and `prefers-reduced-motion` guards as the pin
-itself, and the component clears it again in its own static-mode reset, because CSS cannot
-see "the script never ran" and 240px of blank page above an unpinned still is not a layout.
-And **do not reintroduce a rule that moves the headline instead**: this site had one, to
-clear the rack's top blocks, and having both made the layout circular — a lock derived from
-the plate and a plate derived from the lock.
-
-`--hb-scrub`, `--hb-hold` and `--hb-exit` are the last three, and they are the element's
-pacing after the copy has gone.
-
-`--hb-scrub` is how long the sequence plays and the number to reach for when it reads as too
-fast. It defaults to 70svh, which is what `docs/hero-bridge-render.md` ties to the frame
-count — change one and change the other, or the assembly plays at a different speed. The
-rate is `--hb-scrub x 0.85 / (frames - 1)`, the 0.85 being `TAIL`'s hold on the last frame.
-
-`--hb-hold` is a beat of stillness on the finished picture, on top of that hold. `--hb-exit`
-is the **half-window** of the velocity ramp — spent once out of the element's height before
-the release and once out of the scroll after it. Setting either to `0px` restores the
-release this shipped with, which was a cliff.
-
-**How big the ramp wants to be is not a yes-or-no.** The velocity is continuous at any size
-above zero, but its peak rate of change is `0.75 / --hb-exit`, and a reader moving V px a
-frame sees the picture's step change by `0.75 V² / --hb-exit` between frames. At a 180px
-half-window that is 15px for someone scrolling 60px a frame, which still read as a little
-abrupt; at 405px it is 7px. Raise this, not `--hb-hold`, if the release is what feels wrong.
-
-**Why the exit is not optional if you pin copy over the plate.** While the stage is pinned
-the picture does not move; the instant it is not, it moves at the speed of the page. That
-step is 0 to 1 in a single frame — position is continuous, velocity is not, and the eye
-reads velocity. The ramp blends the two across a window straddling the release so that by
-the time the sticky lets go the picture is already at half page speed. It only ever moves
-the picture **up**: the section behind sits barely a padding below the plate's bottom, so a
-picture eased out by lagging the page would be run into by it.
-
-**Two things the host owns in that handoff, and both are easy to miss.**
-
-*The pinned copy has to stop being pinned on the same pixel the element does.* Sticky holds
-an element for as far as its containing block reaches, and a copy overlay tall enough to
-cover the hero reaches much further than the element's stage does — so the picture leaves
-and the words stay, for the best part of a thousand pixels. Place the overlay's bottom at
-`100% - <approach> - <scrub> - <exit> - <the copy's own top offset and height>`; percentages
-resolve against the section, so that expression *is* the element's own release point and no
-plate geometry has to be restated. Two gotchas: sticky is constrained by the **margin** box,
-so include the heading's bottom margin or it lets go early; and the heading's height cannot
-be derived at that point, so it has to be a declared number.
-
-*Then name it.* `exit-with="<selector>"` on the element takes anything that should ride the
-same curve — resolved against the owner document at boot, since by definition it is not
-inside the component, and written the identical transform. Releasing together is not the
-same as releasing gently; this is the second half. Under reduced motion or with scripting
-off there is no pin to release, so no ramp is written at all.
-
-`--hb-entry-span`, `--hb-entry-clear`, `--hb-entry-zoom` and `--hb-max` are registered
-with `@property` so they resolve to numbers and pixels for the script. If a theme's build
-strips `@property` rules, the element falls back to its stage's height, 40% of the
-viewport, no zoom and a 2880px ceiling — sane rather than correct, so do not strip them.
-
-**The host also has to clip sideways.** With `--hb-entry-zoom` above 1 the plate is wider
-than the screen during the approach, and a transform that overhangs extends the page's
-scrollable width. Nothing inside the component may clip it — an `overflow` on the stage is
-the exact edge artefact the whole rig avoids — so the host clips at the full width of the
-page, where the cut lands off-screen. This site uses `overflow-x: clip` on its page
-wrapper. `clip` and not `hidden`: `hidden` creates a scroll container and breaks the
-stage's `position: sticky`.
-
-**The scale floor is not optional.** `--hb-entry-min` exists because the entry solves for
-how big the plate can be in the room below the copy, and on a viewport shorter than the
-copy needs that room is negative. An unclamped solve makes the scale negative with it, and
-a negative scale *reflects* the box about its origin: the plate is drawn mirrored and
-entirely off the bottom of the screen, so the hero reads as blank for the whole hold. A
-phone in landscape — 667x375 leaves 303px under the header — is the case that finds it.
-
-**What is load-bearing, and what breaks quietly:**
-
-- **Filenames.** Frames are addressed as `base + "hb" + <4-digit Blender frame> + <cut> +
-  ".webp"` by string concatenation. Nothing references them literally, so **do not upload
-  them through the media library** — WordPress renames and re-encodes on upload, and every
-  frame 404s while the still keeps showing and nothing looks broken. Same rule as §5 and
-  §6. Put the directory on disk and point `base` at it.
-- **`base` must stay a single quoted attribute value beginning `assets/`.** The build's
-  reference check and `absolutise()` both scan for exactly that shape — the latter rewrites
-  every `assets/` reference to an absolute path so a client-side navigation cannot resolve
-  it against the wrong URL. Build it from pieces and both miss it, and every route 404s on
-  all 96 frames while the home page looks fine.
-- **`from` and `to` are not decoration.** The page plays 276–417 of an encoded 276–468,
-  because only that span carries the ground shadow — see
-  [`docs/hero-bridge-render.md`](../docs/hero-bridge-render.md). Widen the span and the
-  arch visibly changes colour mid-scrub.
-- **The plate is never clipped by a box, and that is the whole arrangement.** It runs edge
-  to edge at the plate's own 1.4302:1, which is taller than any desktop screen, so the
-  **stage takes the plate's height rather than the screen's** and hangs below the fold.
-  Do not put `overflow: hidden` back on the stage as a tidy-up: while the stage is pinned
-  a clip rectangle hides at the bottom of the screen, and the moment it releases it walks
-  up the viewport as a hard line through the ground shadow. That is what this replaced.
-- **The stage's height is declared, not left to its content.** A sticky box is constrained
-  to its parent's *content* box, so putting the scroll budget in padding gives the stage a
-  sticky range of zero and the hero simply scrolls past without pinning. Both heights are
-  written in `hero-bridge.css` and their difference is the budget.
-- **The bottom 4% is masked, and it is not decoration.** The render's last row carries the
-  ground-shadow plane at alpha 2.4/255 and ends there, which composited on a page colour is
-  a step across the full width of the screen. The mask sits on `[data-hb-box]` rather than
-  on the layers, so it applies after the two canvases have blended — masking them separately
-  fades each contribution before `plus-lighter` adds them, which is a different picture
-  during a cross-fade.
-- **The section's height is the scroll budget.** `assets/hero-bridge.css` sets it, the
-  element measures its own height minus its stage's, and the scrub divides that among the
-  frames the manifest offers. Frame count and height are one setting in two files: encode
-  more frames without raising the height and the whole thing plays proportionally faster.
-- **`isolation: isolate` on `[data-hb-box]`.** The two canvases cross-fade under
-  `mix-blend-mode: plus-lighter`; without the isolation they blend against the page and
-  blow out to white. A theme ancestor with a `filter`, an `opacity` below 1, or its own
-  `mix-blend-mode` is what to check first if the plates ever look wrong.
-- **The `<img>` inside the box carries no inline style.** Its positioning is the
-  stylesheet's, and an inline `height:auto` put back would break the registration between
-  the still and the canvases that replace it.
-
-**Degradation is deliberate and has three arms**, all resolved in JS rather than by a
-media query, because only the element sees all three: reduced motion, save-data or a slow
-connection, and an engine without `createImageBitmap`. Any of them leaves
-`data-hb-motion="off"`, which collapses the pin and shows the still in normal flow —
-exactly what the hero was before this existed. That is also the state before the script
-runs at all, so a page with no JavaScript renders the finished hero rather than a gap.
-
----
-
-## 5. The falling-blocks rig — already portable
-
-> **Status.** This moved. It was the hero; it now wraps the closing call to action,
-> on a shorter pin — 140svh against 190svh — so the blocks tumble past a little more
-> briskly. It was set to 70svh at first, which turned out to be too quick to read: the
-> rig sits nine thousand pixels down the page, so a reader arrives carrying whatever
-> speed the page above has built and the whole thing went by in a blink. Rate alone does
-> not answer that; the length of the pin is what buys time against a fling. Same element,
-> same frames, same contract — only the height and where it sits on the page changed.
-
-This one was built for the move. It is a dependency-free custom element with no
-framework, no build step and no assumption about its host. To use it in WordPress:
-
-**1. Copy** `assets/falling-blocks.js`, `assets/falling-blocks.css`, and the
-`assets/falling-blocks/` frame directory into the theme.
-
-**2. Enqueue** both files:
-
-```php
-add_action('wp_enqueue_scripts', function () {
-    $uri = get_template_directory_uri();
-    wp_enqueue_style('falling-blocks', $uri . '/falling-blocks.css', [], '1.0');
-    wp_enqueue_script('falling-blocks', $uri . '/falling-blocks.js', [], '1.0', true);
-});
-```
-
-**3. Emit the markup**, with `base` pointing at the frame directory. Everything the
-element touches is authored here — it builds no DOM of its own, so nothing a page builder
-or block editor does can leave it half-constructed:
-
-```php
-<falling-blocks base="<?php echo esc_url(get_template_directory_uri() . '/falling-blocks/'); ?>"
-                width="1440" frames="48" layers="bottom,top"
-                revolutions="0.6" budget-mb="128" min-width="901" stage-fill="0.93"
+```html
+<falling-blocks base="…/falling-blocks/" width="1440" frames="48"
+                layers="bottom,top" revolutions="0.6" budget-mb="128"
+                min-width="0" stage-fill="0.93"
                 content-bottom="0.273,0.700" content-top="0.183,0.775"
                 speed-bottom="1" speed-top="1.25">
   <div data-fb-stage>
     <div data-fb-layer="bottom" aria-hidden="true">
       <canvas></canvas>
-      <img src="…/falling-blocks/w1440/bottom/fb0001.webp" alt="" width="1440" height="2160" loading="lazy" decoding="async">
+      <img src="…/falling-blocks/w1440/bottom/fb0001.webp" alt=""
+           width="1440" height="2160" loading="lazy" decoding="async">
     </div>
     <div data-fb-copy>
-      <h1>Bridging frontier AI and the classroom.</h1>
+      <h2>Join us in building better foundations for AI in education.</h2>
       <div data-fb-front>
         <p>…</p>
         <!-- buttons -->
@@ -447,284 +489,331 @@ or block editor does can leave it half-constructed:
     </div>
     <div data-fb-layer="top" aria-hidden="true">
       <canvas></canvas>
-      <img src="…/falling-blocks/w1440/top/fb0001.webp" alt="" width="1440" height="2160" loading="lazy" decoding="async">
+      <img src="…/falling-blocks/w1440/top/fb0001.webp" alt=""
+           width="1440" height="2160" loading="lazy" decoding="async">
     </div>
   </div>
 </falling-blocks>
 ```
 
-The `data-fb-front` wrapper is load-bearing, not cosmetic: the near plate passes **in
-front of the `h1` and behind everything inside `data-fb-front`**. A headline reads fine
-with a block crossing it; body copy and buttons do not. Do not add a `z-index` to
-`data-fb-copy` itself — that makes it a stacking context and collapses the copy back
-into one layer, putting the plate over all of it.
-
-**4. Set the height and the header offset:**
+4. Set the header offset and the height. The element's height minus one screen is
+   the pin length; this site pins for 140svh:
 
 ```css
-falling-blocks { --fb-sticky-top: 4.5rem; height: calc(290svh - 4.5rem); }
+falling-blocks {
+  --fb-sticky-top: 4.5rem;                 /* the fixed header's height */
+  height: calc(240svh - 4.5rem);           /* 240 − 100 = 140svh of pin */
+}
 ```
 
-`--fb-sticky-top` is the fixed header's height; the stage pins below it. The element's
-height minus the stage's height is the scroll budget — here 290 minus 100 is 190svh of
-pin. That single number sets both how long the section holds and how fast the blocks
-travel, so there is no second value to keep in step. Make the element the same height
-as its stage and nothing pins: the copy just scrolls away while the blocks move.
+**Configuration notes:**
 
-### Things that will bite
+- **The stylesheet picks the tier.** `falling-blocks.css` sets `--fb-tier: 720`
+  and `--fb-budget: 48` at `(max-width: 900px)` or `(max-height: 500px)`; the
+  element reads both back. The budget shrinks with the tier deliberately: a byte
+  ceiling alone buys *more* frames when each frame gets cheaper, and the measured
+  result was the phone holding more decoded bitmap than the desktop.
+- **`width`, `budget-mb`, and `revolutions` are a performance budget, not
+  preferences.** A frame decodes to width × height × 4 bytes regardless of its
+  size on disk. These values were tuned down after Chrome reported the tab as
+  slowing the machine. Measure before raising any of them.
+- **`content-<layer>` is measured from the render, not chosen.** It records where
+  each layer's blocks sit as fractions of the plate height, and the motion is
+  defined from it. Re-render the plates and these change; the encoder prints the
+  bounds it produced.
+- **`speed-<layer>` multiplies the travel.** 1 means the layer's last block leaves
+  exactly as the pin ends. Below 1 strands blocks on screen and is never right.
+- `stage-fill` (0.93) matches the share of the viewport the desk artwork occupies
+  further down the page.
+- With `min-width="0"` the element animates at every width. Reduced motion,
+  Save-Data, and slow connections still collapse it to the stills at one screen.
 
-- **Do not upload the frames through the media library.** WordPress renames on filename
-  collision, appends `-scaled` to anything over 2560px, and generates its own size
-  variants. The element addresses frames by exact name (`fb0001.webp` … `fb0048.webp`);
-  one rename breaks that frame permanently. Deploy the directory as files, via the theme,
-  a plugin, or the deploy pipeline.
-- **The `<img>` stills are the no-JS and small-screen fallback**, not decoration. Keep
-  them and keep `loading="lazy"` — an image with no layout box is never near the viewport,
-  so lazy is what stops the animated path paying for them.
-- **Full-page caching is safe, but only because it was made safe.** The element writes
-  state into the DOM as it runs, including a tag on each canvas recording which frame it
-  holds. A cache plugin that serialises the rendered DOM bakes that tag into the cached
-  HTML, and the next visitor gets an empty canvas that claims to be already drawn — a
-  hero that stays blank until you scroll. The element now clears those attributes on
-  boot, so this is handled; do not "optimise" that away. It was a real bug, found when
-  this project's own static export reproduced exactly what a page cache does.
-- Below `min-width` (901px), on `prefers-reduced-motion`, and on a Save-Data or 2G/3G
-  connection, the element shows the still and collapses the section to one screen. These
-  are three separate checks on purpose; they mean different things.
-- **`width`, `budget-mb` and `revolutions` are a performance budget, not preferences.**
-  A frame decodes to width x height x 4 bytes however small the WebP is on disk, so at
-  1440 each frame costs 11.9 MiB and a pair costs 24. Those three numbers were tuned
-  down together after Chrome reported the tab as slowing the machine — at 1920 with a
-  320 MiB budget it held 295 MiB of decoded frames and re-decoded 21 MiB every frame
-  step. Raise `width` and the window shrinks automatically; raise `budget-mb` with it
-  and the memory goes back. Measure before changing either.
-- `stage-fill` is the plate's width as a fraction of the stage. It is 0.93 here because
-  that is the share of the viewport the desk artwork occupies further down the page.
-- **`content-<layer>` is measured, not chosen.** It is where that layer's blocks sit as
-  fractions of the plate's height, and the motion is defined from it: at rest the plate
-  is placed so the top of its content rests on the stage's bottom edge, so the blocks
-  are below the fold and rise into view; at the end the bottom of its content sits on
-  the stage's top edge, so they have all left. Re-render the plates and these change —
-  `tools/encode-falling-blocks.mjs` prints the bounds it produced.
-- `speed-<layer>` multiplies that travel. 1 means the layer's last block leaves exactly
-  as the pin ends; above 1 it leaves earlier and the plate keeps rising empty, which is
-  what makes the near plane clear the frame before the far one. Below 1 strands blocks
-  on screen and is never right.
-- **The far plate's lowest block group is trimmed at encode time** (`trimBelow` in the
-  encoder). Those blocks run off the bottom of the render, so the frame edge itself cuts
-  them and they rise through the hero as flat-bottomed shapes. Both layers are trimmed
-  to the same output height — a difference there would put the two depth planes out of
-  registration, which the encoder now fails the build on.
+**Warnings:**
+
+- **`data-fb-front` is load-bearing, not cosmetic.** The near plate passes in
+  front of the heading and behind everything inside `data-fb-front`. A headline
+  reads fine with a block crossing it; body copy and buttons do not. Do not give
+  `data-fb-copy` a `z-index` — that creates a stacking context and collapses the
+  copy into one layer with the plate over all of it. For the same reason, do not
+  put an animating opacity (such as `data-reveal`) on the copy.
+- **Keep the `<img>` stills and keep them `loading="lazy"`.** They are the no-JS
+  and reduced-motion fallback. An image with no layout box is never near the
+  viewport, so the lazy attribute is what stops the animated path from paying for
+  them.
+- **Both layers are trimmed to the same output height at encode time**
+  (`trimBelow` in the encoder). A difference there puts the two depth planes out
+  of registration; the encoder fails the build on it.
 
 The full markup contract and every attribute are documented at the top of
 `assets/falling-blocks.js`.
 
----
+**Read [the build specification](sections/falling-blocks.md) before changing
+its behavior — or if the element cannot run in the target stack.** It documents
+the sandwich, the content-bounds motion, the tier and residency arithmetic
+(including the measured fetch-loop regression its window design prevents), and
+a native-rebuild procedure with verification steps. One host detail it
+specifies that the install alone can miss: the component stylesheet slots an
+`h1` between the plates, and this page's `h2` needs the equivalent rule in the
+page stylesheet.
 
-## 6. The Approach scrub — also portable, but not currently mounted
+### The cycle wheel (`<cycle-wheel>`)
 
-> **Status.** The home page no longer runs this. The client found scrolling through
-> the arch's many stages hard going, so the hero now runs the shorter `<hero-bridge>`
-> sequence (§5a) and the R&D cycle wheel sits where the scrub used to be. `assets/approach.js`,
-> `assets/approach.css` and the frames are all still in the repository, kept for the
-> shortened sequence that replaces it — so everything below still describes the
-> component accurately. Do not port it as part of rebuilding the page as it stands.
+The home page's R&D cycle: a ring of four icon nodes the reader's own scroll
+draws, arc by arc, in lockstep with a reading column of four expandable rows.
+Clicking a node or a row travels the page to that step's beat; keyboard focus
+opens a step in place; the build latches once complete. Below 992 px the wheel
+is a plain accordion. No frames and no canvas — the only images are the four
+icons — so this is the lightest component to install.
 
-The other animated section, and the intricate one. A canvas sequence scrubbed by scroll
-through six beats, with copy and tick markers synced to it, a camera push-in, and a
-separate tighter crop of every plate for phones. It is built the same way as the hero:
-dependency-free custom element, no framework, no build step, driving markup authored in
-the page.
+To install it:
 
-> **This section has a full build spec: [`sections/approach.md`](sections/approach.md).**
-> Read it before changing anything here. It documents the frame contract, the scroll and
-> camera maths, and — most importantly — the decisions that look arbitrary and are
-> load-bearing, each of which produces a section that looks approximately right and is
-> subtly broken if "simplified". If the section has to be rewritten natively rather than
-> ported, that document is the specification.
+1. Copy `assets/cycle-wheel.js`, `assets/cycle-wheel.css`, and the four icon
+   files (`assets/approach/cyc0*.webp`) into the theme.
+2. Enqueue the script and stylesheet per the shared rules.
+3. Copy the `<cycle-wheel>` markup from `pages/home.html`, rendering both arms
+   from one content source (`content/cycle.json` holds the four steps).
+4. If the theme's sticky header is not 4.5 rem tall, set
+   `cycle-wheel { --cw-pin: <header height>; }` — the stage's pin and the
+   scroll clock both follow it.
 
-**1. Copy** `assets/approach.js`, `assets/approach.css`, and the `assets/approach/`
-frame directory into the theme.
+**Read [the build specification](sections/cycle.md) before changing its
+behavior — or if the element cannot run in the target stack.** It documents the
+beat-windowed clock, the measured 0.97 latch and why that value cannot be
+eased, the click-versus-focus semantics, the repaint discipline, a verification
+procedure, and a native-rebuild fallback.
 
-**2. Enqueue** both files:
+### The Approach scrub (`<approach-scrub>`)
 
-```php
-add_action('wp_enqueue_scripts', function () {
-    $uri = get_template_directory_uri();
-    wp_enqueue_style('approach-scrub', $uri . '/approach.css', [], '1.0');
-    wp_enqueue_script('approach-scrub', $uri . '/approach.js', [], '1.0', true);
-});
-```
+> **Status: not currently mounted.** The client found the long scrub hard going,
+> so the home page now runs the hero bridge and the cycle wheel instead. The
+> component, its frames, and its build spec are kept for the shortened sequence
+> that is planned to replace it. Do not port it as part of rebuilding the page as
+> it stands.
 
-**3. Emit the markup**, with `base` pointing at the frame directory. The copy is real
-text in the document — it is what the element fades in and out, and it is readable and
-indexable whether or not the script ever runs:
+A canvas sequence scrubbed through six beats, with copy and tick markers synced to
+it, a camera push-in, and a separate crop for phones. Same doctrine as the other
+two components.
 
-```php
-<approach-scrub base="<?php echo esc_url(get_template_directory_uri() . '/approach/'); ?>">
-  <div data-arch-stage>
-    <div data-arch-box>
-      <div data-arch-cam role="img" aria-label="Two school desks, a gap between them, and a wooden arch assembled across it">
-        <canvas data-arch-layer="0" aria-hidden="true" width="2048" height="1432"></canvas>
-        <canvas data-arch-layer="1" aria-hidden="true" width="2048" height="1432"></canvas>
-      </div>
-      <div data-arch-scrim aria-hidden="true"></div>
-    </div>
-    <div data-arch-ticks>
-      <button data-arch-tick="0" type="button"><span>01</span><span>Define the role</span></button>
-      <!-- 01–04, one per copy beat, same order -->
-    </div>
-    <div data-arch-beats>
-      <div data-arch-copy="0">
-        <p>01</p>
-        <h3>Define the role.</h3>
-        <p>The claim.<span data-arch-more> The elaboration, which a short phone drops.</span></p>
-      </div>
-      <!-- 0–3, same count and order as the ticks -->
-    </div>
-  </div>
-</approach-scrub>
-```
+**Read [the build specification](sections/approach.md) before touching it.** It
+documents the frame contract, the scroll and camera math, the design decisions
+that look arbitrary and are load-bearing, and a five-minute smoke test. If the
+section is ever rebuilt natively instead of ported, that document is the
+specification.
 
-**4. Set the pin offset** if the theme's header is not 4.5rem, or is not sticky:
-
-```css
-approach-scrub { --arch-pin: 6rem; }   /* 0 if nothing is sticky */
-```
-
-That one value drives the sticky offset, the stage's height, and the scroll maths — the
-element reads it back off the rendered stage rather than measuring a page header, so
-there is nothing to keep in step and a WordPress admin bar cannot throw it off.
-
-The element's own height is the scroll budget: `1000vh` on a wide screen, `600svh` on a
-phone, both in `approach.css`. Longer means slower; the beats divide it between them in
-proportion to the frames each covers, so the height and the length of the encoded
-sequence are one setting in two files — encode more frames without raising the height and
-the whole section plays faster. See §3 and §5 of the build spec.
-
-### Things that will bite
-
-- **Do not upload the frames through the media library.** Same reason as the hero:
-  WordPress renames on collision and generates its own size variants, and the element
-  addresses frames by exact name. Deploy the directory as files.
-- **`manifest.json` ships with the frames and is not optional.** The element fetches it
-  to learn the frame list and both cuts' dimensions. Serve it from the same directory;
-  if it 404s the section stays a still.
-- **Two canvases, cross-faded with `mix-blend-mode: plus-lighter` over
-  `isolation: isolate`** — not one canvas at partial alpha, which washes out everything
-  the two frames share. Both desks are in both frames, so that is most of the picture.
-  A theme ancestor with a `filter`, an `opacity` below 1, or its own `mix-blend-mode`
-  makes a competing stacking context and can break the blend; that is the first thing to
-  check if the plates ever look wrong.
-- **The plate hangs from the top of its box, and that is load-bearing.** In the last beat
-  two books come to rest on the keystone **thirteen thousandths of a plate-height from
-  its top edge**. Anchoring anywhere but the top decapitates that frame. The crop lands
-  on the desk legs instead, which is the only part of the picture nothing depends on.
-- **`svh`, never `dvh`, for the element's height.** Scroll progress is derived from that
-  height, so a budget that changed as a mobile URL bar retracted would snap the scrub
-  mid-scroll.
-- **The crop rectangle is a three-way contract** — `CROP` in `tools/encode-approach.mjs`,
-  `cuts` in the manifest, and the `aspect-ratio` on `[data-arch-box]` in `approach.css`.
-  Nothing enforces it. Change one and the camera silently mis-scales.
-- **Full-page caching is safe, but only because it was made safe.** As with the hero, the
-  element writes a tag on each canvas recording which frame it holds; a cache plugin that
-  serialises the rendered DOM would bake that in and the next visitor would get an empty
-  canvas claiming to be drawn. The element clears those on boot. Do not optimise it away.
-- `budget-mb` (default 96) is a decoded-bitmap ceiling, not a preference. A frame costs
-  width × height × 4 bytes however small the WebP is on disk: on the full cut a beat is
-  11.7 MB and a move 7.2, on the phone's crop 4.1 and 1.8. The resident set is derived
-  from the budget, so encoding larger shrinks it automatically instead of silently
-  multiplying what is held — at the sizes that ship, the full cut holds 12 frames. That
-  is fewer than one move spans and still measures as enough; §6.8 of the build spec has
-  the measurement and how to repeat it before reaching for a bigger number.
-- Under `prefers-reduced-motion` the element hides itself and the stacked stills in
-  `.hero-static-block` show instead. Those stills carry `opacity: 0` inline and depend on
-  the page's `data-reveal` sweeper — see §7.1. **Port that or strip the inline opacity, or
-  the reduced-motion fallback renders invisible.**
-
-`docs/approach-render-map.md` maps frames to beats to messages and is the
-authority for the numbers. The full markup contract and every attribute are documented at
-the top of `assets/approach.js`.
+If and when it mounts, installation follows the shared pattern: copy
+`assets/approach.js`, `assets/approach.css`, and `assets/approach/`; enqueue;
+emit the markup contract from the top of `assets/approach.js` with `base` set;
+set `--arch-pin` to the theme header's height. The element's own height is the
+scroll budget (1000vh desktop, 600svh phone). Component-specific warnings —
+the manifest requirement, the top-edge anchor, the crop contract, the
+reduced-motion fallback's dependency on the reveal sweeper — are in the
+specification.
 
 ---
 
-## 7. What has to be rebuilt
+## Behaviors to rebuild
 
-All of this lives in one `class Component extends DCLogic` inside
-`<script type="text/x-dc">` at the bottom of `index.html`. It is written against the
-Claude Design runtime — `DCLogic`, `renderVals()`, `{{ bindings }}`, `<sc-if>` — none of
-which exists in WordPress. The markup each one drives is already in `pages/`; what is
-missing is the behaviour. None of it is large — the two pieces that were are already
-components — but read the originals: they are heavily commented and the comments explain
-*why*, which is the part that is expensive to rediscover.
+The page behaviors below live in the prototype's component script inside
+`index.html`, written against a runtime (`DCLogic`, `renderVals()`,
+`{{ bindings }}`) that does not exist in WordPress. The markup they drive is in
+`pages/`; the behavior must be rewritten. The originals are heavily commented, and
+the comments explain *why* — read them before rewriting.
 
-### 7.1 The small stuff
-
-| behaviour | attribute | what it does | effort |
+| Behavior | Markup hooks | What it does | Effort |
 |---|---|---|---|
-| Scroll reveal | `data-reveal` (59 uses) | fades a block in when it enters view | trivial — IntersectionObserver |
-| Section progress | `data-build`, `data-brick`, `data-kit`, `data-on` | assembles a block kit as you scroll | small |
-| Hover lift | `data-lift`, `data-lift-group`, `data-gloss` | card hover states | trivial, mostly CSS already |
-| Glossary | `data-term`, `data-terms`, `data-term-gloss` | hover/tap definitions for inline terms | small |
-| Animated diagram | `data-cycle`, `data-arc`, `data-node`, `data-label`, `data-active` | the cycle diagram on Our Approach | moderate |
-| Mobile menu | `navOpen` state | header hamburger, sets `body overflow` | trivial |
+| Scroll reveal | `data-reveal` (67 uses) | Fades a block in when it enters the viewport. | Trivial: an IntersectionObserver that sets `opacity` to 1. |
+| Body-offset sync | `data-approach-heading`, `data-approach-text` | Drops a two-column body to sit against the middle of its heading; becomes a gap when stacked. | Small: one measured `margin-top`, applied at ≥992 px. |
+| Mobile menu | `navOpen` state | Header hamburger; locks body scroll; Escape closes. | Trivial. |
 
-Note `data-reveal` starts at `opacity: 0` in the markup, so **if it is not reimplemented,
-those 59 blocks stay invisible.** Either port it or strip the inline opacity.
+Notes:
 
-### 7.2 Delete rather than port
+- **`data-reveal` blocks start at inline `opacity: 0`.** If the reveal behavior is
+  not rebuilt, 67 blocks stay invisible. Either port it or strip the inline
+  opacity.
+- The five `data-step` attributes on The Challenge's sections are inert — nothing
+  reads them. Do not build a mechanism for them.
+- An earlier version of this document listed `data-lift`, `data-gloss`,
+  `data-term`, `data-kit`, `data-brick`, `data-on`, and `data-build` behaviors.
+  They no longer exist in the markup. The R&D cycle wheel also used to be on
+  this list; it is now the `<cycle-wheel>` component and needs no rebuild.
 
-- **The client-side router** (`ROUTES`, `TITLES`, `readRoute`, `show`, `go`, `href`,
-  `popstate`). WordPress has real URLs and real pages.
-- **`tools/build-site.mjs`** — its whole job is emitting per-route copies of one template
-  and verifying references. WordPress makes both unnecessary.
-- **`support.js`** — the runtime itself. 1,911 generated lines, nothing to salvage.
-- **The CDN dependency.** React and Babel are fetched from unpkg on every load, which is a
-  third-party request on the critical path and a single point of failure. Nothing in the
-  rebuilt site should need either.
+## What to delete
 
----
+Nothing in this list should survive into WordPress:
 
-## 8. Content
+- **The client-side router** (`ROUTES`, `TITLES`, `readRoute`, `show`, `go`,
+  `href`, the `popstate` handler). WordPress has real URLs.
+- **`tools/build-site.mjs`.** Its jobs — emitting per-route copies and verifying
+  references — are WordPress's and your pipeline's. Reproduce its one important
+  check: the manifest-versus-disk frame verification (see
+  [`sections/approach.md`](sections/approach.md), trap 7.3).
+- **`support.js`** — the prototype runtime. 1,911 generated lines; nothing to
+  salvage.
+- **The CDN dependency.** React and Babel load from unpkg on every prototype page
+  view: a third-party single point of failure on the critical path, a duplicate of
+  the React WordPress already ships, and a per-pageview IP disclosure to a third
+  party (the class of issue in the German Google Fonts GDPR ruling). Nothing in
+  the rebuilt site needs either.
 
-There is no CMS behind any of this — all copy is hardcoded in the template, which is why
-`pages/` doubles as the content export. Worth deciding early which of these become
-editable fields versus staying in templates:
+## Content
 
-- **Team members** (Who We Are) — 28 people across four grids: Leadership, Research
-  Partners, Technology Partners and Education Fellows. Each carries a headshot, a name, a
-  role and optional LinkedIn/website links; fellows also carry a school and location. The
-  cards render no bio — the bios exist, but only in the tracking sheet. 9 of the 28 have no
-  usable photograph yet and fall back to a grey square, so whatever models this has to treat
-  the image as optional. The obvious candidate for a custom post type.
-- **Research items** (Home, Follow Our Work) — title, description, link.
-- **Approach beats** — six numbered steps, each with a heading and two paragraphs, tied to
-  specific animation frames. Editable copy, fixed count; the frame mapping is not content.
+No CMS sits behind the prototype; all copy is hardcoded. Decide early which of
+these become editable fields and which stay in templates, and model the types
+with the tools already on your install (JetEngine, CPT UI).
+
+**The structured content is exported as data in [`content/`](content/README.md)**
+— import from those files rather than transcribing from the pages.
+
+- **Team members** (`content/team.json`): 28 people across four grids —
+  Leadership, Research Partners, Technology Partners, Education Fellows. Fields:
+  headshot (optional — 9 of 28 currently render a placeholder), name, role,
+  optional affiliation and location, optional LinkedIn and website links. Bios
+  exist only in the project tracking sheet. The obvious custom post type.
+- **Research items** (`content/research.json`): title, description, link.
+- **Cycle wheel steps** (`content/cycle.json`): four steps, each a number, a
+  title, a body paragraph, and an icon. Editable copy, fixed count of four — the
+  geometry and the scroll choreography are not content. See
+  [`sections/cycle.md`](sections/cycle.md).
 - Everything else is page-level marketing copy.
 
----
+### The Follow page form
 
-## 9. Regenerating anything
+The prototype's form renders a required email field, a nine-option "which are you"
+radio group (educator, researcher, engineer, administrator, non-profit
+professional, company executive, funder, journalist, other), an optional message,
+and a **Subscribe** button — and its submit handler discards everything. It has
+never collected a submission.
 
-| command | what it does |
+The rebuild needs a real destination, which is a product decision, not a porting
+task. aerdf.org already runs Gravity Forms (with reCAPTCHA) and embeds HubSpot
+forms; either reproduces this form in under an hour once someone decides:
+
+1. Which system receives submissions, and into what list or pipeline.
+2. What consent language the form carries (CookieYes is live on the target site).
+3. Who owns the resulting list. "Subscribe" implies an email program — a
+   commitment beyond the form itself.
+
+### Page metadata
+
+Titles and descriptions for search and social, ready for Yoast fields (also
+exported as `content/pages.json`):
+
+| Route | Title | Description |
+|---|---|---|
+| `/` | AugmentED \| Bridging frontier AI and the classroom | AugmentED is an R&D organization closing the gap between what AI can do and what students need. We are teachers, researchers, and engineers building and testing the missing technology, and the evidence to trust it. |
+| `/challenge/` | The Challenge \| AugmentED | AI is arriving in classrooms whether schools are ready or not. The danger is that some are rushing in without asking what AI can do well, what teachers uniquely bring, or what students actually need. |
+| `/approach/` | Our Approach \| AugmentED | We believe better educational AI will emerge from discovering what classrooms actually need, building solutions with real educators and students, and testing them in real classrooms. |
+| `/team/` | Who We Are \| AugmentED | AugmentED brings together people from classrooms, research labs, and engineering teams who share a conviction that AI should augment human teaching, not replace it. |
+| `/follow/` | Follow Our Work \| AugmentED | Get updates on AugmentED's work and research findings. |
+
+### Redirects
+
+The slugs were shortened after preview links had been shared. If the production
+site keeps these paths, recreate the redirects — `content/redirects.csv` is this
+table in the Redirection plugin's CSV import format:
+
+| From | To |
 |---|---|
-| `node tools/export-static.mjs` | re-renders `pages/` from the current site (needs `npm i --no-save playwright`) |
-| `node tools/encode-hero-bridge.mjs` | re-encodes the hero frames and rewrites their manifest (needs `npm i --no-save sharp`, and the plates, which are not in the repository) |
-| `node tools/encode-falling-blocks.mjs` | re-encodes the closing CTA's frames (needs `npm i --no-save sharp`) |
-| `node tools/encode-approach.mjs` | re-encodes the Approach frames and rewrites their manifest |
-| `node tools/encode-images.mjs` | re-encodes photography and headshots |
-| `node tools/build-site.mjs _site` | builds the current static site — useful for comparison while rebuilding |
+| `/the-challenge/` | `/challenge/` |
+| `/our-approach/` | `/approach/` |
+| `/who-we-are/` | `/team/` |
+| `/follow-our-work/` | `/follow/` |
 
-The encoders write the committed files directly and CI never runs them. **None of them is
-needed to rebuild the site in WordPress** — every file they produce is already committed and
-listed in §4. They only matter if the artwork itself is being re-rendered, and they read from
-masters that are no longer in the repository; each one prints the exact path to restore if
-you run it without them. The root `README.md` lists those paths.
+Also plan redirects from `augmented2.folkmark.com` once the production URL exists.
 
-To change the closing CTA's resolution, edit `WIDTHS` at the top of
-`tools/encode-falling-blocks.mjs` and re-run — it rewrites the frame directory and the
-manifest together. (The hero is a different sequence with a different encoder: its widths
-are `FULL_W` and `CROP_W` in `tools/encode-hero-bridge.mjs`. Editing `WIDTHS` here changes
-the closing CTA and does nothing to the hero.) Adding a second width (640 is the useful one, ~1.4 MB) is a one-line
-change and would let the element serve a smaller set to slow connections instead of
-falling back to the still.
+## Protect the components from optimization plugins
+
+Two plugin classes break this site in ways that are invisible at deploy time.
+Neither is installed on the target site today; both are common enough that the
+exclusions belong in the theme and in this document.
+
+**Image optimizers reach into theme directories.** EWWW's bulk optimizer and
+"Folders to Optimize", Smush's Directory Smush, ShortPixel's other-folders
+feature, and edge optimizers (Cloudflare Polish, Jetpack Photon) can re-compress
+images outside the media library, in place. One bulk run re-encodes every
+carefully tuned frame — same filenames, degraded pixels, nothing visibly broken.
+
+- Exclude the component asset directories from every image-optimization plugin
+  and every CDN image feature (including WebP-to-AVIF conversion).
+- Treat the byte totals in [The assets](#the-assets) as the tamper check: a
+  re-compressed sequence announces itself as a changed directory total.
+
+**JavaScript and CSS optimizers break scroll-driven code.** "Delay JS until
+interaction" features (WP Rocket, LiteSpeed) boot scripts on the first scroll —
+which for a scroll-scrubbed hero means booting mid-scroll, already late. Combine
+and minify features relocate scripts, and WP Rocket's CSS minifier has a
+documented history of corrupting `calc()` and `clamp()` expressions — which the
+scroll budgets are made of.
+
+- Exclude the component scripts and stylesheets from delay, combine, minify, and
+  remove-unused-CSS features, by handle and by filename.
+- Exclude the still images from plugin lazy-load rewriting: the hero still
+  (`assets/images/hero-bridge.webp`) is the LCP element, and the component stills
+  are the no-JS fallback — a plugin that rewrites their `src` to a
+  `data-lazy-src` breaks both. The components' own `loading="lazy"` attributes
+  are correct and stay.
+- Add the belt-and-braces attributes via the `script_loader_tag` filter:
+  `nowprocket`, `data-no-defer="1"`, `data-jetpack-boost="ignore"`.
+  [`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php) already does this
+  for the component handles.
+- Do not add a smooth-scroll plugin to pages with these components. Anything that
+  virtualizes the scroll position desynchronizes code that reads native scroll.
+
+## Acceptance checklist
+
+The rebuild is done when every item passes. Test logged out *and* logged in (the
+admin bar shifts the viewport for logged-in users), and on aerdf.org test with the
+AccessiBe widget active.
+
+**Per page, against [the reference site](https://augmented2.folkmark.com):**
+
+- [ ] Matches the reference at 360, 768, 1440, and 1920 px wide.
+- [ ] Title and meta description match [Page metadata](#page-metadata).
+- [ ] No console errors; no 404s in the network panel (frame requests included).
+
+**Hero bridge:**
+
+- [ ] Plays frames 276–417; the arch does not change color mid-scrub.
+- [ ] The headline pins for the whole hero and releases together with the plate —
+      no gap where one leaves and the other stays.
+- [ ] The release is a ramp, not a snap.
+- [ ] Reduced motion, Save-Data, and script-off each show the finished-bridge
+      still in normal flow, with no blank band above it.
+
+**Cycle wheel** (full criteria in [`sections/cycle.md`](sections/cycle.md)):
+
+- [ ] The ring builds with scroll, latches complete, and never un-builds on the
+      way back up after completion.
+- [ ] Clicking a step travels the page; keyboard focus opens a step in place.
+- [ ] Below 992 px the wheel is an accordion with no pinned run.
+
+**Falling blocks:**
+
+- [ ] The near plate crosses the heading but never the body or buttons.
+- [ ] Phones fetch only `w720` frames; desktops only `w1440`.
+- [ ] Reduced motion and Save-Data show the frame-1 stills at one screen.
+
+**Site-wide:**
+
+- [ ] All 67 reveal blocks become visible; none is stranded at `opacity: 0`.
+- [ ] The form submits to its decided destination and the submission arrives.
+- [ ] Fonts self-hosted, WOFF2 only; Avenir license confirmation on file.
+- [ ] Frame directories excluded from image optimization; manifests return 200.
+- [ ] Redirects from the old slugs and the preview domain are live.
+
+## Regenerating the artifacts
+
+Every file this handoff lists is committed and final; **none of these commands is
+needed to rebuild the site in WordPress.** They matter only when the artwork or
+the export changes. The encoders read master material that is no longer in the
+repository and print the restore path they need if you run them without it.
+
+| Command | What it does |
+|---|---|
+| `node tools/export-static.mjs` | Re-renders `pages/` from the live prototype and stamps each page with its source commit. Needs `npm i --no-save playwright` and browser network access. |
+| `node tools/export-content.mjs` | Re-parses `pages/` into the `content/` data files. Run it after every export. |
+| `node tools/encode-hero-bridge.mjs` | Re-encodes the hero frames and manifest. Widths: `FULL_W` / `CROP_W` in the script. |
+| `node tools/encode-falling-blocks.mjs` | Re-encodes the CTA frames and manifest. Tiers: `WIDTHS` in the script. |
+| `node tools/encode-approach.mjs` | Re-encodes the Approach frames and manifest. Sequence: `OPEN` / `BEATS` / `STRIDE` in the script. |
+| `node tools/encode-images.mjs` | Re-encodes photography and headshots from committed sources. |
+| `node tools/build-site.mjs _site` | Builds the static site for comparison while rebuilding. |

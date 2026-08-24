@@ -1,0 +1,372 @@
+[
+  {
+    "name": "Sherry Lachman",
+    "group": "Leadership",
+    "role": "Founder & Executive Director",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/sherry-lachman.webp",
+    "links": []
+  },
+  {
+    "name": "Caitlin Mills",
+    "group": "Leadership",
+    "role": "Co-Founder & Chief of Research and Impact",
+    "affiliation": null,
+    "location": null,
+    "photo": null,
+    "links": []
+  },
+  {
+    "name": "Raquel Romano",
+    "group": "Leadership",
+    "role": "Chief Technology Officer",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/raquel-romano.webp",
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/romano"
+      }
+    ]
+  },
+  {
+    "name": "Jenny Bradbury",
+    "group": "Leadership",
+    "role": "Vice President of Education Innovation and Partnerships",
+    "affiliation": null,
+    "location": null,
+    "photo": null,
+    "links": []
+  },
+  {
+    "name": "Brandon Bodnar",
+    "group": "Leadership",
+    "role": "Principal Engineer",
+    "affiliation": null,
+    "location": null,
+    "photo": null,
+    "links": []
+  },
+  {
+    "name": "Andrew Lan",
+    "group": "Research Partners",
+    "role": "Associate Professor of Computer Science, University of Massachusetts Amherst",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/andrew-lan.webp",
+    "links": [
+      {
+        "label": "Website",
+        "url": "https://www.cics.umass.edu/about/directory/andrew-lan"
+      }
+    ]
+  },
+  {
+    "name": "Ryan Baker",
+    "group": "Research Partners",
+    "role": "Professor of Artificial Intelligence and Education, Adelaide University",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/ryan-baker.webp",
+    "links": [
+      {
+        "label": "Website",
+        "url": "https://learninganalytics.upenn.edu/ryanbaker/"
+      }
+    ]
+  },
+  {
+    "name": "Angela E.B. Stewart",
+    "group": "Research Partners",
+    "role": "Assistant Professor, University of Pittsburgh",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/angela-stewart.webp",
+    "links": [
+      {
+        "label": "Website",
+        "url": "https://www.sci.pitt.edu/people/angela-eb-stewart"
+      }
+    ]
+  },
+  {
+    "name": "Laura Allen",
+    "group": "Research Partners",
+    "role": "Associate Professor, University of Minnesota",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/laura-allen.webp",
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/laura-allen-37344528/"
+      },
+      {
+        "label": "Website",
+        "url": "https://edpsych.umn.edu/laura-allen"
+      }
+    ]
+  },
+  {
+    "name": "Blair Lehman",
+    "group": "Research Partners",
+    "role": "Senior Scientist, Brighter Research",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/blair-lehman.webp",
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/blair-lehman-bb043b11"
+      },
+      {
+        "label": "Website",
+        "url": "https://sites.google.com/site/blairlehman/home"
+      }
+    ]
+  },
+  {
+    "name": "Isa Peczuh",
+    "group": "Research Partners",
+    "role": "PhD Candidate, University of Minnesota",
+    "affiliation": null,
+    "location": null,
+    "photo": null,
+    "links": []
+  },
+  {
+    "name": "Sarah Zaner",
+    "group": "Technology Partners",
+    "role": "Co-founder, Bendable Labs",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/sarah-zaner.webp",
+    "links": [
+      {
+        "label": "Website",
+        "url": "https://bendablelabs.com/who_we_are/sarah-zaner"
+      }
+    ]
+  },
+  {
+    "name": "Lisa Peterson",
+    "group": "Technology Partners",
+    "role": "Product Design Consultant",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/lisa-peterson.webp",
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/lisa-peterson/"
+      }
+    ]
+  },
+  {
+    "name": "Neil Sharma",
+    "group": "Technology Partners",
+    "role": "Engineering Consultant",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/neil-sharma.webp",
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/neilshar/"
+      }
+    ]
+  },
+  {
+    "name": "Joan Lee",
+    "group": "Technology Partners",
+    "role": "Project Manager",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/joan-lee.webp",
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/about-joan-lee"
+      }
+    ]
+  },
+  {
+    "name": "Danielle Ragavanis",
+    "group": "Education Fellows",
+    "role": "Social Studies & Design Thinking Teacher, R&D Department Lead",
+    "affiliation": "Thomas A. Edison Career and Technical Education High School",
+    "location": "Jamaica, NY",
+    "photo": "assets/team/danielle-ragavanis.webp",
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/danielle-ragavanis-passaretti-110b80b0/"
+      }
+    ]
+  },
+  {
+    "name": "Alondra Ramos",
+    "group": "Education Fellows",
+    "role": "Special Education Teacher",
+    "affiliation": "Thomas A. Edison Career and Technical Education High School",
+    "location": "Jamaica, NY",
+    "photo": "assets/team/alondra-ramos.webp",
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/alondra-ramos-31542958/"
+      }
+    ]
+  },
+  {
+    "name": "Philip Baker",
+    "group": "Education Fellows",
+    "role": "Social Studies & Design Thinking Teacher, R&D Department Lead",
+    "affiliation": "Thomas A. Edison Career and Technical Education High School",
+    "location": "Jamaica, NY",
+    "photo": null,
+    "links": []
+  },
+  {
+    "name": "Ted Cuevas",
+    "group": "Education Fellows",
+    "role": "Physics Teacher",
+    "affiliation": "High Tech High Chula Vista",
+    "location": "Chula Vista, CA",
+    "photo": null,
+    "links": [
+      {
+        "label": "Website",
+        "url": "https://www.hightechhigh.org/staff/ted-cuevas/"
+      }
+    ]
+  },
+  {
+    "name": "Alexandra Wiggins",
+    "group": "Education Fellows",
+    "role": "Humanities Teacher, 504 Coordinator",
+    "affiliation": "High Tech High Mesa",
+    "location": "San Diego, CA",
+    "photo": null,
+    "links": [
+      {
+        "label": "Website",
+        "url": "https://www.hightechhigh.org/staff/alexandra-wiggins/"
+      }
+    ]
+  },
+  {
+    "name": "Chris Mutter",
+    "group": "Education Fellows",
+    "role": "Multimedia Teacher",
+    "affiliation": "High Tech High International",
+    "location": "San Diego, CA",
+    "photo": null,
+    "links": [
+      {
+        "label": "Website",
+        "url": "https://www.hightechhigh.org/staff/chris-mutter/"
+      }
+    ]
+  },
+  {
+    "name": "Christopher Hanks",
+    "group": "Education Fellows",
+    "role": "Principal on Special Assignment, Innovation Design",
+    "affiliation": "Grand Rapids Public Museum High School",
+    "location": "Grand Rapids, MI",
+    "photo": "assets/team/christopher-hanks.webp",
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/christopher-hanks-4a0ba92b9/"
+      }
+    ]
+  },
+  {
+    "name": "Tom Peterson",
+    "group": "Education Fellows",
+    "role": "Social Studies Teacher",
+    "affiliation": "Grand Rapids Public Museum High School",
+    "location": "Grand Rapids, MI",
+    "photo": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/tom-peterson-25776477/"
+      }
+    ]
+  },
+  {
+    "name": "Ben Hoff",
+    "group": "Education Fellows",
+    "role": "Science & Computer Science Teacher",
+    "affiliation": "Grand Rapids Public Museum High School",
+    "location": "Grand Rapids, MI",
+    "photo": "assets/team/ben-hoff.webp",
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/ben-hoff-240635272/"
+      }
+    ]
+  },
+  {
+    "name": "Nikki Wallace",
+    "group": "Education Fellows",
+    "role": "Science Teacher, Director of Research & Innovation",
+    "affiliation": "Crosstown High School",
+    "location": "Memphis, TN",
+    "photo": "assets/team/nikki-wallace.webp",
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/nikki-wallace-hmw/"
+      }
+    ]
+  },
+  {
+    "name": "Danie Cowden",
+    "group": "Education Fellows",
+    "role": "Photography, Digital Art & Design Teacher, CTE Coordinator",
+    "affiliation": "Crosstown High School",
+    "location": "Memphis, TN",
+    "photo": "assets/team/danie-cowden.webp",
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/danie-cowden/"
+      }
+    ]
+  },
+  {
+    "name": "Joshua Sloan",
+    "group": "Education Fellows",
+    "role": "Math Teacher, Math Department Lead",
+    "affiliation": "Crosstown High School",
+    "location": "Memphis, TN",
+    "photo": "assets/team/joshua-sloan.webp",
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/joshua-sloan-746aa1226/"
+      }
+    ]
+  },
+  {
+    "name": "Mohammed Al Harthy",
+    "group": "Education Fellows",
+    "role": "Computer Science Teacher, 9th Grade Lead",
+    "affiliation": "Crosstown High School",
+    "location": "Memphis, TN",
+    "photo": "assets/team/mohammed-al-harthy.webp",
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/mohammed-al-harthy/"
+      }
+    ]
+  }
+]
