@@ -13,6 +13,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -381,3 +382,25 @@ if (problems.length) {
 
 console.log(`built ${built.length} pages into ${path.relative(root, outDir)} (base ${basePath})`);
 for (const p of built) console.log(`  ${p}`);
+
+// The handoff export in wordpress-handoff/pages/ is committed output of
+// tools/export-static.mjs, and nothing regenerates it automatically — so it
+// drifts silently the moment index.html changes, and it has done so before: the
+// 2026-08-24 home rebuild shipped while the export still showed the page it
+// replaced. The exporter stamps its source commit into each page; compare that
+// against the commits that have touched index.html since. A warning, never a
+// failure: the export is not part of what ships, and CI clones can be too
+// shallow for rev-list to answer at all — silence in that case, not a red build.
+try {
+  const stamped = fs.readFileSync(path.join(root, 'wordpress-handoff/pages/home.html'), 'utf8')
+    .match(/<!-- exported from ([0-9a-f]{40})/);
+  if (!stamped) {
+    console.warn('::warning::wordpress-handoff/pages/ carries no export stamp — regenerate with tools/export-static.mjs');
+  } else {
+    const behind = execFileSync('git', ['rev-list', '--count', `${stamped[1]}..HEAD`, '--', 'index.html'],
+      { cwd: root, stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+    if (behind !== '0') {
+      console.warn(`::warning::wordpress-handoff/pages/ was exported at ${stamped[1].slice(0, 7)}, and index.html has ${behind} newer commit(s) — regenerate with tools/export-static.mjs`);
+    }
+  }
+} catch {}

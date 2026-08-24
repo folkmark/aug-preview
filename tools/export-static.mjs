@@ -29,6 +29,21 @@ const stage = path.join(root, '.export-tmp');
 const OUT = path.join(root, 'wordpress-handoff/pages');
 const PORT = 8731;
 
+// Which source this export was taken from, stamped into every page. The export is
+// committed and nothing regenerates it automatically, so it drifts silently the
+// moment index.html changes — it has done so before, and a handoff page that is
+// three commits behind the template looks exactly like one that is current.
+// build-site.mjs reads this stamp back and warns when index.html has moved past
+// it. "+dirty" means the working tree differed from the stamped commit, so the
+// stamp names the nearest commit rather than the exact input.
+let STAMP = 'unknown';
+try {
+  STAMP = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root }).toString().trim();
+  if (execFileSync('git', ['status', '--porcelain', '--', 'index.html', 'support.js'], { cwd: root }).toString().trim()) {
+    STAMP += '+dirty';
+  }
+} catch {}
+
 const PAGES = [
   { slug: '', file: 'home.html', name: 'Home' },
   { slug: 'challenge/', file: 'challenge.html', name: 'The Challenge' },
@@ -135,7 +150,12 @@ for (const p of PAGES) {
     doc.querySelectorAll('[data-dc-tpl]').forEach((n) => n.removeAttribute('data-dc-tpl'));
     // The runtime injects a rule hiding its own template element. That element is gone
     // now, and a dangling x-dc selector in the handoff would only raise questions.
+    // The runtime's loading-placeholder stylesheet (.sc-placeholder, the streaming
+    // shimmer, .sc-logic-error) goes with it: every selector in it styles states only
+    // the runtime can produce, and forty lines of dead CSS at the top of a handoff
+    // page reads as something the porter is supposed to understand.
     doc.querySelectorAll('style').forEach((s) => {
+      if (s.textContent.includes('.sc-placeholder')) { s.remove(); return; }
       s.textContent = s.textContent.replace(/x-dc\s*\{[^}]*\}/g, '').trim();
       if (!s.textContent) s.remove();
     });
@@ -173,6 +193,24 @@ for (const p of PAGES) {
         c.removeAttribute('height');
       });
     });
+    // The same again for what the page's own component wrote before the snapshot.
+    // The reveal sweeper has set opacity 1 on every block above the fold, the
+    // cycle rig has written its scroll-0 geometry (dash offsets on the arc paths,
+    // opacity and a disabled attribute on the nodes), and the approach-offset sync
+    // has measured a margin — all of it one viewport's runtime state, none of it
+    // authored markup. Put each back to the state the template declares, so a
+    // porter copying a block copies what was written, not what one 1440x900
+    // session happened to compute.
+    doc.querySelectorAll('[data-reveal]').forEach((el) => { el.style.opacity = '0'; });
+    doc.querySelectorAll('[data-approach-text]').forEach((el) => el.style.removeProperty('margin-top'));
+    doc.querySelectorAll('[data-cycle] [data-arc] path').forEach((p) => p.removeAttribute('style'));
+    doc.querySelectorAll('[data-cycle] [data-arc] polygon').forEach((p) => p.setAttribute('style', 'opacity:0'));
+    doc.querySelectorAll('[data-cycle] [data-node]').forEach((n) => {
+      n.style.opacity = '0';
+      n.style.removeProperty('pointer-events');
+      n.removeAttribute('disabled');
+    });
+    doc.querySelectorAll('[data-cycle] [data-hub], [data-cycle] [data-hub-line]').forEach((h) => { h.style.opacity = '0'; });
     const rootEl = doc.querySelector('#dc-root');
     const body = doc.querySelector('body');
     if (rootEl && body) { while (rootEl.firstChild) body.appendChild(rootEl.firstChild); rootEl.remove(); }
@@ -195,7 +233,8 @@ for (const p of PAGES) {
   const out = html
     .replace(/(["'\s,(])\/assets\//g, '$1../../assets/')
     .replace(/(["'\s,(])\/_ds\//g, '$1../../_ds/')
-    .replace(/(["'])\/support\.js\1/g, '$1../../support.js$1');
+    .replace(/(["'])\/support\.js\1/g, '$1../../support.js$1')
+    .replace(/^<!doctype html>\n/, `<!doctype html>\n<!-- exported from ${STAMP} by tools/export-static.mjs -->\n`);
 
   fs.writeFileSync(path.join(OUT, p.file), out);
   console.log(`${p.file.padEnd(22)} ${(out.length / 1024).toFixed(0)} KB  ${p.name}`);

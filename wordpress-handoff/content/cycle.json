@@ -1,0 +1,26 @@
+[
+  {
+    "number": "01",
+    "title": "Define the role",
+    "body": "AI can play many distinct roles in a classroom, and each requires its own standards, evidence, and safeguards. With our partners, we pinpoint a specific role AI could play to meet real needs, and what teachers uniquely bring alongside it. Then we form hypotheses: what the role requires, where its limits are, and what bar it must meet to play the role responsibly.",
+    "icon": "assets/approach/cyc01_role_0001.webp"
+  },
+  {
+    "number": "02",
+    "title": "Build the capabilities",
+    "body": "Much of the technology needed for AI to play these roles well doesn’t exist off the shelf. We build the missing layer between frontier AI models and classroom apps — validated capabilities that many different tools can build on, like computational methods that help AI measure students’ skills or track how concepts connect across a semester.",
+    "icon": "assets/approach/cyc02_capabilities_0001.webp"
+  },
+  {
+    "number": "03",
+    "title": "Co-design the tools",
+    "body": "Teachers, researchers, and engineers build classroom tools on those capabilities, along with new ways of teaching alongside them. They then test our work where it counts: in real classrooms.",
+    "icon": "assets/approach/cyc03_applications_0002.webp"
+  },
+  {
+    "number": "04",
+    "title": "Test, learn, begin again.",
+    "body": "Classroom data tells us whether the AI role we selected and the capabilities and tools we built actually helped. Those lessons sharpen our hypotheses, strengthen our capabilities and tools, and inform our next cycle of R&D.",
+    "icon": "assets/approach/cyc04_test_0001.webp"
+  }
+]

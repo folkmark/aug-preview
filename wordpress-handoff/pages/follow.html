@@ -1,48 +1,6 @@
 <!doctype html>
-<html lang="en"><head><style>.sc-placeholder{background:color-mix(in srgb,currentColor 8%,transparent);
-      border:1px solid color-mix(in srgb,currentColor 50%,transparent);
-      border-radius:2px;box-sizing:border-box;overflow:hidden}
-    @keyframes sc-shine{0%{background-position:100% 50%}100%{background-position:0% 50%}}
-    html.sc-dc-streaming .sc-placeholder,
-    html.sc-dc-streaming .sc-interp.sc-missing{position:relative;
-      background:color-mix(in srgb,currentColor 5%,transparent);
-      border-color:transparent}
-    html.sc-dc-streaming .sc-placeholder::before,
-    html.sc-dc-streaming .sc-interp.sc-missing::before{content:'';
-      position:absolute;inset:0;pointer-events:none;
-      background:linear-gradient(90deg,rgba(217,119,87,0) 25%,rgba(247,225,211,.95) 37%,rgba(217,119,87,0) 63%);
-      background-size:400% 100%;animation:sc-shine 1.4s ease infinite}
-    html.sc-dc-streaming .sc-placeholder:nth-child(n+9 of .sc-placeholder)::before,
-    html.sc-dc-streaming .sc-interp.sc-missing:nth-child(n+9 of .sc-interp.sc-missing)::before{animation:none;
-      background:color-mix(in srgb,currentColor 8%,transparent)}
-    .sc-placeholder-error{padding:4px 8px;font:11px/1.4 ui-monospace,monospace;
-      color:color-mix(in srgb,currentColor 70%,transparent);word-break:break-word}
-    .sc-interp.sc-missing{display:inline-block;width:2em;height:1em;overflow:hidden;
-      vertical-align:text-bottom;background:rgba(255,255,255,.3);border:1px solid rgba(0,0,0,.5);
-      border-radius:2px;box-sizing:border-box;color:transparent;
-      user-select:none}
-    .sc-interp.sc-unresolved{font-family:ui-monospace,monospace;font-size:.85em;
-      color:color-mix(in srgb,currentColor 50%,transparent);
-      background:color-mix(in srgb,currentColor 10%,transparent);border-radius:3px;
-      padding:0 3px}
-    .sc-host.sc-has-error{position:relative}
-    .sc-logic-error{position:absolute;top:8px;left:8px;z-index:2147483647;max-width:60ch;
-      padding:6px 10px;background:#b00020;color:#fff;font:12px/1.4 ui-monospace,monospace;
-      border-radius:4px;white-space:pre-wrap;pointer-events:none}
-    /* Mirrors PRINT_BASELINE_CSS in apps/web deck-stage-export.ts — keep both
-       in sync until dc-runtime regains a build step. */
-    @media print {
-      @page { margin: 0.5cm; }
-      figure, table { break-inside: avoid; }
-      #dc-root, #dc-root > .sc-host { height: auto; }
-      *, *::before, *::after {
-        print-color-adjust: exact; -webkit-print-color-adjust: exact;
-        backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
-        animation-delay: -99s !important; animation-duration: .001s !important;
-        animation-iteration-count: 1 !important; animation-fill-mode: both !important;
-        animation-play-state: running !important; transition-duration: 0s !important;
-      }
-    }</style>
+<!-- exported from 91724dd127004fb66db8bed2558b6ffb2679b4e7 by tools/export-static.mjs -->
+<html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Follow Our Work | AugmentED</title>
@@ -60,6 +18,7 @@
      paint the brand page colour up front rather than flashing white first. -->
 <style>html, body { margin: 0; background: #fdfcfa; }</style>
 
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" data-bg-color="#FBF9F4"><rect width="120" height="120" fill="#FBF9F4"></rect><g fill="none" stroke="#255799" stroke-width="7" stroke-linecap="square"><path d="M36 86V60a24 24 0 0 1 48 0v26"></path><path d="M28 86h64"></path></g></svg></template>
 <link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/fonts.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/colors.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/typography.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/layout.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/icons.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/schemes.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/base.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/styles.css"><link rel="stylesheet" href="../../assets/hero-bridge.css"><script src="../../assets/hero-bridge.js" defer=""></script><link rel="stylesheet" href="../../assets/falling-blocks.css"><script src="../../assets/falling-blocks.js" defer=""></script><style>body { margin: 0; background: var(--surface-page); }
   /* The intrinsic width/height attributes are there to reserve the box before the
      bytes arrive, not to size the image: every one of these is sized by CSS, and
@@ -84,26 +43,52 @@
   .team-grid-2 img, .team-grid-3 img, .team-grid-2 > div > div:first-child, .team-grid-3 > div > div:first-child { margin-bottom: var(--space-4) !important; }
   .team-grid-2 a[aria-label], .team-grid-3 a[aria-label] { width: var(--icon-size); height: var(--icon-size); align-items: center; justify-content: center; flex: 0 0 auto; }
   .team-grid-2 a[aria-label] > *, .team-grid-3 a[aria-label] > * { width: var(--icon-size) !important; height: var(--icon-size) !important; min-width: var(--icon-size) !important; min-height: var(--icon-size) !important; font-size: var(--icon-size) !important; line-height: var(--icon-size) !important; display: block !important; margin: 0 !important; }
-  [data-cycle] [data-arc] { color: var(--brand-accent); opacity: 0.55; transition: opacity var(--transition-fast); }
-  [data-cycle] [data-node] { background: var(--surface-card); border: var(--border-width-divider) solid var(--border-hairline); transition: border-color var(--transition-fast); }
-  [data-cycle] [data-label] { transition: opacity var(--transition-fast); }
-  [data-cycle] [data-node]:hover { border-color: var(--color-neutral-darkest); }
+  [data-cycle] [data-arc] { color: var(--brand-accent); opacity: 0.55; transition: opacity 200ms ease-in-out; }
+  [data-cycle] [data-node] { background: none; border: 0; opacity: 0; pointer-events: none; transform: translate(-50%,-50%); transition: opacity 200ms ease-in-out, transform 200ms ease-in-out; }
+  [data-cycle] [data-node]:focus-visible, [data-cycle] [data-rl]:focus-visible { outline: 2px solid var(--brand-accent); outline-offset: 3px; }
   [data-cycle][data-active="0"] [data-arc="0"],
   [data-cycle][data-active="1"] [data-arc="1"],
   [data-cycle][data-active="2"] [data-arc="2"],
   [data-cycle][data-active="3"] [data-arc="3"] { opacity: 1; }
-  [data-cycle][data-active="0"] [data-node="0"],
-  [data-cycle][data-active="1"] [data-node="1"],
-  [data-cycle][data-active="2"] [data-node="2"],
-  [data-cycle][data-active="3"] [data-node="3"] { border-color: var(--color-neutral-darkest); }
-@media (prefers-reduced-motion: reduce) {
-    [data-cycle] [data-arc], [data-cycle] [data-node],
-    [data-cycle] [data-label], [data-cycle] [data-chrome] { transition: none; }
+  [data-cycle] [data-node]:hover { transform: translate(-50%,-50%) scale(1.06); }
+  [data-cycle][data-sel="0"] [data-node="0"],
+  [data-cycle][data-sel="1"] [data-node="1"],
+  [data-cycle][data-sel="2"] [data-node="2"],
+  [data-cycle][data-sel="3"] [data-node="3"] { transform: translate(-50%,-50%) scale(1.12); }
+  [data-cycle][data-sel="0"] [data-node="0"]:hover,
+  [data-cycle][data-sel="1"] [data-node="1"]:hover,
+  [data-cycle][data-sel="2"] [data-node="2"]:hover,
+  [data-cycle][data-sel="3"] [data-node="3"]:hover { transform: translate(-50%,-50%) scale(1.16); }
+  /* The open row's number carries the same accent as its lit arc. */
+  [data-cycle][data-sel="0"] [data-rl="0"] [data-num], [data-cycle][data-sel="1"] [data-rl="1"] [data-num],
+  [data-cycle][data-sel="2"] [data-rl="2"] [data-num], [data-cycle][data-sel="3"] [data-rl="3"] [data-num] { color: var(--brand-accent); }
+  /* The reading column is one integrated list: each row is a step title, and the
+     active row opens to hold its copy — the title is never said twice. */
+  [data-cycle] [data-rl] { opacity: 0.45; transition: opacity 200ms ease-in-out; }
+  [data-cycle] [data-rl]:hover { opacity: 1; }
+  [data-cycle][data-sel="0"] [data-rl="0"],
+  [data-cycle][data-sel="1"] [data-rl="1"],
+  [data-cycle][data-sel="2"] [data-rl="2"],
+  [data-cycle][data-sel="3"] [data-rl="3"] { opacity: 1; }
+  [data-cycle] [data-body] { max-height: 0; overflow: hidden; transition: max-height 200ms ease-out; }
+  [data-cycle] [data-body] p { opacity: 0; transition: opacity 120ms ease-in-out; }
+  [data-cycle][data-sel="0"] [data-body="0"],
+  [data-cycle][data-sel="1"] [data-body="1"],
+  [data-cycle][data-sel="2"] [data-body="2"],
+  [data-cycle][data-sel="3"] [data-body="3"] { max-height: 26rem; transition: max-height 420ms ease-out 200ms; }
+  [data-cycle][data-sel="0"] [data-body="0"] p,
+  [data-cycle][data-sel="1"] [data-body="1"] p,
+  [data-cycle][data-sel="2"] [data-body="2"] p,
+  [data-cycle][data-sel="3"] [data-body="3"] p { opacity: 1; transition: opacity 260ms ease-in-out 340ms; }
+  @media (max-width: 991px) {
+    [data-cycle][data-sel="0"] [data-body="0"],
+    [data-cycle][data-sel="1"] [data-body="1"],
+    [data-cycle][data-sel="2"] [data-body="2"],
+    [data-cycle][data-sel="3"] [data-body="3"] { max-height: 40rem; }
   }
-  [data-cycle][data-active="0"] [data-label]:not([data-label="0"]),
-  [data-cycle][data-active="1"] [data-label]:not([data-label="1"]),
-  [data-cycle][data-active="2"] [data-label]:not([data-label="2"]),
-  [data-cycle][data-active="3"] [data-label]:not([data-label="3"]) { opacity: 0.45; }
+  @media (prefers-reduced-motion: reduce) {
+    [data-cycle] [data-arc], [data-cycle] [data-node], [data-cycle] [data-rl], [data-cycle] [data-body], [data-cycle] [data-body] p { transition: none; }
+  }
   /* The two things the page has to tell the hero scrub, and they are both about the page
      rather than about the sequence. --hb-pin is the header's height; the element reads it
      back off its own stage, and hero-bridge.css derives the stage's height, the approach's
@@ -560,13 +545,13 @@
   <main data-screen-label="Get Involved">
 
     <section style="padding: clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter) clamp(var(--space-20),9vw,8rem);">
-      <div data-reveal="" style="opacity: 1; transition: opacity var(--transition-fade); margin-inline: auto; max-width: var(--container-lg); text-align: center; margin-bottom: clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg));">
+      <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); margin-inline: auto; max-width: var(--container-lg); text-align: center; margin-bottom: clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg));">
         <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-regular); margin: 0 0 var(--space-4);">Connect</p>
         <h2 style="font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-6); text-wrap: pretty;">Stay in the loop</h2>
         <p style="font-size: var(--text-medium); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">Get updates on our work and research findings.</p>
       </div>
 
-      <form data-reveal="" style="opacity: 1; transition: opacity var(--transition-fade); margin-inline: auto; max-width: 40rem; display: flex; flex-direction: column; gap: var(--space-8);">
+      <form data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); margin-inline: auto; max-width: 40rem; display: flex; flex-direction: column; gap: var(--space-8);">
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: var(--space-6);">
           <div>
             <div class="sc-host-x" style="display: contents;"><label data-slot="label" style="display: flex; align-items: center; gap: 0.5rem; user-select: none; font-family: var(--font-body); font-size: var(--text-regular); line-height: var(--text-body-line-height);">First name</label></div>
@@ -623,14 +608,6 @@
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); column-gap: var(--space-12); row-gap: var(--space-12); margin-bottom: var(--space-16);">
         <div>
           <img src="../../assets/logo/logo-light.png" alt="augment^ed" width="768" height="149" decoding="async" style="width: 168px; display: block; margin-bottom: var(--space-6);">
-          <p style="font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0 0 var(--space-6);">Get updates on AugmentED research and tools.</p>
-          <form style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-4); margin-bottom: var(--space-4);">
-            <div style="flex: 1 1 12rem;">
-              <div class="sc-host-x" style="display: contents;"><div style="position: relative; display: flex; width: 100%; align-items: center;"><input data-slot="input" type="email" placeholder="Your email" style="display: flex; width: 100%; min-height: 2rem; padding: 0.5rem 0px; background: transparent; border-top: 0px; border-right: 0px; border-bottom: 1px solid var(--color-neutral-darkest-15); border-left: 0px; border-image: initial; color: var(--color-scheme-text, var(--text-body)); font-family: var(--font-body); font-size: var(--text-regular); line-height: var(--text-body-line-height); outline: none; transition: all var(--transition-fast);"></div></div>
-            </div>
-            <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="secondary" type="submit" data-btn-size="sm" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-neutral-darkest-5); color: inherit; padding: 0.25rem 0.625rem; font-weight: var(--font-weight-medium); backdrop-filter: blur(var(--blur-glass));">Subscribe</button></div>
-          </form>
-          <p style="font-size: var(--text-tiny); line-height: var(--text-body-line-height); margin: 0px; max-width: 24rem;">By subscribing you agree to our Privacy Policy and consent to receive updates from AugmentED.</p>
         </div>
         <div style="display: flex; flex-direction: column; gap: var(--space-3);">
           <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0 0 var(--space-1);">Explore</p>

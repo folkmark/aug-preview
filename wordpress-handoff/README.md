@@ -32,6 +32,8 @@ truth there; when a spec and the site disagree, the site wins and the spec has a
 | Path | What it contains |
 |---|---|
 | [`pages/`](pages/) | Each route as rendered HTML. Build templates from these files, not from `index.html`. |
+| [`content/`](content/) | The structured content as data: team, research, cycle steps, page metadata, redirects. See [its README](content/README.md). |
+| [`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php) | A drop-in for your theme that enqueues the design system and the components correctly. |
 | [`sections/approach.md`](sections/approach.md) | Build specification for the Approach scrub (not currently mounted). |
 | [`sections/cycle.md`](sections/cycle.md) | Build specification for the R&D cycle wheel on the home page. |
 | `../_ds/augmented-design-system-*/` | The design system: tokens, stylesheet, fonts. |
@@ -62,7 +64,7 @@ Settle these before development starts. Each one changes work downstream of it.
    aerdf.org today:
    - *Pages inside aerdf.org's theme* (the existing AugmentED page's precedent).
      Add page templates and page-scoped assets to the custom theme. Recommended
-     if the site's developer maintains that theme.
+     if you maintain that theme.
    - *A separate WordPress install on its own domain* (the EF+Math precedent).
      Cleanest isolation for a bespoke build, but it creates a second
      hosting and maintenance owner. Name that owner as part of the decision.
@@ -145,25 +147,20 @@ your WordPress templates from these files.
 The files open directly from disk; their asset paths point up two levels at the
 repository's own `assets/` and `_ds/`.
 
-> **Warning: `home.html` predates the 2026-08-24 home page rebuild.** The current
-> home page carries the scroll-driven cycle wheel (`data-cycle-rig`) and revised
-> copy; the export still shows the older click-only diagram. Until the export is
-> regenerated, treat [`sections/cycle.md`](sections/cycle.md) plus the wheel markup
-> in `index.html` as the source for that section, and the reference site as ground
-> truth. To regenerate the export, run the following on a machine with browser
-> network access:
->
-> ```
-> npm i --no-save playwright && node tools/export-static.mjs
-> ```
+**Check the export stamp before you build from a page.** The second line of each
+file records the commit it was exported from
+(`<!-- exported from <commit> by tools/export-static.mjs -->`). The build warns
+when `index.html` has moved past that commit; if you see the warning, or the
+stamped commit is not the head of `main`, regenerate before building templates:
 
-Two properties of the export to know about:
+```
+npm i --no-save playwright && node tools/export-static.mjs && node tools/export-content.mjs
+```
 
-- Design-system components such as `<x-import …Button>` are exported as real
-  elements (`<button data-slot="button" …>`) with their computed styles inlined.
-  Those inline styles are the design system's own values.
-- The exported `<head>` still carries the prototype runtime's placeholder CSS
-  (`.sc-placeholder` and related rules). It is inert residue; do not port it.
+One property of the export to know about: design-system components such as
+`<x-import …Button>` are exported as real elements
+(`<button data-slot="button" …>`) with their computed styles inlined. Those
+inline styles are the design system's own values.
 
 **About the inline styles.** The exported markup styles elements with `style=""`
 attributes that resolve design-system custom properties. That is faithful to the
@@ -176,9 +173,9 @@ classes during the port, not left as inline-styled HTML in a rich-text field.
 `_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/` is the single
 source of truth for every color, size, radius, and font on the site. It is plain
 CSS with no build step. **Copy it; do not rewrite it** — and do not re-author the
-tokens into `theme.json`. The target theme is a classic theme, where enqueued token
-CSS is the correct mechanism. Offer a `theme.json` mapping only if the theme's
-developer wants the tokens surfaced in the editor.
+tokens into `theme.json`. Your theme is a classic theme, where enqueued token CSS
+is the correct mechanism; add a `theme.json` mapping only if you want the tokens
+surfaced in the editor UI as well.
 
 To install the design system:
 
@@ -187,22 +184,12 @@ To install the design system:
    `tokens/fonts.css`, `tokens/colors.css`, `tokens/typography.css`,
    `tokens/layout.css`, `tokens/icons.css`, `tokens/schemes.css`,
    `tokens/base.css`, `styles.css`.
-3. Version each with `filemtime()` so a change busts caches:
 
-```php
-add_action('wp_enqueue_scripts', function () {
-    $dir = get_stylesheet_directory() . '/ds/';
-    $uri = get_stylesheet_directory_uri() . '/ds/';
-    $files = ['tokens/fonts', 'tokens/colors', 'tokens/typography', 'tokens/layout',
-              'tokens/icons', 'tokens/schemes', 'tokens/base', 'styles'];
-    $prev = [];
-    foreach ($files as $f) {
-        $handle = 'aug-ds-' . basename($f);
-        wp_enqueue_style($handle, $uri . $f . '.css', $prev, filemtime($dir . $f . '.css'));
-        $prev = [$handle];   // chain the dependency so the order holds
-    }
-});
-```
+[`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php) implements this —
+the eight files dependency-chained so WordPress cannot reorder them, versioned
+with `filemtime()` so an edit busts the far-future caches WP Engine and
+Cloudflare apply — along with the component enqueues below. Its header comment
+is the install procedure.
 
 The files define roughly 150 custom properties on `:root`. Use the semantic
 aliases, not the raw ramps behind them:
@@ -291,6 +278,10 @@ still image when its script does not run.
   export's path rewriter scan for exactly that shape.)
 - **Enqueue with `filemtime()` versions and `'strategy' => 'defer'`.** The
   scripts are defer-safe and order-independent.
+  [`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php) does this for both
+  mounted components, gates everything to the AugmentED pages, and adds the
+  optimizer opt-out attributes from
+  [Protect the components from optimization plugins](#protect-the-components-from-optimization-plugins).
 - **Full-page caching is safe because the components make it safe.** Each records
   the frame a canvas holds in a `data-` attribute and clears those attributes on
   boot. Without the clear, a cache that serializes the rendered DOM hands the next
@@ -585,20 +576,22 @@ Nothing in this list should survive into WordPress:
 
 ## Content
 
-No CMS sits behind the prototype; all copy is hardcoded, which is why `pages/`
-doubles as the content export. Decide early which of these become editable fields
-and which stay in templates. JetEngine and CPT UI are already on the target
-install; model with them.
+No CMS sits behind the prototype; all copy is hardcoded. Decide early which of
+these become editable fields and which stay in templates, and model the types
+with the tools already on your install (JetEngine, CPT UI).
 
-- **Team members** (Who We Are): 28 people across four grids — Leadership,
-  Research Partners, Technology Partners, Education Fellows. Fields: headshot
-  (optional — 9 of 28 currently render a placeholder), name, role, optional
-  LinkedIn and website links; fellows add school and location. Bios exist only in
-  the project tracking sheet. The obvious custom post type.
-- **Research items** (Home, Follow Our Work): title, description, link.
-- **Cycle wheel steps** (Home): four steps, each a number, a title, a body
-  paragraph, and an icon. Editable copy, fixed count of four — the geometry and
-  the scroll choreography are not content. See
+**The structured content is exported as data in [`content/`](content/README.md)**
+— import from those files rather than transcribing from the pages.
+
+- **Team members** (`content/team.json`): 28 people across four grids —
+  Leadership, Research Partners, Technology Partners, Education Fellows. Fields:
+  headshot (optional — 9 of 28 currently render a placeholder), name, role,
+  optional affiliation and location, optional LinkedIn and website links. Bios
+  exist only in the project tracking sheet. The obvious custom post type.
+- **Research items** (`content/research.json`): title, description, link.
+- **Cycle wheel steps** (`content/cycle.json`): four steps, each a number, a
+  title, a body paragraph, and an icon. Editable copy, fixed count of four — the
+  geometry and the scroll choreography are not content. See
   [`sections/cycle.md`](sections/cycle.md).
 - Everything else is page-level marketing copy.
 
@@ -621,7 +614,8 @@ forms; either reproduces this form in under an hour once someone decides:
 
 ### Page metadata
 
-Titles and descriptions for search and social, ready for Yoast fields:
+Titles and descriptions for search and social, ready for Yoast fields (also
+exported as `content/pages.json`):
 
 | Route | Title | Description |
 |---|---|---|
@@ -634,8 +628,8 @@ Titles and descriptions for search and social, ready for Yoast fields:
 ### Redirects
 
 The slugs were shortened after preview links had been shared. If the production
-site keeps these paths, recreate the redirects (the target install runs the
-Redirection plugin):
+site keeps these paths, recreate the redirects — `content/redirects.csv` is this
+table in the Redirection plugin's CSV import format:
 
 | From | To |
 |---|---|
@@ -674,6 +668,8 @@ scroll budgets are made of.
   remove-unused-CSS features, by handle and by filename.
 - Add the belt-and-braces attributes via the `script_loader_tag` filter:
   `nowprocket`, `data-no-defer="1"`, `data-jetpack-boost="ignore"`.
+  [`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php) already does this
+  for the component handles.
 - Do not add a smooth-scroll plugin to pages with these components. Anything that
   virtualizes the scroll position desynchronizes code that reads native scroll.
 
@@ -728,7 +724,8 @@ repository and print the restore path they need if you run them without it.
 
 | Command | What it does |
 |---|---|
-| `node tools/export-static.mjs` | Re-renders `pages/` from the live prototype. Needs `npm i --no-save playwright` and browser network access. |
+| `node tools/export-static.mjs` | Re-renders `pages/` from the live prototype and stamps each page with its source commit. Needs `npm i --no-save playwright` and browser network access. |
+| `node tools/export-content.mjs` | Re-parses `pages/` into the `content/` data files. Run it after every export. |
 | `node tools/encode-hero-bridge.mjs` | Re-encodes the hero frames and manifest. Widths: `FULL_W` / `CROP_W` in the script. |
 | `node tools/encode-falling-blocks.mjs` | Re-encodes the CTA frames and manifest. Tiers: `WIDTHS` in the script. |
 | `node tools/encode-approach.mjs` | Re-encodes the Approach frames and manifest. Sequence: `OPEN` / `BEATS` / `STRIDE` in the script. |

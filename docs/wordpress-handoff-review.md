@@ -8,11 +8,16 @@
 > and acceptance checklist (§3.4), the plugin-hardening notes and `filemtime`
 > versioning (§3.5), the JetEngine/CPT UI targeting and inline-styles paragraph
 > (part of §3.6), the font-licensing items (§3.7), and the AERDF environment
-> section (§1). Still open: re-running the `pages/` export (needs a machine with
-> browser network access), the export freshness stamp (§3.1), the cycle-wheel
-> *port* (the spec exists; the custom element does not), the
-> `wordpress-handoff/content/` data files (§3.6), and every decision that is
-> AERDF's to make.
+> section (§1). A second pass the same day closed most of the rest: the `pages/`
+> export was regenerated against the current site, the exporter now stamps its
+> source commit into every page and strips runtime state (and
+> `tools/build-site.mjs` warns when `index.html` moves past the stamp), the
+> structured content ships as data in `wordpress-handoff/content/` with
+> `tools/export-content.mjs` to regenerate it, and
+> `wordpress-handoff/wp/augmented-ed-assets.php` implements the enqueue and
+> optimizer-hardening rules as a theme drop-in. Still open: the cycle-wheel
+> *port* (the spec exists; the custom element does not), and every decision that
+> is AERDF's to make.
 
 *Written 2026-08-24, on `claude/wordpress-handoff-research-f2l98g`. This reviews
 `wordpress-handoff/` against (a) what aerdf.org actually runs, observed directly on

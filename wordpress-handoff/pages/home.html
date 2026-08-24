@@ -1,48 +1,6 @@
 <!doctype html>
-<html lang="en"><head><style>.sc-placeholder{background:color-mix(in srgb,currentColor 8%,transparent);
-      border:1px solid color-mix(in srgb,currentColor 50%,transparent);
-      border-radius:2px;box-sizing:border-box;overflow:hidden}
-    @keyframes sc-shine{0%{background-position:100% 50%}100%{background-position:0% 50%}}
-    html.sc-dc-streaming .sc-placeholder,
-    html.sc-dc-streaming .sc-interp.sc-missing{position:relative;
-      background:color-mix(in srgb,currentColor 5%,transparent);
-      border-color:transparent}
-    html.sc-dc-streaming .sc-placeholder::before,
-    html.sc-dc-streaming .sc-interp.sc-missing::before{content:'';
-      position:absolute;inset:0;pointer-events:none;
-      background:linear-gradient(90deg,rgba(217,119,87,0) 25%,rgba(247,225,211,.95) 37%,rgba(217,119,87,0) 63%);
-      background-size:400% 100%;animation:sc-shine 1.4s ease infinite}
-    html.sc-dc-streaming .sc-placeholder:nth-child(n+9 of .sc-placeholder)::before,
-    html.sc-dc-streaming .sc-interp.sc-missing:nth-child(n+9 of .sc-interp.sc-missing)::before{animation:none;
-      background:color-mix(in srgb,currentColor 8%,transparent)}
-    .sc-placeholder-error{padding:4px 8px;font:11px/1.4 ui-monospace,monospace;
-      color:color-mix(in srgb,currentColor 70%,transparent);word-break:break-word}
-    .sc-interp.sc-missing{display:inline-block;width:2em;height:1em;overflow:hidden;
-      vertical-align:text-bottom;background:rgba(255,255,255,.3);border:1px solid rgba(0,0,0,.5);
-      border-radius:2px;box-sizing:border-box;color:transparent;
-      user-select:none}
-    .sc-interp.sc-unresolved{font-family:ui-monospace,monospace;font-size:.85em;
-      color:color-mix(in srgb,currentColor 50%,transparent);
-      background:color-mix(in srgb,currentColor 10%,transparent);border-radius:3px;
-      padding:0 3px}
-    .sc-host.sc-has-error{position:relative}
-    .sc-logic-error{position:absolute;top:8px;left:8px;z-index:2147483647;max-width:60ch;
-      padding:6px 10px;background:#b00020;color:#fff;font:12px/1.4 ui-monospace,monospace;
-      border-radius:4px;white-space:pre-wrap;pointer-events:none}
-    /* Mirrors PRINT_BASELINE_CSS in apps/web deck-stage-export.ts — keep both
-       in sync until dc-runtime regains a build step. */
-    @media print {
-      @page { margin: 0.5cm; }
-      figure, table { break-inside: avoid; }
-      #dc-root, #dc-root > .sc-host { height: auto; }
-      *, *::before, *::after {
-        print-color-adjust: exact; -webkit-print-color-adjust: exact;
-        backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
-        animation-delay: -99s !important; animation-duration: .001s !important;
-        animation-iteration-count: 1 !important; animation-fill-mode: both !important;
-        animation-play-state: running !important; transition-duration: 0s !important;
-      }
-    }</style>
+<!-- exported from 91724dd127004fb66db8bed2558b6ffb2679b4e7 by tools/export-static.mjs -->
+<html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AugmentED | Bridging frontier AI and the classroom</title>
@@ -60,6 +18,7 @@
      paint the brand page colour up front rather than flashing white first. -->
 <style>html, body { margin: 0; background: #fdfcfa; }</style>
 
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" data-bg-color="#FBF9F4"><rect width="120" height="120" fill="#FBF9F4"></rect><g fill="none" stroke="#255799" stroke-width="7" stroke-linecap="square"><path d="M36 86V60a24 24 0 0 1 48 0v26"></path><path d="M28 86h64"></path></g></svg></template>
 <link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/fonts.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/colors.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/typography.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/layout.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/icons.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/schemes.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/base.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/styles.css"><link rel="stylesheet" href="../../assets/hero-bridge.css"><script src="../../assets/hero-bridge.js" defer=""></script><link rel="stylesheet" href="../../assets/falling-blocks.css"><script src="../../assets/falling-blocks.js" defer=""></script><style>body { margin: 0; background: var(--surface-page); }
   /* The intrinsic width/height attributes are there to reserve the box before the
      bytes arrive, not to size the image: every one of these is sized by CSS, and
@@ -84,26 +43,52 @@
   .team-grid-2 img, .team-grid-3 img, .team-grid-2 > div > div:first-child, .team-grid-3 > div > div:first-child { margin-bottom: var(--space-4) !important; }
   .team-grid-2 a[aria-label], .team-grid-3 a[aria-label] { width: var(--icon-size); height: var(--icon-size); align-items: center; justify-content: center; flex: 0 0 auto; }
   .team-grid-2 a[aria-label] > *, .team-grid-3 a[aria-label] > * { width: var(--icon-size) !important; height: var(--icon-size) !important; min-width: var(--icon-size) !important; min-height: var(--icon-size) !important; font-size: var(--icon-size) !important; line-height: var(--icon-size) !important; display: block !important; margin: 0 !important; }
-  [data-cycle] [data-arc] { color: var(--brand-accent); opacity: 0.55; transition: opacity var(--transition-fast); }
-  [data-cycle] [data-node] { background: var(--surface-card); border: var(--border-width-divider) solid var(--border-hairline); transition: border-color var(--transition-fast); }
-  [data-cycle] [data-label] { transition: opacity var(--transition-fast); }
-  [data-cycle] [data-node]:hover { border-color: var(--color-neutral-darkest); }
+  [data-cycle] [data-arc] { color: var(--brand-accent); opacity: 0.55; transition: opacity 200ms ease-in-out; }
+  [data-cycle] [data-node] { background: none; border: 0; opacity: 0; pointer-events: none; transform: translate(-50%,-50%); transition: opacity 200ms ease-in-out, transform 200ms ease-in-out; }
+  [data-cycle] [data-node]:focus-visible, [data-cycle] [data-rl]:focus-visible { outline: 2px solid var(--brand-accent); outline-offset: 3px; }
   [data-cycle][data-active="0"] [data-arc="0"],
   [data-cycle][data-active="1"] [data-arc="1"],
   [data-cycle][data-active="2"] [data-arc="2"],
   [data-cycle][data-active="3"] [data-arc="3"] { opacity: 1; }
-  [data-cycle][data-active="0"] [data-node="0"],
-  [data-cycle][data-active="1"] [data-node="1"],
-  [data-cycle][data-active="2"] [data-node="2"],
-  [data-cycle][data-active="3"] [data-node="3"] { border-color: var(--color-neutral-darkest); }
-@media (prefers-reduced-motion: reduce) {
-    [data-cycle] [data-arc], [data-cycle] [data-node],
-    [data-cycle] [data-label], [data-cycle] [data-chrome] { transition: none; }
+  [data-cycle] [data-node]:hover { transform: translate(-50%,-50%) scale(1.06); }
+  [data-cycle][data-sel="0"] [data-node="0"],
+  [data-cycle][data-sel="1"] [data-node="1"],
+  [data-cycle][data-sel="2"] [data-node="2"],
+  [data-cycle][data-sel="3"] [data-node="3"] { transform: translate(-50%,-50%) scale(1.12); }
+  [data-cycle][data-sel="0"] [data-node="0"]:hover,
+  [data-cycle][data-sel="1"] [data-node="1"]:hover,
+  [data-cycle][data-sel="2"] [data-node="2"]:hover,
+  [data-cycle][data-sel="3"] [data-node="3"]:hover { transform: translate(-50%,-50%) scale(1.16); }
+  /* The open row's number carries the same accent as its lit arc. */
+  [data-cycle][data-sel="0"] [data-rl="0"] [data-num], [data-cycle][data-sel="1"] [data-rl="1"] [data-num],
+  [data-cycle][data-sel="2"] [data-rl="2"] [data-num], [data-cycle][data-sel="3"] [data-rl="3"] [data-num] { color: var(--brand-accent); }
+  /* The reading column is one integrated list: each row is a step title, and the
+     active row opens to hold its copy — the title is never said twice. */
+  [data-cycle] [data-rl] { opacity: 0.45; transition: opacity 200ms ease-in-out; }
+  [data-cycle] [data-rl]:hover { opacity: 1; }
+  [data-cycle][data-sel="0"] [data-rl="0"],
+  [data-cycle][data-sel="1"] [data-rl="1"],
+  [data-cycle][data-sel="2"] [data-rl="2"],
+  [data-cycle][data-sel="3"] [data-rl="3"] { opacity: 1; }
+  [data-cycle] [data-body] { max-height: 0; overflow: hidden; transition: max-height 200ms ease-out; }
+  [data-cycle] [data-body] p { opacity: 0; transition: opacity 120ms ease-in-out; }
+  [data-cycle][data-sel="0"] [data-body="0"],
+  [data-cycle][data-sel="1"] [data-body="1"],
+  [data-cycle][data-sel="2"] [data-body="2"],
+  [data-cycle][data-sel="3"] [data-body="3"] { max-height: 26rem; transition: max-height 420ms ease-out 200ms; }
+  [data-cycle][data-sel="0"] [data-body="0"] p,
+  [data-cycle][data-sel="1"] [data-body="1"] p,
+  [data-cycle][data-sel="2"] [data-body="2"] p,
+  [data-cycle][data-sel="3"] [data-body="3"] p { opacity: 1; transition: opacity 260ms ease-in-out 340ms; }
+  @media (max-width: 991px) {
+    [data-cycle][data-sel="0"] [data-body="0"],
+    [data-cycle][data-sel="1"] [data-body="1"],
+    [data-cycle][data-sel="2"] [data-body="2"],
+    [data-cycle][data-sel="3"] [data-body="3"] { max-height: 40rem; }
   }
-  [data-cycle][data-active="0"] [data-label]:not([data-label="0"]),
-  [data-cycle][data-active="1"] [data-label]:not([data-label="1"]),
-  [data-cycle][data-active="2"] [data-label]:not([data-label="2"]),
-  [data-cycle][data-active="3"] [data-label]:not([data-label="3"]) { opacity: 0.45; }
+  @media (prefers-reduced-motion: reduce) {
+    [data-cycle] [data-arc], [data-cycle] [data-node], [data-cycle] [data-rl], [data-cycle] [data-body], [data-cycle] [data-body] p { transition: none; }
+  }
   /* The two things the page has to tell the hero scrub, and they are both about the page
      rather than about the sequence. --hb-pin is the header's height; the element reads it
      back off its own stage, and hero-bridge.css derives the stage's height, the approach's
@@ -563,7 +548,7 @@
           </div>
         </div>
       </div>
-      <div data-hero-visual="" data-reveal="" style="opacity: 1; transition: opacity var(--transition-fade);">
+      <div data-hero-visual="" data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade);">
         <hero-bridge base="../../assets/hero-bridge/" from="276" to="417" exit-with="[data-hero-copy] h1">
           <div data-hb-stage="">
             <div data-hb-box="">
@@ -589,141 +574,159 @@
 
     <section style="padding: clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter);">
       <div style="margin-inline: auto; max-width: var(--container-xxl);">
-        <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); display: grid; grid-template-columns: repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr)); column-gap: var(--space-20); row-gap: var(--space-8); margin-bottom: clamp(var(--space-12),7vw,var(--space-30));">
-          <div data-approach-heading="">
-            <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-regular); margin: 0 0 var(--space-4);">Our Approach</p>
-            <h2 style="font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0px; text-wrap: pretty;">We treat AI in education as a science, not a gold rush.</h2>
-          </div>
-          <div data-approach-text="" style="margin-top: 276.5px;">
-            <p style="font-size: var(--text-medium); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">We run an iterative research and development cycle, with educators, researchers, and engineers as equal partners at every step. We don't start by asking what AI can do. We start by asking what teachers and students need. Each cycle focuses on one role AI could play in meeting some of those needs. Then educators, researchers, and engineers work together to identify what's missing, build it, and test it in real classrooms. What we learn informs the next turn of the cycle.</p>
-            <div style="margin-top: var(--space-8); display: flex;">
-              <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="link" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background: none; color: var(--color-scheme-text, var(--text-body)); padding: 0.375rem 0.75rem;">Learn more<div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 20px; width: 20px; height: 20px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 20;">chevron_right</span></div></button></div>
-            </div>
-          </div>
+        <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); max-width: var(--container-lg); margin-bottom: clamp(var(--space-8),4vw,var(--space-16));">
+          <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-regular); margin: 0 0 var(--space-4);">Our Approach</p>
+          <h2 style="font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-6); text-wrap: pretty;">We treat AI in education as a science, not a gold rush.</h2>
+          <p style="font-size: var(--text-medium); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">We run an iterative research and development cycle, with educators, researchers, and engineers as equal partners at every step. We start by asking what teachers and students need. Each cycle focuses on one role AI could play in meeting some of those needs. Together, we identify what the role requires but doesn't yet exist, build it, and test it in real classrooms. What we learn informs the next turn of the cycle.</p>
         </div>
 
         
         <div data-diagram="" style="margin-inline: auto; max-width: 70rem;">
-          <div class="at-desktop" data-diagram-slot="" style="position: relative; width: 100%; aspect-ratio: 1120 / 780;">
-          <div data-cycle="" data-active="" style="position: absolute; inset: 0px; container-type: inline-size;">
-            <div data-spin="" style="position: absolute; inset: 0px;">
-            <svg viewBox="0 0 1120 780" aria-hidden="true" style="position: absolute; inset: 0px; width: 100%; height: 100%; overflow: visible;">
-              <g stroke-width="1.5" stroke-dasharray="5 6" fill="none" style="stroke: var(--color-neutral-darkest-30);">
-                <path d="M 757.1 333.5 A 205 205 0 0 0 630.1 197.4"></path>
-                <path d="M 616.5 587.1 A 205 205 0 0 0 752.6 460.1"></path>
-                <path d="M 362.9 446.5 A 205 205 0 0 0 489.9 582.6"></path>
-                <path d="M 503.5 192.9 A 205 205 0 0 0 367.4 319.9"></path>
-              </g>
-              <g style="fill: var(--color-neutral-darkest-40);">
-                <polygon points="630.1,197.4 640.6,194.8 636.5,206.1"></polygon>
-                <polygon points="752.6,460.1 755.2,470.6 743.9,466.5"></polygon>
-                <polygon points="489.9,582.6 479.4,585.2 483.5,573.9"></polygon>
-                <polygon points="367.4,319.9 364.8,309.4 376.1,313.5"></polygon>
-              </g>
-              <g data-arc="0">
-                <path d="M 628.9 149.7 A 250 250 0 0 1 800.3 321.1" fill="none" stroke="currentColor" stroke-width="2"></path>
-                <polygon points="800.3,321.1 790.1,312.6 804.5,308.4" fill="currentColor"></polygon>
-              </g>
-              <g data-arc="1">
-                <path d="M 800.3 458.9 A 250 250 0 0 1 628.9 630.3" fill="none" stroke="currentColor" stroke-width="2"></path>
-                <polygon points="628.9,630.3 637.4,620.1 641.6,634.5" fill="currentColor"></polygon>
-              </g>
-              <g data-arc="2">
-                <path d="M 491.1 630.3 A 250 250 0 0 1 319.7 458.9" fill="none" stroke="currentColor" stroke-width="2"></path>
-                <polygon points="319.7,458.9 329.9,467.4 315.5,471.6" fill="currentColor"></polygon>
-              </g>
-              <g data-arc="3">
-                <path d="M 319.7 321.1 A 250 250 0 0 1 491.1 149.7" fill="none" stroke="currentColor" stroke-width="2"></path>
-                <polygon points="491.1,149.7 482.6,159.9 478.4,145.5" fill="currentColor"></polygon>
-              </g>
+          <div class="at-desktop" data-cycle-rig="" style="height: 260vh;">
+          <div style="position: sticky; top: 4.5rem; height: calc(-4.5rem + 100svh); display: flex; align-items: center;">
+          <div data-cycle="" data-active="0" data-sel="0" style="width: 100%; display: grid; grid-template-columns: minmax(0px, 1.04fr) minmax(0px, 0.96fr); column-gap: clamp(3rem, 6vw, 6rem); align-items: center;">
+          <div data-diagram-slot="" style="position: relative; width: 100%; max-width: 33rem; margin-inline: auto; aspect-ratio: 1 / 1; container-type: inline-size;">
+            <svg viewBox="0 0 780 780" aria-hidden="true" style="position: absolute; inset: 0px; width: 100%; height: 100%; overflow: visible;">
+              <g data-arc="0" style="opacity: 1;"><path d="M 458.9 149.7 A 250 250 0 0 1 630.3 321.1" fill="none" stroke="currentColor" stroke-width="2" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"></path><polygon points="630.3,321.1 620.1,312.6 634.5,308.4" fill="currentColor" style="opacity:0"></polygon></g>
+              <g data-arc="1"><path d="M 630.3 458.9 A 250 250 0 0 1 458.9 630.3" fill="none" stroke="currentColor" stroke-width="2" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"></path><polygon points="458.9,630.3 467.4,620.1 471.6,634.5" fill="currentColor" style="opacity:0"></polygon></g>
+              <g data-arc="2"><path d="M 321.1 630.3 A 250 250 0 0 1 149.7 458.9" fill="none" stroke="currentColor" stroke-width="2" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"></path><polygon points="149.7,458.9 159.9,467.4 145.5,471.6" fill="currentColor" style="opacity:0"></polygon></g>
+              <g data-arc="3"><path d="M 149.7 321.1 A 250 250 0 0 1 321.1 149.7" fill="none" stroke="currentColor" stroke-width="2" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"></path><polygon points="321.1,149.7 312.6,159.9 308.4,145.5" fill="currentColor" style="opacity:0"></polygon></g>
             </svg>
-
-            <button type="button" aria-label="Step 01, Define the role" data-node="0" style="position: absolute; transform: translate(-50%, -50%); width: 10.714%; aspect-ratio: 1 / 1; padding: 0px; display: flex; align-items: center; justify-content: center; border-radius: 50%; cursor: pointer; box-sizing: border-box; left: 50%; top: 17.95%;">
-              <span data-upright="" style="display: flex; width: 78%; height: 78%;"><svg viewBox="-60 -60 120 120" style="width: 100%; height: 100%; display: block;"><g transform="scale(1.632) translate(0 -9.5)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" style="fill: var(--color-st-tropaz-light);"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" style="fill: var(--color-st-tropaz);"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" style="fill: var(--color-st-tropaz-lighter);"></polygon></g></svg></span>
+            <button type="button" aria-label="Step 01, Define the role" data-node="0" style="opacity: 0; position: absolute; width: 18.5%; aspect-ratio: 1 / 1; padding: 0px; display: flex; align-items: center; justify-content: center; cursor: pointer; left: 50%; top: 17.95%;">
+              <span style="display: flex; width: 86%; height: 86%;"><img src="../../assets/approach/cyc01_role_0001.webp" alt="" style="width: 100%; height: 100%; object-fit: contain; display: block;"></span>
             </button>
-            <button type="button" aria-label="Step 02, Build the capabilities" data-node="1" style="position: absolute; transform: translate(-50%, -50%); width: 10.714%; aspect-ratio: 1 / 1; padding: 0px; display: flex; align-items: center; justify-content: center; border-radius: 50%; cursor: pointer; box-sizing: border-box; left: 72.32%; top: 50%;">
-              <span data-upright="" style="display: flex; width: 78%; height: 78%;"><svg viewBox="-60 -60 120 120" style="width: 100%; height: 100%; display: block;"><g transform="scale(0.912) translate(-17 -19)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" style="fill: var(--color-st-tropaz-light);"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" style="fill: var(--color-st-tropaz);"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" style="fill: var(--color-st-tropaz-lighter);"></polygon><polygon points="0,9.5 17,19 17,38 0,28.5" style="fill: var(--color-st-tropaz);"></polygon><polygon points="17,19 34,9.5 34,28.5 17,38" style="fill: var(--color-st-tropaz-dark);"></polygon><polygon points="17,0 34,9.5 17,19 0,9.5" style="fill: var(--color-st-tropaz-lightest);"></polygon><polygon points="17,19 34,28.5 34,47.5 17,38" style="fill: var(--color-st-tropaz-light);"></polygon><polygon points="34,28.5 51,19 51,38 34,47.5" style="fill: var(--color-st-tropaz);"></polygon><polygon points="34,9.5 51,19 34,28.5 17,19" style="fill: var(--color-st-tropaz-lighter);"></polygon></g></svg></span>
+            <button type="button" aria-label="Step 02, Build the capabilities" data-node="1" style="opacity: 0; position: absolute; width: 18.5%; aspect-ratio: 1 / 1; padding: 0px; display: flex; align-items: center; justify-content: center; cursor: pointer; left: 82.05%; top: 50%;">
+              <span style="display: flex; width: 86%; height: 86%;"><img src="../../assets/approach/cyc02_capabilities_0001.webp" alt="" style="width: 100%; height: 100%; object-fit: contain; display: block;"></span>
             </button>
-            <button type="button" aria-label="Step 03, Co-design the tools with teachers" data-node="2" style="position: absolute; transform: translate(-50%, -50%); width: 10.714%; aspect-ratio: 1 / 1; padding: 0px; display: flex; align-items: center; justify-content: center; border-radius: 50%; cursor: pointer; box-sizing: border-box; left: 50%; top: 82.05%;">
-              <span data-upright="" style="display: flex; width: 78%; height: 78%;"><svg viewBox="-60 -60 120 120" style="width: 100%; height: 100%; display: block;"><g transform="scale(0.912) translate(0 -14.3)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" style="fill: var(--color-st-tropaz-light);"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" style="fill: var(--color-st-tropaz);"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" style="fill: var(--color-st-tropaz-lighter);"></polygon><polygon points="0,9.5 17,19 17,38 0,28.5" style="fill: var(--color-st-tropaz);"></polygon><polygon points="17,19 34,9.5 34,28.5 17,38" style="fill: var(--color-st-tropaz-dark);"></polygon><polygon points="17,0 34,9.5 17,19 0,9.5" style="fill: var(--color-st-tropaz-lightest);"></polygon><polygon points="-34,9.5 -17,19 -17,38 -34,28.5" style="fill: var(--color-st-tropaz-light);"></polygon><polygon points="-17,19 0,9.5 0,28.5 -17,38" style="fill: var(--color-st-tropaz);"></polygon><polygon points="-17,0 0,9.5 -17,19 -34,9.5" style="fill: var(--color-st-tropaz-lighter);"></polygon><polygon points="-17,-9.5 0,0 0,19 -17,9.5" style="fill: var(--color-st-tropaz);"></polygon><polygon points="0,0 17,-9.5 17,9.5 0,19" style="fill: var(--color-st-tropaz-dark);"></polygon><polygon points="0,-19 17,-9.5 0,0 -17,-9.5" style="fill: var(--color-st-tropaz-lightest);"></polygon><polygon points="-17,19 0,28.5 0,47.5 -17,38" style="fill: var(--color-st-tropaz-light);"></polygon><polygon points="0,28.5 17,19 17,38 0,47.5" style="fill: var(--color-st-tropaz);"></polygon><polygon points="0,9.5 17,19 0,28.5 -17,19" style="fill: var(--color-st-tropaz-lighter);"></polygon></g></svg></span>
+            <button type="button" aria-label="Step 03, Co-design the tools" data-node="2" style="opacity: 0; position: absolute; width: 18.5%; aspect-ratio: 1 / 1; padding: 0px; display: flex; align-items: center; justify-content: center; cursor: pointer; left: 50%; top: 82.05%;">
+              <span style="display: flex; width: 86%; height: 86%;"><img src="../../assets/approach/cyc03_applications_0002.webp" alt="" style="width: 100%; height: 100%; object-fit: contain; display: block;"></span>
             </button>
-            <button type="button" aria-label="Step 04, Test, learn, begin again" data-node="3" style="position: absolute; transform: translate(-50%, -50%); width: 10.714%; aspect-ratio: 1 / 1; padding: 0px; display: flex; align-items: center; justify-content: center; border-radius: 50%; cursor: pointer; box-sizing: border-box; left: 27.68%; top: 50%;">
-              <span data-upright="" style="display: flex; width: 78%; height: 78%;"><svg viewBox="-60 -60 120 120" style="width: 100%; height: 100%; display: block;"><g transform="scale(0.919) translate(-8.5 -4.3)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" style="fill: var(--color-st-tropaz-light);"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" style="fill: var(--color-st-tropaz);"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" style="fill: var(--color-st-tropaz-lighter);"></polygon><polygon points="0,9.5 17,19 17,38 0,28.5" style="fill: var(--color-st-tropaz);"></polygon><polygon points="17,19 34,9.5 34,28.5 17,38" style="fill: var(--color-st-tropaz-dark);"></polygon><polygon points="17,0 34,9.5 17,19 0,9.5" style="fill: var(--color-st-tropaz-lightest);"></polygon><polygon points="-17,-19.9 0,-10.4 0,8.6 -17,-0.9" style="fill: var(--color-st-tropaz-light);"></polygon><polygon points="0,-10.4 17,-19.9 17,-0.9 0,8.6" style="fill: var(--color-st-tropaz);"></polygon><polygon points="0,-29.4 17,-19.9 0,-10.4 -17,-19.9" style="fill: var(--color-st-tropaz-lighter);"></polygon></g></svg></span>
+            <button type="button" aria-label="Step 04, Test, learn, begin again" data-node="3" style="opacity: 0; position: absolute; width: 18.5%; aspect-ratio: 1 / 1; padding: 0px; display: flex; align-items: center; justify-content: center; cursor: pointer; left: 17.95%; top: 50%;">
+              <span style="display: flex; width: 86%; height: 86%;"><img src="../../assets/approach/cyc04_test_0001.webp" alt="" style="width: 100%; height: 100%; object-fit: contain; display: block;"></span>
             </button>
-
-            </div>
-            <div data-chrome="" style="position: absolute; inset: 0px; pointer-events: none; transition: opacity var(--transition-fast);">
-            <div data-label="0" style="position: absolute; left: 50%; top: 0px; transform: translateX(-50%); width: 44%; text-align: center;">
-              <p style="font-weight: var(--font-weight-semibold); font-size: max(0.72rem, 1.05cqw); letter-spacing: 0.1em; margin: 0px 0px 0.4em; color: var(--brand-accent);">01</p>
-              <p style="font-size: max(1.15rem, 2.1cqw); line-height: var(--text-h3-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0px;">Define the role</p>
-            </div>
-            <div data-label="1" style="position: absolute; left: 79.46%; top: 50%; transform: translateY(-50%); width: 20%; text-align: left;">
-              <p style="font-weight: var(--font-weight-semibold); font-size: max(0.72rem, 1.05cqw); letter-spacing: 0.1em; margin: 0px 0px 0.4em; color: var(--brand-accent);">02</p>
-              <p style="font-size: max(1.15rem, 2.1cqw); line-height: var(--text-h3-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0px;">Build the capabilities</p>
-            </div>
-            <div data-label="2" style="position: absolute; left: 50%; top: 91%; transform: translateX(-50%); width: 44%; text-align: center;">
-              <p style="font-weight: var(--font-weight-semibold); font-size: max(0.72rem, 1.05cqw); letter-spacing: 0.1em; margin: 0px 0px 0.4em; color: var(--brand-accent);">03</p>
-              <p style="font-size: max(1.15rem, 2.1cqw); line-height: var(--text-h3-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0px;">Co-design the tools with teachers</p>
-            </div>
-            <div data-label="3" style="position: absolute; right: 79.46%; top: 50%; transform: translateY(-50%); width: 20%; text-align: right;">
-              <p style="font-weight: var(--font-weight-semibold); font-size: max(0.72rem, 1.05cqw); letter-spacing: 0.1em; margin: 0px 0px 0.4em; color: var(--brand-accent);">04</p>
-              <p style="font-size: max(1.15rem, 2.1cqw); line-height: var(--text-h3-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0px;">Test, learn, begin again.</p>
-            </div>
-
-            <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 30%; text-align: center;">
-              
-                <div>
-                  <h3 style="font-size: max(1.4rem, 2.6cqw); line-height: var(--text-h3-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0px;">AugmentED R&amp;D Cycle</h3>
-                  <div style="width: var(--space-10); height: var(--border-width-divider); background: var(--border-hairline); margin: 0.9em auto;"></div>
-                  <p style="font-size: max(0.8rem, 1.25cqw); line-height: var(--text-body-line-height); margin: 0px; opacity: 0.7;">What we learn informs the next turn of the cycle.</p>
-                </div>
-              
-              
-              
-              
-              
-            </div>
-            </div>
+            <div data-hub="" style="opacity: 0; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 38%; text-align: center; pointer-events: none;">
+              <h3 style="font-size: max(1.25rem, 2.5cqw); line-height: 1.2; letter-spacing: -0.01em; font-weight: 700; margin: 0px;">AugmentED R&amp;D Cycle</h3>
+              <div style="width: 40px; height: 1px; background: var(--color-neutral-darkest-15); margin: 1em auto;"></div>
+              <p data-hub-line="" style="font-size: max(0.8rem, 1.3cqw); line-height: 1.5; margin: 0px; opacity: 0; text-wrap: pretty;">Each turn of the cycle informs the next.</p>
             </div>
           </div>
-
-          <div class="at-mobile" style="display: flex; flex-direction: column; gap: var(--space-10);">
-            <div style="display: flex; align-items: flex-start; gap: var(--space-5);">
-              <svg viewBox="-60 -60 120 120" aria-hidden="true" style="flex: 0 0 3.5rem; width: 3.5rem; height: 3.5rem; display: block;"><g transform="scale(1.632) translate(0 -9.5)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" style="fill: var(--color-st-tropaz-light);"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" style="fill: var(--color-st-tropaz);"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" style="fill: var(--color-st-tropaz-lighter);"></polygon></g></svg>
+          <div>
+            <div style="display: flex; flex-direction: column;">
               <div>
-                <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); letter-spacing: 0.1em; margin: 0 0 var(--space-2); color: var(--brand-accent);">01</p>
-                <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Define the role</h3>
-                <p style="font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">AI can play many distinct roles in a classroom, and each requires its own standards, evidence, and safeguards. With each group of teachers and students, we pinpoint a specific role AI could play to meet real needs, and what teachers uniquely bring alongside it. Then we form hypotheses: what the role requires, where its limits are, and what bar it must meet to play the role responsibly.</p>
+                <button type="button" data-rl="0" style="display: flex; align-items: baseline; gap: 0.875rem; width: 100%; padding: 1.125rem 0px 1rem; border: 0px; background: none; cursor: pointer; font-family: inherit; color: inherit; text-align: left;">
+                  <span data-num="" style="font-weight: 600; font-size: var(--text-tiny,0.75rem); transition: color 200ms ease-in-out;">01</span>
+                  <span style="font-weight: 700; font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em;">Define the role</span>
+                </button>
+                <div data-body="0">
+                  <div style="overflow: hidden;">
+                    <p style="font-size: var(--text-regular); line-height: 1.5; margin: 0px; padding: 0px 0px 1.375rem; max-width: 34rem; text-wrap: pretty;">AI can play many distinct roles in a classroom, and each requires its own standards, evidence, and safeguards. With our partners, we pinpoint a specific role AI could play to meet real needs, and what teachers uniquely bring alongside it. Then we form hypotheses: what the role requires, where its limits are, and what bar it must meet to play the role responsibly.</p>
+                  </div>
+                </div>
+              </div>
+              <div style="border-top: 1px solid var(--color-neutral-darkest-15);">
+                <button type="button" data-rl="1" style="display: flex; align-items: baseline; gap: 0.875rem; width: 100%; padding: 1.125rem 0px 1rem; border: 0px; background: none; cursor: pointer; font-family: inherit; color: inherit; text-align: left;">
+                  <span data-num="" style="font-weight: 600; font-size: var(--text-tiny,0.75rem); transition: color 200ms ease-in-out;">02</span>
+                  <span style="font-weight: 700; font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em;">Build the capabilities</span>
+                </button>
+                <div data-body="1">
+                  <div style="overflow: hidden;">
+                    <p style="font-size: var(--text-regular); line-height: 1.5; margin: 0px; padding: 0px 0px 1.375rem; max-width: 34rem; text-wrap: pretty;">Much of the technology needed for AI to play these roles well doesn’t exist off the shelf. We build the missing layer between frontier AI models and classroom apps — validated capabilities that many different tools can build on, like computational methods that help AI measure students’ skills or track how concepts connect across a semester.</p>
+                  </div>
+                </div>
+              </div>
+              <div style="border-top: 1px solid var(--color-neutral-darkest-15);">
+                <button type="button" data-rl="2" style="display: flex; align-items: baseline; gap: 0.875rem; width: 100%; padding: 1.125rem 0px 1rem; border: 0px; background: none; cursor: pointer; font-family: inherit; color: inherit; text-align: left;">
+                  <span data-num="" style="font-weight: 600; font-size: var(--text-tiny,0.75rem); transition: color 200ms ease-in-out;">03</span>
+                  <span style="font-weight: 700; font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em;">Co-design the tools</span>
+                </button>
+                <div data-body="2">
+                  <div style="overflow: hidden;">
+                    <p style="font-size: var(--text-regular); line-height: 1.5; margin: 0px; padding: 0px 0px 1.375rem; max-width: 34rem; text-wrap: pretty;">Teachers, researchers, and engineers build classroom tools on those capabilities, along with new ways of teaching alongside them. They then test our work where it counts: in real classrooms.</p>
+                  </div>
+                </div>
+              </div>
+              <div style="border-top: 1px solid var(--color-neutral-darkest-15);">
+                <button type="button" data-rl="3" style="display: flex; align-items: baseline; gap: 0.875rem; width: 100%; padding: 1.125rem 0px 1rem; border: 0px; background: none; cursor: pointer; font-family: inherit; color: inherit; text-align: left;">
+                  <span data-num="" style="font-weight: 600; font-size: var(--text-tiny,0.75rem); transition: color 200ms ease-in-out;">04</span>
+                  <span style="font-weight: 700; font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em;">Test, learn, begin again.</span>
+                </button>
+                <div data-body="3">
+                  <div style="overflow: hidden;">
+                    <p style="font-size: var(--text-regular); line-height: 1.5; margin: 0px; padding: 0px 0px 1.375rem; max-width: 34rem; text-wrap: pretty;">Classroom data tells us whether the AI role we selected and the capabilities and tools we built actually helped. Those lessons sharpen our hypotheses, strengthen our capabilities and tools, and inform our next cycle of R&amp;D.</p>
+                  </div>
+                </div>
               </div>
             </div>
-            <div style="display: flex; align-items: flex-start; gap: var(--space-5);">
-              <svg viewBox="-60 -60 120 120" aria-hidden="true" style="flex: 0 0 3.5rem; width: 3.5rem; height: 3.5rem; display: block;"><g transform="scale(0.912) translate(-17 -19)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" style="fill: var(--color-st-tropaz-light);"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" style="fill: var(--color-st-tropaz);"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" style="fill: var(--color-st-tropaz-lighter);"></polygon><polygon points="0,9.5 17,19 17,38 0,28.5" style="fill: var(--color-st-tropaz);"></polygon><polygon points="17,19 34,9.5 34,28.5 17,38" style="fill: var(--color-st-tropaz-dark);"></polygon><polygon points="17,0 34,9.5 17,19 0,9.5" style="fill: var(--color-st-tropaz-lightest);"></polygon><polygon points="17,19 34,28.5 34,47.5 17,38" style="fill: var(--color-st-tropaz-light);"></polygon><polygon points="34,28.5 51,19 51,38 34,47.5" style="fill: var(--color-st-tropaz);"></polygon><polygon points="34,9.5 51,19 34,28.5 17,19" style="fill: var(--color-st-tropaz-lighter);"></polygon></g></svg>
-              <div>
-                <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); letter-spacing: 0.1em; margin: 0 0 var(--space-2); color: var(--brand-accent);">02</p>
-                <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Build the capabilities</h3>
-                <p style="font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">Much of the technology needed for AI to play these roles well doesn’t exist off the shelf. We build the missing layer between frontier AI models and classroom apps — validated capabilities that many different tools can build on, like computational methods that help AI measure students’ skills or track how concepts connect across a semester.</p>
-              </div>
-            </div>
-            <div style="display: flex; align-items: flex-start; gap: var(--space-5);">
-              <svg viewBox="-60 -60 120 120" aria-hidden="true" style="flex: 0 0 3.5rem; width: 3.5rem; height: 3.5rem; display: block;"><g transform="scale(0.912) translate(0 -14.3)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" style="fill: var(--color-st-tropaz-light);"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" style="fill: var(--color-st-tropaz);"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" style="fill: var(--color-st-tropaz-lighter);"></polygon><polygon points="0,9.5 17,19 17,38 0,28.5" style="fill: var(--color-st-tropaz);"></polygon><polygon points="17,19 34,9.5 34,28.5 17,38" style="fill: var(--color-st-tropaz-dark);"></polygon><polygon points="17,0 34,9.5 17,19 0,9.5" style="fill: var(--color-st-tropaz-lightest);"></polygon><polygon points="-34,9.5 -17,19 -17,38 -34,28.5" style="fill: var(--color-st-tropaz-light);"></polygon><polygon points="-17,19 0,9.5 0,28.5 -17,38" style="fill: var(--color-st-tropaz);"></polygon><polygon points="-17,0 0,9.5 -17,19 -34,9.5" style="fill: var(--color-st-tropaz-lighter);"></polygon><polygon points="-17,-9.5 0,0 0,19 -17,9.5" style="fill: var(--color-st-tropaz);"></polygon><polygon points="0,0 17,-9.5 17,9.5 0,19" style="fill: var(--color-st-tropaz-dark);"></polygon><polygon points="0,-19 17,-9.5 0,0 -17,-9.5" style="fill: var(--color-st-tropaz-lightest);"></polygon><polygon points="-17,19 0,28.5 0,47.5 -17,38" style="fill: var(--color-st-tropaz-light);"></polygon><polygon points="0,28.5 17,19 17,38 0,47.5" style="fill: var(--color-st-tropaz);"></polygon><polygon points="0,9.5 17,19 0,28.5 -17,19" style="fill: var(--color-st-tropaz-lighter);"></polygon></g></svg>
-              <div>
-                <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); letter-spacing: 0.1em; margin: 0 0 var(--space-2); color: var(--brand-accent);">03</p>
-                <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Co-design the tools with teachers</h3>
-                <p style="font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">Teachers, researchers, and engineers build classroom tools on those capabilities, along with new ways of teaching alongside them. They then test our work where it counts: in real classrooms.</p>
-              </div>
-            </div>
-            <div style="display: flex; align-items: flex-start; gap: var(--space-5);">
-              <svg viewBox="-60 -60 120 120" aria-hidden="true" style="flex: 0 0 3.5rem; width: 3.5rem; height: 3.5rem; display: block;"><g transform="scale(0.919) translate(-8.5 -4.3)"><polygon points="-17,0 0,9.5 0,28.5 -17,19" style="fill: var(--color-st-tropaz-light);"></polygon><polygon points="0,9.5 17,0 17,19 0,28.5" style="fill: var(--color-st-tropaz);"></polygon><polygon points="0,-9.5 17,0 0,9.5 -17,0" style="fill: var(--color-st-tropaz-lighter);"></polygon><polygon points="0,9.5 17,19 17,38 0,28.5" style="fill: var(--color-st-tropaz);"></polygon><polygon points="17,19 34,9.5 34,28.5 17,38" style="fill: var(--color-st-tropaz-dark);"></polygon><polygon points="17,0 34,9.5 17,19 0,9.5" style="fill: var(--color-st-tropaz-lightest);"></polygon><polygon points="-17,-19.9 0,-10.4 0,8.6 -17,-0.9" style="fill: var(--color-st-tropaz-light);"></polygon><polygon points="0,-10.4 17,-19.9 17,-0.9 0,8.6" style="fill: var(--color-st-tropaz);"></polygon><polygon points="0,-29.4 17,-19.9 0,-10.4 -17,-19.9" style="fill: var(--color-st-tropaz-lighter);"></polygon></g></svg>
-              <div>
-                <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); letter-spacing: 0.1em; margin: 0 0 var(--space-2); color: var(--brand-accent);">04</p>
-                <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Test, learn, begin again.</h3>
-                <p style="font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">Classroom data tells us whether the AI roles we selected and the capabilities and tools we built actually helped. Those lessons sharpen our hypotheses, strengthen our capabilities and tools, and inform our next cycle of R&amp;D.</p>
-              </div>
+            <div style="margin-top: var(--space-6); display: flex;">
+              <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="link" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background: none; color: var(--color-scheme-text, var(--text-body)); padding: 0.375rem 0.75rem;">Learn more<div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 20px; width: 20px; height: 20px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 20;">chevron_right</span></div></button></div>
             </div>
           </div>
         </div>
+          </div>
+        </div>
+
+        <div class="at-mobile" data-cycle="" data-sel="0" style="display: flex; flex-direction: column;">
+          <div>
+            <button type="button" data-rl="0" style="display: flex; align-items: center; gap: 1rem; width: 100%; min-height: 2.75rem; padding: 1.125rem 0px; border: 0px; background: none; cursor: pointer; font-family: inherit; color: inherit; text-align: left;">
+              <img src="../../assets/approach/cyc01_role_0001.webp" alt="" style="flex: 0 0 2.75rem; width: 2.75rem; height: 2.75rem; object-fit: contain; display: block;">
+              <span style="display: flex; flex-direction: column; gap: 0.25rem;">
+                <span data-num="" style="font-weight: 600; font-size: var(--text-small); letter-spacing: 0.1em; transition: color 200ms ease-in-out;">01</span>
+                <span style="font-weight: 700; font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em;">Define the role</span>
+              </span>
+            </button>
+            <div data-body="0">
+              <div style="overflow: hidden;">
+                <p style="font-size: var(--text-regular); line-height: 1.5; margin: 0px; padding: 0px 0px 1.375rem; max-width: 34rem; text-wrap: pretty;">AI can play many distinct roles in a classroom, and each requires its own standards, evidence, and safeguards. With our partners, we pinpoint a specific role AI could play to meet real needs, and what teachers uniquely bring alongside it. Then we form hypotheses: what the role requires, where its limits are, and what bar it must meet to play the role responsibly.</p>
+              </div>
+            </div>
+          </div>
+          <div style="border-top: 1px solid var(--color-neutral-darkest-15);">
+            <button type="button" data-rl="1" style="display: flex; align-items: center; gap: 1rem; width: 100%; min-height: 2.75rem; padding: 1.125rem 0px; border: 0px; background: none; cursor: pointer; font-family: inherit; color: inherit; text-align: left;">
+              <img src="../../assets/approach/cyc02_capabilities_0001.webp" alt="" style="flex: 0 0 2.75rem; width: 2.75rem; height: 2.75rem; object-fit: contain; display: block;">
+              <span style="display: flex; flex-direction: column; gap: 0.25rem;">
+                <span data-num="" style="font-weight: 600; font-size: var(--text-small); letter-spacing: 0.1em; transition: color 200ms ease-in-out;">02</span>
+                <span style="font-weight: 700; font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em;">Build the capabilities</span>
+              </span>
+            </button>
+            <div data-body="1">
+              <div style="overflow: hidden;">
+                <p style="font-size: var(--text-regular); line-height: 1.5; margin: 0px; padding: 0px 0px 1.375rem; max-width: 34rem; text-wrap: pretty;">Much of the technology needed for AI to play these roles well doesn’t exist off the shelf. We build the missing layer between frontier AI models and classroom apps — validated capabilities that many different tools can build on, like computational methods that help AI measure students’ skills or track how concepts connect across a semester.</p>
+              </div>
+            </div>
+          </div>
+          <div style="border-top: 1px solid var(--color-neutral-darkest-15);">
+            <button type="button" data-rl="2" style="display: flex; align-items: center; gap: 1rem; width: 100%; min-height: 2.75rem; padding: 1.125rem 0px; border: 0px; background: none; cursor: pointer; font-family: inherit; color: inherit; text-align: left;">
+              <img src="../../assets/approach/cyc03_applications_0002.webp" alt="" style="flex: 0 0 2.75rem; width: 2.75rem; height: 2.75rem; object-fit: contain; display: block;">
+              <span style="display: flex; flex-direction: column; gap: 0.25rem;">
+                <span data-num="" style="font-weight: 600; font-size: var(--text-small); letter-spacing: 0.1em; transition: color 200ms ease-in-out;">03</span>
+                <span style="font-weight: 700; font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em;">Co-design the tools</span>
+              </span>
+            </button>
+            <div data-body="2">
+              <div style="overflow: hidden;">
+                <p style="font-size: var(--text-regular); line-height: 1.5; margin: 0px; padding: 0px 0px 1.375rem; max-width: 34rem; text-wrap: pretty;">Teachers, researchers, and engineers build classroom tools on those capabilities, along with new ways of teaching alongside them. They then test our work where it counts: in real classrooms.</p>
+              </div>
+            </div>
+          </div>
+          <div style="border-top: 1px solid var(--color-neutral-darkest-15);">
+            <button type="button" data-rl="3" style="display: flex; align-items: center; gap: 1rem; width: 100%; min-height: 2.75rem; padding: 1.125rem 0px; border: 0px; background: none; cursor: pointer; font-family: inherit; color: inherit; text-align: left;">
+              <img src="../../assets/approach/cyc04_test_0001.webp" alt="" style="flex: 0 0 2.75rem; width: 2.75rem; height: 2.75rem; object-fit: contain; display: block;">
+              <span style="display: flex; flex-direction: column; gap: 0.25rem;">
+                <span data-num="" style="font-weight: 600; font-size: var(--text-small); letter-spacing: 0.1em; transition: color 200ms ease-in-out;">04</span>
+                <span style="font-weight: 700; font-size: var(--text-h5); line-height: 1.3; letter-spacing: -0.01em;">Test, learn, begin again.</span>
+              </span>
+            </button>
+            <div data-body="3">
+              <div style="overflow: hidden;">
+                <p style="font-size: var(--text-regular); line-height: 1.5; margin: 0px; padding: 0px 0px 1.375rem; max-width: 34rem; text-wrap: pretty;">Classroom data tells us whether the AI role we selected and the capabilities and tools we built actually helped. Those lessons sharpen our hypotheses, strengthen our capabilities and tools, and inform our next cycle of R&amp;D.</p>
+              </div>
+            </div>
+          </div>
+          <p style="font-size: var(--text-small); line-height: 1.5; margin: 1.5rem 0px 0px; opacity: 0.7; text-wrap: pretty;">Tap a step to read more. Each turn of the cycle informs the next.</p>
+
+        </div>
       </div>
-    </section>
+    </div></section>
 
 
     <section style="padding: clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter);">
@@ -741,7 +744,7 @@
           <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade);">
             <img src="../../assets/illustrations/blocks.webp" alt="Wooden toy blocks — an arch, a column, a curve and two bricks — standing as one structure" width="810" height="810" loading="lazy" decoding="async" style="aspect-ratio: 1 / 1; width: 100%; object-fit: contain; margin-bottom: var(--space-8); display: block;">
             <h3 style="font-size: var(--text-h4); line-height: var(--text-h4-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-4);">Better foundations for AI tools.</h3>
-            <p style="font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">Reusable infrastructure that future classroom tools can be built on, from validated AI capabilities to the datasets that power them. We build these to generalize: the same capabilities can be recombined into many different tools, serve many subjects and types of schools, and give other ed tech organizations a foundation to build on.</p>
+            <p style="font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">Reusable infrastructure that future classroom tools can be built on, from validated AI capabilities to the datasets that power them. We build these to work across many subjects and types of schools.</p>
           </div>
           <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade);">
             <img src="../../assets/illustrations/laptop.webp" alt="An open laptop showing a simple page of text and an image" width="810" height="810" loading="lazy" decoding="async" style="aspect-ratio: 1 / 1; width: 100%; object-fit: contain; margin-bottom: var(--space-8); display: block;">
@@ -756,8 +759,8 @@
       <div style="margin-inline: auto; max-width: var(--container-xxl);">
         <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); max-width: var(--container-lg); margin-bottom: clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg));">
           <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-regular); margin: 0 0 var(--space-4);">Our Current Work</p>
-          <h2 style="font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-6); text-wrap: pretty;">Examples of what we're building together right now.</h2>
-          <p style="font-size: var(--text-medium); line-height: var(--text-body-line-height); margin: 0 0 var(--space-6); text-wrap: pretty;">In our first cohort, teachers from several pioneering high schools worked together with researchers and engineers to co-design AI-powered solutions. Each project below is a work in progress, not a finished product, and each one feeds reusable capabilities back into a foundation that others can build on.</p>
+          <h2 style="font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-6); text-wrap: pretty;">What we're building together right now.</h2>
+          <p style="font-size: var(--text-medium); line-height: var(--text-body-line-height); margin: 0 0 var(--space-6); text-wrap: pretty;">In our first cohort, teachers from several pioneering high schools worked with researchers and engineers to co-design AI-powered tools. Each project below is a work in progress, and each one feeds reusable capabilities back into a foundation that others can build on.</p>
           <p style="font-size: var(--text-medium); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">All three put the same AI role—AI as cognitive extender—to work. For teachers and students, the AI surfaces patterns hidden in more information than any person could track alone.</p>
         </div>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); column-gap: var(--space-8); row-gap: var(--space-12);">
@@ -766,25 +769,25 @@
             <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0 0 var(--space-4);">Museum High School</p>
             <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-3);">Feedback Facilitator</h3>
             <p style="font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">During multi-week projects, students respond to teacher prompts with short voice memos. The tool surfaces where each student and group is progressing, stuck, or drifting off track, so teachers can provide specific, meaningful feedback for every student.</p>
-            <div style="margin-top: var(--space-6); display: flex;"><div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="link" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background: none; color: var(--color-scheme-text, var(--text-body)); padding: 0.375rem 0.75rem;">Learn more<div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 20px; width: 20px; height: 20px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 20;">chevron_right</span></div></button></div></div>
+            <div style="margin-top: var(--space-6); display: flex;"></div>
           </article>
           <article data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade);">
             <img src="../../assets/images/high-tech-high-workshop.webp" alt="Teachers gathered at a wall of sticky notes and storyboard sketches" width="1080" height="720" loading="lazy" decoding="async" style="width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: block;">
             <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0 0 var(--space-4);">High Tech High Mesa &amp; High Tech High International</p>
             <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-3);">Collaboration Navigator</h3>
             <p style="font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">After students reflect on their small-group work, the tool generates insights about how each group is functioning. It makes group dynamics visible to teachers in real time, so they can coach students on collaboration and repair problems before they harden.</p>
-            <div style="margin-top: var(--space-6); display: flex;"><div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="link" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background: none; color: var(--color-scheme-text, var(--text-body)); padding: 0.375rem 0.75rem;">Learn more<div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 20px; width: 20px; height: 20px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 20;">chevron_right</span></div></button></div></div>
+            <div style="margin-top: var(--space-6); display: flex;"></div>
           </article>
           <article data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade);">
             <img src="../../assets/images/crosstown-workshop.webp" alt="Teachers around a table watching a screen, sticky-note boards filling the windows behind them" width="1080" height="720" loading="lazy" decoding="async" style="width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: block;">
             <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0 0 var(--space-4);">Crosstown High</p>
             <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-3);">Connection Builder</h3>
             <p style="font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">Students learn more deeply when new material connects to what they already know and care about. This tool maps a teacher’s course material to each student’s knowledge, experiences, and interests and then suggests personalized connections.</p>
-            <div style="margin-top: var(--space-6); display: flex;"><div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="link" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background: none; color: var(--color-scheme-text, var(--text-body)); padding: 0.375rem 0.75rem;">Learn more<div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 20px; width: 20px; height: 20px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 20;">chevron_right</span></div></button></div></div>
+            <div style="margin-top: var(--space-6); display: flex;"></div>
           </article>
         </div>
         <div style="margin-top: clamp(var(--space-12),5vw,var(--space-16)); display: flex;">
-          <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="secondary" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-neutral-darkest-5); color: inherit; padding: 0.375rem 0.75rem; font-weight: var(--font-weight-medium); backdrop-filter: blur(var(--blur-glass));">Learn more</button></div>
+          
         </div>
       </div>
     </section>
@@ -794,33 +797,33 @@
         <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); max-width: var(--container-lg); margin-bottom: clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg));">
           <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-regular); margin: 0 0 var(--space-4);">Our Thinking</p>
           <h2 style="font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-6);">Recent Research</h2>
-          <p style="font-size: var(--text-medium); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">With our research partners, we study what each role AI can play in a classroom makes possible, where it falls short, and what we can build to push those limits. Three of our recent papers:</p>
+          <p style="font-size: var(--text-medium); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">We work with university and research partners to study what each role AI plays in a classroom makes possible, where it falls short, and what we can build to move those limits. We publish what we find. Here are three recent papers:</p>
         </div>
         <div style="display: flex; flex-direction: column;">
           <article data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); padding: var(--space-10) 0; border-bottom: var(--border-width-divider) solid var(--border-hairline); display: grid; grid-template-columns: repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr)); column-gap: var(--space-20); row-gap: var(--space-4);">
             <h3 style="font-size: var(--text-h4); line-height: var(--text-h4-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0px;">Measuring critical thinking with AI</h3>
             <div>
-              <p style="font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">Can AI assess a skill as complex as critical thinking? We find that carefully scaffolded language models can measure some critical-thinking subskills in student writing, and we map where they still fall short.</p>
+              <p style="font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">Can AI help assess a skill as complex as critical thinking? We show that carefully scaffolded language models can measure some critical-thinking subskills in student writing, and we map where they still fall short.</p>
               <div style="margin-top: var(--space-6); display: flex;"><div class="sc-host-x" style="display: contents;"><a data-slot="button" data-variant="link" href="https://educationaldatamining.org/wp-content/uploads/2026/proceedings/2026.EDM.full-papers/2026.EDM.full-papers.174.pdf" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background: none; color: var(--color-scheme-text, var(--text-body)); padding: 0.375rem 0.75rem;">Read more<div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 20px; width: 20px; height: 20px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 20;">chevron_right</span></div></a></div></div>
             </div>
           </article>
           <article data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); padding: var(--space-10) 0; border-bottom: var(--border-width-divider) solid var(--border-hairline); display: grid; grid-template-columns: repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr)); column-gap: var(--space-20); row-gap: var(--space-4);">
             <h3 style="font-size: var(--text-h4); line-height: var(--text-h4-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0px;">A repeatable method for measuring durable skills</h3>
             <div>
-              <p style="font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">We share a standardized, step-by-step process for improving and validating the capacity of AI systems to detect complex skills like critical thinking, so the field can build measurement tools without starting from scratch each time.</p>
+              <p style="font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">We share a standardized, step-by-step process for improving and validating the capacity of AI systems to detect complex skills like critical thinking, so the field can build AI measurement tools without starting from scratch every time.</p>
               <div style="margin-top: var(--space-6); display: flex;"><div class="sc-host-x" style="display: contents;"><a data-slot="button" data-variant="link" href="https://educationaldatamining.org/wp-content/uploads/2026/proceedings/2026.EDM.full-papers/2026.EDM.full-papers.174.pdf" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background: none; color: var(--color-scheme-text, var(--text-body)); padding: 0.375rem 0.75rem;">Read more<div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 20px; width: 20px; height: 20px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 20;">chevron_right</span></div></a></div></div>
             </div>
           </article>
           <article data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); padding: var(--space-10) 0; display: grid; grid-template-columns: repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr)); column-gap: var(--space-20); row-gap: var(--space-4);">
             <h3 style="font-size: var(--text-h4); line-height: var(--text-h4-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0px;">The AI Roles for Education framework</h3>
             <div>
-              <p style="font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">We define five distinct roles AI can play in the classroom, and show how a tool's role shapes what it should do, how to judge whether it works, and what safeguards it needs.</p>
+              <p style="font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">Arguing over whether AI is good or bad for education misses the point: AI isn't one thing. We define five distinct roles AI can play in the classroom, and show how naming a tool's role determines what it should do, how to judge whether it works, and what safeguards it needs.</p>
               <div style="margin-top: var(--space-6); display: flex;"><div class="sc-host-x" style="display: contents;"><a data-slot="button" data-variant="link" href="https://educationaldatamining.org/wp-content/uploads/2026/proceedings/2026.EDM.full-papers/2026.EDM.full-papers.174.pdf" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background: none; color: var(--color-scheme-text, var(--text-body)); padding: 0.375rem 0.75rem;">Read more<div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 20px; width: 20px; height: 20px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 20;">chevron_right</span></div></a></div></div>
             </div>
           </article>
         </div>
         <div style="margin-top: clamp(var(--space-12),5vw,var(--space-16)); display: flex;">
-          <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="secondary" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-neutral-darkest-5); color: inherit; padding: 0.375rem 0.75rem; font-weight: var(--font-weight-medium); backdrop-filter: blur(var(--blur-glass));">View all</button></div>
+          
         </div>
       </div>
     </section>
@@ -837,7 +840,7 @@
         <div data-fb-copy="" style="max-width: var(--container-lg); text-align: center; padding-inline: var(--page-gutter);">
           <h2 style="font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-6); text-wrap: pretty;">Join us in building better foundations for AI in education.</h2>
           <div data-fb-front="">
-            <p style="font-size: var(--text-medium); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">We co-design with educators, publish what we learn, and build infrastructure for the whole field. If that's the future of AI in education you want, come build it with us.</p>
+            <p style="font-size: var(--text-medium); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">We co-design with educators, publish what we learn, and build infrastructure the whole field can build on. If that's the future of AI in education you want, come build it with us.</p>
             <div style="margin-top: var(--space-10); display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space-4);">
               <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="default" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border-width: 1px; border-style: solid; border-color: var(--color-st-tropaz); border-image: initial; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-st-tropaz); color: var(--color-scheme-btn-text, var(--color-white)); padding: 0.375rem 0.75rem; font-weight: var(--font-weight-medium);">Meet the team</button></div>
               <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="secondary" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-neutral-darkest-5); color: inherit; padding: 0.375rem 0.75rem; font-weight: var(--font-weight-medium); backdrop-filter: blur(var(--blur-glass));">Follow our work</button></div>
@@ -870,14 +873,6 @@
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); column-gap: var(--space-12); row-gap: var(--space-12); margin-bottom: var(--space-16);">
         <div>
           <img src="../../assets/logo/logo-light.png" alt="augment^ed" width="768" height="149" decoding="async" style="width: 168px; display: block; margin-bottom: var(--space-6);">
-          <p style="font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0 0 var(--space-6);">Get updates on AugmentED research and tools.</p>
-          <form style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-4); margin-bottom: var(--space-4);">
-            <div style="flex: 1 1 12rem;">
-              <div class="sc-host-x" style="display: contents;"><div style="position: relative; display: flex; width: 100%; align-items: center;"><input data-slot="input" type="email" placeholder="Your email" style="display: flex; width: 100%; min-height: 2rem; padding: 0.5rem 0px; background: transparent; border-top: 0px; border-right: 0px; border-bottom: 1px solid var(--color-neutral-darkest-15); border-left: 0px; border-image: initial; color: var(--color-scheme-text, var(--text-body)); font-family: var(--font-body); font-size: var(--text-regular); line-height: var(--text-body-line-height); outline: none; transition: all var(--transition-fast);"></div></div>
-            </div>
-            <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="secondary" type="submit" data-btn-size="sm" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-neutral-darkest-5); color: inherit; padding: 0.25rem 0.625rem; font-weight: var(--font-weight-medium); backdrop-filter: blur(var(--blur-glass));">Subscribe</button></div>
-          </form>
-          <p style="font-size: var(--text-tiny); line-height: var(--text-body-line-height); margin: 0px; max-width: 24rem;">By subscribing you agree to our Privacy Policy and consent to receive updates from AugmentED.</p>
         </div>
         <div style="display: flex; flex-direction: column; gap: var(--space-3);">
           <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0 0 var(--space-1);">Explore</p>
