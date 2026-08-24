@@ -328,6 +328,16 @@ phone, peaks at 719 one pixel before the split, and settles to a flat 600 from 1
 because 3x the phone box and 2x the desktop box have converged on the same number here.
 The set is 1.6 MB for both tiers, against 56 MB of master.
 
+Below that split every one of those rows leads with its photograph, and that takes a rule
+(`.media-row` in the page's `<style>`) because the rows alternate sides in source order:
+three of the seven have their copy first, which is what the row stacks in, so the stacked
+page used to run two blocks of copy together and then two photographs together at each
+turn. The rule asks a container query on the section rather than a viewport media query,
+because the width that decides the split is the row's 720px and not the viewport's 800 —
+and the two are not a fixed 90% apart, since a media query counts a classic scrollbar
+inside the viewport and a percentage gutter does not. Source order is untouched above the
+split, so the alternation the desktop layout is built on is still the markup's.
+
 The three home-page illustrations — `assets/illustrations/{brain,blocks,laptop}.webp` —
 ship as rendered: the full 1200x1200 plate scaled to 810 square, nothing trimmed and
 nothing re-framed. The encoder used to trim each plate to its content and re-pad all
