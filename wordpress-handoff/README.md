@@ -79,6 +79,34 @@ Settle these before development starts. Each one changes work downstream of it.
    submissions. See [The Follow page form](#the-follow-page-form).
 4. **Who confirms the Avenir license.** See [Fonts](#fonts).
 
+## Suggested build order
+
+The package supports any order, but this sequence means each step verifies the
+one before it:
+
+1. Skim this document once, then open
+   [the reference site](https://augmented2.folkmark.com) beside
+   `pages/home.html` so you know what "done" looks like.
+2. Settle the four decisions above with AugmentED.
+3. Copy the two asset directories into the theme and wire up
+   [`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php); its header
+   comment is the procedure. Verify with an empty page template: the design
+   system and both component scripts load, versioned and deferred, on an
+   AugmentED page and nowhere else.
+4. Build the static pages first — The Challenge, Who We Are, Follow Our Work,
+   Our Approach — as page templates from `pages/*.html`, rebuilding the small
+   behaviors as you go ([Behaviors to rebuild](#behaviors-to-rebuild)) and
+   modeling the team and research content from [`content/`](content/README.md).
+5. Build the home page last: the hero and the falling-blocks CTA install per
+   their sections below; the cycle wheel is a rebuild from
+   [`sections/cycle.md`](sections/cycle.md).
+6. Wire the form to its decided destination
+   ([The Follow page form](#the-follow-page-form)).
+7. Configure the environment: metadata from `content/pages.json`, redirects
+   from `content/redirects.csv`, and the exclusions in
+   [Protect the components from optimization plugins](#protect-the-components-from-optimization-plugins).
+8. Run the [Acceptance checklist](#acceptance-checklist) top to bottom.
+
 ## The target environment: aerdf.org
 
 The following was observed directly on 2026-08-24 from aerdf.org's HTML, response
@@ -174,8 +202,8 @@ classes during the port, not left as inline-styled HTML in a rich-text field.
 source of truth for every color, size, radius, and font on the site. It is plain
 CSS with no build step. **Copy it; do not rewrite it** — and do not re-author the
 tokens into `theme.json`. Your theme is a classic theme, where enqueued token CSS
-is the correct mechanism; add a `theme.json` mapping only if you want the tokens
-surfaced in the editor UI as well.
+is the correct mechanism. If you also want the tokens surfaced in the editor UI,
+add a `theme.json` mapping on top — never instead.
 
 To install the design system:
 
@@ -379,7 +407,7 @@ name the headline in the element's `exit-with` attribute so it rides the same ra
 
 - **`from="276" to="417"` is not decoration.** The manifest encodes 276–468, but
   only 276–417 carries the soft ground shadow; the rest is an older render pass
-  with grey legs. Widen the span and the arch visibly changes color mid-scrub. See
+  with gray legs. Widen the span and the arch visibly changes color mid-scrub. See
   [the hero render notes](../docs/hero-bridge-render.md).
 - **Never clip the plate with a box.** The stage takes the plate's height, not the
   screen's, and hangs below the fold. Adding `overflow: hidden` to the stage as a
@@ -666,6 +694,11 @@ scroll budgets are made of.
 
 - Exclude the component scripts and stylesheets from delay, combine, minify, and
   remove-unused-CSS features, by handle and by filename.
+- Exclude the still images from plugin lazy-load rewriting: the hero still
+  (`assets/images/hero-bridge.webp`) is the LCP element, and the component stills
+  are the no-JS fallback — a plugin that rewrites their `src` to a
+  `data-lazy-src` breaks both. The components' own `loading="lazy"` attributes
+  are correct and stay.
 - Add the belt-and-braces attributes via the `script_loader_tag` filter:
   `nowprocket`, `data-no-defer="1"`, `data-jetpack-boost="ignore"`.
   [`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php) already does this

@@ -7,7 +7,7 @@ templates from, so the two cannot disagree — and verifies every count before
 writing. Regenerate them whenever the pages are re-exported:
 
 ```
-node tools/export-static.mjs && node tools/export-content.mjs
+npm i --no-save playwright && node tools/export-static.mjs && node tools/export-content.mjs
 ```
 
 Your target install already runs JetEngine and CPT UI; the field lists below map
@@ -15,7 +15,7 @@ directly onto either.
 
 | File | Records | What it is |
 |---|---|---|
-| `team.json` | 28 | One record per person on Who We Are. Fields: `name`, `group` (Leadership, Research Partners, Technology Partners, Education Fellows), `role`, `affiliation` and `location` (null except for fellows and some partners), `photo` (a repository-relative path, or **null for the 9 people with no usable photograph yet** — model the image as optional and render the grey placeholder), `links` (zero or more of LinkedIn / Website). |
+| `team.json` | 28 | One record per person on Who We Are. Fields: `name`, `group` (Leadership, Research Partners, Technology Partners, Education Fellows), `role`, `affiliation` and `location` (null except for fellows and some partners), `photo` (a repository-relative path, or **null for the 9 people with no usable photograph yet** — model the image as optional and render the gray placeholder), `links` (zero or more of LinkedIn / Website). |
 | `research.json` | 3 | The Recent Research cards: `title`, `description`, `url`. All three currently link to the same paper; that is the state of the content, not a parsing error. |
 | `cycle.json` | 4 | The R&D cycle wheel's steps: `number`, `title`, `body`, `icon`. The count is fixed at four — the wheel's geometry is not content. See [`../sections/cycle.md`](../sections/cycle.md). |
 | `pages.json` | 5 | Per-route `title` and meta `description`, ready for Yoast's fields. |

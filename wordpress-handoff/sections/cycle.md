@@ -173,7 +173,8 @@ The pinned travel splits into four equal beats. Everything below is a
 | Hub closing line | `[0.92, 1]` | opacity 0 → 0.7; waits for the loop to close |
 
 A node is interactive only once drawn: below 0.9 of its own growth it is
-`disabled` with `pointer-events: none`, so there is no invisible hover target.
+`disabled` with `pointer-events: none`, so an undrawn node is never an
+invisible hover target.
 Node opacity is `growth × (selected ? 1 : 0.42)`.
 
 ### Selection
@@ -217,7 +218,7 @@ beat boundary, where two steps contest it. The travel eases with
 previous travel; under reduced motion it jumps with `scrollTo` instead.
 
 If the rig is hidden (`offsetParent === null` — the mobile arm is showing), a
-click selects in place; there is no pinned run to travel.
+click selects in place, because the mobile arm has no pinned run to travel.
 
 Keyboard focus on a node calls `focus({ preventScroll: true })` and selects in
 place.

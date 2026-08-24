@@ -4,8 +4,8 @@
 > going, so the home page now runs the shorter hero-bridge sequence and the cycle
 > wheel. The component and its frames are kept for the shortened sequence planned
 > to replace it. Everything below still describes the shipped files accurately,
-> but no page currently mounts the element — there is no live instance to
-> inspect, on the site or in `pages/`. The markup contract is documented at the
+> but no page currently mounts the element, so no live instance exists to
+> inspect — on the site or in `pages/`. The markup contract is documented at the
 > top of `assets/approach.js`.
 
 This document is a complete description of the Approach section, written so the
@@ -199,7 +199,7 @@ neighboring frame rather than a blank stage.
 > **Warning: the 1.25 gate is coupled to whatever sits above the section, and
 > nothing enforces it.** The gate is "start loading when the section's top is
 > within `near` viewport heights". If the content above the section is taller
-> than that, the gate is satisfied at page load and there is no laziness at all.
+> than that, the gate is satisfied at page load and nothing loads lazily at all.
 > This happened: the hero above it grew to 290vh, and with the old default of 3 a
 > phone fetched the entire sequence before the visitor scrolled a pixel. If the
 > page order or the height above the section changes, re-measure.
