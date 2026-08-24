@@ -1,5 +1,19 @@
 # The WordPress handoff, reviewed against AERDF's actual stack
 
+> **Status (2026-08-24, later the same day).** The handoff documentation was
+> rewritten on this branch to the Google technical-writing guidelines, and the
+> rewrite closed most of what this review ranks: the stale notes and tables
+> (§3.1's documentation half), the cycle-wheel spec (§3.2, as
+> `wordpress-handoff/sections/cycle.md`), the form spec (§3.3), the reference URL
+> and acceptance checklist (§3.4), the plugin-hardening notes and `filemtime`
+> versioning (§3.5), the JetEngine/CPT UI targeting and inline-styles paragraph
+> (part of §3.6), the font-licensing items (§3.7), and the AERDF environment
+> section (§1). Still open: re-running the `pages/` export (needs a machine with
+> browser network access), the export freshness stamp (§3.1), the cycle-wheel
+> *port* (the spec exists; the custom element does not), the
+> `wordpress-handoff/content/` data files (§3.6), and every decision that is
+> AERDF's to make.
+
 *Written 2026-08-24, on `claude/wordpress-handoff-research-f2l98g`. This reviews
 `wordpress-handoff/` against (a) what aerdf.org actually runs, observed directly on
 2026-08-24, (b) current WordPress development practice as of WP 7.0, and (c) the

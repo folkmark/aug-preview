@@ -76,7 +76,8 @@ When any of this changes, these describe it and go stale silently:
 - `wordpress-handoff/sections/approach.md` — a build spec that restates the constants, the
   maths and the byte totals so the section can be rebuilt in another stack. It is written
   to be built from, so a stale number there becomes someone's wrong implementation.
-- `wordpress-handoff/README.md` §4 and §6 — asset inventory and porting notes.
+- `wordpress-handoff/README.md` — the asset inventory ("The assets") and the
+  per-component porting sections.
 - `README.md` — frame count and sequence weight.
 - `docs/approach-render-map.md` — describes the Blender render, so an encode change
   does not touch it. Its frame numbers are the source of truth for the beats.
