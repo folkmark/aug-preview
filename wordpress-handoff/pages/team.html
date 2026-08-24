@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- exported from 6216c3bd3a6bad473c49d989ca8b1b5b86efc556 by tools/export-static.mjs -->
+<!-- exported from d990ad4feb13473cb20af697b03c0ac33a55fec8 by tools/export-static.mjs -->
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -43,6 +43,43 @@
   .team-grid-2 img, .team-grid-3 img, .team-grid-2 > div > div:first-child, .team-grid-3 > div > div:first-child { margin-bottom: var(--space-4) !important; }
   .team-grid-2 a[aria-label], .team-grid-3 a[aria-label] { width: var(--icon-size); height: var(--icon-size); align-items: center; justify-content: center; flex: 0 0 auto; }
   .team-grid-2 a[aria-label] > *, .team-grid-3 a[aria-label] > * { width: var(--icon-size) !important; height: var(--icon-size) !important; min-width: var(--icon-size) !important; min-height: var(--icon-size) !important; font-size: var(--icon-size) !important; line-height: var(--icon-size) !important; display: block !important; margin: 0 !important; }
+  /* THE PICTURE ROWS on The Challenge and Our Approach — one photograph beside one
+     block of copy, the sides alternating down the page.
+
+     THE ALTERNATION USED TO BE DONE IN SOURCE ORDER, and source order is what the row
+     stacks in once the grid collapses, so three of the seven rows put their picture
+     under their copy on a phone: the page read picture, copy — copy, picture —
+     picture, copy, and at every turn either two blocks of copy or two photographs ran
+     together. Every row now leads with its picture in the MARKUP, which is the whole
+     point of doing it this way round: the stacked order is the source order, so it
+     needs no CSS to be right and there is no browser that can get it wrong. It is
+     also the order a screen reader reads, which the old arrangement only matched on
+     a wide screen.
+
+     The alternation is the two-column arm's job now. .media-row-flip is on the three
+     rows that want their picture on the right, and it only ever moves it sideways.
+
+     ASKED OF THE ROW, NOT THE VIEWPORT, because those are two different widths.
+     repeat(auto-fit, minmax(min(var(--container-xxs),100%),1fr)) drops to one column
+     when the row cannot hold two 20rem columns and the --space-20 between them —
+     720px — and the row is the section's content box, which the 5% --page-gutter has
+     already taken its bite out of. A viewport media query would have to restate that
+     gutter (720 / 0.9 = 800px, the number the photographs' sizes attribute carries)
+     and would still be wrong by the width of a classic scrollbar: a media query
+     counts it inside the viewport and a percentage padding does not, so from 800 to
+     about 815 the row would be stacked and the flip still applied — a picture under
+     its copy again, in the one place this rule exists to prevent.
+
+     What a browser too old for container queries loses is the alternation, not the
+     stack: it gets the picture on the left in all seven rows. That is the right way
+     round for the trade. This first shipped the other way — the stack was the thing
+     the container query bought and the fallback was source order — which left every
+     phone that predates container queries with exactly the bug this fixes, on the one
+     class of device where it is not a subtlety. */
+  .media-row { container: media-row / inline-size; }
+  @container media-row (min-width: 720px) {
+    .media-row-flip img { order: 1; }
+  }
   /* The cycle wheel's state styling lives with its component now — see
      ../../assets/cycle-wheel.css, enqueued above with cycle-wheel.js. */
   /* The two things the page has to tell the hero scrub, and they are both about the page

@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- exported from 6216c3bd3a6bad473c49d989ca8b1b5b86efc556 by tools/export-static.mjs -->
+<!-- exported from d990ad4feb13473cb20af697b03c0ac33a55fec8 by tools/export-static.mjs -->
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -43,6 +43,43 @@
   .team-grid-2 img, .team-grid-3 img, .team-grid-2 > div > div:first-child, .team-grid-3 > div > div:first-child { margin-bottom: var(--space-4) !important; }
   .team-grid-2 a[aria-label], .team-grid-3 a[aria-label] { width: var(--icon-size); height: var(--icon-size); align-items: center; justify-content: center; flex: 0 0 auto; }
   .team-grid-2 a[aria-label] > *, .team-grid-3 a[aria-label] > * { width: var(--icon-size) !important; height: var(--icon-size) !important; min-width: var(--icon-size) !important; min-height: var(--icon-size) !important; font-size: var(--icon-size) !important; line-height: var(--icon-size) !important; display: block !important; margin: 0 !important; }
+  /* THE PICTURE ROWS on The Challenge and Our Approach — one photograph beside one
+     block of copy, the sides alternating down the page.
+
+     THE ALTERNATION USED TO BE DONE IN SOURCE ORDER, and source order is what the row
+     stacks in once the grid collapses, so three of the seven rows put their picture
+     under their copy on a phone: the page read picture, copy — copy, picture —
+     picture, copy, and at every turn either two blocks of copy or two photographs ran
+     together. Every row now leads with its picture in the MARKUP, which is the whole
+     point of doing it this way round: the stacked order is the source order, so it
+     needs no CSS to be right and there is no browser that can get it wrong. It is
+     also the order a screen reader reads, which the old arrangement only matched on
+     a wide screen.
+
+     The alternation is the two-column arm's job now. .media-row-flip is on the three
+     rows that want their picture on the right, and it only ever moves it sideways.
+
+     ASKED OF THE ROW, NOT THE VIEWPORT, because those are two different widths.
+     repeat(auto-fit, minmax(min(var(--container-xxs),100%),1fr)) drops to one column
+     when the row cannot hold two 20rem columns and the --space-20 between them —
+     720px — and the row is the section's content box, which the 5% --page-gutter has
+     already taken its bite out of. A viewport media query would have to restate that
+     gutter (720 / 0.9 = 800px, the number the photographs' sizes attribute carries)
+     and would still be wrong by the width of a classic scrollbar: a media query
+     counts it inside the viewport and a percentage padding does not, so from 800 to
+     about 815 the row would be stacked and the flip still applied — a picture under
+     its copy again, in the one place this rule exists to prevent.
+
+     What a browser too old for container queries loses is the alternation, not the
+     stack: it gets the picture on the left in all seven rows. That is the right way
+     round for the trade. This first shipped the other way — the stack was the thing
+     the container query bought and the fallback was source order — which left every
+     phone that predates container queries with exactly the bug this fixes, on the one
+     class of device where it is not a subtlety. */
+  .media-row { container: media-row / inline-size; }
+  @container media-row (min-width: 720px) {
+    .media-row-flip img { order: 1; }
+  }
   /* The cycle wheel's state styling lives with its component now — see
      ../../assets/cycle-wheel.css, enqueued above with cycle-wheel.js. */
   /* The two things the page has to tell the hero scrub, and they are both about the page
@@ -509,18 +546,18 @@
     </section>
 
 
-    <section data-step="0" style="padding: clamp(var(--space-20),8vw,8rem) var(--page-gutter) clamp(var(--space-28),15vh,10rem);">
+    <section class="media-row media-row-flip" data-step="0" style="padding: clamp(var(--space-20),8vw,8rem) var(--page-gutter) clamp(var(--space-28),15vh,10rem);">
       <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); margin-inline: auto; max-width: var(--container-xxl); display: grid; grid-template-columns: repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr)); column-gap: var(--space-20); row-gap: var(--space-12); align-items: center;">
+        <img src="../../assets/images/define-the-role.webp" srcset="../../assets/images/define-the-role-m.webp 800w, ../../assets/images/define-the-role.webp 1264w" sizes="(min-width:1422px) 600px, (min-width:800px) calc(45vw - 40px), 90vw" alt="Two teachers and a researcher at a wall, working out what their students need" decoding="async" loading="lazy" style="width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius-image); display: block;">
         <div>
           <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-regular); margin: 0 0 var(--space-4);"><span style="color: var(--brand-accent);">01</span>&nbsp;&nbsp;Define the role</p>
           <h2 style="font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-6); text-wrap: pretty;">We start by asking what teachers and students need.</h2>
           <p style="font-size: var(--text-medium); line-height: var(--text-body-line-height); font-weight: var(--font-weight-light); margin: 0px; text-wrap: pretty;">Each cycle focuses on one role AI could play in meeting real classroom needs, such as deepening a teacher's understanding of her students' prior experiences and interests, assessing complex skills, or facilitating feedback. We select and shape each role with researchers, educators, and engineers. That role becomes the North Star for everything that follows.</p>
         </div>
-        <img src="../../assets/images/define-the-role.webp" srcset="../../assets/images/define-the-role-m.webp 800w, ../../assets/images/define-the-role.webp 1264w" sizes="(min-width:1422px) 600px, (min-width:800px) calc(45vw - 40px), 90vw" alt="Two teachers and a researcher at a wall, working out what their students need" decoding="async" loading="lazy" style="width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius-image); display: block;">
       </div>
     </section>
 
-    <section data-step="1" style="padding: clamp(var(--space-28),15vh,10rem) var(--page-gutter) clamp(var(--space-28),15vh,10rem);">
+    <section class="media-row" data-step="1" style="padding: clamp(var(--space-28),15vh,10rem) var(--page-gutter) clamp(var(--space-28),15vh,10rem);">
       <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); margin-inline: auto; max-width: var(--container-xxl); display: grid; grid-template-columns: repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr)); column-gap: var(--space-20); row-gap: var(--space-12); align-items: center;">
         <img src="../../assets/images/build-capabilities.webp" srcset="../../assets/images/build-capabilities-m.webp 800w, ../../assets/images/build-capabilities.webp 1264w" sizes="(min-width:1422px) 600px, (min-width:800px) calc(45vw - 40px), 90vw" alt="Two engineers at a desk working through a problem on their laptops" decoding="async" loading="lazy" style="width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius-image); display: block;">
         <div>
@@ -531,18 +568,18 @@
       </div>
     </section>
 
-    <section data-step="2" style="padding: clamp(var(--space-28),15vh,10rem) var(--page-gutter) clamp(var(--space-28),15vh,10rem);">
+    <section class="media-row media-row-flip" data-step="2" style="padding: clamp(var(--space-28),15vh,10rem) var(--page-gutter) clamp(var(--space-28),15vh,10rem);">
       <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); margin-inline: auto; max-width: var(--container-xxl); display: grid; grid-template-columns: repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr)); column-gap: var(--space-20); row-gap: var(--space-12); align-items: center;">
+        <img src="../../assets/images/codesign-tools.webp" srcset="../../assets/images/codesign-tools-m.webp 800w, ../../assets/images/codesign-tools.webp 1264w" sizes="(min-width:1422px) 600px, (min-width:800px) calc(45vw - 40px), 90vw" alt="Teachers and engineers around a table moving paper sketches of a classroom tool between them" decoding="async" loading="lazy" style="width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius-image); display: block;">
         <div>
           <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-regular); margin: 0 0 var(--space-4);"><span style="color: var(--brand-accent);">03</span>&nbsp;&nbsp;Co-design the applications</p>
           <h2 style="font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-6); text-wrap: pretty;">We build tools that bring the role to life.</h2>
           <p style="font-size: var(--text-medium); line-height: var(--text-body-line-height); font-weight: var(--font-weight-light); margin: 0px; text-wrap: pretty;">Our teams of educators, researchers, and engineers use that infrastructure to build and test AI-powered tools, and new ways of teaching alongside them. This second part is crucial: an AI tool might help students evaluate sources or collaboratively solve problems, but it's only truly effective when paired with a teaching approach that combines what AI and human teachers each do best.</p>
         </div>
-        <img src="../../assets/images/codesign-tools.webp" srcset="../../assets/images/codesign-tools-m.webp 800w, ../../assets/images/codesign-tools.webp 1264w" sizes="(min-width:1422px) 600px, (min-width:800px) calc(45vw - 40px), 90vw" alt="Teachers and engineers around a table moving paper sketches of a classroom tool between them" decoding="async" loading="lazy" style="width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius-image); display: block;">
       </div>
     </section>
 
-    <section data-step="3" style="padding: clamp(var(--space-28),15vh,10rem) var(--page-gutter) clamp(var(--space-24),14vh,9rem);">
+    <section class="media-row" data-step="3" style="padding: clamp(var(--space-28),15vh,10rem) var(--page-gutter) clamp(var(--space-24),14vh,9rem);">
       <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); margin-inline: auto; max-width: var(--container-xxl); display: grid; grid-template-columns: repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr)); column-gap: var(--space-20); row-gap: var(--space-12); align-items: center;">
         <img src="../../assets/images/test-in-classrooms.webp" srcset="../../assets/images/test-in-classrooms-m.webp 800w, ../../assets/images/test-in-classrooms.webp 1264w" sizes="(min-width:1422px) 600px, (min-width:800px) calc(45vw - 40px), 90vw" alt="A teacher crouched beside two students at their desks, watching them try something on a laptop" decoding="async" loading="lazy" style="width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius-image); display: block;">
         <div>
