@@ -32,16 +32,19 @@
 <link rel="stylesheet" href="_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/base.css">
 <link rel="stylesheet" href="_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/styles.css">
 <script src="_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/_ds_bundle.js"></script>
-<!-- The hero scrub and the falling-blocks CTA. Both are deliberately standalone custom
-     elements with their own stylesheets, rather than page CSS and a method on the
-     component below: each drives markup it does not build and touches no runtime API, so
-     the same two files and the same markup work in any host. Nothing else on the page
-     depends on either, and both degrade to the still <img> in their markup if these
-     scripts never run. -->
+<!-- The hero scrub, the falling-blocks CTA and the cycle wheel. All three are
+     deliberately standalone custom elements with their own stylesheets, rather than
+     page CSS and methods on the component below: each drives markup it does not
+     build and touches no runtime API, so the same files and the same markup work in
+     any host. Nothing else on the page depends on any of them; the two canvas rigs
+     degrade to the still <img> in their markup if their scripts never run, and the
+     wheel degrades to its reading column, which is real text either way. -->
 <link rel="stylesheet" href="assets/hero-bridge.css">
 <script src="assets/hero-bridge.js" defer=""></script>
 <link rel="stylesheet" href="assets/falling-blocks.css">
 <script src="assets/falling-blocks.js" defer=""></script>
+<link rel="stylesheet" href="assets/cycle-wheel.css">
+<script src="assets/cycle-wheel.js" defer=""></script>
 <style>
   body { margin: 0; background: var(--surface-page); }
   /* The intrinsic width/height attributes are there to reserve the box before the
@@ -67,52 +70,8 @@
   .team-grid-2 img, .team-grid-3 img, .team-grid-2 > div > div:first-child, .team-grid-3 > div > div:first-child { margin-bottom: var(--space-4) !important; }
   .team-grid-2 a[aria-label], .team-grid-3 a[aria-label] { width: var(--icon-size); height: var(--icon-size); align-items: center; justify-content: center; flex: 0 0 auto; }
   .team-grid-2 a[aria-label] > *, .team-grid-3 a[aria-label] > * { width: var(--icon-size) !important; height: var(--icon-size) !important; min-width: var(--icon-size) !important; min-height: var(--icon-size) !important; font-size: var(--icon-size) !important; line-height: var(--icon-size) !important; display: block !important; margin: 0 !important; }
-  [data-cycle] [data-arc] { color: var(--brand-accent); opacity: 0.55; transition: opacity 200ms ease-in-out; }
-  [data-cycle] [data-node] { background: none; border: 0; opacity: 0; pointer-events: none; transform: translate(-50%,-50%); transition: opacity 200ms ease-in-out, transform 200ms ease-in-out; }
-  [data-cycle] [data-node]:focus-visible, [data-cycle] [data-rl]:focus-visible { outline: 2px solid var(--brand-accent); outline-offset: 3px; }
-  [data-cycle][data-active="0"] [data-arc="0"],
-  [data-cycle][data-active="1"] [data-arc="1"],
-  [data-cycle][data-active="2"] [data-arc="2"],
-  [data-cycle][data-active="3"] [data-arc="3"] { opacity: 1; }
-  [data-cycle] [data-node]:hover { transform: translate(-50%,-50%) scale(1.06); }
-  [data-cycle][data-sel="0"] [data-node="0"],
-  [data-cycle][data-sel="1"] [data-node="1"],
-  [data-cycle][data-sel="2"] [data-node="2"],
-  [data-cycle][data-sel="3"] [data-node="3"] { transform: translate(-50%,-50%) scale(1.12); }
-  [data-cycle][data-sel="0"] [data-node="0"]:hover,
-  [data-cycle][data-sel="1"] [data-node="1"]:hover,
-  [data-cycle][data-sel="2"] [data-node="2"]:hover,
-  [data-cycle][data-sel="3"] [data-node="3"]:hover { transform: translate(-50%,-50%) scale(1.16); }
-  /* The open row's number carries the same accent as its lit arc. */
-  [data-cycle][data-sel="0"] [data-rl="0"] [data-num], [data-cycle][data-sel="1"] [data-rl="1"] [data-num],
-  [data-cycle][data-sel="2"] [data-rl="2"] [data-num], [data-cycle][data-sel="3"] [data-rl="3"] [data-num] { color: var(--brand-accent); }
-  /* The reading column is one integrated list: each row is a step title, and the
-     active row opens to hold its copy — the title is never said twice. */
-  [data-cycle] [data-rl] { opacity: 0.45; transition: opacity 200ms ease-in-out; }
-  [data-cycle] [data-rl]:hover { opacity: 1; }
-  [data-cycle][data-sel="0"] [data-rl="0"],
-  [data-cycle][data-sel="1"] [data-rl="1"],
-  [data-cycle][data-sel="2"] [data-rl="2"],
-  [data-cycle][data-sel="3"] [data-rl="3"] { opacity: 1; }
-  [data-cycle] [data-body] { max-height: 0; overflow: hidden; transition: max-height 200ms ease-out; }
-  [data-cycle] [data-body] p { opacity: 0; transition: opacity 120ms ease-in-out; }
-  [data-cycle][data-sel="0"] [data-body="0"],
-  [data-cycle][data-sel="1"] [data-body="1"],
-  [data-cycle][data-sel="2"] [data-body="2"],
-  [data-cycle][data-sel="3"] [data-body="3"] { max-height: 26rem; transition: max-height 420ms ease-out 200ms; }
-  [data-cycle][data-sel="0"] [data-body="0"] p,
-  [data-cycle][data-sel="1"] [data-body="1"] p,
-  [data-cycle][data-sel="2"] [data-body="2"] p,
-  [data-cycle][data-sel="3"] [data-body="3"] p { opacity: 1; transition: opacity 260ms ease-in-out 340ms; }
-  @media (max-width: 991px) {
-    [data-cycle][data-sel="0"] [data-body="0"],
-    [data-cycle][data-sel="1"] [data-body="1"],
-    [data-cycle][data-sel="2"] [data-body="2"],
-    [data-cycle][data-sel="3"] [data-body="3"] { max-height: 40rem; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    [data-cycle] [data-arc], [data-cycle] [data-node], [data-cycle] [data-rl], [data-cycle] [data-body], [data-cycle] [data-body] p { transition: none; }
-  }
+  /* The cycle wheel's state styling lives with its component now — see
+     assets/cycle-wheel.css, enqueued above with cycle-wheel.js. */
   /* The two things the page has to tell the hero scrub, and they are both about the page
      rather than about the sequence. --hb-pin is the header's height; the element reads it
      back off its own stage, and hero-bridge.css derives the stage's height, the approach's
@@ -651,12 +610,16 @@
 
         <!-- The AugmentED R&D Cycle wheel, moved here from the Approach page in
              place of the long scroll-scrubbed bridge build. The reader's own scroll
-             builds the ring; clicking or focusing a node moves the page to that stage's
-             beat rather than pinning it, and hover only scales the icon. -->
-        <div data-diagram="" style="margin-inline:auto;max-width:70rem">
-          <div class="at-desktop" data-cycle-rig="" style="height:260vh">
-          <div style="position:sticky;top:4.5rem;height:calc(100vh - 4.5rem);height:calc(100svh - 4.5rem);display:flex;align-items:center">
-          <div data-cycle="" data-active="{{ activeStep }}" data-sel="{{ activeStep }}" style="width:100%;display:grid;grid-template-columns:minmax(0,1.04fr) minmax(0,0.96fr);column-gap:clamp(3rem,6vw,6rem);align-items:center">
+             builds the ring; clicking a node or a row travels the page to that stage's
+             beat, keyboard focus opens a stage in place, and hover only scales the
+             icon. The behavior is <cycle-wheel> — assets/cycle-wheel.js and .css, a
+             standalone element like the hero and the CTA, driving only the markup
+             below. Contract at the top of the JS; full spec, latch measurement
+             included, in wordpress-handoff/sections/cycle.md. -->
+        <cycle-wheel data-diagram="" style="display:block;margin-inline:auto;max-width:70rem">
+          <div data-cycle-rig="">
+          <div data-cycle-stage="">
+          <div data-cycle="" data-active="0" data-sel="0" style="width:100%;display:grid;grid-template-columns:minmax(0,1.04fr) minmax(0,0.96fr);column-gap:clamp(3rem,6vw,6rem);align-items:center">
           <div data-diagram-slot="" style="position:relative;width:100%;max-width:33rem;margin-inline:auto;aspect-ratio:1/1;container-type:inline-size">
             <svg viewBox="0 0 780 780" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">
               <g data-arc="0"><path d="M 458.9 149.7 A 250 250 0 0 1 630.3 321.1" fill="none" stroke="currentColor" stroke-width="2" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"></path><polygon points="630.3,321.1 620.1,312.6 634.5,308.4" fill="currentColor" style="opacity:0"></polygon></g>
@@ -664,16 +627,16 @@
               <g data-arc="2"><path d="M 321.1 630.3 A 250 250 0 0 1 149.7 458.9" fill="none" stroke="currentColor" stroke-width="2" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"></path><polygon points="149.7,458.9 159.9,467.4 145.5,471.6" fill="currentColor" style="opacity:0"></polygon></g>
               <g data-arc="3"><path d="M 149.7 321.1 A 250 250 0 0 1 321.1 149.7" fill="none" stroke="currentColor" stroke-width="2" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"></path><polygon points="321.1,149.7 312.6,159.9 308.4,145.5" fill="currentColor" style="opacity:0"></polygon></g>
             </svg>
-            <button type="button" onClick="{{ cycleOn0 }}" onFocus="{{ cycleFocus0 }}" aria-label="Step 01, Define the role" data-node="0" style="opacity:0;position:absolute;width:18.5%;aspect-ratio:1/1;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;left:50%;top:17.95%">
+            <button type="button" aria-label="Step 01, Define the role" data-node="0" style="opacity:0;position:absolute;width:18.5%;aspect-ratio:1/1;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;left:50%;top:17.95%">
               <span style="display:flex;width:86%;height:86%"><img src="assets/approach/cyc01_role_0001.webp" alt="" style="width:100%;height:100%;object-fit:contain;display:block"></span>
             </button>
-            <button type="button" onClick="{{ cycleOn1 }}" onFocus="{{ cycleFocus1 }}" aria-label="Step 02, Build the capabilities" data-node="1" style="opacity:0;position:absolute;width:18.5%;aspect-ratio:1/1;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;left:82.05%;top:50%">
+            <button type="button" aria-label="Step 02, Build the capabilities" data-node="1" style="opacity:0;position:absolute;width:18.5%;aspect-ratio:1/1;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;left:82.05%;top:50%">
               <span style="display:flex;width:86%;height:86%"><img src="assets/approach/cyc02_capabilities_0001.webp" alt="" style="width:100%;height:100%;object-fit:contain;display:block"></span>
             </button>
-            <button type="button" onClick="{{ cycleOn2 }}" onFocus="{{ cycleFocus2 }}" aria-label="Step 03, Co-design the tools" data-node="2" style="opacity:0;position:absolute;width:18.5%;aspect-ratio:1/1;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;left:50%;top:82.05%">
+            <button type="button" aria-label="Step 03, Co-design the tools" data-node="2" style="opacity:0;position:absolute;width:18.5%;aspect-ratio:1/1;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;left:50%;top:82.05%">
               <span style="display:flex;width:86%;height:86%"><img src="assets/approach/cyc03_applications_0002.webp" alt="" style="width:100%;height:100%;object-fit:contain;display:block"></span>
             </button>
-            <button type="button" onClick="{{ cycleOn3 }}" onFocus="{{ cycleFocus3 }}" aria-label="Step 04, Test, learn, begin again" data-node="3" style="opacity:0;position:absolute;width:18.5%;aspect-ratio:1/1;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;left:17.95%;top:50%">
+            <button type="button" aria-label="Step 04, Test, learn, begin again" data-node="3" style="opacity:0;position:absolute;width:18.5%;aspect-ratio:1/1;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;left:17.95%;top:50%">
               <span style="display:flex;width:86%;height:86%"><img src="assets/approach/cyc04_test_0001.webp" alt="" style="width:100%;height:100%;object-fit:contain;display:block"></span>
             </button>
             <div data-hub="" style="opacity:0;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:38%;text-align:center;pointer-events:none">
@@ -685,7 +648,7 @@
           <div>
             <div style="display:flex;flex-direction:column">
               <div>
-                <button type="button" data-rl="0" onClick="{{ cycleOn0 }}" style="display:flex;align-items:baseline;gap:0.875rem;width:100%;padding:1.125rem 0 1rem;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
+                <button type="button" data-rl="0" style="display:flex;align-items:baseline;gap:0.875rem;width:100%;padding:1.125rem 0 1rem;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
                   <span data-num="" style="font-weight:600;font-size:var(--text-tiny,0.75rem);transition:color 200ms ease-in-out">01</span>
                   <span style="font-weight:700;font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em">Define the role</span>
                 </button>
@@ -696,7 +659,7 @@
                 </div>
               </div>
               <div style="border-top:1px solid var(--color-neutral-darkest-15)">
-                <button type="button" data-rl="1" onClick="{{ cycleOn1 }}" style="display:flex;align-items:baseline;gap:0.875rem;width:100%;padding:1.125rem 0 1rem;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
+                <button type="button" data-rl="1" style="display:flex;align-items:baseline;gap:0.875rem;width:100%;padding:1.125rem 0 1rem;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
                   <span data-num="" style="font-weight:600;font-size:var(--text-tiny,0.75rem);transition:color 200ms ease-in-out">02</span>
                   <span style="font-weight:700;font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em">Build the capabilities</span>
                 </button>
@@ -707,7 +670,7 @@
                 </div>
               </div>
               <div style="border-top:1px solid var(--color-neutral-darkest-15)">
-                <button type="button" data-rl="2" onClick="{{ cycleOn2 }}" style="display:flex;align-items:baseline;gap:0.875rem;width:100%;padding:1.125rem 0 1rem;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
+                <button type="button" data-rl="2" style="display:flex;align-items:baseline;gap:0.875rem;width:100%;padding:1.125rem 0 1rem;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
                   <span data-num="" style="font-weight:600;font-size:var(--text-tiny,0.75rem);transition:color 200ms ease-in-out">03</span>
                   <span style="font-weight:700;font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em">Co-design the tools</span>
                 </button>
@@ -718,7 +681,7 @@
                 </div>
               </div>
               <div style="border-top:1px solid var(--color-neutral-darkest-15)">
-                <button type="button" data-rl="3" onClick="{{ cycleOn3 }}" style="display:flex;align-items:baseline;gap:0.875rem;width:100%;padding:1.125rem 0 1rem;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
+                <button type="button" data-rl="3" style="display:flex;align-items:baseline;gap:0.875rem;width:100%;padding:1.125rem 0 1rem;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
                   <span data-num="" style="font-weight:600;font-size:var(--text-tiny,0.75rem);transition:color 200ms ease-in-out">04</span>
                   <span style="font-weight:700;font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em">Test, learn, begin again.</span>
                 </button>
@@ -737,9 +700,9 @@
           </div>
         </div>
 
-        <div class="at-mobile" data-cycle="" data-sel="{{ activeStep }}" style="display:flex;flex-direction:column">
+        <div data-cycle-list="" data-cycle="" data-sel="0" style="display:flex;flex-direction:column">
           <div>
-            <button type="button" data-rl="0" onClick="{{ cycleOn0 }}" style="display:flex;align-items:center;gap:1rem;width:100%;min-height:2.75rem;padding:1.125rem 0;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
+            <button type="button" data-rl="0" style="display:flex;align-items:center;gap:1rem;width:100%;min-height:2.75rem;padding:1.125rem 0;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
               <img src="assets/approach/cyc01_role_0001.webp" alt="" style="flex:0 0 2.75rem;width:2.75rem;height:2.75rem;object-fit:contain;display:block">
               <span style="display:flex;flex-direction:column;gap:0.25rem">
                 <span data-num="" style="font-weight:600;font-size:var(--text-small);letter-spacing:0.1em;transition:color 200ms ease-in-out">01</span>
@@ -753,7 +716,7 @@
             </div>
           </div>
           <div style="border-top:1px solid var(--color-neutral-darkest-15)">
-            <button type="button" data-rl="1" onClick="{{ cycleOn1 }}" style="display:flex;align-items:center;gap:1rem;width:100%;min-height:2.75rem;padding:1.125rem 0;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
+            <button type="button" data-rl="1" style="display:flex;align-items:center;gap:1rem;width:100%;min-height:2.75rem;padding:1.125rem 0;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
               <img src="assets/approach/cyc02_capabilities_0001.webp" alt="" style="flex:0 0 2.75rem;width:2.75rem;height:2.75rem;object-fit:contain;display:block">
               <span style="display:flex;flex-direction:column;gap:0.25rem">
                 <span data-num="" style="font-weight:600;font-size:var(--text-small);letter-spacing:0.1em;transition:color 200ms ease-in-out">02</span>
@@ -767,7 +730,7 @@
             </div>
           </div>
           <div style="border-top:1px solid var(--color-neutral-darkest-15)">
-            <button type="button" data-rl="2" onClick="{{ cycleOn2 }}" style="display:flex;align-items:center;gap:1rem;width:100%;min-height:2.75rem;padding:1.125rem 0;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
+            <button type="button" data-rl="2" style="display:flex;align-items:center;gap:1rem;width:100%;min-height:2.75rem;padding:1.125rem 0;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
               <img src="assets/approach/cyc03_applications_0002.webp" alt="" style="flex:0 0 2.75rem;width:2.75rem;height:2.75rem;object-fit:contain;display:block">
               <span style="display:flex;flex-direction:column;gap:0.25rem">
                 <span data-num="" style="font-weight:600;font-size:var(--text-small);letter-spacing:0.1em;transition:color 200ms ease-in-out">03</span>
@@ -781,7 +744,7 @@
             </div>
           </div>
           <div style="border-top:1px solid var(--color-neutral-darkest-15)">
-            <button type="button" data-rl="3" onClick="{{ cycleOn3 }}" style="display:flex;align-items:center;gap:1rem;width:100%;min-height:2.75rem;padding:1.125rem 0;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
+            <button type="button" data-rl="3" style="display:flex;align-items:center;gap:1rem;width:100%;min-height:2.75rem;padding:1.125rem 0;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
               <img src="assets/approach/cyc04_test_0001.webp" alt="" style="flex:0 0 2.75rem;width:2.75rem;height:2.75rem;object-fit:contain;display:block">
               <span style="display:flex;flex-direction:column;gap:0.25rem">
                 <span data-num="" style="font-weight:600;font-size:var(--text-small);letter-spacing:0.1em;transition:color 200ms ease-in-out">04</span>
@@ -797,7 +760,7 @@
           <p style="font-size:var(--text-small);line-height:1.5;margin:1.5rem 0 0;opacity:0.7;text-wrap:pretty">Tap a step to read more. Each turn of the cycle informs the next.</p>
 
         </div>
-      </div>
+      </cycle-wheel>
     </div></section>
 
 
@@ -1569,12 +1532,11 @@ function readRoute() {
 
 class Component extends DCLogic {
   route = readRoute();
-  state = { page: this.route.page, navOpen: false, cycleStep: 0 };
+  state = { page: this.route.page, navOpen: false };
   lastPage = this.route.page;
 
   componentDidMount() {
     document.title = TITLES[this.state.page] || TITLES.home;
-    this.reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     // Back and forward move between pages the way they would on a normal site.
     this.onPopState = () => this.show(readRoute().page);
     window.addEventListener("popstate", this.onPopState);
@@ -1612,21 +1574,17 @@ class Component extends DCLogic {
     this.syncApproachOffset();
     this.approachTimer = setInterval(this.syncApproachOffset, 250);
 
-    // The hero's rising block kit used to be driven from here. The falling-blocks
-    // element replaced it and listens for its own scroll, so nothing carries
-    // [data-parallax] any more and the loop that moved them has gone with them.
-    this.onScroll = () => {
-      this.cycleBuild();
-      this.sweep();
-    };
+    // The hero's rising block kit used to be driven from here, and the cycle
+    // wheel after it. Both are their own elements now — falling-blocks and
+    // cycle-wheel each listen for their own scroll — so this handler has only the
+    // reveal sweep left to run.
+    this.onScroll = () => this.sweep();
     window.addEventListener("scroll", this.onScroll, { passive: true });
     window.addEventListener("resize", this.onScroll, { passive: true });
     this.sweep();
-    this.cycleBuild();
   }
 
   componentWillUnmount() {
-    if (this.travRaf) cancelAnimationFrame(this.travRaf);
     window.removeEventListener("popstate", this.onPopState);
     window.removeEventListener("keydown", this.onKeyDown);
     document.body.style.overflow = "";
@@ -1639,19 +1597,13 @@ class Component extends DCLogic {
   componentDidUpdate(prevProps, prevState) {
     document.body.style.overflow = this.state.navOpen ? "hidden" : "";
     // The runtime invokes this with prevProps only, so prevState is undefined —
-    // reading it threw on every update and swallowed the three ticks below.
+    // reading it threw on every update and swallowed the sweep below.
     // go() already scrolls to the top, so track the page change ourselves.
     if (this.lastPage !== this.state.page) {
       this.lastPage = this.state.page;
       window.scrollTo(0, 0);
-      // Only a page change starts the ring over — this hook also runs on every
-      // scroll-driven step change, and clearing the latch there un-built the cycle.
-      this.cycleDone = false;
     }
     if (this.sweep) requestAnimationFrame(this.sweep);
-    this.builtP = null;
-    this.paintedSel = null;
-    requestAnimationFrame(() => this.cycleBuild());
   }
 
   // The URL a page lives at, relative to wherever the site is mounted.
@@ -1667,7 +1619,7 @@ class Component extends DCLogic {
   show(page) {
     document.title = TITLES[page] || TITLES.home;
     window.scrollTo(0, 0);
-    this.setState({ page: page, navOpen: false, cycleStep: 0 }, () => {
+    this.setState({ page: page, navOpen: false }, () => {
       window.scrollTo(0, 0);
       if (this.sweep) requestAnimationFrame(this.sweep);
     });
@@ -1687,122 +1639,15 @@ class Component extends DCLogic {
     };
   }
 
-  // The ring builds itself with the reader's own scroll — each arc draws out of
-  // the previous step's node, the next node settles in, and the last arc closes
-  // the loop back into 01. Reversible, unpinned, and done by the time the wheel
-  // is fully in view; the reading column never moves with it.
-  cycleBuild() {
-    const rig = document.querySelector("[data-cycle-rig]");
-    if (!rig || !rig.offsetHeight) return;
-    const stage = rig.firstElementChild;
-    const span = rig.offsetHeight - stage.offsetHeight;
-    const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
-    const p = clamp01((72 - rig.getBoundingClientRect().top) / (span || 1));
-    // One clock for everything: the pinned travel is split into four equal
-    // beats, and beat i is when step i's tab is open AND its arc is drawing —
-    // the ring's growth and the reading column walk in lockstep. Each beat ends
-    // with the next node settling in; the last beat closes the loop into 01 and
-    // the hub signs it off.
-    // The latch has to land on or after the last arc's own close, and that is 0.97,
-    // not 0.92: arc i draws over seg(i*0.25 + 0.05, +0.17), so arc 3 runs 0.80 to 0.97.
-    // 0.92 is where the hub's closing line starts fading, below. Latching at 0.93
-    // measured a jump of 25.8 dashoffset units in one 9px scroll step at 1440x900 —
-    // a quarter of the final arc and its arrowhead appearing at once, and unlike every
-    // other change to this value it is not eased, because stroke-dashoffset carries no
-    // transition. The 0.03 of travel this gives back is 45px there, and it is travel
-    // the hub line is still using anyway.
-    if (p > 0.97) this.cycleDone = true;
-    const b = this.reduced || this.cycleDone ? 1 : p;
-    const sel = this.state.cycleStep || 0;
-    const seg = (a, c) => clamp01((b - a) / (c - a));
-    const grown = (i) => (this.cycleDone || i <= sel ? 1 : i === 0 ? seg(0, 0.04) : seg((i - 1) * 0.25 + 0.2, i * 0.25));
-    // Geometry: only moves while the build is still progressing.
-    if (b !== this.builtP) {
-      this.builtP = b;
-      for (let i = 0; i < 4; i++) {
-        const arc = document.querySelector('[data-arc="' + i + '"]');
-        if (arc) {
-          const path = arc.querySelector("path"), head = arc.querySelector("polygon");
-          const a0 = i * 0.25 + 0.05;
-          if (path) path.style.strokeDashoffset = (100 * (1 - seg(a0, a0 + 0.17))).toFixed(2);
-          if (head) head.style.opacity = seg(a0 + 0.14, a0 + 0.17).toFixed(3);
-        }
-      }
-      // The wheel is named from the first beat — the reader always knows what
-      // they are looking at; only its closing line waits for the loop to close.
-      const hub = document.querySelector("[data-hub]");
-      if (hub) hub.style.opacity = seg(0, 0.05).toFixed(3);
-      const line = document.querySelector("[data-hub-line]");
-      if (line) line.style.opacity = (0.7 * seg(0.92, 1)).toFixed(3);
-    }
-    // Selection: repaints whenever the open stage changes, latched or not.
-    const key = sel + "|" + b;
-    if (key !== this.paintedSel) {
-      this.paintedSel = key;
-      for (let i = 0; i < 4; i++) {
-        const node = document.querySelector('[data-node="' + i + '"]');
-        if (!node) continue;
-        const built = grown(i);
-        node.style.opacity = (built * (i === sel ? 1 : 0.42)).toFixed(3);
-        // No hover target until the icon is actually on screen.
-        node.style.pointerEvents = built > 0.9 ? "auto" : "none";
-        node.disabled = built <= 0.9;
-        const arc = document.querySelector('[data-arc="' + i + '"]');
-        if (arc) arc.style.opacity = i === sel ? "1" : "";
-      }
-    }
-    // The visitor's own pointer outranks the scroll clock.
-    const at = Math.min(3, Math.floor(p / 0.25));
-    if (this.state.cycleStep !== at) this.setState({ cycleStep: at });
-  }
-
-  cycleSelect(i) {
-    // Keyboard focus reads a stage without moving the page.
-    if (this.state.cycleStep !== i) this.setState({ cycleStep: i }, () => this.cycleBuild());
-  }
-
-  cycleGo(i) {
-    const rig = document.querySelector("[data-cycle-rig]");
-    // Mobile has no pinned run — the list just opens.
-    if (!rig || !rig.offsetHeight || rig.offsetParent === null) { this.cycleSelect(i); return; }
-    const span = rig.offsetHeight - rig.firstElementChild.offsetHeight;
-    const top = rig.getBoundingClientRect().top + (window.scrollY || 0);
-    // Land mid-beat, where the stage is unambiguously the active one.
-    const target = Math.round(top - 72 + (i * 0.25 + 0.125) * span);
-    if (this.travRaf) { cancelAnimationFrame(this.travRaf); this.travRaf = null; }
-    if (this.reduced) { window.scrollTo(0, target); return; }
-    const from = window.scrollY || 0;
-    if (Math.abs(target - from) < 2) return;
-    const dur = 520, t0 = performance.now();
-    const step = (now) => {
-      let t = (now - t0) / dur;
-      t = t < 0 ? 0 : t > 1 ? 1 : t;
-      const e = t * t * (3 - 2 * t);
-      window.scrollTo(0, Math.round(from + (target - from) * e));
-      if (t < 1) this.travRaf = requestAnimationFrame(step);
-      else { this.travRaf = null; window.scrollTo(0, target); }
-    };
-    this.travRaf = requestAnimationFrame(step);
-  }
+  // The R&D cycle wheel used to be driven from here — a scroll clock, a latch
+  // and an eased travel written against this runtime. It is <cycle-wheel> now
+  // (assets/cycle-wheel.js), a standalone element like the hero and the CTA, so
+  // the page's whole animated surface ports by copying files. Nothing in this
+  // component references it any more.
 
   renderVals() {
     const open = this.state.navOpen;
-    const active = this.state.cycleStep;
-    const cycle = {
-      activeStep: String(active == null ? 0 : active)
-    };
-    for (let i = 0; i < 4; i++) {
-      // A click travels, a focus does not. Pointing at a node is not a request to read
-      // it — only the CSS hover scale answers that — but arriving by keyboard has no
-      // scroll of its own, so focus opens the stage where it stands.
-      cycle["cycleOn" + i] = () => this.cycleGo(i);
-      cycle["cycleFocus" + i] = (e) => {
-        if (e && e.target && e.target.focus) e.target.focus({ preventScroll: true });
-        this.cycleSelect(i);
-      };
-    }
     return {
-      ...cycle,
       isHome: this.state.page === "home",
       isChallenge: this.state.page === "challenge",
       isApproach: this.state.page === "approach",

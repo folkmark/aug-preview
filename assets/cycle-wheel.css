@@ -1,0 +1,75 @@
+/* <cycle-wheel> — layout mechanics and state styling for the R&D cycle ring.
+   Everything here keys off the component's own hooks (data-cycle-rig,
+   data-cycle-stage, data-cycle-list, data-cycle and its data-sel/data-active),
+   so the host page needs no utility classes of its own. The script reads the
+   sticky offset back off [data-cycle-stage]'s computed top, so --cw-pin is the
+   one value a host with a different header sets. */
+
+/* Two arms, one breakpoint. 992px is the design system's only type-scale break,
+   which is why it is the split everywhere on this site. */
+@media (max-width: 991px) { cycle-wheel [data-cycle-rig] { display: none; } }
+@media (min-width: 992px) { cycle-wheel [data-cycle-list] { display: none; } }
+
+/* The rig's height is the scroll budget: the pinned travel is height minus one
+   stage, split into four equal beats by the script. Raise it and the ring builds
+   more slowly; the beats stay equal. 260vh here is 160vh-and-a-header of pinned
+   travel — roughly 40vh of scroll per beat. */
+cycle-wheel [data-cycle-rig] { height: 260vh; }
+cycle-wheel [data-cycle-stage] {
+  position: sticky;
+  top: var(--cw-pin, 4.5rem);
+  height: calc(100vh - var(--cw-pin, 4.5rem));
+  height: calc(100svh - var(--cw-pin, 4.5rem));
+  display: flex;
+  align-items: center;
+}
+
+cycle-wheel [data-cycle] [data-arc] { color: var(--brand-accent, #255799); opacity: 0.55; transition: opacity 200ms ease-in-out; }
+cycle-wheel [data-cycle] [data-node] { background: none; border: 0; opacity: 0; pointer-events: none; transform: translate(-50%,-50%); transition: opacity 200ms ease-in-out, transform 200ms ease-in-out; }
+cycle-wheel [data-cycle] [data-node]:focus-visible, cycle-wheel [data-cycle] [data-rl]:focus-visible { outline: 2px solid var(--brand-accent, #255799); outline-offset: 3px; }
+cycle-wheel [data-cycle][data-active="0"] [data-arc="0"],
+cycle-wheel [data-cycle][data-active="1"] [data-arc="1"],
+cycle-wheel [data-cycle][data-active="2"] [data-arc="2"],
+cycle-wheel [data-cycle][data-active="3"] [data-arc="3"] { opacity: 1; }
+cycle-wheel [data-cycle] [data-node]:hover { transform: translate(-50%,-50%) scale(1.06); }
+cycle-wheel [data-cycle][data-sel="0"] [data-node="0"],
+cycle-wheel [data-cycle][data-sel="1"] [data-node="1"],
+cycle-wheel [data-cycle][data-sel="2"] [data-node="2"],
+cycle-wheel [data-cycle][data-sel="3"] [data-node="3"] { transform: translate(-50%,-50%) scale(1.12); }
+cycle-wheel [data-cycle][data-sel="0"] [data-node="0"]:hover,
+cycle-wheel [data-cycle][data-sel="1"] [data-node="1"]:hover,
+cycle-wheel [data-cycle][data-sel="2"] [data-node="2"]:hover,
+cycle-wheel [data-cycle][data-sel="3"] [data-node="3"]:hover { transform: translate(-50%,-50%) scale(1.16); }
+/* The open row's number carries the same accent as its lit arc. */
+cycle-wheel [data-cycle][data-sel="0"] [data-rl="0"] [data-num], cycle-wheel [data-cycle][data-sel="1"] [data-rl="1"] [data-num],
+cycle-wheel [data-cycle][data-sel="2"] [data-rl="2"] [data-num], cycle-wheel [data-cycle][data-sel="3"] [data-rl="3"] [data-num] { color: var(--brand-accent, #255799); }
+/* The reading column is one integrated list: each row is a step title, and the
+   active row opens to hold its copy — the title is never said twice. */
+cycle-wheel [data-cycle] [data-rl] { opacity: 0.45; transition: opacity 200ms ease-in-out; }
+cycle-wheel [data-cycle] [data-rl]:hover { opacity: 1; }
+cycle-wheel [data-cycle][data-sel="0"] [data-rl="0"],
+cycle-wheel [data-cycle][data-sel="1"] [data-rl="1"],
+cycle-wheel [data-cycle][data-sel="2"] [data-rl="2"],
+cycle-wheel [data-cycle][data-sel="3"] [data-rl="3"] { opacity: 1; }
+cycle-wheel [data-cycle] [data-body] { max-height: 0; overflow: hidden; transition: max-height 200ms ease-out; }
+cycle-wheel [data-cycle] [data-body] p { opacity: 0; transition: opacity 120ms ease-in-out; }
+/* Close-then-open reads as one motion, not two fighting: the opening row waits
+   200ms for the closing one, and its paragraph fades in later still. */
+cycle-wheel [data-cycle][data-sel="0"] [data-body="0"],
+cycle-wheel [data-cycle][data-sel="1"] [data-body="1"],
+cycle-wheel [data-cycle][data-sel="2"] [data-body="2"],
+cycle-wheel [data-cycle][data-sel="3"] [data-body="3"] { max-height: 26rem; transition: max-height 420ms ease-out 200ms; }
+cycle-wheel [data-cycle][data-sel="0"] [data-body="0"] p,
+cycle-wheel [data-cycle][data-sel="1"] [data-body="1"] p,
+cycle-wheel [data-cycle][data-sel="2"] [data-body="2"] p,
+cycle-wheel [data-cycle][data-sel="3"] [data-body="3"] p { opacity: 1; transition: opacity 260ms ease-in-out 340ms; }
+@media (max-width: 991px) {
+  cycle-wheel [data-cycle][data-sel="0"] [data-body="0"],
+  cycle-wheel [data-cycle][data-sel="1"] [data-body="1"],
+  cycle-wheel [data-cycle][data-sel="2"] [data-body="2"],
+  cycle-wheel [data-cycle][data-sel="3"] [data-body="3"] { max-height: 40rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  cycle-wheel [data-cycle] [data-arc], cycle-wheel [data-cycle] [data-node], cycle-wheel [data-cycle] [data-rl],
+  cycle-wheel [data-cycle] [data-body], cycle-wheel [data-cycle] [data-body] p { transition: none; }
+}

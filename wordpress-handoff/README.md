@@ -14,11 +14,12 @@ where it lives.
 **Key points:**
 
 - The design system, the assets, and the page markup transfer as they are.
-- The three scroll-driven animations are dependency-free custom elements. To port
-  one, copy its files, enqueue them, and emit its markup. Do not rewrite them.
-- The page behaviors written against the prototype's runtime must be rebuilt. Most
-  are trivial. The one intricate case, the R&D cycle wheel, has its own
-  specification: [The cycle wheel](sections/cycle.md).
+- All four scroll behaviors — the hero, the closing CTA, the cycle wheel, and
+  the parked Approach scrub — are dependency-free custom elements. To port one,
+  copy its files, enqueue them, and emit its markup. Do not rewrite them.
+- The few page behaviors written against the prototype's runtime must be
+  rebuilt, and every one of them is small. See
+  [Behaviors to rebuild](#behaviors-to-rebuild).
 - Two decisions need an owner before work starts: where the site lives, and where
   the Follow page's form submits. See [Decisions to make first](#decisions-to-make-first).
 
@@ -35,7 +36,7 @@ truth there; when a spec and the site disagree, the site wins and the spec has a
 | [`content/`](content/) | The structured content as data: team, research, cycle steps, page metadata, redirects. See [its README](content/README.md). |
 | [`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php) | A drop-in for your theme that enqueues the design system and the components correctly. |
 | [`sections/approach.md`](sections/approach.md) | Build specification for the Approach scrub (not currently mounted). |
-| [`sections/cycle.md`](sections/cycle.md) | Build specification for the R&D cycle wheel on the home page. |
+| [`sections/cycle.md`](sections/cycle.md) | Specification and install guide for the `<cycle-wheel>` component. |
 | `../_ds/augmented-design-system-*/` | The design system: tokens, stylesheet, fonts. |
 | `../assets/` | Production images, animation frames, and the three components. |
 | `../docs/approach-render-map.md`, `../docs/hero-bridge-render.md` | Render notes. The authority for frame numbers and for what a re-render needs. |
@@ -44,7 +45,7 @@ truth there; when a spec and the site disagree, the site wins and the spec has a
 
 | Term | Meaning |
 |---|---|
-| **component** | One of the three self-contained custom elements: `<hero-bridge>`, `<falling-blocks>`, `<approach-scrub>`. |
+| **component** | One of the four self-contained custom elements: `<hero-bridge>`, `<falling-blocks>`, `<cycle-wheel>`, `<approach-scrub>`. |
 | **plate** | One rendered artwork image. The animation plates carry alpha and composite directly on the page color. |
 | **frame** | One WebP file in an animation sequence, named by its Blender frame number. |
 | **cut** (or **tier**) | A size variant of a sequence. Each sequence ships in two; a browser fetches one. |
@@ -97,9 +98,8 @@ one before it:
    Our Approach — as page templates from `pages/*.html`, rebuilding the small
    behaviors as you go ([Behaviors to rebuild](#behaviors-to-rebuild)) and
    modeling the team and research content from [`content/`](content/README.md).
-5. Build the home page last: the hero and the falling-blocks CTA install per
-   their sections below; the cycle wheel is a rebuild from
-   [`sections/cycle.md`](sections/cycle.md).
+5. Build the home page last: the hero, the cycle wheel, and the falling-blocks
+   CTA all install per their sections below.
 6. Wire the form to its decided destination
    ([The Follow page form](#the-follow-page-form)).
 7. Configure the environment: metadata from `content/pages.json`, redirects
@@ -263,6 +263,7 @@ produce everything (see [Regenerating the artifacts](#regenerating-the-artifacts
 | `assets/falling-blocks.js` / `.css` | The `<falling-blocks>` component. | See [The falling-blocks CTA](#the-falling-blocks-cta-falling-blocks). |
 | `assets/approach/ap*.webp` + `manifest.json` | Approach sequence: 122 frames × 2 cuts. 6.25 MB full, 4.05 MB crop. | Not currently mounted. Filenames are load-bearing. |
 | `assets/approach/cyc0*.webp` | The four cycle-wheel node icons, 320 px square with alpha. | Used by the home page wheel. Not part of the sequence; the manifest does not track them. |
+| `assets/cycle-wheel.js` / `.css` | The `<cycle-wheel>` component. | See [The cycle wheel](#the-cycle-wheel-cycle-wheel). |
 | `assets/approach.js` / `.css` | The `<approach-scrub>` component. | See [The Approach scrub](#the-approach-scrub-approach-scrub). |
 | `assets/images/`, `assets/team/`, `assets/icons/`, `assets/logo/` | Photography, headshots, marks. | Plain images. The seven portrait photos ship in two widths picked by `srcset`. |
 | `assets/illustrations/{brain,blocks,laptop}.webp` | The three home-page illustrations, 810 × 810 with alpha. | See the note below. |
@@ -284,10 +285,12 @@ notes in `../docs/` stayed, and they are the authority for frame numbers.
 
 ## The components
 
-Three animations are already portable. Each is a dependency-free custom element
-with no framework and no build step. Each one drives markup the page authors, so
-nothing a block editor does can leave it half-constructed, and each degrades to a
-still image when its script does not run.
+The page's four scroll behaviors are all portable. Each is a dependency-free
+custom element with no framework and no build step. Each one drives markup the
+page authors, so nothing a block editor does can leave it half-constructed, and
+each degrades safely when its script does not run: the canvas rigs to their
+still image, the cycle wheel to its reading column, which is real text either
+way.
 
 ### Rules that apply to every component
 
@@ -529,6 +532,31 @@ falling-blocks {
 The full markup contract and every attribute are documented at the top of
 `assets/falling-blocks.js`.
 
+### The cycle wheel (`<cycle-wheel>`)
+
+The home page's R&D cycle: a ring of four icon nodes the reader's own scroll
+draws, arc by arc, in lockstep with a reading column of four expandable rows.
+Clicking a node or a row travels the page to that step's beat; keyboard focus
+opens a step in place; the build latches once complete. Below 992 px the wheel
+is a plain accordion. No frames and no canvas — the only images are the four
+icons — so this is the lightest component to install.
+
+To install it:
+
+1. Copy `assets/cycle-wheel.js`, `assets/cycle-wheel.css`, and the four icon
+   files (`assets/approach/cyc0*.webp`) into the theme.
+2. Enqueue the script and stylesheet per the shared rules.
+3. Copy the `<cycle-wheel>` markup from `pages/home.html`, rendering both arms
+   from one content source (`content/cycle.json` holds the four steps).
+4. If the theme's sticky header is not 4.5 rem tall, set
+   `cycle-wheel { --cw-pin: <header height>; }` — the stage's pin and the
+   scroll clock both follow it.
+
+**Read [the specification](sections/cycle.md) before changing its behavior.**
+It documents the beat-windowed clock, the measured 0.97 latch and why that
+value cannot be eased, the click-versus-focus semantics, the repaint
+discipline, and a verification procedure.
+
 ### The Approach scrub (`<approach-scrub>`)
 
 > **Status: not currently mounted.** The client found the long scrub hard going,
@@ -568,7 +596,6 @@ the comments explain *why* — read them before rewriting.
 
 | Behavior | Markup hooks | What it does | Effort |
 |---|---|---|---|
-| The cycle wheel | `data-cycle-rig`, `data-cycle`, `data-arc`, `data-node`, `data-rl`, `data-body`, `data-hub` | The scroll-built R&D cycle ring on the home page. | Moderate. **Specified in [`sections/cycle.md`](sections/cycle.md)** — build from that, not from the runtime code. |
 | Scroll reveal | `data-reveal` (67 uses) | Fades a block in when it enters the viewport. | Trivial: an IntersectionObserver that sets `opacity` to 1. |
 | Body-offset sync | `data-approach-heading`, `data-approach-text` | Drops a two-column body to sit against the middle of its heading; becomes a gap when stacked. | Small: one measured `margin-top`, applied at ≥992 px. |
 | Mobile menu | `navOpen` state | Header hamburger; locks body scroll; Escape closes. | Trivial. |
@@ -582,7 +609,8 @@ Notes:
   reads them. Do not build a mechanism for them.
 - An earlier version of this document listed `data-lift`, `data-gloss`,
   `data-term`, `data-kit`, `data-brick`, `data-on`, and `data-build` behaviors.
-  They no longer exist in the markup.
+  They no longer exist in the markup. The R&D cycle wheel also used to be on
+  this list; it is now the `<cycle-wheel>` component and needs no rebuild.
 
 ## What to delete
 

@@ -203,6 +203,10 @@ for (const p of PAGES) {
     // session happened to compute.
     doc.querySelectorAll('[data-reveal]').forEach((el) => { el.style.opacity = '0'; });
     doc.querySelectorAll('[data-approach-text]').forEach((el) => el.style.removeProperty('margin-top'));
+    // The wheel's paint keys are session state with the same hazard as the canvas
+    // frame tags: serialised into a page, they claim a ring is painted that is not.
+    // The element clears them on boot too, but the handoff reads as authored markup.
+    doc.querySelectorAll('[data-cycle]').forEach((w) => { delete w.dataset.cwg; delete w.dataset.cwk; });
     doc.querySelectorAll('[data-cycle] [data-arc] path').forEach((p) => p.removeAttribute('style'));
     doc.querySelectorAll('[data-cycle] [data-arc] polygon').forEach((p) => p.setAttribute('style', 'opacity:0'));
     doc.querySelectorAll('[data-cycle] [data-node]').forEach((n) => {

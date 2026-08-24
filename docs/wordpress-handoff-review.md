@@ -15,9 +15,12 @@
 > structured content ships as data in `wordpress-handoff/content/` with
 > `tools/export-content.mjs` to regenerate it, and
 > `wordpress-handoff/wp/augmented-ed-assets.php` implements the enqueue and
-> optimizer-hardening rules as a theme drop-in. Still open: the cycle-wheel
-> *port* (the spec exists; the custom element does not), and every decision that
-> is AERDF's to make.
+> optimizer-hardening rules as a theme drop-in. A third pass finished the last
+> engineering item: the cycle wheel is now `<cycle-wheel>`
+> (`assets/cycle-wheel.js` / `.css`), verified with a 22-check unit suite over
+> the production markup and a 10-check integration run against the built site
+> under the real runtime. Every animated behavior on the page is now a
+> copy-paste component. Still open: only the decisions that are AERDF's to make.
 
 *Written 2026-08-24, on `claude/wordpress-handoff-research-f2l98g`. This reviews
 `wordpress-handoff/` against (a) what aerdf.org actually runs, observed directly on

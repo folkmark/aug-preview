@@ -1,20 +1,23 @@
 # The cycle wheel — build spec
 
 This document specifies the AugmentED R&D Cycle wheel on the home page: the
-scroll-built ring diagram with a synced reading column. It exists because the
-wheel is the one intricate page behavior written against the prototype's runtime,
-so it must be **rebuilt** in WordPress rather than copied. Build from this
-document and the markup in `pages/home.html`; treat the reference site as ground
-truth for feel.
+scroll-built ring diagram with a synced reading column. The wheel is
+`<cycle-wheel>` — `assets/cycle-wheel.js` and `assets/cycle-wheel.css` — a
+dependency-free custom element built to the same doctrine as the other three
+components: it drives markup the page authors and touches no runtime API, so
+porting it is copying files and markup. Install per section 7; read the rest
+when you change how it behaves, and treat the reference site as ground truth
+for feel.
 
-**Audience.** The developer rebuilding the home page. Read
-[the handoff README](../README.md) first for the shared context; read the source
-comments in `index.html` (search for `cycleBuild`) if a number here needs its
-derivation.
+**Audience.** The developer installing or modifying the wheel. Read
+[the handoff README](../README.md) first for the rules shared by all
+components.
 
 **Where the numbers come from.** Every value here is read from the shipping
-files — the markup and CSS in `index.html` and the component script at its
-foot — not estimated.
+files — `assets/cycle-wheel.js`, `assets/cycle-wheel.css`, and the markup in
+`index.html` / `pages/home.html` — not estimated. The element's behavior is
+verified by a scripted pass over exactly these numbers: clock positions, the
+latch, focus and travel semantics, the mobile arm, and reduced motion.
 
 ---
 
@@ -65,18 +68,19 @@ text from `index.html` or the reference site.
 
 ## 2. The markup contract
 
-The desktop and mobile arms are **separate markup**, toggled by the page's
-`.at-desktop` / `.at-mobile` utility classes at 992 px. The step titles and body
-paragraphs are therefore duplicated in the source. In WordPress, render both arms
-from one content source so they cannot drift.
+The element wraps two arms of **separate markup**; `cycle-wheel.css` switches
+them at 992 px on the component's own hooks, so the host page needs no utility
+classes. The step titles and body paragraphs are duplicated across the arms in
+the source. In WordPress, render both arms from one content source so they
+cannot drift.
 
 ### Desktop arm
 
 ```
-[data-diagram]                       max-width: 70rem, centered
-└─ .at-desktop [data-cycle-rig]      height: 260vh — the scroll budget
-   └─ (sticky stage)                 position: sticky; top: 4.5rem;
-      │                              height: calc(100svh − 4.5rem); centers its child
+<cycle-wheel>                        display: block; the page sizes it
+└─ [data-cycle-rig]                  height: 260vh — the scroll budget (component CSS)
+   └─ [data-cycle-stage]             position: sticky; top: var(--cw-pin, 4.5rem);
+      │                              height: calc(100svh − pin); centers its child
       └─ [data-cycle] [data-active=N] [data-sel=N]
          │                           two-column grid: 1.04fr / 0.96fr
          ├─ [data-diagram-slot]      max-width: 33rem; aspect-ratio: 1/1;
@@ -101,14 +105,15 @@ from one content source so they cannot drift.
 
 ### Mobile arm
 
-`.at-mobile [data-cycle] [data-sel=N]`: four rows, each a `<button data-rl>`
-(icon at 2.75 rem, number, title; `min-height: 2.75rem` for a 44 px touch
-target) followed by its `[data-body]`. A helper line closes the list: "Tap a
-step to read more. Each turn of the cycle informs the next."
+`[data-cycle-list]` (which is itself the arm's `[data-cycle]` root, carrying
+`data-sel`): four rows, each a `<button data-rl>` (icon at 2.75 rem, number,
+title; `min-height: 2.75rem` for a 44 px touch target) followed by its
+`[data-body]`. A helper line closes the list: "Tap a step to read more. Each
+turn of the cycle informs the next."
 
 ### State attributes
 
-The script writes the active step *N* into two attributes on the `[data-cycle]`
+The element writes the active step *N* into two attributes on the `[data-cycle]`
 root, and the CSS derives everything visual from them:
 
 | Attribute | Drives |
@@ -128,15 +133,15 @@ One scalar drives the whole desktop presentation.
 ### Progress
 
 ```
-span = rigHeight − stageHeight            // 260vh − (100svh − 4.5rem) of travel
-p    = clamp01((72 − rig.top) / span)     // rig.top from getBoundingClientRect()
+pin  = computed top of [data-cycle-stage]   // --cw-pin resolved, in px
+span = rigHeight − stageHeight              // 260vh − (100svh − pin) of travel
+p    = clamp01((pin − rig.top) / span)      // rig.top from getBoundingClientRect()
 ```
 
-> **Warning: the literal 72 is the sticky offset in pixels (4.5 rem).** It
-> appears in the progress formula and again in the click-travel formula, and it
-> must equal the stage's `top`. If the theme's header height differs, change all
-> three together — or better, read the offset from the stage's computed `top` the
-> way the packaged components do.
+The element reads `pin` back off the stage's computed `top`, so the stylesheet
+and the script cannot disagree: a host with a different header sets `--cw-pin`
+once and both the sticky position and the clock follow. The same `pin` feeds
+the click-travel formula in section 4, which keeps the two exact inverses.
 
 ### The build value, and the latch
 
@@ -167,10 +172,14 @@ The pinned travel splits into four equal beats. Everything below is a
 |---|---|---|
 | Arc *i* path | `[i·0.25 + 0.05, i·0.25 + 0.22]` | `stroke-dashoffset = 100 × (1 − seg)` |
 | Arc *i* arrowhead | `[i·0.25 + 0.19, i·0.25 + 0.22]` | opacity 0 → 1 |
-| Node 0 | `[0, 0.04]` | opacity rises with the build |
-| Node *i* (*i* ≥ 1) | `[(i−1)·0.25 + 0.2, i·0.25]` | settles in as the previous beat ends |
+| Node *i*, *i* > open step | `[(i−1)·0.25 + 0.2, i·0.25]` | settles in as the previous beat ends |
 | Hub caption | `[0, 0.05]` | named from the first beat |
 | Hub closing line | `[0.92, 1]` | opacity 0 → 0.7; waits for the loop to close |
+
+A node at or before the open step is always fully grown — which is why node 0,
+the selected step at boot, is present from the first paint: the wheel opens with
+its entry point already on the ring, and the growth windows apply only to the
+steps the reader has not reached.
 
 A node is interactive only once drawn: below 0.9 of its own growth it is
 `disabled` with `pointer-events: none`, so an undrawn node is never an
@@ -199,8 +208,14 @@ The build runs on every scroll and resize tick, so it caches:
 - Geometry (arcs, heads, hub) repaints only when `b` changes.
 - Selection styling repaints only when `sel + "|" + b` changes.
 
-Reproduce the two caches, or an equivalent, in a rebuild; the handler is on the
-scroll path.
+Both keys are recorded on the wheel's own root (`data-cwg`, `data-cwk`), not in
+the element instance — the same discipline as the canvas components' frame tags:
+a framework that replaces the subtree gets a full repaint instead of a stale
+ring, and the element clears both keys on boot so a full-page cache that
+serialized them cannot leave the next visitor un-repainted. The element also
+runs a 250 ms insurance tick that repaints geometry only; it deliberately never
+re-asserts the scroll-derived step, or it would silently revert a selection the
+keyboard just made.
 
 ---
 
@@ -227,9 +242,9 @@ place.
 
 ## 5. The CSS mechanics
 
-The wheel's stylesheet lives in the page head (search `[data-cycle]` in
-`index.html`); port it with the markup. The parts that look incidental and are
-not:
+The wheel's stylesheet is `assets/cycle-wheel.css`, scoped under the
+`cycle-wheel` element so it cannot leak into a host theme. The parts that look
+incidental and are not:
 
 - **Arcs** are `color: var(--brand-accent)` at opacity 0.55; the
   `data-active` arc is 1. Drawing uses `pathLength="100"` on each path so the
@@ -260,24 +275,28 @@ not:
 
 ---
 
-## 7. Rebuilding it in WordPress
+## 7. Installing it in WordPress
 
-The prototype implements the wheel inside its page runtime; none of that code
-ports. The clean rebuild is a fourth custom element in the pattern of the three
-packaged components — markup authored in the template, element drives it, no
-framework — or a small plain-JS module. Either way:
+The wheel installs like the other components:
 
-1. Render both arms (desktop and mobile) from one content source: four steps of
-   number, title, body, icon.
-2. Emit the markup contract in section 2, including `pathLength="100"` on the
-   arc paths and the two state attributes on the root.
-3. Implement the clock in section 3 against native scroll position, with the
-   latch and the two repaint caches.
-4. Implement click travel and focus-in-place per section 4, honoring reduced
-   motion.
-5. Port the CSS block per section 5.
-6. Derive the sticky offset from the theme header once, and use it in the
-   stage's `top`, the progress formula, and the travel formula.
+1. Copy `assets/cycle-wheel.js`, `assets/cycle-wheel.css`, and the four icon
+   files (`assets/approach/cyc0*.webp`) into the theme.
+2. Enqueue the script and stylesheet per the shared rules —
+   [`wp/augmented-ed-assets.php`](../wp/augmented-ed-assets.php) already does.
+3. Emit the markup contract in section 2. Copy it from `pages/home.html`, and
+   render both arms from one content source (`content/cycle.json` holds the four
+   steps) so they cannot drift. Keep `pathLength="100"` on the arc paths and the
+   two state attributes on each root.
+4. If the theme's sticky header is not 4.5 rem tall, set the pin once:
+
+   ```css
+   cycle-wheel { --cw-pin: 6rem; }   /* 0 if nothing is sticky */
+   ```
+
+   The stage's position and the scroll clock both follow it; nothing else needs
+   to change.
+5. To change the pace, change the rig height (`[data-cycle-rig]`'s 260vh in
+   `cycle-wheel.css`). The four beats stay equal shares of whatever you set.
 
 ### Verification
 
