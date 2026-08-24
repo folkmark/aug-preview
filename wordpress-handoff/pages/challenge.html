@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- exported from 91724dd127004fb66db8bed2558b6ffb2679b4e7 by tools/export-static.mjs -->
+<!-- exported from 6216c3bd3a6bad473c49d989ca8b1b5b86efc556 by tools/export-static.mjs -->
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,7 +19,7 @@
 <style>html, body { margin: 0; background: #fdfcfa; }</style>
 
 <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" data-bg-color="#FBF9F4"><rect width="120" height="120" fill="#FBF9F4"></rect><g fill="none" stroke="#255799" stroke-width="7" stroke-linecap="square"><path d="M36 86V60a24 24 0 0 1 48 0v26"></path><path d="M28 86h64"></path></g></svg></template>
-<link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/fonts.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/colors.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/typography.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/layout.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/icons.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/schemes.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/base.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/styles.css"><link rel="stylesheet" href="../../assets/hero-bridge.css"><script src="../../assets/hero-bridge.js" defer=""></script><link rel="stylesheet" href="../../assets/falling-blocks.css"><script src="../../assets/falling-blocks.js" defer=""></script><style>body { margin: 0; background: var(--surface-page); }
+<link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/fonts.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/colors.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/typography.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/layout.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/icons.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/schemes.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/base.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/styles.css"><link rel="stylesheet" href="../../assets/hero-bridge.css"><script src="../../assets/hero-bridge.js" defer=""></script><link rel="stylesheet" href="../../assets/falling-blocks.css"><script src="../../assets/falling-blocks.js" defer=""></script><link rel="stylesheet" href="../../assets/cycle-wheel.css"><script src="../../assets/cycle-wheel.js" defer=""></script><style>body { margin: 0; background: var(--surface-page); }
   /* The intrinsic width/height attributes are there to reserve the box before the
      bytes arrive, not to size the image: every one of these is sized by CSS, and
      without this the height attribute would fight a CSS width and squash it. Where
@@ -43,52 +43,8 @@
   .team-grid-2 img, .team-grid-3 img, .team-grid-2 > div > div:first-child, .team-grid-3 > div > div:first-child { margin-bottom: var(--space-4) !important; }
   .team-grid-2 a[aria-label], .team-grid-3 a[aria-label] { width: var(--icon-size); height: var(--icon-size); align-items: center; justify-content: center; flex: 0 0 auto; }
   .team-grid-2 a[aria-label] > *, .team-grid-3 a[aria-label] > * { width: var(--icon-size) !important; height: var(--icon-size) !important; min-width: var(--icon-size) !important; min-height: var(--icon-size) !important; font-size: var(--icon-size) !important; line-height: var(--icon-size) !important; display: block !important; margin: 0 !important; }
-  [data-cycle] [data-arc] { color: var(--brand-accent); opacity: 0.55; transition: opacity 200ms ease-in-out; }
-  [data-cycle] [data-node] { background: none; border: 0; opacity: 0; pointer-events: none; transform: translate(-50%,-50%); transition: opacity 200ms ease-in-out, transform 200ms ease-in-out; }
-  [data-cycle] [data-node]:focus-visible, [data-cycle] [data-rl]:focus-visible { outline: 2px solid var(--brand-accent); outline-offset: 3px; }
-  [data-cycle][data-active="0"] [data-arc="0"],
-  [data-cycle][data-active="1"] [data-arc="1"],
-  [data-cycle][data-active="2"] [data-arc="2"],
-  [data-cycle][data-active="3"] [data-arc="3"] { opacity: 1; }
-  [data-cycle] [data-node]:hover { transform: translate(-50%,-50%) scale(1.06); }
-  [data-cycle][data-sel="0"] [data-node="0"],
-  [data-cycle][data-sel="1"] [data-node="1"],
-  [data-cycle][data-sel="2"] [data-node="2"],
-  [data-cycle][data-sel="3"] [data-node="3"] { transform: translate(-50%,-50%) scale(1.12); }
-  [data-cycle][data-sel="0"] [data-node="0"]:hover,
-  [data-cycle][data-sel="1"] [data-node="1"]:hover,
-  [data-cycle][data-sel="2"] [data-node="2"]:hover,
-  [data-cycle][data-sel="3"] [data-node="3"]:hover { transform: translate(-50%,-50%) scale(1.16); }
-  /* The open row's number carries the same accent as its lit arc. */
-  [data-cycle][data-sel="0"] [data-rl="0"] [data-num], [data-cycle][data-sel="1"] [data-rl="1"] [data-num],
-  [data-cycle][data-sel="2"] [data-rl="2"] [data-num], [data-cycle][data-sel="3"] [data-rl="3"] [data-num] { color: var(--brand-accent); }
-  /* The reading column is one integrated list: each row is a step title, and the
-     active row opens to hold its copy — the title is never said twice. */
-  [data-cycle] [data-rl] { opacity: 0.45; transition: opacity 200ms ease-in-out; }
-  [data-cycle] [data-rl]:hover { opacity: 1; }
-  [data-cycle][data-sel="0"] [data-rl="0"],
-  [data-cycle][data-sel="1"] [data-rl="1"],
-  [data-cycle][data-sel="2"] [data-rl="2"],
-  [data-cycle][data-sel="3"] [data-rl="3"] { opacity: 1; }
-  [data-cycle] [data-body] { max-height: 0; overflow: hidden; transition: max-height 200ms ease-out; }
-  [data-cycle] [data-body] p { opacity: 0; transition: opacity 120ms ease-in-out; }
-  [data-cycle][data-sel="0"] [data-body="0"],
-  [data-cycle][data-sel="1"] [data-body="1"],
-  [data-cycle][data-sel="2"] [data-body="2"],
-  [data-cycle][data-sel="3"] [data-body="3"] { max-height: 26rem; transition: max-height 420ms ease-out 200ms; }
-  [data-cycle][data-sel="0"] [data-body="0"] p,
-  [data-cycle][data-sel="1"] [data-body="1"] p,
-  [data-cycle][data-sel="2"] [data-body="2"] p,
-  [data-cycle][data-sel="3"] [data-body="3"] p { opacity: 1; transition: opacity 260ms ease-in-out 340ms; }
-  @media (max-width: 991px) {
-    [data-cycle][data-sel="0"] [data-body="0"],
-    [data-cycle][data-sel="1"] [data-body="1"],
-    [data-cycle][data-sel="2"] [data-body="2"],
-    [data-cycle][data-sel="3"] [data-body="3"] { max-height: 40rem; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    [data-cycle] [data-arc], [data-cycle] [data-node], [data-cycle] [data-rl], [data-cycle] [data-body], [data-cycle] [data-body] p { transition: none; }
-  }
+  /* The cycle wheel's state styling lives with its component now — see
+     ../../assets/cycle-wheel.css, enqueued above with cycle-wheel.js. */
   /* The two things the page has to tell the hero scrub, and they are both about the page
      rather than about the sequence. --hb-pin is the header's height; the element reads it
      back off its own stage, and hero-bridge.css derives the stage's height, the approach's

@@ -103,12 +103,14 @@ expect(research.length === 3, `research: expected 3 cards, parsed ${research.len
 // which carries the same copy as the desktop arm in a flatter shape. Icons come
 // from the row markup itself.
 // ---------------------------------------------------------------------------
-// Anchor on the arm's own closing helper line and take the *nearest* at-mobile
-// before it: the first at-mobile on the page is the header nav's, and slicing
-// from there sweeps the desktop wheel in and mispairs its icons with the
-// reading column's numbers.
+// Anchor on the arm's own closing helper line and take the nearest
+// data-cycle-list before it — the cycle-wheel component's hook for the mobile
+// arm. Anchoring on the page's at-mobile utility class was tried twice and
+// wrong twice: the header nav carries it too, and slicing from there sweeps
+// the desktop wheel in and mispairs its icons with the reading column's
+// numbers.
 const tapAt = homeHtml.indexOf('Tap a step');
-const mobileArm = homeHtml.slice(homeHtml.lastIndexOf('at-mobile', tapAt), tapAt);
+const mobileArm = homeHtml.slice(homeHtml.lastIndexOf('data-cycle-list', tapAt), tapAt);
 const cycle = [...mobileArm.matchAll(
   /<img src="\.\.\/\.\.\/(assets\/approach\/cyc[^"]+)"[\s\S]*?<span[^>]*data-num[^>]*>(\d\d)<\/span>\s*<span[^>]*>([^<]+)<\/span>[\s\S]*?<p[^>]*>([^<]+)<\/p>/g
 )].map((m) => ({ number: m[2], title: decode(m[3]), body: decode(m[4]), icon: m[1] }));
