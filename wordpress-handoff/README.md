@@ -35,8 +35,10 @@ truth there; when a spec and the site disagree, the site wins and the spec has a
 | [`pages/`](pages/) | Each route as rendered HTML. Build templates from these files, not from `index.html`. |
 | [`content/`](content/) | The structured content as data: team, research, cycle steps, page metadata, redirects. See [its README](content/README.md). |
 | [`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php) | A drop-in for your theme that enqueues the design system and the components correctly. |
+| [`sections/hero-bridge.md`](sections/hero-bridge.md) | Build specification for the hero bridge. |
+| [`sections/falling-blocks.md`](sections/falling-blocks.md) | Build specification for the falling-blocks CTA. |
+| [`sections/cycle.md`](sections/cycle.md) | Build specification for the cycle wheel. |
 | [`sections/approach.md`](sections/approach.md) | Build specification for the Approach scrub (not currently mounted). |
-| [`sections/cycle.md`](sections/cycle.md) | Specification and install guide for the `<cycle-wheel>` component. |
 | `../_ds/augmented-design-system-*/` | The design system: tokens, stylesheet, fonts. |
 | `../assets/` | Production images, animation frames, and the three components. |
 | `../docs/approach-render-map.md`, `../docs/hero-bridge-render.md` | Render notes. The authority for frame numbers and for what a re-render needs. |
@@ -292,6 +294,13 @@ each degrades safely when its script does not run: the canvas rigs to their
 still image, the cycle wheel to its reading column, which is real text either
 way.
 
+**Each component also has a full build specification in
+[`sections/`](sections/)** — the asset contract, the math, the design decisions,
+and a native-rebuild procedure — so the behavior survives even if a packaged
+element cannot be used in the target stack. Install from the sections below;
+open the specification when you change how a component behaves, or if one
+cannot run.
+
 ### Rules that apply to every component
 
 - **Never upload frames through the media library.** WordPress renames files on
@@ -355,6 +364,12 @@ To install it:
    plain CSS using `position: sticky` and `animation-timeline: scroll()`, with no
    JavaScript and no reference to the component.
 5. Set the seven host properties below against the theme's own header and copy.
+
+**Read [the build specification](sections/hero-bridge.md) before changing its
+behavior — or if the element cannot run in the target stack.** It documents the
+frame contract and the played-span measurements, the entry and exit math with
+every clamp's failure mode, the loading measurements, and a native-rebuild
+procedure with verification steps.
 
 **Host-supplied custom properties.** The first four size and place the plate; the
 last three pace it. All are registered with `@property`; if a build pipeline strips
@@ -532,6 +547,15 @@ falling-blocks {
 The full markup contract and every attribute are documented at the top of
 `assets/falling-blocks.js`.
 
+**Read [the build specification](sections/falling-blocks.md) before changing
+its behavior — or if the element cannot run in the target stack.** It documents
+the sandwich, the content-bounds motion, the tier and residency arithmetic
+(including the measured fetch-loop regression its window design prevents), and
+a native-rebuild procedure with verification steps. One host detail it
+specifies that the install alone can miss: the component stylesheet slots an
+`h1` between the plates, and this page's `h2` needs the equivalent rule in the
+page stylesheet.
+
 ### The cycle wheel (`<cycle-wheel>`)
 
 The home page's R&D cycle: a ring of four icon nodes the reader's own scroll
@@ -552,10 +576,11 @@ To install it:
    `cycle-wheel { --cw-pin: <header height>; }` — the stage's pin and the
    scroll clock both follow it.
 
-**Read [the specification](sections/cycle.md) before changing its behavior.**
-It documents the beat-windowed clock, the measured 0.97 latch and why that
-value cannot be eased, the click-versus-focus semantics, the repaint
-discipline, and a verification procedure.
+**Read [the build specification](sections/cycle.md) before changing its
+behavior — or if the element cannot run in the target stack.** It documents the
+beat-windowed clock, the measured 0.97 latch and why that value cannot be
+eased, the click-versus-focus semantics, the repaint discipline, a verification
+procedure, and a native-rebuild fallback.
 
 ### The Approach scrub (`<approach-scrub>`)
 

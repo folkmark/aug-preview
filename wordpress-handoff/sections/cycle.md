@@ -313,3 +313,13 @@ A five-minute smoke test at 1440×900, plus the checks the page cannot show you:
    without animation, and no transition runs.
 7. Confirm the scroll handler is not doing layout work when neither `b` nor the
    selection changed.
+
+### Rebuilding it natively
+
+If the element cannot be used in the target stack, sections 3 to 5 are the
+specification: implement the clock, the latch, and the repaint discipline of
+section 3 against native scroll position, the travel and focus semantics of
+section 4, and the CSS mechanics of section 5, over the markup contract of
+section 2. If nothing scroll-driven can run at all, ship the mobile arm's
+accordion at every width — the four steps stay fully readable, which is the
+floor this section is designed to degrade to.

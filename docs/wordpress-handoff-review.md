@@ -20,7 +20,11 @@
 > (`assets/cycle-wheel.js` / `.css`), verified with a 22-check unit suite over
 > the production markup and a 10-check integration run against the built site
 > under the real runtime. Every animated behavior on the page is now a
-> copy-paste component. Still open: only the decisions that are AERDF's to make.
+> copy-paste component — and every component now also carries a full
+> native-rebuild specification in `wordpress-handoff/sections/`
+> (`hero-bridge.md` and `falling-blocks.md` joining `cycle.md` and
+> `approach.md`), so each section survives even a stack where its element
+> cannot run. Still open: only the decisions that are AERDF's to make.
 
 *Written 2026-08-24, on `claude/wordpress-handoff-research-f2l98g`. This reviews
 `wordpress-handoff/` against (a) what aerdf.org actually runs, observed directly on

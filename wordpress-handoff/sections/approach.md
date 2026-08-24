@@ -27,10 +27,13 @@ ship — `assets/approach.js`, `assets/approach.css`,
 frame numbers to the beats and messages they carry, and is the source of every
 frame number below. This document describes what the page does with them.
 
-**The format is meant to be reused.** The section order below is a template — what
-it is, the asset contract, the math, the responsive states, the decisions, the
-traps, accessibility, what is not required, how to rebuild — and
-[`sections/cycle.md`](cycle.md) follows the same shape.
+**The format is a template, and every component now uses it.** The section
+order below — what it is, the asset contract, the math, the responsive states,
+the decisions, the traps, accessibility, what is not required, how to rebuild —
+is shared by [`hero-bridge.md`](hero-bridge.md),
+[`falling-blocks.md`](falling-blocks.md), and [`cycle.md`](cycle.md), so each
+section on the page can be rebuilt natively if its packaged element cannot be
+used.
 
 ---
 
