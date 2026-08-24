@@ -68,13 +68,20 @@
   .team-grid-2 a[aria-label], .team-grid-3 a[aria-label] { width: var(--icon-size); height: var(--icon-size); align-items: center; justify-content: center; flex: 0 0 auto; }
   .team-grid-2 a[aria-label] > *, .team-grid-3 a[aria-label] > * { width: var(--icon-size) !important; height: var(--icon-size) !important; min-width: var(--icon-size) !important; min-height: var(--icon-size) !important; font-size: var(--icon-size) !important; line-height: var(--icon-size) !important; display: block !important; margin: 0 !important; }
   /* THE PICTURE ROWS on The Challenge and Our Approach — one photograph beside one
-     block of copy, the sides alternating down the page. The alternation is done in
-     source order, so half the rows have their copy first, and source order is what
-     the row falls back on when the grid collapses to a single column. Stacked, the
-     page therefore read picture, copy — copy, picture — picture, copy: across every
-     turn either two blocks of copy or two photographs ran together, and the rhythm
-     the desktop layout is built on read as a doubling-up. Every row leads with its
-     picture when stacked now, and none of them move above the collapse.
+     block of copy, the sides alternating down the page.
+
+     THE ALTERNATION USED TO BE DONE IN SOURCE ORDER, and source order is what the row
+     stacks in once the grid collapses, so three of the seven rows put their picture
+     under their copy on a phone: the page read picture, copy — copy, picture —
+     picture, copy, and at every turn either two blocks of copy or two photographs ran
+     together. Every row now leads with its picture in the MARKUP, which is the whole
+     point of doing it this way round: the stacked order is the source order, so it
+     needs no CSS to be right and there is no browser that can get it wrong. It is
+     also the order a screen reader reads, which the old arrangement only matched on
+     a wide screen.
+
+     The alternation is the two-column arm's job now. .media-row-flip is on the three
+     rows that want their picture on the right, and it only ever moves it sideways.
 
      ASKED OF THE ROW, NOT THE VIEWPORT, because those are two different widths.
      repeat(auto-fit, minmax(min(var(--container-xxs),100%),1fr)) drops to one column
@@ -84,18 +91,18 @@
      gutter (720 / 0.9 = 800px, the number the photographs' sizes attribute carries)
      and would still be wrong by the width of a classic scrollbar: a media query
      counts it inside the viewport and a percentage padding does not, so from 800 to
-     about 815 the row would be stacked with the picture still under the copy. The
-     section is the query container instead and the two questions ask the same width,
-     which is why this needs no fudged breakpoint.
+     about 815 the row would be stacked and the flip still applied — a picture under
+     its copy again, in the one place this rule exists to prevent.
 
-     Under @supports so that a browser without container queries keeps the source
-     order it has today — wrong side up when stacked, but never a picture pinned to
-     the wrong side of a two-column row, which is what an unanswered order: -1 would
-     leave it with. */
+     What a browser too old for container queries loses is the alternation, not the
+     stack: it gets the picture on the left in all seven rows. That is the right way
+     round for the trade. This first shipped the other way — the stack was the thing
+     the container query bought and the fallback was source order — which left every
+     phone that predates container queries with exactly the bug this fixes, on the one
+     class of device where it is not a subtlety. */
   .media-row { container: media-row / inline-size; }
-  @supports (container-type: inline-size) {
-    .media-row img { order: -1; }
-    @container media-row (min-width: 720px) { .media-row img { order: 0; } }
+  @container media-row (min-width: 720px) {
+    .media-row-flip img { order: 1; }
   }
   [data-cycle] [data-arc] { color: var(--brand-accent); opacity: 0.55; transition: opacity 200ms ease-in-out; }
   [data-cycle] [data-node] { background: none; border: 0; opacity: 0; pointer-events: none; transform: translate(-50%,-50%); transition: opacity 200ms ease-in-out, transform 200ms ease-in-out; }
@@ -1000,13 +1007,13 @@
       </div>
     </section>
 
-    <section class="media-row" style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
+    <section class="media-row media-row-flip" style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
       <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-inline:auto;max-width:var(--container-xxl);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr));column-gap:var(--space-20);row-gap:var(--space-12);align-items:center">
+        <img src="assets/images/engineers-screens.webp" srcset="assets/images/engineers-screens-m.webp 800w, assets/images/engineers-screens.webp 1264w" sizes="(min-width:1422px) 600px, (min-width:800px) calc(45vw - 40px), 90vw" alt="An engineer and a researcher side by side comparing what is on their two laptop screens" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--radius-image);display:block" decoding="async" loading="lazy">
         <div>
           <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">And the technology to support it is lacking.</h2>
           <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0;text-wrap:pretty">Ed tech companies build the apps teachers and students use. The big AI labs build the underlying models that power these apps. What's missing is the layer in between: the foundational capabilities that let AI understand what a student knows, measure skills as complex as critical thinking, and adapt to what's happening in a real classroom.</p>
         </div>
-        <img src="assets/images/engineers-screens.webp" srcset="assets/images/engineers-screens-m.webp 800w, assets/images/engineers-screens.webp 1264w" sizes="(min-width:1422px) 600px, (min-width:800px) calc(45vw - 40px), 90vw" alt="An engineer and a researcher side by side comparing what is on their two laptop screens" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--radius-image);display:block" decoding="async" loading="lazy">
       </div>
     </section>
 
@@ -1060,14 +1067,14 @@
     </section>
 
 
-    <section class="media-row" data-step="0" style="padding:clamp(var(--space-20),8vw,8rem) var(--page-gutter) clamp(var(--space-28),15vh,10rem)">
+    <section class="media-row media-row-flip" data-step="0" style="padding:clamp(var(--space-20),8vw,8rem) var(--page-gutter) clamp(var(--space-28),15vh,10rem)">
       <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-inline:auto;max-width:var(--container-xxl);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr));column-gap:var(--space-20);row-gap:var(--space-12);align-items:center">
+        <img src="assets/images/define-the-role.webp" srcset="assets/images/define-the-role-m.webp 800w, assets/images/define-the-role.webp 1264w" sizes="(min-width:1422px) 600px, (min-width:800px) calc(45vw - 40px), 90vw" alt="Two teachers and a researcher at a wall, working out what their students need" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--radius-image);display:block" decoding="async" loading="lazy">
         <div>
           <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0 0 var(--space-4)"><span style="color:var(--brand-accent)">01</span>&nbsp;&nbsp;Define the role</p>
           <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">We start by asking what teachers and students need.</h2>
           <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0;text-wrap:pretty">Each cycle focuses on one role AI could play in meeting real classroom needs, such as deepening a teacher's understanding of her students' prior experiences and interests, assessing complex skills, or facilitating feedback. We select and shape each role with researchers, educators, and engineers. That role becomes the North Star for everything that follows.</p>
         </div>
-        <img src="assets/images/define-the-role.webp" srcset="assets/images/define-the-role-m.webp 800w, assets/images/define-the-role.webp 1264w" sizes="(min-width:1422px) 600px, (min-width:800px) calc(45vw - 40px), 90vw" alt="Two teachers and a researcher at a wall, working out what their students need" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--radius-image);display:block" decoding="async" loading="lazy">
       </div>
     </section>
 
@@ -1082,14 +1089,14 @@
       </div>
     </section>
 
-    <section class="media-row" data-step="2" style="padding:clamp(var(--space-28),15vh,10rem) var(--page-gutter) clamp(var(--space-28),15vh,10rem)">
+    <section class="media-row media-row-flip" data-step="2" style="padding:clamp(var(--space-28),15vh,10rem) var(--page-gutter) clamp(var(--space-28),15vh,10rem)">
       <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-inline:auto;max-width:var(--container-xxl);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr));column-gap:var(--space-20);row-gap:var(--space-12);align-items:center">
+        <img src="assets/images/codesign-tools.webp" srcset="assets/images/codesign-tools-m.webp 800w, assets/images/codesign-tools.webp 1264w" sizes="(min-width:1422px) 600px, (min-width:800px) calc(45vw - 40px), 90vw" alt="Teachers and engineers around a table moving paper sketches of a classroom tool between them" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--radius-image);display:block" decoding="async" loading="lazy">
         <div>
           <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0 0 var(--space-4)"><span style="color:var(--brand-accent)">03</span>&nbsp;&nbsp;Co-design the applications</p>
           <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">We build tools that bring the role to life.</h2>
           <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0;text-wrap:pretty">Our teams of educators, researchers, and engineers use that infrastructure to build and test AI-powered tools, and new ways of teaching alongside them. This second part is crucial: an AI tool might help students evaluate sources or collaboratively solve problems, but it's only truly effective when paired with a teaching approach that combines what AI and human teachers each do best.</p>
         </div>
-        <img src="assets/images/codesign-tools.webp" srcset="assets/images/codesign-tools-m.webp 800w, assets/images/codesign-tools.webp 1264w" sizes="(min-width:1422px) 600px, (min-width:800px) calc(45vw - 40px), 90vw" alt="Teachers and engineers around a table moving paper sketches of a classroom tool between them" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--radius-image);display:block" decoding="async" loading="lazy">
       </div>
     </section>
 
