@@ -634,8 +634,6 @@ Notes:
 - **`data-reveal` blocks start at inline `opacity: 0`.** If the reveal behavior is
   not rebuilt, 67 blocks stay invisible. Either port it or strip the inline
   opacity.
-- The five `data-step` attributes on The Challenge's sections are inert — nothing
-  reads them. Do not build a mechanism for them.
 - An earlier version of this document listed `data-lift`, `data-gloss`,
   `data-term`, `data-kit`, `data-brick`, `data-on`, and `data-build` behaviors.
   They no longer exist in the markup. The R&D cycle wheel also used to be on
