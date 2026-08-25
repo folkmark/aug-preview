@@ -1,43 +1,46 @@
-# The WordPress handoff, reviewed against AERDF's actual stack
+# The WordPress handoff — working notes
 
-> **Status (2026-08-24, later the same day).** The handoff documentation was
-> rewritten on this branch to the Google technical-writing guidelines, and the
-> rewrite closed most of what this review ranks: the stale notes and tables
+> **Status (2026-08-24, later the same day).** I rewrote the handoff
+> documentation to the Google technical-writing guidelines, and that closed
+> most of what these notes rank: the stale notes and tables
 > (§3.1's documentation half), the cycle-wheel spec (§3.2, as
 > `wordpress-handoff/sections/cycle.md`), the form spec (§3.3), the reference URL
 > and acceptance checklist (§3.4), the plugin-hardening notes and `filemtime`
 > versioning (§3.5), the JetEngine/CPT UI targeting and inline-styles paragraph
 > (part of §3.6), the font-licensing items (§3.7), and the AERDF environment
-> section (§1). A second pass the same day closed most of the rest: the `pages/`
-> export was regenerated against the current site, the exporter now stamps its
-> source commit into every page and strips runtime state (and
-> `tools/build-site.mjs` warns when `index.html` moves past the stamp), the
-> structured content ships as data in `wordpress-handoff/content/` with
-> `tools/export-content.mjs` to regenerate it, and
-> `wordpress-handoff/wp/augmented-ed-assets.php` implements the enqueue and
+> section (§1). A second pass the same day closed most of the rest: I
+> re-exported `pages/` against the current site, taught the exporter to stamp
+> its source commit into every page and strip runtime state (with
+> `tools/build-site.mjs` warning when `index.html` moves past the stamp),
+> shipped the structured content as data in `wordpress-handoff/content/` with
+> `tools/export-content.mjs` to regenerate it, and wrote
+> `wordpress-handoff/wp/augmented-ed-assets.php` to implement the enqueue and
 > optimizer-hardening rules as a theme drop-in. A third pass finished the last
-> engineering item: the cycle wheel is now `<cycle-wheel>`
-> (`assets/cycle-wheel.js` / `.css`), verified with a 22-check unit suite over
-> the production markup and a 10-check integration run against the built site
-> under the real runtime. Every animated behavior on the page is now a
+> engineering item: I ported the cycle wheel to `<cycle-wheel>`
+> (`assets/cycle-wheel.js` / `.css`) and verified it with a 22-check unit suite
+> over the production markup and a 10-check integration run against the built
+> site under the real runtime. Every animated behavior on the page is now a
 > copy-paste component — and every component now also carries a full
 > native-rebuild specification in `wordpress-handoff/sections/`
 > (`hero-bridge.md` and `falling-blocks.md` joining `cycle.md` and
 > `approach.md`), so each section survives even a stack where its element
 > cannot run. Still open: only the decisions that are AERDF's to make.
 
-*Written 2026-08-24, on `claude/wordpress-handoff-research-f2l98g`. This reviews
-`wordpress-handoff/` against (a) what aerdf.org actually runs, observed directly on
-2026-08-24, (b) current WordPress development practice as of WP 7.0, and (c) the
-handoff-package literature. It is a set of suggestions for the site's author, not part
-of the handoff itself — though several sections below are written to be lifted into it.*
+*My working notes from getting the handoff ready, written for the AugmentED
+team — the developer doing the rebuild gets
+[`wordpress-handoff/`](../wordpress-handoff/README.md), which is self-contained
+and doesn't need this. What's here is the reasoning: what aerdf.org actually
+runs, which I checked directly on 2026-08-24; what current WordPress practice
+says; how the package measured up against both; and what I changed in response.
+The findings below stand as I wrote them, and the status note above says what
+has been done about each since.*
 
 ---
 
 ## 1. Where this site is going — AERDF's stack, observed
 
-Nobody had checked what the receiving developer actually works in. It was checkable
-from the outside, and it changes several decisions.
+I hadn't checked what the receiving developer actually works in — and it was
+checkable from the outside and changed several decisions, so I checked.
 
 **aerdf.org is WordPress on WP Engine, behind Cloudflare.** The theme is custom —
 `wp-content/themes/sessionwise-starter-master/`, header verbatim: *"Theme Name: AERDF …
@@ -69,8 +72,8 @@ What follows from each observation:
 | **AccessiBe** widget | It rewrites the DOM and can manipulate scrolling and animations. Every acceptance test must run **with the widget active**, and the reduced-motion/"stop animations" mode it offers should be checked against all three scrub components. This is a QA row the handoff cannot currently know to include. |
 | Wordfence | Security hardening occasionally 403s direct requests to non-PHP files in theme directories. "Manifest fetch returns 200 after security config" belongs on the launch checklist. |
 | **Gravity Forms + HubSpot both present** | The Follow page's form finally has obvious destinations — see §3.3. |
-| Avenir already self-hosted on aerdf.org | The licence question the handoff raises in §3 is probably already answered inside AERDF — someone licensed the web font once. The action item collapses to: *confirm the existing licence covers the new pages/domain*, and name who confirms it. |
-| Yoast + Redirection installed | Per-page titles/descriptions from `tools/build-site.mjs` `PAGES` should ship as content (see §3.6), and the preview URLs that circulated (`augmented2.folkmark.com/...`, plus the old long slugs in `MOVED`) can be honoured with their Redirection plugin if the final home is on aerdf.org. |
+| Avenir already self-hosted on aerdf.org | The license question the handoff raises in §3 is probably already answered inside AERDF — someone licensed the web font once. The action item collapses to: *confirm the existing license covers the new pages/domain*, and name who confirms it. |
+| Yoast + Redirection installed | Per-page titles/descriptions from `tools/build-site.mjs` `PAGES` should ship as content (see §3.6), and the preview URLs that circulated (`augmented2.folkmark.com/...`, plus the old long slugs in `MOVED`) can be honored with their Redirection plugin if the final home is on aerdf.org. |
 | GTM + CookieYes | If consent-gating is ever applied to scripts, the component scripts must be classified as strictly-necessary/functional — a consent-blocked `hero-bridge.js` is a hero that never moves. One line in the handoff prevents that misclassification. |
 
 **The decision to force early — where the site lives.** Three options, and the handoff
@@ -119,7 +122,7 @@ The site changed on 2026-08-24; the export in `pages/` is from 2026-08-21. Speci
 
 - **`pages/home.html` predates the co-design cycle rebuild** (`f2e02ed` and the four
   copy commits after it). The new scroll-driven cycle rig — `data-cycle-rig`, absent
-  from the export — and the client-corrected copy exist only in `index.html`.
+  from the export — and AugmentED's corrected copy exist only in `index.html`.
 - **The §2 warning is stale in the opposite direction.** It says *"home.html is one
   revision behind — it still shows the hero as a plain `<img>`"*; the export has carried
   the full `<hero-bridge>` markup since `b165a6f`. A warning that describes a fixed

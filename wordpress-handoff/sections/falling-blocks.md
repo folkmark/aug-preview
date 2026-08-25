@@ -1,22 +1,22 @@
 # The falling-blocks CTA — build spec
 
-This document is a complete description of the closing call-to-action, written
-so the section can be rebuilt in another stack **without the packaged element**.
-The normal path is the `<falling-blocks>` component — copy
-`assets/falling-blocks.js`, `assets/falling-blocks.css`, the frame directory,
-and the markup, per [the handoff README](../README.md). This document exists
-for the other case: the element cannot run in the target stack, or someone has
-to change how it behaves. Sections 3 to 5 are then the specification, and
-section 6 is the part that is expensive to rediscover.
+This is the complete description of the closing call-to-action — enough to
+rebuild it in another stack **without the packaged element**. The normal path
+is the `<falling-blocks>` component: copy `assets/falling-blocks.js`,
+`assets/falling-blocks.css`, the frame directory, and the markup, per
+[the handoff README](../README.md). I wrote this for the other case — the
+element cannot run in your stack, or you have to change how it behaves.
+Sections 3 to 5 are then the specification, and section 6 is the part that is
+expensive to rediscover.
 
-**Audience.** The developer installing, modifying, or reimplementing the
-section. Read [the handoff README](../README.md) first for the rules shared by
-all components.
+**Audience.** You're installing, changing, or reimplementing the section. Read
+[the handoff README](../README.md) first for the rules shared by all
+components.
 
-**Where the numbers come from.** Every value here is read from the shipping
+**Where the numbers come from.** I read every value here from the shipping
 files — `assets/falling-blocks.js`, `assets/falling-blocks.css`,
-`assets/falling-blocks/manifest.json`, the CTA block in `index.html` — or from
-the measurements recorded beside them.
+`assets/falling-blocks/manifest.json`, the CTA block in `index.html` — or
+measured it and wrote the measurement down.
 
 ---
 

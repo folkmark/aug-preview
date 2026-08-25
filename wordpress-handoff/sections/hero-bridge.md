@@ -1,22 +1,22 @@
 # The hero bridge — build spec
 
-This document is a complete description of the home page hero, written so the
-section can be rebuilt in another stack **without the packaged element**. The
-normal path is the `<hero-bridge>` component — copy `assets/hero-bridge.js`,
+This is the complete description of the home page hero — enough to rebuild it
+in another stack **without the packaged element**. The normal path is the
+`<hero-bridge>` component: copy `assets/hero-bridge.js`,
 `assets/hero-bridge.css`, the frame directory, and the markup, per
-[the handoff README](../README.md). This document exists for the other case: the
-element cannot run in the target stack, or someone has to change how it behaves.
+[the handoff README](../README.md). I wrote this for the other case — the
+element cannot run in your stack, or you have to change how it behaves.
 Sections 3 to 6 are then the specification, and section 8 is the part that is
 expensive to rediscover.
 
-**Audience.** The developer installing, modifying, or reimplementing the hero.
-Read [the handoff README](../README.md) first for the rules shared by all
+**Audience.** You're installing, changing, or reimplementing the hero. Read
+[the handoff README](../README.md) first for the rules shared by all
 components.
 
-**Where the numbers come from.** Every value here is read from the shipping
+**Where the numbers come from.** I read every value here from the shipping
 files — `assets/hero-bridge.js`, `assets/hero-bridge.css`,
-`assets/hero-bridge/manifest.json`, the hero blocks in `index.html` — or from
-the measurements recorded beside them. The render-side authority is
+`assets/hero-bridge/manifest.json`, the hero blocks in `index.html` — or
+measured it and wrote the measurement down. The render-side authority is
 [`docs/hero-bridge-render.md`](../../docs/hero-bridge-render.md); its frame
 numbers are the source of the frame numbers below.
 

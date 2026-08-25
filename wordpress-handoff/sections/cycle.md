@@ -1,7 +1,7 @@
 # The cycle wheel — build spec
 
-This document specifies the AugmentED R&D Cycle wheel on the home page: the
-scroll-built ring diagram with a synced reading column. The wheel is
+This is the specification for the AugmentED R&D Cycle wheel on the home page:
+the scroll-built ring diagram with a synced reading column. The wheel is
 `<cycle-wheel>` — `assets/cycle-wheel.js` and `assets/cycle-wheel.css` — a
 dependency-free custom element built to the same doctrine as the other three
 components: it drives markup the page authors and touches no runtime API, so
@@ -9,14 +9,14 @@ porting it is copying files and markup. Install per section 7; read the rest
 when you change how it behaves, and treat the reference site as ground truth
 for feel.
 
-**Audience.** The developer installing or modifying the wheel. Read
+**Audience.** You're installing or changing the wheel. Read
 [the handoff README](../README.md) first for the rules shared by all
 components.
 
-**Where the numbers come from.** Every value here is read from the shipping
+**Where the numbers come from.** I read every value here from the shipping
 files — `assets/cycle-wheel.js`, `assets/cycle-wheel.css`, and the markup in
-`index.html` / `pages/home.html` — not estimated. The element's behavior is
-verified by a scripted pass over exactly these numbers: clock positions, the
+`index.html` / `pages/home.html` — nothing is estimated, and I verified the
+element's behavior with a scripted pass over exactly these numbers: clock positions, the
 latch, focus and travel semantics, the mobile arm, and reduced motion.
 
 ---

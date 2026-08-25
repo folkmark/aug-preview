@@ -1,6 +1,6 @@
 # The Approach scrub — build spec
 
-> **Status: not currently on the page.** The client found the long scrub hard
+> **Status: not currently on the page.** AugmentED found the long scrub hard
 > going, so the home page now runs the shorter hero-bridge sequence and the cycle
 > wheel. The component and its frames are kept for the shortened sequence planned
 > to replace it. Everything below still describes the shipped files accurately,
@@ -8,19 +8,19 @@
 > inspect — on the site or in `pages/`. The markup contract is documented at the
 > top of `assets/approach.js`.
 
-This document is a complete description of the Approach section, written so the
-section can be rebuilt in another stack without reading the original source. It
-covers the asset contract, the scroll and camera math, the responsive states, the
+This is the complete description of the Approach section — enough to rebuild
+it in another stack without reading the original source. It covers the asset contract, the scroll and camera math, the responsive states, the
 design decisions that look arbitrary and are load-bearing, the silent failure
 modes, and a verification procedure.
 
-**Audience.** The developer porting or rebuilding the section. Read
-[the handoff README](../README.md) first for the rules shared by all three
+**Audience.** You're porting or rebuilding the section. Read
+[the handoff README](../README.md) first for the rules shared by all
 components.
 
-**Where the numbers come from.** Every number here is read from the files that
+**Where the numbers come from.** I read every number here from the files that
 ship — `assets/approach.js`, `assets/approach.css`,
-`assets/approach/manifest.json`, `tools/encode-approach.mjs` — not estimated.
+`assets/approach/manifest.json`, `tools/encode-approach.mjs` — nothing is
+estimated.
 
 **Companion document.**
 [`docs/approach-render-map.md`](../../docs/approach-render-map.md) maps Blender
