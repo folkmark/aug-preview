@@ -146,7 +146,7 @@ at the top of each exported page (`<!-- exported from 4a063e4 -->`), and let
 `tools/build-site.mjs` print a warning when `index.html` has changed since the stamp.
 That converts "someone should remember to re-export" into a message nobody can miss —
 the same move the manifest check already made for frames. While in the exporter, also
-strip the Claude Design runtime's placeholder CSS (`.sc-placeholder`, the `sc-dc-streaming`
+strip the prototype runtime's placeholder CSS (`.sc-placeholder`, the `sc-dc-streaming`
 shimmer) that currently rides along in every exported `<head>` — ~40 lines of residue a
 WordPress developer should not have to puzzle over.
 

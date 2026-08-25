@@ -1,6 +1,6 @@
 // Renders every page of the site to plain, static HTML for handoff.
 //
-// The site ships as one client-rendered Claude Design template: index.html holds an
+// The site ships as one client-rendered template: index.html holds an
 // <x-dc> element that support.js compiles and mounts with React, fetched from a CDN
 // at runtime. That is fine to deploy and useless to hand to anyone who has to rebuild
 // the site somewhere else — there is no page markup in the repository to read, only a

@@ -256,7 +256,7 @@ Root manifest:
 | `assets/images/` | `home-hero-0…5.png` — the six wooden-block cut-outs |
 | `reference/` | Verbatim source files: `DESIGN.md`, `sitemap.md`, four homepage screenshots |
 | `thumbnail.html` | Project tile |
-| `SKILL.md` | Agent Skills front matter for use in Claude Code |
+| `SKILL.md` | Agent Skills front matter for editor tooling |
 
 ### Components
 

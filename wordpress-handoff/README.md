@@ -152,7 +152,7 @@ Consequences for this rebuild:
 
 ## What the prototype is
 
-`index.html` is not a page. It is a single Claude Design (`<x-dc>`) template that
+`index.html` is not a page. It is a single client-rendered `<x-dc>` template that
 holds all five pages and is compiled in the browser by `support.js`, which loads
 React and Babel from a CDN at runtime. Two consequences shape this handoff:
 
