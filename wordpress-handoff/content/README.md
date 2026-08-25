@@ -1,6 +1,7 @@
 # Content data files
 
-The site's structured content as data, so you can model and import it instead of
+Part of [the WordPress handoff](../README.md) — the site's structured content as
+data, so you can model and import it instead of
 transcribing it from HTML. `tools/export-content.mjs` parses these files out of
 the rendered pages in [`../pages/`](../pages/) — the same files you build
 templates from, so the two cannot disagree — and verifies every count before
@@ -21,5 +22,5 @@ directly onto either.
 | `pages.json` | 5 | Per-route `title` and meta `description`, ready for Yoast's fields. |
 | `redirects.csv` | 4 | The old long slugs and their replacements, in the Redirection plugin's CSV import format (`source,target`). Import it if the production site keeps these paths. |
 
-Bios exist for team members but are not on the site; they live in the project's
-tracking sheet. Ask AugmentED for it if the rebuild adds bios.
+Bios exist for team members but are not on the site; they live in our tracking
+sheet. Ask us for it if the rebuild adds bios.

@@ -6,8 +6,8 @@ _site/
 # Bulk render masters. These are inputs to tools/encode-approach.mjs and
 # tools/encode-falling-blocks.mjs, the site serves none of them, and every output
 # they produce is committed under assets/. They came to 604 MB — more than eight
-# times the rest of the repository put together — so they live on the designer's
-# machine and are restored to these paths only when something needs re-encoding.
+# times the rest of the repository put together — so they live on my machine
+# and are restored to these paths only when something needs re-encoding.
 #
 # Everything else that used to sit under project/ is now tracked, in
 # source-material/. See source-material/README.md.

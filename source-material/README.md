@@ -19,6 +19,6 @@ produce, in `_ds/augmented-design-system-*/assets/fonts/`, which is where
 The bulk renders — Blender plates, 8K PNG sequences, the WebP frame archive — are
 not in the repository and never should be: they came to 604 MB, the site serves
 none of them, and every output they produce is committed under `assets/`. They live
-on the designer's machine. `tools/encode-approach.mjs` and
+on my machine. `tools/encode-approach.mjs` and
 `tools/encode-falling-blocks.mjs` are the only things that need them, and each
 prints the path it wants if it is missing. See the README's restore table.

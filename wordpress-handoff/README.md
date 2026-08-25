@@ -1,15 +1,17 @@
 # AugmentED WordPress handoff
 
-This package contains everything you need to rebuild the AugmentED marketing site in
-WordPress: the rendered markup of every page, the design system, the production
-assets, three portable animation components, and build specifications for the two
-sections that need them.
+I designed and built the AugmentED marketing site, and this package is everything
+you need to rebuild it in WordPress: the rendered markup of every page, the design
+system, the production assets, four portable animation components, and a build
+specification for each of them.
 
-**Audience.** A WordPress developer rebuilding this site, most likely inside
-aerdf.org's existing custom theme. The package assumes you know WordPress theme
-development (enqueueing, page templates, custom post types) and modern CSS. It does
-not assume you have seen this codebase before; each section states what you need and
-where it lives.
+**Audience.** You — the WordPress developer rebuilding this site, most likely
+inside aerdf.org's existing custom theme. I assume you know WordPress theme
+development (enqueueing, page templates, custom post types) and modern CSS. I
+don't assume you've seen this codebase before; each section states what you need
+and where it lives. Where this document says **us**, it means the AugmentED team
+and me together — content and destination decisions are theirs, and anything
+about how the site is built is mine to answer.
 
 **Key points:**
 
@@ -26,7 +28,8 @@ where it lives.
 **Reference site.** The finished site runs at
 [augmented2.folkmark.com](https://augmented2.folkmark.com). It rebuilds from `main`
 on every push. Every visual and behavioral question in this package has a ground
-truth there; when a spec and the site disagree, the site wins and the spec has a bug.
+truth there; when a spec and the site disagree, the site wins, the spec has a
+bug, and I would like to hear about it.
 
 ## Contents
 
@@ -40,7 +43,7 @@ truth there; when a spec and the site disagree, the site wins and the spec has a
 | [`sections/cycle.md`](sections/cycle.md) | Build specification for the cycle wheel. |
 | [`sections/approach.md`](sections/approach.md) | Build specification for the Approach scrub (not currently mounted). |
 | `../_ds/augmented-design-system-*/` | The design system: tokens, stylesheet, fonts. |
-| `../assets/` | Production images, animation frames, and the three components. |
+| `../assets/` | Production images, animation frames, and the four components. |
 | `../docs/approach-render-map.md`, `../docs/hero-bridge-render.md` | Render notes. The authority for frame numbers and for what a re-render needs. |
 
 ## Key terms
@@ -61,7 +64,8 @@ truth there; when a spec and the site disagree, the site wins and the spec has a
 
 ## Decisions to make first
 
-Settle these before development starts. Each one changes work downstream of it.
+Settle these with us before development starts. Each one changes work
+downstream of it.
 
 1. **Where the site lives.** Three options, with precedent for the first two on
    aerdf.org today:
@@ -90,11 +94,11 @@ one before it:
 1. Skim this document once, then open
    [the reference site](https://augmented2.folkmark.com) beside
    `pages/home.html` so you know what "done" looks like.
-2. Settle the four decisions above with AugmentED.
+2. Settle the four decisions above with us.
 3. Copy the two asset directories into the theme and wire up
    [`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php); its header
    comment is the procedure. Verify with an empty page template: the design
-   system and both component scripts load, versioned and deferred, on an
+   system and the component scripts load, versioned and deferred, on an
    AugmentED page and nowhere else.
 4. Build the static pages first — The Challenge, Who We Are, Follow Our Work,
    Our Approach — as page templates from `pages/*.html`, rebuilding the small
@@ -277,7 +281,7 @@ enough to change the framing slices the shadow off against a straight edge.
 
 **Master material is not in the repository.** The Blender plates, source PNG
 sequences, and frame archives (692 MB of a 702 MB checkout) were removed from
-history; they live with the designer. Nothing in this handoff depends on them —
+history; they live with me. Nothing in this handoff depends on them —
 every encoder output is committed. They matter only for re-rendering artwork, and
 each encoder prints the restore path it needs if you run it without them. The hero
 sequence's masters are the one set that was never in the history at all. The render
@@ -584,7 +588,7 @@ procedure, and a native-rebuild fallback.
 
 ### The Approach scrub (`<approach-scrub>`)
 
-> **Status: not currently mounted.** The client found the long scrub hard going,
+> **Status: not currently mounted.** AugmentED found the long scrub hard going,
 > so the home page now runs the hero bridge and the cycle wheel instead. The
 > component, its frames, and its build spec are kept for the shortened sequence
 > that is planned to replace it. Do not port it as part of rebuilding the page as
@@ -630,8 +634,6 @@ Notes:
 - **`data-reveal` blocks start at inline `opacity: 0`.** If the reveal behavior is
   not rebuilt, 67 blocks stay invisible. Either port it or strip the inline
   opacity.
-- The five `data-step` attributes on The Challenge's sections are inert — nothing
-  reads them. Do not build a mechanism for them.
 - An earlier version of this document listed `data-lift`, `data-gloss`,
   `data-term`, `data-kit`, `data-brick`, `data-on`, and `data-build` behaviors.
   They no longer exist in the markup. The R&D cycle wheel also used to be on
@@ -668,7 +670,7 @@ with the tools already on your install (JetEngine, CPT UI).
   Leadership, Research Partners, Technology Partners, Education Fellows. Fields:
   headshot (optional — 9 of 28 currently render a placeholder), name, role,
   optional affiliation and location, optional LinkedIn and website links. Bios
-  exist only in the project tracking sheet. The obvious custom post type.
+  exist only in our tracking sheet — ask us. The obvious custom post type.
 - **Research items** (`content/research.json`): title, description, link.
 - **Cycle wheel steps** (`content/cycle.json`): four steps, each a number, a
   title, a body paragraph, and an icon. Editable copy, fixed count of four — the
@@ -686,7 +688,7 @@ never collected a submission.
 
 The rebuild needs a real destination, which is a product decision, not a porting
 task. aerdf.org already runs Gravity Forms (with reCAPTCHA) and embeds HubSpot
-forms; either reproduces this form in under an hour once someone decides:
+forms; either reproduces this form in under an hour once we have decided:
 
 1. Which system receives submissions, and into what list or pipeline.
 2. What consent language the form carries (CookieYes is live on the target site).

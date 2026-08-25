@@ -37,7 +37,7 @@ you change what ships, and do not assume a `main` merge alone has published it.
 ## The master renders are not gone, only untracked
 
 `.gitignore` excludes `/project/` and `/Falling Blocks/`, and `README.md` says the
-masters live on the designer's machine. That is true of the working tree and false
+masters live on the designer's machine — my machine. That is true of the working tree and false
 of the history: they were tracked until `8e830fe` stripped them, and every one of
 them is still reachable.
 

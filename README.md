@@ -3,6 +3,32 @@
 The AugmentED marketing site, built as a Claude Design handoff bundle. It is a
 single-page app: `index.html` carries every page (Home, The Challenge, Our
 Approach, Who We Are, Follow Our Work) and switches between them client-side.
+I built it; everything in this repository is either the site, the tools that
+build it, or the documents that hand it on. The finished thing is live at
+[augmented2.folkmark.com](https://augmented2.folkmark.com).
+
+## Start here
+
+Pick the path that matches why you're reading this, and follow it — each
+document links onward to the more specific ones it needs:
+
+1. **You're rebuilding the site in WordPress** (the AERDF developer): go
+   straight to [`wordpress-handoff/README.md`](wordpress-handoff/README.md).
+   It is the complete package — a build order, the rendered markup, the
+   components, the content as data, and a spec for every animated section —
+   and it doesn't assume you've read anything else here first.
+2. **You're on the AugmentED team** and want the story of what was built, what
+   it costs, and what's still open: this file for the site itself, and
+   [`docs/wordpress-handoff-review.md`](docs/wordpress-handoff-review.md) for
+   my working notes on the handoff — what AERDF's site runs, what I checked,
+   and the decisions that are yours to make.
+3. **You're changing this repository** — the preview site, the encoders, the
+   publish: read [`CLAUDE.md`](CLAUDE.md) first (where work goes and what
+   breaks quietly), then the rest of this file.
+4. **You're re-rendering or re-encoding artwork**: the render notes in
+   [`docs/`](docs/) are the authority for frame numbers, and the restore table
+   below says where the masters go. The originals everything else was made
+   from are in [`source-material/`](source-material/README.md).
 
 ## Layout
 
@@ -14,7 +40,7 @@ Approach, Who We Are, Follow Our Work) and switches between them client-side.
 | `assets/`         | Web-ready images — everything here is sized and encoded for the page |
 | `docs/`           | Render notes, including the frame ↔ beat map for the Approach section |
 | `tools/`          | The build, and the encoders that turn originals into `assets/`       |
-| `wordpress-handoff/` | The rebuild package — rendered markup and per-section specs       |
+| `wordpress-handoff/` | The rebuild package — start at its README to rebuild the site in WordPress |
 | `source-material/` | Inputs, not outputs: the original Webflow export and its style guide, the image and block originals the encoders read, the brand explorations and the headshots at full resolution. See its own README. |
 
 The whole repository is about 120 MB cloned, and everything in it either ships,
@@ -29,7 +55,7 @@ tools produce is committed. Deleting them from the working tree did nothing for
 anyone, because a clone still pays for whatever history holds — so they were
 removed from history outright, and a clone went from about 700 MB to 120 MB.
 
-They live on the designer's machine now. Restore them at these paths to re-encode:
+They live on my machine now. Restore them at these paths to re-encode:
 
 | Restore to | For |
 | ---------- | --- |
@@ -43,9 +69,9 @@ their inputs are committed, in `source-material/image-sources/` and
 `_ds/*/assets/fonts/` respectively. Each encoder exits with the path it wants if
 something is missing.
 
-A full copy of the repository as it stood before the history rewrite, bulk renders
-and all, was bundled off to the designer. That bundle is the only way back to the
-old SHAs; nothing in this repository points at them any more.
+I keep a full copy of the repository as it stood before the history rewrite,
+bulk renders and all. That bundle is the only way back to the old SHAs; nothing
+in this repository points at them any more.
 
 ## The hero animation
 
@@ -241,7 +267,7 @@ not to the frames.
 ## The Approach animation
 
 **Not currently on the page.** The pinned scrub asked the reader through many
-stages of the arch being built, and the client found it hard going, so the home
+stages of the arch being built, and AugmentED found it hard going, so the home
 page now carries the hero sequence above and the R&D cycle wheel where the scrub
 used to be. The component — `assets/approach.js` and
 `assets/approach.css` — and its frames are kept for the shortened sequence that
@@ -320,7 +346,7 @@ The last two run from a clean checkout: `encode-images.mjs` reads
 beside the WOFF2 in `_ds/*/assets/fonts/`, and both are committed. The first three
 need the bulk renders restored (see above) — and the hero's masters are the one set
 that has never been in the history at all, so re-encoding that sequence needs them
-from the designer.
+from me.
 
 Each target size is set from the box the image actually occupies, at about three
 device pixels per CSS pixel — what a phone at DPR 3 can resolve and no more.
