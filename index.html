@@ -993,17 +993,7 @@
     <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter) clamp(var(--space-20),9vw,9rem)">
       <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-inline:auto;max-width:var(--container-lg);text-align:center">
         <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">We're on a mission to bridge this gap.</h2>
-        <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0 0 var(--space-8);text-wrap:pretty">The gap exists because frontier AI and classroom learning operate on different timelines and constraints. Our work closes that gap by creating the infrastructure that lets them work together—safely, effectively, and in service of what students actually need to learn.</p>
-        <!-- The list centres as a block and its rows stay left-aligned inside it:
-             width:fit-content shrinks the ul to its widest item, so the three ticks
-             share one left edge. Centring each row instead — justify-content:center
-             per item — sets the ticks at three different x positions, because the
-             labels are three different lengths. -->
-        <ul style="list-style:none;margin:0 auto;padding:0;width:fit-content;text-align:left;display:flex;flex-direction:column;gap:var(--space-4)">
-          <li style="display:flex;align-items:center;gap:var(--space-3);font-size:var(--text-regular)"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="check"></x-import>Research what students need</li>
-          <li style="display:flex;align-items:center;gap:var(--space-3);font-size:var(--text-regular)"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="check"></x-import>Test what AI can do</li>
-          <li style="display:flex;align-items:center;gap:var(--space-3);font-size:var(--text-regular)"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="check"></x-import>Build the bridge between them</li>
-        </ul>
+        <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0;text-wrap:pretty">The gap exists because frontier AI and classroom learning operate on different timelines and constraints. Our work closes that gap by creating the infrastructure that lets them work together—safely, effectively, and in service of what students actually need to learn.</p>
         <div style="margin-top:var(--space-10);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--space-6)">
           <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary">Follow our research</x-import>
           <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" onClick="{{ goApproach }}">Explore our approach<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import>
