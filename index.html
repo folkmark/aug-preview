@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AugmentED | Bridging frontier AI and the classroom</title>
+<meta name="description" content="AugmentED is an R&amp;D organization closing the gap between what AI can do and what students need. We are teachers, researchers, and engineers building and testing the missing technology, and the evidence to trust it.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AugmentED | Bridging frontier AI and the classroom">
+<meta property="og:description" content="An R&amp;D organization closing the gap between what AI can do and what students need.">
+<meta property="og:image" content="/assets/logo/logo-light.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AugmentED | Bridging frontier AI and the classroom">
+<meta name="twitter:description" content="An R&amp;D organization closing the gap between what AI can do and what students need.">
+<link rel="icon" href="/assets/logo/logo-light.png" type="image/png">
+<meta name="theme-color" content="#fdfcfa">
+<!-- The design-system stylesheets load from <helmet> once the runtime boots, so
+     paint the brand page colour up front rather than flashing white first. -->
+<style>html, body { margin: 0; background: #fdfcfa; }</style>
+<script src="/support.js"></script>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" data-bg-color="#FBF9F4"><rect width="120" height="120" fill="#FBF9F4"/><g fill="none" stroke="#255799" stroke-width="7" stroke-linecap="square"><path d="M36 86V60a24 24 0 0 1 48 0v26"/><path d="M28 86h64"/></g></svg></template>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="/_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/fonts.css">
+<link rel="stylesheet" href="/_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/colors.css">
+<link rel="stylesheet" href="/_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/typography.css">
+<link rel="stylesheet" href="/_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/layout.css">
+<link rel="stylesheet" href="/_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/icons.css">
+<link rel="stylesheet" href="/_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/schemes.css">
+<link rel="stylesheet" href="/_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/base.css">
+<link rel="stylesheet" href="/_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/styles.css">
+<script src="/_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/_ds_bundle.js"></script>
+<!-- The hero scrub, the falling-blocks CTA and the cycle wheel. All three are
+     deliberately standalone custom elements with their own stylesheets, rather than
+     page CSS and methods on the component below: each drives markup it does not
+     build and touches no runtime API, so the same files and the same markup work in
+     any host. Nothing else on the page depends on any of them; the two canvas rigs
+     degrade to the still <img> in their markup if their scripts never run, and the
+     wheel degrades to its reading column, which is real text either way. -->
+<link rel="stylesheet" href="/assets/hero-bridge.css">
+<script src="/assets/hero-bridge.js" defer=""></script>
+<link rel="stylesheet" href="/assets/falling-blocks.css">
+<script src="/assets/falling-blocks.js" defer=""></script>
+<link rel="stylesheet" href="/assets/cycle-wheel.css">
+<script src="/assets/cycle-wheel.js" defer=""></script>
+<style>
+  body { margin: 0; background: var(--surface-page); }
+  /* The intrinsic width/height attributes are there to reserve the box before the
+     bytes arrive, not to size the image: every one of these is sized by CSS, and
+     without this the height attribute would fight a CSS width and squash it. Where
+     an aspect-ratio is set, that still wins and computes the height. */
+  img[width][height] { height: auto; }
+  a { color: var(--color-neutral-darkest); text-decoration: none; transition: opacity var(--transition-fast); }
+  /* Guarded: a touch device has no hover to leave, so an unguarded rule sticks the
+     tapped link at 0.7 until something else is tapped. */
+  @media (hover: hover) { a:hover { opacity: 0.7; } }
+  @media (max-width: 991px) { .at-desktop { display: none !important; } }
+  @media (min-width: 992px) { .at-mobile { display: none !important; } }
+  @media (min-width: 992px) {
+    .team-grid-3 { grid-template-columns: repeat(6, minmax(0, 1fr)) !important; column-gap: var(--space-5) !important; }
+    .team-grid-2 { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; column-gap: var(--space-5) !important; }
+  }
+  @media (max-width: 991px) {
+    .team-grid-2, .team-grid-3 { grid-template-columns: repeat(auto-fit, minmax(min(150px,100%),1fr)) !important; column-gap: var(--space-5) !important; }
+  }
+  .team-grid-2 h3, .team-grid-3 h3 { font-size: var(--text-regular) !important; line-height: 1.35 !important; }
+  .team-grid-2 p, .team-grid-3 p { font-size: var(--text-small) !important; }
+  .team-grid-2 img, .team-grid-3 img, .team-grid-2 > div > div:first-child, .team-grid-3 > div > div:first-child { margin-bottom: var(--space-4) !important; }
+  .team-grid-2 a[aria-label], .team-grid-3 a[aria-label] { width: var(--icon-size); height: var(--icon-size); align-items: center; justify-content: center; flex: 0 0 auto; }
+  .team-grid-2 a[aria-label] > *, .team-grid-3 a[aria-label] > * { width: var(--icon-size) !important; height: var(--icon-size) !important; min-width: var(--icon-size) !important; min-height: var(--icon-size) !important; font-size: var(--icon-size) !important; line-height: var(--icon-size) !important; display: block !important; margin: 0 !important; }
+  /* THE PICTURE ROWS on The Challenge and Our Approach — one photograph beside one
+     block of copy, the sides alternating down the page.
+
+     THE ALTERNATION USED TO BE DONE IN SOURCE ORDER, and source order is what the row
+     stacks in once the grid collapses, so three of the seven rows put their picture
+     under their copy on a phone: the page read picture, copy — copy, picture —
+     picture, copy, and at every turn either two blocks of copy or two photographs ran
+     together. Every row now leads with its picture in the MARKUP, which is the whole
+     point of doing it this way round: the stacked order is the source order, so it
+     needs no CSS to be right and there is no browser that can get it wrong. It is
+     also the order a screen reader reads, which the old arrangement only matched on
+     a wide screen.
+
+     The alternation is the two-column arm's job now. .media-row-flip is on the three
+     rows that want their picture on the right, and it only ever moves it sideways.
+
+     ASKED OF THE ROW, NOT THE VIEWPORT, because those are two different widths.
+     repeat(auto-fit, minmax(min(var(--container-xxs),100%),1fr)) drops to one column
+     when the row cannot hold two 20rem columns and the --space-20 between them —
+     720px — and the row is the section's content box, which the 5% --page-gutter has
+     already taken its bite out of. A viewport media query would have to restate that
+     gutter (720 / 0.9 = 800px, the number the photographs' sizes attribute carries)
+     and would still be wrong by the width of a classic scrollbar: a media query
+     counts it inside the viewport and a percentage padding does not, so from 800 to
+     about 815 the row would be stacked and the flip still applied — a picture under
+     its copy again, in the one place this rule exists to prevent.
+
+     What a browser too old for container queries loses is the alternation, not the
+     stack: it gets the picture on the left in all seven rows. That is the right way
+     round for the trade. This first shipped the other way — the stack was the thing
+     the container query bought and the fallback was source order — which left every
+     phone that predates container queries with exactly the bug this fixes, on the one
+     class of device where it is not a subtlety. */
+  .media-row { container: media-row / inline-size; }
+  @container media-row (min-width: 720px) {
+    .media-row-flip img { order: 1; }
+  }
+  /* The cycle wheel's state styling lives with its component now — see
+     /assets/cycle-wheel.css, enqueued above with cycle-wheel.js. */
+  /* The two things the page has to tell the hero scrub, and they are both about the page
+     rather than about the sequence. --hb-pin is the header's height; the element reads it
+     back off its own stage, and hero-bridge.css derives the stage's height, the approach's
+     length and the element's own from the same number.
+
+     --hb-entry-clear is how much room this copy needs. The plate is pinned from load and
+     the copy is laid over it, so during the approach the plate hangs from a line under the
+     words — its first pixel of artwork on that line, its own empty top behind them, and
+     its bottom off the fold wherever it does not fit.
+
+     --hero-band is the gap plus the copy's own measured height plus 24px of tail, and the
+     copy heights are the numbers that had to be measured: 380px on every desktop width
+     (the h1 wraps identically inside --container-lg at any of them), 290px from the 992px
+     type-scale break down to about 600, 479px on a phone and 558px at 320, where the h1
+     goes to four lines. Kept in CSS rather than measured at runtime on purpose — this is
+     the one part of the hero a porting theme has to re-derive for its own copy, and a
+     number it can read beats a number it has to instrument for. It is also what the static
+     export ships, which has no script to measure with.
+
+     Those four are the STACKED arm. Above 1400px the copy is two columns and the block is
+     a different shape, so --hero-copy is derived there from the offset that makes it —
+     see THE SPLIT below. Both arms still answer the same question, and the assertion is
+     the same either way: the measured block must fit inside --hero-copy, or the body
+     lands on the plate.
+
+     THE BAND IS THE PLATE'S BUDGET AS WELL AS THE COPY'S, and the exchange rate is steep.
+     hero-bridge sizes the entry from the room left under this band and divides by
+     (--hb-entry-keep - --hb-entry-sky) = 0.174, so a pixel here is 5.75px of picture.
+     Anything that grows the copy shrinks the plate by nearly six times as much.
+
+     --hero-gap is the air between the nav and the first line, and it sits ABOVE the copy
+     rather than around it: the copy is aligned to the START of its band, not centred in
+     it, because splitting a 130px gap would cost 260px of band and that difference is what
+     keeps the plate at full width on an 800px-tall screen.
+
+     Its shape is two clamps for two different screens. 14svh grows the gap on a tall one
+     so the copy is not marooned at the top; the 20svh ceiling shrinks it on a short one,
+     where 130px of air is a fifth of everything there is. The 84svh ceiling on the band is
+     the far end of the same problem: a band bigger than the screen would push the copy up
+     behind the header and leave the plate nothing at all. A phone in landscape hits both.
+
+     Nothing else here — the cuts, the budget, the artwork constants the entry is composed
+     against and the scrub's own pacing are the component's, and a page that set them from
+     here would put them in two files. */
+  .scheme-1 {
+    --hero-gap: min(max(130px, 14svh), 20svh);
+    --hero-copy: 380px;
+    /* How many lines the headline sets in, measured alongside --hero-copy. It cannot be
+       derived: --hero-h1 below has to know the headline's height before the headline has
+       been laid out. Two everywhere the type is at desktop scale, three on a phone and
+       four at 320, where "Bridging" gets a line of its own. */
+    --hero-h1-lines: 2;
+    /* The headline's height, which is what --hb-arch-clear is built from — how far below
+       the header the finished bridge has to land. Derived from the type rather than
+       written as a number, so it tracks --text-h1 across the 992px scale break. */
+    --hero-h1: calc(var(--hero-h1-lines) * var(--text-h1) * var(--text-h1-line-height));
+    --hero-band: min(calc(var(--hero-gap) + var(--hero-copy) + 24px), 84svh);
+    /* The three budgets the component spends after the copy has gone, named here because
+       the PAGE needs them as well: the point at which the headline stops being pinned has to
+       be the point at which the plate does, and that lands --hero-band + --hero-scrub +
+       --hero-hold + --hero-exit from the bottom of the element. See [data-hero-copy]'s
+       bottom below.
+
+       --hero-scrub is twice the component's 70svh default. 48 frames across it is 22.8px of
+       scroll a frame at 1440x900 once TAIL's hold is taken off, where 70svh gave 11.4 and
+       read as rushed. It is the same rate the closing CTA runs at, which nobody minded.
+
+       --hero-hold is the beat on the finished bridge, on top of the ~95px TAIL already
+       holds. --hero-exit is the ramp's HALF-WINDOW, spent once here and once out of the
+       scroll after the release; the component defaults it to 24svh and this hero spends
+       nearly twice that, because the picture is a full screen and a full screen is what gets
+       yanked away. The peak rate the velocity changes at is 0.75 / --hero-exit, so this is
+       the number to raise if the release still reads as abrupt — 45svh is 405px at 1440x900
+       and 7px of frame-to-frame change for a reader moving 60px a frame, against 15px at the
+       180px this first shipped with. */
+    --hero-scrub: 140svh;
+    --hero-hold: 20svh;
+    --hero-exit: 45svh;
+    /* The hero section's own bottom padding, and the gap between the bottom of the plate
+       and the top of whatever follows. Worth knowing while reading leave(): it is all the
+       clearance the exit has, which is why the ramp there only ever moves the picture UP.
+       A picture eased out by lagging the page would be run into by this section. */
+    --hero-tail: clamp(var(--section-pad-y), 7vw, var(--section-pad-y-lg));
+  }
+  /* --hb-entry-span is the component's default one screen; this page overrides it to the
+     band so the approach lasts exactly as long as the copy takes to leave. The plate's rise
+     is driven off --hb-entry-clear, which is the same number, so the scrub picks up at the
+     instant the copy is gone AND the plate has landed. Leave the default in place and the
+     two finish 294px apart at 1440x900 — a third of a screen of scrolling in which the
+     headline is pinned, the plate is pinned, and nothing at all moves. */
+  hero-bridge {
+    --hb-pin: var(--space-18);
+    --hb-entry-clear: var(--hero-band);
+    --hb-entry-span: var(--hero-band);
+    --hb-scrub: var(--hero-scrub);
+    --hb-hold: var(--hero-hold);
+    --hb-exit: var(--hero-exit);
+    /* Enter as much larger than edge to edge as the composition allows, up to twice. Two
+       things bind before it does and both are the component's, so this number is a request
+       rather than a setting: --hb-entry-keep holds the desk's top edge above the fold,
+       which is the binding one on a laptop, and --hb-max holds the drawn width to 1.8x the
+       1600 cut, which is the binding one from 1920x1080 up. Measured, the entry lands
+       between 1.07 and 1.51 — see §The hero animation in README.md for the table.
+
+       What it spends is the sides: content spans plate x 0.000-0.999, so anything above 1
+       crops the rack's left edge and the desk's right. At 1.07 that is a kiss, at 1.35 it
+       is about a quarter of each object, at 1.51 rather more. It is a deliberate trade of
+       the outer edges of the picture for the size of it.
+
+       DESKTOP ONLY, at the design system's own breakpoint — the one this component already
+       switches its cut and its budget on. Not because a phone cannot afford the pixels: the
+       mobile cut is 1200 wide against a 780px drawn plate at 390, so it is sharper there
+       than anywhere. It is that this trade was made for the hero with copy laid across it in
+       two columns, and a phone shows the same picture with none of that pressure on it — the
+       plate already has all the room it needs, so cropping half the width off it buys
+       nothing and spends the rack's left and the desk's right for no reason. */
+    --hb-entry-zoom: 1;
+  }
+  @media (min-width: 992px) {
+    hero-bridge { --hb-entry-zoom: 2; }
+  }
+  @media (max-width: 991px) { .scheme-1 { --hero-copy: 320px; } }
+  @media (max-width: 560px) { .scheme-1 { --hero-copy: 500px; } }
+  @media (max-width: 360px) { .scheme-1 { --hero-copy: 580px; } }
+  /* --hero-h1-lines has its own breakpoints, and it did not used to: it rode along on the
+     band's, which are 560 and 360, and neither is where the headline actually wraps. It
+     sets in three lines from 358px and four at 357 and below, measured a pixel at a time.
+     That mismatch was harmless while the only consumer was a clearance rule that could
+     afford to be conservative. It is not harmless now — --hero-h1 is what --hb-arch-clear
+     moves the plate by, so a line too many put the finished bridge 53px lower than asked
+     at 360x780, and a line too few would put it 53px too high, which is the direction that
+     lands blocks on the words.
+
+     Rounded outward on purpose where the boundary is fuzzy: 479 rather than the measured
+     477, 357 rather than 358. Over-declaring costs a line-height of extra clearance and
+     under-declaring costs the collision, so the two errors are not worth the same. */
+  @media (max-width: 479px) { .scheme-1 { --hero-h1-lines: 3; } }
+  @media (max-width: 357px) { .scheme-1 { --hero-h1-lines: 4; } }
+  /* The hero copy, laid over the pinned plate. Absolute so it contributes no height of
+     its own, and it spans most of the hero rather than just the copy's band — because this
+     box is the headline's containing block, and position: sticky can only hold an element
+     for as far as its containing block reaches.
+
+     WHERE IT ENDS IS WHERE THE HEADLINE LETS GO, and that is the whole point of the
+     arithmetic in `bottom`. It used to end at the plate's own bottom, which sounds like the
+     same thing and is nearly a thousand pixels away from it: the plate's stage is taller
+     than the headline, so the plate started scrolling away ~870px before the words did. The
+     finished bridge rode up through the type — undoing the 30px it is placed to keep — and
+     then the headline got a release of its own, a second hard stop-to-go over a page the
+     picture had already left.
+
+     Both now let go on the same pixel. Percentages on `bottom` resolve against the section,
+     so `100% - everything below the stage` IS the stage's own release point, and the four
+     budgets are the ones the page already names. No plate geometry is restated here — that
+     is what made the old toys rule circular, and this is the same trap one step along.
+
+     --space-6 is load-bearing and cost a measurement: sticky is constrained by an element's
+     MARGIN box, and the h1 carries an inline margin-block: 0 var(--space-6). Leave it out
+     and the headline lets go 24px of scroll early, which opens the gap to 54px.
+
+     The two ends still have to be eased into each other after this — releasing together is
+     not the same as releasing gently — and that is leave() in hero-bridge.js, reaching the
+     headline through the exit-with attribute on the element below.
+
+     pointer-events go with the size. A box this big at z-index 2 would otherwise sit over
+     the entire hero swallowing clicks, so it takes none and hands them back to the two
+     children that want them.
+
+     No data-reveal on this element or anything inside it. The page's own sweep() writes
+     el.style.opacity = "1" on those and then abandons the element once it reads exactly
+     "1", and the inline transition it pairs with would smear every value the scroll
+     animation below writes. The two mechanisms cannot share an element. */
+  [data-hero-copy] {
+    position: absolute;
+    inset: 0 0 auto;
+    bottom: calc(100% - var(--hero-band) - var(--hero-scrub) - var(--hero-hold)
+                 - var(--hero-exit) - var(--hero-gap) - var(--hero-h1) - var(--space-6));
+    margin-inline: auto;
+    max-width: var(--container-xxl);
+    /* content-box so the page gutter sits OUTSIDE the 1280 measure, which is how every
+       other container on this page is built — see the wrapper at the Our Approach split. */
+    box-sizing: content-box;
+    padding-top: var(--hero-gap);
+    padding-inline: var(--page-gutter);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    z-index: 2;
+    pointer-events: none;
+  }
+  /* Both children take the measure the old wrapper used to carry. They are siblings rather
+     than one block because the headline has to pin and the body has to leave, and a
+     transform on a shared parent would become the sticky element's containing block and
+     kill the pin outright.
+
+     Left-aligned, and that is the whole point of this arrangement rather than a detail.
+     The headline sat off-centre by accident — an inline `margin` shorthand on the h1 zeroed
+     the side margins the stylesheet was setting to auto — and centre-ragged text inside an
+     off-centre column is exactly what made it read as a bug. Committed asymmetry wants a
+     rag. The inline shorthand is now a margin-block that cannot zero the sides, so none of
+     this depends on a specificity collision any more. */
+  [data-hero-copy] > * {
+    margin-inline: 0;
+    max-width: var(--container-lg);
+    text-align: left;
+    pointer-events: auto;
+  }
+  /* The button row carries an inline justify-content:center from the shared hero markup, so
+     this needs the weight to beat it. Flush left with everything else on the rail. */
+  [data-hero-actions] { justify-content: flex-start !important; }
+
+  /* THE SPLIT, which is the layout the rest of the site already uses — the Our Approach
+     header, the research rows, the team blocks: heading left, body right, --space-20 between.
+
+     2fr/1fr rather than the house 1fr/1fr, and that is forced rather than chosen. The
+     content grid caps at --container-xxl, so an even split is a 600px headline column at
+     every width from 1280 up, and "Bridging frontier AI" alone measures ~750px at the h1's
+     84px. An even split would mean dropping the hero headline to h2 scale — the same size
+     as every section heading on the page. 2fr gives it 800px and it sets in two lines.
+
+     The 1400px floor is derived from that: two lines needs ~768px, so (content - 80) x 2/3
+     >= 768 puts the content at 1232 and the viewport at ~1370. Measured, 1400 gives a 787px
+     column and 1330 wraps to three. 1366 measures two lines in a 766px column and would be
+     worth having — it is a very common laptop width — but an earlier round measured it as
+     three, the two readings have not been reconciled, and a headline that wraps to three
+     lines at 84px is a worse failure than a stacked rail. Left at 1400 until it is settled.
+
+     THERE IS NO LONGER A min-height ON THIS, and it is worth knowing why there was one.
+     The split's copy block measured 410px against the stacked arm's 380, the extra 30px
+     cost 172px of plate, and at 1440x750 the entry dropped from 0.82 to 0.62 — so the
+     layout was gated to screens that could afford it, which turned out to be no MacBook
+     with browser chrome open. Now that --hero-drop scales with the viewport the split arm
+     is the SHORTER of the two on exactly those screens — 328px at 1400x720 against 380
+     stacked — so there is nothing left for a height bound to protect. Below 560px of
+     height the no-overlay arm further down still takes the whole overlay off.
+
+     The stacked arm keeps --container-lg on both children so its four measured --hero-copy
+     values still hold; only this arm hands the measure to the columns and derives the band
+     from it. */
+  @media (min-width: 1400px) {
+    /* THE BODY SITS AGAINST THE MIDDLE OF THE HEADING BESIDE IT — the same idea as
+       syncApproachOffset further down this file, which does it for the Our Approach split.
+       That one measures the heading in JS because it wraps to an unpredictable number of
+       lines; this one does not need to, because the split only runs where the h1 is exactly
+       two lines. Half of two lines is one line-height, and CSS can say that outright.
+
+       It scales with the SCREEN rather than being that flat 92.4px everywhere, and the
+       reason is the plate. The copy band is subtracted from the room the plate is sized
+       into, and the divisor there is (--hb-entry-keep - --hb-entry-sky) = 0.174 — so every
+       pixel of band costs 5.75px of plate height, and a flat offset costs 530px of picture
+       on a screen that has none to spare. Full offset from about 885px of viewport height
+       up; 80px at 860, 40px at 780, 32px at 764, nothing at 700 and below, where the two
+       simply top-align. 700 is the floor because that is where the split's block stops
+       being taller than the stacked arm's 380px.
+
+       ONE property, used twice. --hero-copy is the band and has to include the offset or
+       the body collides with the plate — that shortfall is exactly the bug the flat 416px
+       was patching — so it is derived here rather than hand-set. 324px is the measured
+       offset-free block height, and it is a constant worth trusting: 318px at every width
+       from 1400 to 2560, because the container caps at --container-xxl so the body column
+       is 400px at all of them, plus 6px of margin. */
+    .scheme-1 {
+      --hero-drop: clamp(0px, calc((100svh - 700px) / 2),
+                         calc(var(--text-h1) * var(--text-h1-line-height)));
+      --hero-copy: calc(324px + var(--hero-drop));
+    }
+    [data-hero-copy] {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      column-gap: var(--space-20);
+    }
+    [data-hero-copy] > * { max-width: none; }
+    [data-hero-body] {
+      align-self: start;
+      margin-top: var(--hero-drop);
+    }
+  }
+
+  /* THE HEADLINE STAYS AND THE BODY LEAVES, and the whole thing is CSS with no JavaScript
+     and no knowledge of the hero-bridge element at all. A theme rebuilding this page copies
+     this block and the markup it selects and needs nothing else — which is the point, and
+     the reason it is not driven from the component: [data-hero-copy] is a SIBLING of the
+     component, so a custom property written there would not even inherit to it.
+
+     The headline pins at the position it loads in — --hero-gap under the header, the same
+     air it loads with — and holds it for the entire hero: the body leaving, the plate
+     growing, and every frame of the sequence, releasing only as the plate itself scrolls
+     away. THE PICTURE IS WHAT MOVES OUT OF ITS WAY, not the other way round: --hb-arch-clear
+     below tells the component where the finished bridge has to land, and the component
+     drops the plate to put it there.
+
+     That replaced a rule that pulled the headline UP instead, to clear the rack's top toys
+     at plate y 0.269. It is gone, and not because it stopped working — it is that the
+     finished arch is a strictly harder constraint than the furniture under it. The bridge
+     arcs OVER the gap, so its deck sits at y 0.100, above both the rack's top at 0.257 and
+     the desk's at 0.245. Anything clearing the arch clears the toys by 30px plus 0.169 of
+     the plate's height, which is 200px at 1440x900. Two rules for one requirement, and the
+     weaker of them was the one making the layout circular: the lock was derived from the
+     plate, and the plate is now derived from the lock.
+
+     The body floats 5rem further than the page scrolls, so it pulls up and away from the
+     headline rather than riding down with it, and dissolves as it goes. Both run on the
+     same 0-to-band range as the plate's own growth, so the copy leaving and the picture
+     arriving are one move rather than two — see --hb-entry-span above.
+
+     pointer-events in the dissolve is not decoration. The body reaches opacity 0 at 60% of
+     the range having travelled only ~370px, so without it the buttons are still over the
+     viewport and still clickable while completely invisible.
+
+     @supports carries the pin as well as the animation, deliberately: one guard, one
+     fallback. An engine without scroll-driven animations gets the band-height box and copy
+     that simply scrolls away, which is what this shipped as. Chrome has had these since
+     115, Safari since 26, Firefox since 144. Reduced motion is handled by never starting
+     any of it rather than by resetting it, so nothing is left stranded at opacity 0. */
+  @keyframes hero-float { to { transform: translateY(-5rem); } }
+  @keyframes hero-dissolve { 60%, to { opacity: 0; pointer-events: none; } }
+  @supports (animation-timeline: scroll()) {
+    @media not (prefers-reduced-motion: reduce) {
+      /* WHERE THE FINISHED BRIDGE HAS TO LAND, handed to the component. Measured from under
+         the header, like --hb-entry-clear beside it and for the same reason: nothing in
+         hero-bridge.css can know how tall this headline is. The component owns the other
+         half — --hb-arch, the top of the assembled bridge as a share of the plate — and
+         solves the two into a static offset that moves the plate down.
+
+         It is set HERE, inside the pin's own guards, rather than beside --hb-pin further
+         up. The clearance exists because the headline holds over the picture; an engine
+         without scroll-driven animations, or a reader who asked for less motion, gets copy
+         that simply scrolls away, and moving the plate for a headline that has already gone
+         would be spending the desk's feet on nothing. */
+      hero-bridge {
+        --hb-arch-clear: calc(var(--hero-gap) + var(--hero-h1) + 30px);
+      }
+      [data-hero-copy] h1 {
+        position: sticky;
+        /* Not stretch, which is the grid default and was silently wrong: the row is as tall
+           as the body beside it, so the headline's BOX came out 386px against 185px of text
+           — and the clearance rule that used to live here reasoned about the text. Still
+           load-bearing now that the rule is gone: a stretched sticky item pins by its box,
+           so the headline would hold a position 200px above its own first line. */
+        align-self: start;
+        top: calc(var(--space-18) + var(--hero-gap));
+      }
+      [data-hero-body] {
+        animation: hero-float linear both, hero-dissolve linear both;
+        animation-timeline: scroll(root block), scroll(root block);
+        animation-range: 0 var(--hero-band), 0 var(--hero-band);
+        will-change: transform, opacity;
+      }
+    }
+  }
+  @supports not (animation-timeline: scroll()) {
+    [data-hero-copy] { inset: 0 0 auto; height: var(--hero-band); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-hero-copy] { inset: 0 0 auto; height: var(--hero-band); }
+  }
+
+  /* WHERE THERE IS NO ROOM TO OVERLAY, DO NOT OVERLAY. Below about 560px of viewport the
+     copy wants more than the whole screen under the header: a landscape phone at 667x375
+     leaves 303px, and the copy alone is 290 of it. Every arrangement that keeps the words
+     over the plate there is a collision dressed up as a layout, so this one drops the
+     overlay instead — the copy goes back into flow, takes the screen it needs, and the
+     plate follows it down the page exactly as it does with scripting off.
+
+     Everything the overlay arrangement adds comes off with it. --hb-entry-clear, because
+     with nothing laid over the plate there is nothing for it to clear. The pin, because a
+     headline stuck to the top of a page that is not holding anything behind it is just a
+     headline that will not go away. Last in the file on purpose: it has to outrank the
+     @supports block above, and these two carry equal specificity. */
+  @media (max-height: 560px) {
+    [data-hero-copy] {
+      position: static;
+      inset: auto;
+      height: auto;
+      padding-block: var(--hero-gap) var(--space-10);
+      pointer-events: auto;
+    }
+    [data-hero-copy] h1 { position: static; }
+    hero-bridge { --hb-entry-clear: 24px; --hb-arch-clear: 0px; }
+  }
+  /* The header is sticky and 4.5rem tall, so the stage is a screen minus the header
+     and the rig is that plus the pin. The difference between the two is the scroll
+     budget the element measures: 240 minus 100 leaves 140svh, over which revolutions="0.6"
+     of 48 frames turn — 45px of scroll a frame at 1440x900, the same rate the Approach
+     section runs at.
+
+     It was 170, which is 70svh and 22.5px a frame. The complaint was not the rate as such:
+     this rig sits 9,380px down a page that ends at 11,363, straight after Recent Research
+     with no empty run-up, so a reader arrives carrying whatever speed the page above has
+     built and the whole thing went past in a blink. Rate alone does not answer that — the
+     length of the pin is the only thing that buys time against a fling, so the pin doubled.
+     If it now reads as a crawl rather than an arrival, this is the number.
+
+     Static mode (reduced motion, save-data, no bitmap support) collapses to one
+     screen via falling-blocks.css's :not([data-fb-motion="on"]) rule, which outweighs
+     this bare type selector on purpose — keep this selector bare. */
+  falling-blocks { --fb-sticky-top: var(--space-18); height: calc(240vh - var(--space-18)); height: calc(240svh - var(--space-18)); }
+  /* falling-blocks.css slots an h1 between the plates (near plate in front of the
+     heading, far plate behind); the CTA's heading is an h2, so give it the same slot. */
+  falling-blocks [data-fb-copy] h2 { position: relative; z-index: 2; }
+
+  [data-slot="button"]:not([data-variant^="link"]) { padding-left: 2.25rem !important; padding-right: 2.25rem !important; }
+  [data-slot="button"][data-btn-size="sm"] { padding-left: 1.875rem !important; padding-right: 1.875rem !important; }
+  /* Touch targets. The hint-size attributes in the markup are preview annotations and
+     set nothing, so buttons render at their text height — about 35px, and 31px at the
+     small size. Below the desktop breakpoint every control gets the 44px a fingertip
+     needs; the footer and the team's social icons are the worst offenders at 18 and
+     24px, and they get it from padding rather than from a bigger glyph. */
+  @media (max-width: 991px) {
+    [data-slot="button"] { min-height: 2.75rem !important; }
+    footer a, footer [data-slot="button"][data-variant^="link"] { display: inline-flex; align-items: center; min-height: 2.75rem; }
+    /* The wordmark is a 168x33 link. min-height rather than a display change, so the
+       header's own flex layout is left alone. */
+    header a, footer a:has(img) { min-height: 2.75rem; }
+    .team-grid-2 a[aria-label], .team-grid-3 a[aria-label] { width: 44px !important; height: 44px !important; margin: -10px; }
+    /* Radios and checkboxes are wrapped in their label, so the row is what a finger
+       hits — the 18px control is only the mark. Give the row the height. Not a
+       direct-child selector: the design system nests the control in a wrapper. */
+    label:has(button) { min-height: 2.75rem; }
+  }
+</style>
+</helmet>
+
+<div class="scheme-1" style="min-height:100vh;overflow-x:clip;font-family:var(--font-body);color:var(--text-body);background:var(--surface-page)">
+
+  <header style="position: sticky; top: 0; z-index: 900; display: flex; min-height: var(--space-18); width: 100%; align-items: center; padding-inline: var(--page-gutter); background: var(--surface-page)">
+    <div style="margin-inline:auto;display:flex;width:100%;max-width:var(--container-xxl);align-items:center;justify-content:space-between;gap:var(--space-8)">
+      <a href="{{ hrefHome }}" onClick="{{ goHome }}" style="display:block;flex-shrink:0"><img src="/assets/logo/logo-light.png" alt="augment^ed" style="width:168px;display:block" width="768" height="149" decoding="async"></a>
+      <nav class="at-desktop" style="display:flex;align-items:center;gap:var(--space-10)">
+        <a href="{{ hrefChallenge }}" onClick="{{ goChallenge }}">The Challenge</a>
+        <a href="{{ hrefApproach }}" onClick="{{ goApproach }}">Our Approach</a>
+        <a href="{{ hrefTeam }}" onClick="{{ goTeam }}">Who We Are</a>
+        <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" onClick="{{ goInvolved }}" size="sm" data-btn-size="sm">Follow our work</x-import>
+      </nav>
+      <button class="at-mobile" onClick="{{ toggleNav }}" aria-label="{{ navLabel }}" aria-expanded="{{ navExpanded }}" aria-controls="site-menu" style="display:flex;flex-direction:column;justify-content:center;gap:6px;width:44px;height:44px;padding:0;border:0;background:transparent;cursor:pointer">
+        <span style="{{ barTopStyle }}"></span>
+        <span style="{{ barBottomStyle }}"></span>
+      </button>
+    </div>
+  </header>
+
+  <sc-if value="{{ navOpen }}" hint-placeholder-val="{{ false }}">
+    <div id="site-menu" class="scheme-1 at-mobile" style="position:fixed;inset:var(--space-18) 0 0 0;z-index:800;overflow-y:auto;overscroll-behavior:contain;background:var(--surface-page);padding:var(--space-12) var(--page-gutter);display:flex;flex-direction:column;gap:var(--space-8)">
+      <a href="{{ hrefChallenge }}" onClick="{{ goChallenge }}" style="font-size:var(--text-h4);font-weight:var(--font-weight-bold);letter-spacing:var(--heading-letter-spacing)">The Challenge</a>
+      <a href="{{ hrefApproach }}" onClick="{{ goApproach }}" style="font-size:var(--text-h4);font-weight:var(--font-weight-bold);letter-spacing:var(--heading-letter-spacing)">Our Approach</a>
+      <a href="{{ hrefTeam }}" onClick="{{ goTeam }}" style="font-size:var(--text-h4);font-weight:var(--font-weight-bold);letter-spacing:var(--heading-letter-spacing)">Who We Are</a>
+      <a href="{{ hrefInvolved }}" onClick="{{ goInvolved }}" style="font-size:var(--text-h4);font-weight:var(--font-weight-bold);letter-spacing:var(--heading-letter-spacing)">Follow Our Work</a>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <main data-screen-label="Home">
+
+    <!-- The hero: the copy laid OVER the bridge assembling. The plate is pinned from the
+         moment the page loads, so the first screen is the artwork with the headline on top
+         of it, and the copy scrolls away to start the scrub. The falling-blocks rig that
+         used to pin here now wraps the closing CTA, and the long Approach act it led into
+         is gone: the bridge lands next to the bridging headline, the way the client reads
+         the page.
+
+         Three phases, and the budget is split between them in hero-bridge.css: the plate
+         hangs from a line under the copy, rises into place as the last of the copy leaves,
+         then scrubs for --hero-scrub while the arch builds. --hb-entry-clear above is what keeps
+         the words and the picture off each other during the first of those. On a desktop
+         screen the plate is already edge to edge while it hangs there — only its bottom is
+         off the fold — so the rise is a move rather than a zoom.
+
+         The plate runs EDGE TO EDGE and is never clipped by a box. It is 1.43:1 and taller
+         than a 1.6 laptop screen, so its stage takes the plate's height rather than the
+         screen's: the bottom of the picture is below the fold while the arch builds — the
+         desk's feet and the rack's base, everything past y 0.82 at 1440x900 — and scrolling
+         on reveals it whole. The rig this replaced cropped to the stage instead, which
+         looked identical while pinned and then dragged a hard cut up through the ground
+         shadow the moment the stage released. See /assets/hero-bridge.css.
+
+         The plate's alpha sits straight on the page colour, so the section carries no
+         side gutter and nothing behind the artwork: the copy over it supplies its own.
+
+         from/to name the span of the manifest that is actually played. This sequence was
+         delivered in three renders and only 276-417 carries the soft ground shadow — the
+         rest is an older pass with grey legs, and the one step between them measures a
+         22-point drop in partial alpha coverage against 23% either side of it. The other
+         frames stay encoded and on disk, unplayed rather than deleted; when a re-render
+         gives the tail its shadow this is the one attribute that changes. See
+         docs/hero-bridge-render.md.
+
+         The <img> is the still this hero shipped before the sequence was wired up,
+         unchanged. It is what a reader gets with scripting off, under reduced motion, on
+         save-data, and in the seconds before the first frame decodes — and it is the LCP
+         element in every one of those cases. Its positioning belongs to hero-bridge.css;
+         do not give it an inline style back. -->
+    <section style="position:relative;padding:0 0 var(--hero-tail)">
+      <div data-hero-copy="">
+        <h1 style="font-size:var(--text-h1);line-height:var(--text-h1-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin-block:0 var(--space-6);text-wrap:pretty">Bridging frontier AI and the classroom.</h1>
+        <div data-hero-body="">
+          <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">AugmentED is an R&amp;D organization closing the gap between what AI can do and what students need. We are teachers, researchers, and engineers working together to build and test the missing technology, and the evidence to trust it.</p>
+          <div data-hero-actions="" style="margin-top:var(--space-10);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--space-4)">
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button">Follow our work</x-import>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary" onClick="{{ goApproach }}">Explore our approach</x-import>
+          </div>
+        </div>
+      </div>
+      <div data-hero-visual="" data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+        <hero-bridge base="/assets/hero-bridge/" from="276" to="417" exit-with="[data-hero-copy] h1">
+          <div data-hb-stage="">
+            <div data-hb-box="">
+              <canvas data-hb-layer="0" aria-hidden="true"></canvas>
+              <canvas data-hb-layer="1" aria-hidden="true"></canvas>
+              <!-- Both files are the same plate at two sizes, so the browser picks by
+                   width and pixel density rather than by a media query. No plate and no
+                   radius: the render's alpha is the point, and it sits on the page
+                   colour. -->
+              <img src="/assets/images/hero-bridge.webp" srcset="/assets/images/hero-bridge-m.webp 1200w, /assets/images/hero-bridge.webp 2048w" sizes="100vw" alt="An arch of toy blocks under construction between a server rack and a school desk, carrying the span from one to the other as the last blocks fall into place" width="2048" height="1432" decoding="async">
+            </div>
+          </div>
+        </hero-bridge>
+      </div>
+    </section>
+
+    <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
+      <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-inline:auto;max-width:var(--container-lg);text-align:center">
+        <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0 0 var(--space-4)">The Challenge</p>
+        <h2 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0;text-wrap:pretty">Frontier AI models weren't purpose-built for education, leaving a gap between what AI can do and what students need. Closing it requires a missing middle layer between those models and the apps they power: infrastructure built for learning, proven in classrooms, and worthy of trust.</h2>
+        <div style="margin-top:var(--space-8);display:flex;justify-content:center">
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" onClick="{{ goChallenge }}">Learn more<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
+      <div style="margin-inline:auto;max-width:var(--container-xxl)">
+        <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);max-width:var(--container-lg);margin-bottom:clamp(var(--space-8),4vw,var(--space-16))">
+          <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0 0 var(--space-4)">Our Approach</p>
+          <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">We treat AI in education as a science, not a gold rush.</h2>
+          <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">We run an iterative research and development cycle, with educators, researchers, and engineers as equal partners at every step. We start by asking what teachers and students need. Each cycle focuses on one role AI could play in meeting some of those needs. Together, we identify what the role requires but doesn't yet exist, build it, and test it in real classrooms. What we learn informs the next turn of the cycle.</p>
+        </div>
+
+        <!-- The AugmentED R&D Cycle wheel, moved here from the Approach page in
+             place of the long scroll-scrubbed bridge build. The reader's own scroll
+             builds the ring; clicking a node or a row travels the page to that stage's
+             beat, keyboard focus opens a stage in place, and hover only scales the
+             icon. The behavior is <cycle-wheel> — /assets/cycle-wheel.js and .css, a
+             standalone element like the hero and the CTA, driving only the markup
+             below. Contract at the top of the JS; full spec, latch measurement
+             included, in wordpress-handoff/sections/cycle.md. -->
+        <cycle-wheel data-diagram="" style="display:block;margin-inline:auto;max-width:70rem">
+          <div data-cycle-rig="">
+          <div data-cycle-stage="">
+          <div data-cycle="" data-active="0" data-sel="0" style="width:100%;display:grid;grid-template-columns:minmax(0,1.04fr) minmax(0,0.96fr);column-gap:clamp(3rem,6vw,6rem);align-items:center">
+          <div data-diagram-slot="" style="position:relative;width:100%;max-width:33rem;margin-inline:auto;aspect-ratio:1/1;container-type:inline-size">
+            <svg viewBox="0 0 780 780" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">
+              <g data-arc="0"><path d="M 458.9 149.7 A 250 250 0 0 1 630.3 321.1" fill="none" stroke="currentColor" stroke-width="2" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"></path><polygon points="630.3,321.1 620.1,312.6 634.5,308.4" fill="currentColor" style="opacity:0"></polygon></g>
+              <g data-arc="1"><path d="M 630.3 458.9 A 250 250 0 0 1 458.9 630.3" fill="none" stroke="currentColor" stroke-width="2" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"></path><polygon points="458.9,630.3 467.4,620.1 471.6,634.5" fill="currentColor" style="opacity:0"></polygon></g>
+              <g data-arc="2"><path d="M 321.1 630.3 A 250 250 0 0 1 149.7 458.9" fill="none" stroke="currentColor" stroke-width="2" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"></path><polygon points="149.7,458.9 159.9,467.4 145.5,471.6" fill="currentColor" style="opacity:0"></polygon></g>
+              <g data-arc="3"><path d="M 149.7 321.1 A 250 250 0 0 1 321.1 149.7" fill="none" stroke="currentColor" stroke-width="2" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"></path><polygon points="321.1,149.7 312.6,159.9 308.4,145.5" fill="currentColor" style="opacity:0"></polygon></g>
+            </svg>
+            <button type="button" aria-label="Step 01, Define the role" data-node="0" style="opacity:0;position:absolute;width:18.5%;aspect-ratio:1/1;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;left:50%;top:17.95%">
+              <span style="display:flex;width:86%;height:86%"><img src="/assets/approach/cyc01_role_0001.webp" alt="" style="width:100%;height:100%;object-fit:contain;display:block"></span>
+            </button>
+            <button type="button" aria-label="Step 02, Build the capabilities" data-node="1" style="opacity:0;position:absolute;width:18.5%;aspect-ratio:1/1;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;left:82.05%;top:50%">
+              <span style="display:flex;width:86%;height:86%"><img src="/assets/approach/cyc02_capabilities_0001.webp" alt="" style="width:100%;height:100%;object-fit:contain;display:block"></span>
+            </button>
+            <button type="button" aria-label="Step 03, Co-design the tools" data-node="2" style="opacity:0;position:absolute;width:18.5%;aspect-ratio:1/1;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;left:50%;top:82.05%">
+              <span style="display:flex;width:86%;height:86%"><img src="/assets/approach/cyc03_applications_0002.webp" alt="" style="width:100%;height:100%;object-fit:contain;display:block"></span>
+            </button>
+            <button type="button" aria-label="Step 04, Test, learn, begin again" data-node="3" style="opacity:0;position:absolute;width:18.5%;aspect-ratio:1/1;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;left:17.95%;top:50%">
+              <span style="display:flex;width:86%;height:86%"><img src="/assets/approach/cyc04_test_0001.webp" alt="" style="width:100%;height:100%;object-fit:contain;display:block"></span>
+            </button>
+            <div data-hub="" style="opacity:0;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:38%;text-align:center;pointer-events:none">
+              <h3 style="font-size:max(1.25rem,2.5cqw);line-height:1.2;letter-spacing:-0.01em;font-weight:700;margin:0">AugmentED R&amp;D Cycle</h3>
+              <p data-hub-line="" style="font-size:max(0.8rem,1.3cqw);line-height:1.5;margin:1em 0 0;opacity:0;text-wrap:pretty">Each turn of the cycle informs the next.</p>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;flex-direction:column">
+              <div>
+                <button type="button" data-rl="0" style="display:flex;align-items:baseline;gap:0.875rem;width:100%;padding:1.125rem 0 1rem;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
+                  <span data-num="" style="font-weight:600;font-size:var(--text-tiny,0.75rem);transition:color 200ms ease-in-out">01</span>
+                  <span style="font-weight:700;font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em">Define the role</span>
+                </button>
+                <div data-body="0">
+                  <div style="overflow:hidden">
+                    <p style="font-size:var(--text-regular);line-height:1.5;margin:0;padding:0 0 1.375rem;max-width:34rem;text-wrap:pretty">AI can play many distinct roles in a classroom, and each requires its own standards, evidence, and safeguards. With our partners, we pinpoint a specific role AI could play to meet real needs, and what teachers uniquely bring alongside it. Then we form hypotheses: what the role requires, where its limits are, and what bar it must meet to play the role responsibly.</p>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <button type="button" data-rl="1" style="display:flex;align-items:baseline;gap:0.875rem;width:100%;padding:1.125rem 0 1rem;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
+                  <span data-num="" style="font-weight:600;font-size:var(--text-tiny,0.75rem);transition:color 200ms ease-in-out">02</span>
+                  <span style="font-weight:700;font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em">Build the capabilities</span>
+                </button>
+                <div data-body="1">
+                  <div style="overflow:hidden">
+                    <p style="font-size:var(--text-regular);line-height:1.5;margin:0;padding:0 0 1.375rem;max-width:34rem;text-wrap:pretty">Much of the technology needed for AI to play these roles well doesn’t exist off the shelf. We build the missing layer between frontier AI models and classroom apps — validated capabilities that many different tools can build on, like computational methods that help AI measure students’ skills or track how concepts connect across a semester.</p>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <button type="button" data-rl="2" style="display:flex;align-items:baseline;gap:0.875rem;width:100%;padding:1.125rem 0 1rem;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
+                  <span data-num="" style="font-weight:600;font-size:var(--text-tiny,0.75rem);transition:color 200ms ease-in-out">03</span>
+                  <span style="font-weight:700;font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em">Co-design the tools</span>
+                </button>
+                <div data-body="2">
+                  <div style="overflow:hidden">
+                    <p style="font-size:var(--text-regular);line-height:1.5;margin:0;padding:0 0 1.375rem;max-width:34rem;text-wrap:pretty">Teachers, researchers, and engineers build classroom tools on those capabilities, along with new ways of teaching alongside them. They then test our work where it counts: in real classrooms.</p>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <button type="button" data-rl="3" style="display:flex;align-items:baseline;gap:0.875rem;width:100%;padding:1.125rem 0 1rem;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
+                  <span data-num="" style="font-weight:600;font-size:var(--text-tiny,0.75rem);transition:color 200ms ease-in-out">04</span>
+                  <span style="font-weight:700;font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em">Test, learn, begin again.</span>
+                </button>
+                <div data-body="3">
+                  <div style="overflow:hidden">
+                    <p style="font-size:var(--text-regular);line-height:1.5;margin:0;padding:0 0 1.375rem;max-width:34rem;text-wrap:pretty">Classroom data tells us whether the AI role we selected and the capabilities and tools we built actually helped. Those lessons sharpen our hypotheses, strengthen our capabilities and tools, and inform our next cycle of R&amp;D.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:var(--space-6);display:flex">
+              <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" onClick="{{ goApproach }}">Learn more<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import>
+            </div>
+          </div>
+        </div>
+          </div>
+        </div>
+
+        <div data-cycle-list="" data-cycle="" data-sel="0" style="display:flex;flex-direction:column">
+          <div>
+            <button type="button" data-rl="0" style="display:flex;align-items:center;gap:1rem;width:100%;min-height:2.75rem;padding:1.125rem 0;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
+              <img src="/assets/approach/cyc01_role_0001.webp" alt="" style="flex:0 0 2.75rem;width:2.75rem;height:2.75rem;object-fit:contain;display:block">
+              <span style="display:flex;flex-direction:column;gap:0.25rem">
+                <span data-num="" style="font-weight:600;font-size:var(--text-small);letter-spacing:0.1em;transition:color 200ms ease-in-out">01</span>
+                <span style="font-weight:700;font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em">Define the role</span>
+              </span>
+            </button>
+            <div data-body="0">
+              <div style="overflow:hidden">
+                <p style="font-size:var(--text-regular);line-height:1.5;margin:0;padding:0 0 1.375rem;max-width:34rem;text-wrap:pretty">AI can play many distinct roles in a classroom, and each requires its own standards, evidence, and safeguards. With our partners, we pinpoint a specific role AI could play to meet real needs, and what teachers uniquely bring alongside it. Then we form hypotheses: what the role requires, where its limits are, and what bar it must meet to play the role responsibly.</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <button type="button" data-rl="1" style="display:flex;align-items:center;gap:1rem;width:100%;min-height:2.75rem;padding:1.125rem 0;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
+              <img src="/assets/approach/cyc02_capabilities_0001.webp" alt="" style="flex:0 0 2.75rem;width:2.75rem;height:2.75rem;object-fit:contain;display:block">
+              <span style="display:flex;flex-direction:column;gap:0.25rem">
+                <span data-num="" style="font-weight:600;font-size:var(--text-small);letter-spacing:0.1em;transition:color 200ms ease-in-out">02</span>
+                <span style="font-weight:700;font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em">Build the capabilities</span>
+              </span>
+            </button>
+            <div data-body="1">
+              <div style="overflow:hidden">
+                <p style="font-size:var(--text-regular);line-height:1.5;margin:0;padding:0 0 1.375rem;max-width:34rem;text-wrap:pretty">Much of the technology needed for AI to play these roles well doesn’t exist off the shelf. We build the missing layer between frontier AI models and classroom apps — validated capabilities that many different tools can build on, like computational methods that help AI measure students’ skills or track how concepts connect across a semester.</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <button type="button" data-rl="2" style="display:flex;align-items:center;gap:1rem;width:100%;min-height:2.75rem;padding:1.125rem 0;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
+              <img src="/assets/approach/cyc03_applications_0002.webp" alt="" style="flex:0 0 2.75rem;width:2.75rem;height:2.75rem;object-fit:contain;display:block">
+              <span style="display:flex;flex-direction:column;gap:0.25rem">
+                <span data-num="" style="font-weight:600;font-size:var(--text-small);letter-spacing:0.1em;transition:color 200ms ease-in-out">03</span>
+                <span style="font-weight:700;font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em">Co-design the tools</span>
+              </span>
+            </button>
+            <div data-body="2">
+              <div style="overflow:hidden">
+                <p style="font-size:var(--text-regular);line-height:1.5;margin:0;padding:0 0 1.375rem;max-width:34rem;text-wrap:pretty">Teachers, researchers, and engineers build classroom tools on those capabilities, along with new ways of teaching alongside them. They then test our work where it counts: in real classrooms.</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <button type="button" data-rl="3" style="display:flex;align-items:center;gap:1rem;width:100%;min-height:2.75rem;padding:1.125rem 0;border:0;background:none;cursor:pointer;font-family:inherit;color:inherit;text-align:left">
+              <img src="/assets/approach/cyc04_test_0001.webp" alt="" style="flex:0 0 2.75rem;width:2.75rem;height:2.75rem;object-fit:contain;display:block">
+              <span style="display:flex;flex-direction:column;gap:0.25rem">
+                <span data-num="" style="font-weight:600;font-size:var(--text-small);letter-spacing:0.1em;transition:color 200ms ease-in-out">04</span>
+                <span style="font-weight:700;font-size:var(--text-h5);line-height:1.3;letter-spacing:-0.01em">Test, learn, begin again.</span>
+              </span>
+            </button>
+            <div data-body="3">
+              <div style="overflow:hidden">
+                <p style="font-size:var(--text-regular);line-height:1.5;margin:0;padding:0 0 1.375rem;max-width:34rem;text-wrap:pretty">Classroom data tells us whether the AI role we selected and the capabilities and tools we built actually helped. Those lessons sharpen our hypotheses, strengthen our capabilities and tools, and inform our next cycle of R&amp;D.</p>
+              </div>
+            </div>
+          </div>
+          <p style="font-size:var(--text-small);line-height:1.5;margin:1.5rem 0 0;opacity:0.7;text-wrap:pretty">Tap a step to read more. Each turn of the cycle informs the next.</p>
+
+        </div>
+      </cycle-wheel>
+    </div></section>
+
+
+    <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
+      <div style="margin-inline:auto;max-width:var(--container-xxl)">
+        <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr));column-gap:var(--space-20);row-gap:var(--space-8);margin-bottom:clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg))">
+          <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0;text-wrap:pretty">Turning classroom experiments into reusable infrastructure.</h2>
+          <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">Each co-design cycle produces more than prototypes. It creates evidence about what students need, what AI can do reliably, and what teachers need to use it well. AugmentED turns those lessons into research, technical foundations, and tools the field can trust and build on.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));column-gap:var(--space-8);row-gap:var(--space-12)">
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/illustrations/brain.webp" alt="A model of a human brain on a wooden stand" style="aspect-ratio:1/1;width:100%;object-fit:contain;margin-bottom:var(--space-8);display:block" width="810" height="810" loading="lazy" decoding="async">
+            <h3 style="font-size:var(--text-h4);line-height:var(--text-h4-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-4)">Better ways of thinking.</h3>
+            <p style="font-size:var(--text-regular);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">Ideas and evidence that help the field reason about AI in education: research insights on the roles AI should (and shouldn’t) play in the classroom and methods for evaluating how well AI can play these roles.</p>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/illustrations/blocks.webp" alt="Wooden toy blocks — an arch, a column, a curve and two bricks — standing as one structure" style="aspect-ratio:1/1;width:100%;object-fit:contain;margin-bottom:var(--space-8);display:block" width="810" height="810" loading="lazy" decoding="async">
+            <h3 style="font-size:var(--text-h4);line-height:var(--text-h4-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-4)">Better foundations for AI tools.</h3>
+            <p style="font-size:var(--text-regular);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">Reusable infrastructure that future classroom tools can be built on, from validated AI capabilities to the datasets that power them. We build these to work across many subjects and types of schools.</p>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/illustrations/laptop.webp" alt="An open laptop showing a simple page of text and an image" style="aspect-ratio:1/1;width:100%;object-fit:contain;margin-bottom:var(--space-8);display:block" width="810" height="810" loading="lazy" decoding="async">
+            <h3 style="font-size:var(--text-h4);line-height:var(--text-h4-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-4)">Better tools and classroom practices.</h3>
+            <p style="font-size:var(--text-regular);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">Tested classroom resources that help educators apply AI, including AI-powered applications, implementation guides, and proven methods for teaching alongside AI, all built with teachers, not for them, to solve real challenges in their classrooms.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
+      <div style="margin-inline:auto;max-width:var(--container-xxl)">
+        <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);max-width:var(--container-lg);margin-bottom:clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg))">
+          <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0 0 var(--space-4)">Our Current Work</p>
+          <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">What we're building together right now.</h2>
+          <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);margin:0 0 var(--space-6);text-wrap:pretty">In our first cohort, teachers from several pioneering high schools worked with researchers and engineers to co-design AI-powered tools. Each project below is a work in progress, and each one feeds reusable capabilities back into a foundation that others can build on.</p>
+          <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">All three put the same AI role—AI as cognitive extender—to work. For teachers and students, the AI surfaces patterns hidden in more information than any person could track alone.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));column-gap:var(--space-8);row-gap:var(--space-12)">
+          <article data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/images/museum-high-workshop.webp" alt="Teachers at worktables in a high-ceilinged classroom, project cards and sticky notes spread in front of them" style="width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="1080" height="720" loading="lazy" decoding="async">
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0 0 var(--space-4)">Museum High School</p>
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-3)">Feedback Facilitator</h3>
+            <p style="font-size:var(--text-regular);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">During multi-week projects, students respond to teacher prompts with short voice memos. The tool surfaces where each student and group is progressing, stuck, or drifting off track, so teachers can provide specific, meaningful feedback for every student.</p>
+            <div style="margin-top:var(--space-6);display:flex"></div>
+          </article>
+          <article data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/images/high-tech-high-workshop.webp" alt="Teachers gathered at a wall of sticky notes and storyboard sketches" style="width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="1080" height="720" loading="lazy" decoding="async">
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0 0 var(--space-4)">High Tech High Mesa &amp; High Tech High International</p>
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-3)">Collaboration Navigator</h3>
+            <p style="font-size:var(--text-regular);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">After students reflect on their small-group work, the tool generates insights about how each group is functioning. It makes group dynamics visible to teachers in real time, so they can coach students on collaboration and repair problems before they harden.</p>
+            <div style="margin-top:var(--space-6);display:flex"></div>
+          </article>
+          <article data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/images/crosstown-workshop.webp" alt="Teachers around a table watching a screen, sticky-note boards filling the windows behind them" style="width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="1080" height="720" loading="lazy" decoding="async">
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0 0 var(--space-4)">Crosstown High</p>
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-3)">Connection Builder</h3>
+            <p style="font-size:var(--text-regular);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">Students learn more deeply when new material connects to what they already know and care about. This tool maps a teacher’s course material to each student’s knowledge, experiences, and interests and then suggests personalized connections.</p>
+            <div style="margin-top:var(--space-6);display:flex"></div>
+          </article>
+        </div>
+        <div style="margin-top:clamp(var(--space-12),5vw,var(--space-16));display:flex">
+          
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
+      <div style="margin-inline:auto;max-width:var(--container-xxl)">
+        <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);max-width:var(--container-lg);margin-bottom:clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg))">
+          <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0 0 var(--space-4)">Our Thinking</p>
+          <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6)">Recent Research</h2>
+          <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">We work with university and research partners to study what each role AI plays in a classroom makes possible, where it falls short, and what we can build to move those limits. We publish what we find. Here are three recent papers:</p>
+        </div>
+        <div style="display:flex;flex-direction:column">
+          <article data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);padding:var(--space-10) 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr));column-gap:var(--space-20);row-gap:var(--space-4)">
+            <h3 style="font-size:var(--text-h4);line-height:var(--text-h4-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0">Measuring critical thinking with AI</h3>
+            <div>
+              <p style="font-size:var(--text-regular);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">Can AI help assess a skill as complex as critical thinking? We show that carefully scaffolded language models can measure some critical-thinking subskills in student writing, and we map where they still fall short.</p>
+              <div style="margin-top:var(--space-6);display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" as="a" href="https://educationaldatamining.org/wp-content/uploads/2026/proceedings/2026.EDM.full-papers/2026.EDM.full-papers.174.pdf" target="_blank" rel="noopener">Read more<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import></div>
+            </div>
+          </article>
+          <article data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);padding:var(--space-10) 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr));column-gap:var(--space-20);row-gap:var(--space-4)">
+            <h3 style="font-size:var(--text-h4);line-height:var(--text-h4-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0">A repeatable method for measuring durable skills</h3>
+            <div>
+              <p style="font-size:var(--text-regular);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">We share a standardized, step-by-step process for improving and validating the capacity of AI systems to detect complex skills like critical thinking, so the field can build AI measurement tools without starting from scratch every time.</p>
+              <div style="margin-top:var(--space-6);display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" as="a" href="https://educationaldatamining.org/wp-content/uploads/2026/proceedings/2026.EDM.full-papers/2026.EDM.full-papers.174.pdf" target="_blank" rel="noopener">Read more<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import></div>
+            </div>
+          </article>
+          <article data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);padding:var(--space-10) 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr));column-gap:var(--space-20);row-gap:var(--space-4)">
+            <h3 style="font-size:var(--text-h4);line-height:var(--text-h4-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0">The AI Roles for Education framework</h3>
+            <div>
+              <p style="font-size:var(--text-regular);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">Arguing over whether AI is good or bad for education misses the point: AI isn't one thing. We define five distinct roles AI can play in the classroom, and show how naming a tool's role determines what it should do, how to judge whether it works, and what safeguards it needs.</p>
+              <div style="margin-top:var(--space-6);display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" as="a" href="https://educationaldatamining.org/wp-content/uploads/2026/proceedings/2026.EDM.full-papers/2026.EDM.full-papers.174.pdf" target="_blank" rel="noopener">Read more<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import></div>
+            </div>
+          </article>
+        </div>
+        <div style="margin-top:clamp(var(--space-12),5vw,var(--space-16));display:flex">
+          
+        </div>
+      </div>
+    </section>
+
+    <!-- The falling-blocks CTA: the rig that used to be the hero, on a 140svh pin (see
+         the falling-blocks height rule in the style block) so the blocks have time to
+         tumble past while the closing copy holds. It was half that and went by too fast
+         to read, for reasons the height rule explains. stage-fill 0.93 and the
+         content/speed bounds are measured off the render — see falling-blocks.js.
+
+         Two depth plates of one camera view sandwich the copy: "bottom" is the far
+         and mid planes and sits behind the words, "top" is the near plane and passes
+         in front of the heading only — the body and buttons sit above everything in
+         [data-fb-front] so they stay readable and clickable. No data-reveal on the
+         copy: an animating opacity would create a stacking context and flatten the
+         between-the-plates z-order. Reduced-motion, save-data, and script-off
+         visitors get the frame-1 stills at one screen with the copy centered. -->
+    <falling-blocks base="/assets/falling-blocks/" width="1440" frames="48" layers="bottom,top" revolutions="0.6" budget-mb="128" min-width="0" stage-fill="0.93" content-bottom="0.273,0.700" content-top="0.183,0.775" speed-bottom="1" speed-top="1.25">
+      <div data-fb-stage="">
+
+        <div data-fb-layer="bottom" aria-hidden="true">
+          <canvas></canvas>
+          <img src="/assets/falling-blocks/w1440/bottom/fb0001.webp" alt="" width="1440" height="2160" loading="lazy" decoding="async">
+        </div>
+
+        <div data-fb-copy="" style="max-width:var(--container-lg);text-align:center;padding-inline:var(--page-gutter)">
+          <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">Join us in building better foundations for AI in education.</h2>
+          <div data-fb-front="">
+            <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">We co-design with educators, publish what we learn, and build infrastructure the whole field can build on. If that's the future of AI in education you want, come build it with us.</p>
+            <div style="margin-top:var(--space-10);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--space-4)">
+              <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" onClick="{{ goTeam }}">Meet the team</x-import>
+              <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary">Follow our work</x-import>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lazy on both stills so the animated path does not pay for them: an image
+             with no layout box is never near the viewport, so a lazy one is skipped
+             where the canvas has replaced it, while the static path renders it in the
+             viewport and loads it at once. -->
+        <div data-fb-layer="top" aria-hidden="true">
+          <canvas></canvas>
+          <img src="/assets/falling-blocks/w1440/top/fb0001.webp" alt="" width="1440" height="2160" loading="lazy" decoding="async">
+        </div>
+
+      </div>
+    </falling-blocks>
+
+  </main>
+  </sc-if>
+
+  <sc-if value="{{ isChallenge }}" hint-placeholder-val="{{ false }}">
+  <main data-screen-label="The Challenge">
+
+    <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
+      <div style="margin-inline:auto;max-width:var(--container-lg);text-align:center">
+        <h1 style="font-size:var(--text-h1);line-height:var(--text-h1-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">The gap between what AI can do and what students need.</h1>
+        <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0;text-wrap:pretty">AI is arriving in classrooms whether schools are ready or not. The danger is that some companies and schools are rushing in without asking what AI can do well, what teachers uniquely bring, or what students actually need.</p>
+      </div>
+    </section>
+
+    <section class="media-row" style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
+      <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-inline:auto;max-width:var(--container-xxl);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr));column-gap:var(--space-20);row-gap:var(--space-12);align-items:center">
+        <img src="/assets/images/student-notebook.webp" srcset="/assets/images/student-notebook-m.webp 800w, /assets/images/student-notebook.webp 1264w" sizes="(min-width:1422px) 600px, (min-width:800px) calc(45vw - 40px), 90vw" alt="A student at a desk writing longhand in a spiral notebook, a closed laptop pushed aside" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--radius-image);display:block" decoding="async" loading="lazy">
+        <div>
+          <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">Nobody knows the right way for AI to enter the classroom.</h2>
+          <div style="display:flex;flex-direction:column;gap:var(--space-6)">
+            <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0;text-wrap:pretty">Most of us built our critical thinking, writing ability, and judgment without AI, which is what allows us to use it well now. We direct it rather than defer to it. Students who lean on AI too early can short-circuit those skills before they form.</p>
+            <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0;text-wrap:pretty">It's a safe bet that AI can improve how people learn. But nobody has discovered how. The entire field fundamentally lacks research into the right ways to integrate AI into the classroom.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="media-row media-row-flip" style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
+      <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-inline:auto;max-width:var(--container-xxl);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr));column-gap:var(--space-20);row-gap:var(--space-12);align-items:center">
+        <img src="/assets/images/engineers-screens.webp" srcset="/assets/images/engineers-screens-m.webp 800w, /assets/images/engineers-screens.webp 1264w" sizes="(min-width:1422px) 600px, (min-width:800px) calc(45vw - 40px), 90vw" alt="An engineer and a researcher side by side comparing what is on their two laptop screens" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--radius-image);display:block" decoding="async" loading="lazy">
+        <div>
+          <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">And the technology to support it is lacking.</h2>
+          <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0;text-wrap:pretty">Ed tech companies build the apps teachers and students use. The big AI labs build the underlying models that power these apps. What's missing is the layer in between: the foundational capabilities that let AI understand what a student knows, measure skills as complex as critical thinking, and adapt to what's happening in a real classroom.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="media-row" style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
+      <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-inline:auto;max-width:var(--container-xxl);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr));column-gap:var(--space-20);row-gap:var(--space-12);align-items:center">
+        <img src="/assets/images/teacher-two-students.webp" srcset="/assets/images/teacher-two-students-m.webp 800w, /assets/images/teacher-two-students.webp 1264w" sizes="(min-width:1422px) 600px, (min-width:800px) calc(45vw - 40px), 90vw" alt="A teacher standing between two students’ desks, talking with them" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--radius-image);display:block" decoding="async" loading="lazy">
+        <div>
+          <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">Fear is fueling a backlash that could leave students worse off</h2>
+          <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">Parents and teachers are alarmed. Some districts are pushing screens and AI out of schools entirely. This instinct is understandable, but both extremes carry real costs. Letting AI take over the classroom would stunt student learning and hollow out the relationships it depends on. Yet pushing AI out altogether leaves students unprepared for a world that already runs on it.</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter) clamp(var(--space-20),9vw,9rem)">
+      <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-inline:auto;max-width:var(--container-lg);text-align:center">
+        <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">We're on a mission to bridge this gap.</h2>
+        <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0;text-wrap:pretty">The gap exists because frontier AI and classroom learning operate on different timelines and constraints. Our work closes that gap by creating the infrastructure that lets them work together—safely, effectively, and in service of what students actually need to learn.</p>
+        <div style="margin-top:var(--space-10);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--space-6)">
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary">Follow our research</x-import>
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" onClick="{{ goApproach }}">Explore our approach<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  </sc-if>
+
+  <sc-if value="{{ isApproach }}" hint-placeholder-val="{{ false }}">
+  <main data-screen-label="Our Approach">
+
+
+    <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
+      <div style="margin-inline:auto;max-width:var(--container-lg);text-align:center">
+        <h1 style="font-size:var(--text-h1);line-height:var(--text-h1-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6)">Our Approach</h1>
+        <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0 0 var(--space-6);text-wrap:pretty">We believe better educational AI will emerge from discovering what classrooms actually need, building solutions with educators, testing them in real classrooms, and using what we learn to improve the technology. That's why every AugmentED project combines research and development in an iterative co-design cycle, carried out by teams of educators, researchers, and engineers.</p>
+        <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0;text-wrap:pretty">Education technology companies build the applications teachers and students use every day. The large AI labs build the underlying models. What's missing is the layer in between: the capabilities that let AI understand what a student knows, measure skills as complex as critical thinking, and adapt to what's happening in a real classroom. That's the layer we are building.</p>
+        <div style="margin-top:var(--space-10);display:flex;justify-content:center">
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button">Follow our work</x-import>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="media-row media-row-flip" style="padding:clamp(var(--space-20),8vw,8rem) var(--page-gutter) clamp(var(--space-28),15vh,10rem)">
+      <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-inline:auto;max-width:var(--container-xxl);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr));column-gap:var(--space-20);row-gap:var(--space-12);align-items:center">
+        <img src="/assets/images/define-the-role.webp" srcset="/assets/images/define-the-role-m.webp 800w, /assets/images/define-the-role.webp 1264w" sizes="(min-width:1422px) 600px, (min-width:800px) calc(45vw - 40px), 90vw" alt="Two teachers and a researcher at a wall, working out what their students need" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--radius-image);display:block" decoding="async" loading="lazy">
+        <div>
+          <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0 0 var(--space-4)"><span style="color:var(--brand-accent)">01</span>&nbsp;&nbsp;Define the role</p>
+          <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">We start by asking what teachers and students need.</h2>
+          <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0;text-wrap:pretty">Each cycle focuses on one role AI could play in meeting real classroom needs, such as deepening a teacher's understanding of her students' prior experiences and interests, assessing complex skills, or facilitating feedback. We select and shape each role with researchers, educators, and engineers. That role becomes the North Star for everything that follows.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="media-row" style="padding:clamp(var(--space-28),15vh,10rem) var(--page-gutter) clamp(var(--space-28),15vh,10rem)">
+      <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-inline:auto;max-width:var(--container-xxl);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr));column-gap:var(--space-20);row-gap:var(--space-12);align-items:center">
+        <img src="/assets/images/build-capabilities.webp" srcset="/assets/images/build-capabilities-m.webp 800w, /assets/images/build-capabilities.webp 1264w" sizes="(min-width:1422px) 600px, (min-width:800px) calc(45vw - 40px), 90vw" alt="Two engineers at a desk working through a problem on their laptops" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--radius-image);display:block" decoding="async" loading="lazy">
+        <div>
+          <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0 0 var(--space-4)"><span style="color:var(--brand-accent)">02</span>&nbsp;&nbsp;Build the capabilities</p>
+          <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">We research what makes that role technically feasible.</h2>
+          <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0;text-wrap:pretty">Our researchers and engineers then build the underlying infrastructure, with educators informing the work: the reusable technical capabilities a tool needs to play its chosen role well. For the roles we're currently exploring, that includes building capabilities such as validated ways for AI to measure and support durable skills and a living map of how the ideas in a particular teacher's class connect to each other and to students' prior experiences and interests. Most of these capabilities don't exist yet. Once we build and prove them, they can be reused, adapted, and made available to others to build on.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="media-row media-row-flip" style="padding:clamp(var(--space-28),15vh,10rem) var(--page-gutter) clamp(var(--space-28),15vh,10rem)">
+      <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-inline:auto;max-width:var(--container-xxl);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr));column-gap:var(--space-20);row-gap:var(--space-12);align-items:center">
+        <img src="/assets/images/codesign-tools.webp" srcset="/assets/images/codesign-tools-m.webp 800w, /assets/images/codesign-tools.webp 1264w" sizes="(min-width:1422px) 600px, (min-width:800px) calc(45vw - 40px), 90vw" alt="Teachers and engineers around a table moving paper sketches of a classroom tool between them" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--radius-image);display:block" decoding="async" loading="lazy">
+        <div>
+          <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0 0 var(--space-4)"><span style="color:var(--brand-accent)">03</span>&nbsp;&nbsp;Co-design the applications</p>
+          <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">We build tools that bring the role to life.</h2>
+          <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0;text-wrap:pretty">Our teams of educators, researchers, and engineers use that infrastructure to build and test AI-powered tools, and new ways of teaching alongside them. This second part is crucial: an AI tool might help students evaluate sources or collaboratively solve problems, but it's only truly effective when paired with a teaching approach that combines what AI and human teachers each do best.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="media-row" style="padding:clamp(var(--space-28),15vh,10rem) var(--page-gutter) clamp(var(--space-24),14vh,9rem)">
+      <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-inline:auto;max-width:var(--container-xxl);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr));column-gap:var(--space-20);row-gap:var(--space-12);align-items:center">
+        <img src="/assets/images/test-in-classrooms.webp" srcset="/assets/images/test-in-classrooms-m.webp 800w, /assets/images/test-in-classrooms.webp 1264w" sizes="(min-width:1422px) 600px, (min-width:800px) calc(45vw - 40px), 90vw" alt="A teacher crouched beside two students at their desks, watching them try something on a laptop" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--radius-image);display:block" decoding="async" loading="lazy">
+        <div>
+          <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0 0 var(--space-4)"><span style="color:var(--brand-accent)">04</span>&nbsp;&nbsp;Test, learn, begin again.</p>
+          <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">We test in real classrooms.</h2>
+          <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0 0 var(--space-6);text-wrap:pretty">Every tool is tested in classrooms by teachers and students. What we learn tells us which capabilities to build or improve next, while new and improved capabilities make better tools possible. Then the cycle turns again.</p>
+          <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0;text-wrap:pretty">Each turn of the cycle strengthens the field's understanding of what roles AI should play, what capabilities those roles require, and how those ideas translate into practical tools that genuinely improve learning.</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter) clamp(var(--space-24),14vh,9rem)">
+      <div style="margin-inline:auto;max-width:var(--container-xxl)">
+        <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);max-width:var(--container-lg);margin-bottom:clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg))">
+          <h2 style="font-size:var(--text-h3);line-height:var(--text-h3-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0;text-wrap:pretty">Through this cycle, we produce three things the field needs:</h2>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));column-gap:var(--space-8);row-gap:var(--space-12)">
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);padding-top:var(--space-6)">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-4)">Research</h3>
+            <p style="font-size:var(--text-regular);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">Every co-design cycle generates evidence about what AI should do in education, when it works, and why. We openly share our research findings, evaluation methods, and models for teaching and learning alongside AI, so the field can build from evidence instead of assumptions.</p>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);padding-top:var(--space-6)">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-4)">Capabilities</h3>
+            <p style="font-size:var(--text-regular);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">Behind every successful classroom tool are foundational capabilities that make it possible. We develop and share reusable capabilities, from specially trained models and datasets to ways of representing what's being taught and learned in a classroom, that any educational AI application can build on.</p>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);padding-top:var(--space-6)">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-4)">Applications</h3>
+            <p style="font-size:var(--text-regular);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">Research and capabilities only matter if they improve learning. We build and validate classroom tools and teaching methods alongside educators and students to demonstrate what works in practice.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter) clamp(var(--space-20),9vw,9rem)">
+      <div style="margin-inline:auto;max-width:var(--container-xxl)">
+        <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin:0 auto;max-width:var(--container-lg);text-align:center">
+          <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">What we learn shapes what we build next.</h2>
+          <div style="margin-top:var(--space-10);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--space-6)">
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary">Follow our work</x-import>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" onClick="{{ goTeam }}">Meet the team<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  </sc-if>
+
+  <sc-if value="{{ isTeam }}" hint-placeholder-val="{{ false }}">
+  <main data-screen-label="Who We Are">
+
+    <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
+      <div style="margin-inline:auto;max-width:var(--container-xxl);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr));column-gap:var(--space-20);row-gap:var(--space-8)">
+        <h1 style="font-size:var(--text-h1);line-height:var(--text-h1-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0">Our Team</h1>
+        <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0;text-wrap:pretty">AugmentED brings together people from classrooms, research labs, and engineering teams who share a conviction that AI should augment human teaching, not replace it. We build the infrastructure that lets teachers and students work alongside frontier AI in ways that deepen their thinking, learning, and relationships rather than short-circuit them.</p>
+      </div>
+    </section>
+
+    <section style="padding:clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg)) var(--page-gutter)">
+      <div style="margin-inline:auto;max-width:var(--container-xxl)">
+        <h2 data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg))">Leadership</h2>
+        <div class="team-grid-2" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));column-gap:var(--space-8);row-gap:var(--space-12)">
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/team/sherry-lachman.webp" alt="Sherry Lachman" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="512" height="512" decoding="async" loading="lazy">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Sherry Lachman</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0">Founder &amp; Executive Director</p>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <div style="aspect-ratio:1/1;width:100%;background:var(--color-neutral-lightest);border-radius:var(--radius-image);margin-bottom:var(--space-6)"></div>
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Caitlin Mills</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0">Co-Founder &amp; Chief of Research and Impact</p>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/team/raquel-romano.webp" alt="Raquel Romano" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 5%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="512" height="512" decoding="async" loading="lazy">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Raquel Romano</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0">Chief Technology Officer</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://www.linkedin.com/in/romano" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="/assets/icons/linkedin.svg" alt="" style="width:var(--icon-size);height:var(--icon-size);display:block" width="24" height="24" decoding="async" loading="lazy"></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <div style="aspect-ratio:1/1;width:100%;background:var(--color-neutral-lightest);border-radius:var(--radius-image);margin-bottom:var(--space-6)"></div>
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Jenny Bradbury</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0">Vice President of Education Innovation and Partnerships</p>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <div style="aspect-ratio:1/1;width:100%;background:var(--color-neutral-lightest);border-radius:var(--radius-image);margin-bottom:var(--space-6)"></div>
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Brandon Bodnar</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0">Principal Engineer</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
+      <div style="margin-inline:auto;max-width:var(--container-xxl)">
+        <h2 data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg))">Research Partners</h2>
+        <div class="team-grid-3" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));column-gap:var(--space-8);row-gap:var(--space-12)">
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/team/andrew-lan.webp" alt="Andrew Lan" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="203" height="203" decoding="async" loading="lazy">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Andrew Lan</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Associate Professor of Computer Science, University of Massachusetts Amherst</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://www.cics.umass.edu/about/directory/andrew-lan" target="_blank" rel="noopener" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language"></x-import></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/team/ryan-baker.webp" alt="Ryan Baker" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 0%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="190" height="213" decoding="async" loading="lazy">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Ryan Baker</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Professor of Artificial Intelligence and Education, Adelaide University</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://learninganalytics.upenn.edu/ryanbaker/" target="_blank" rel="noopener" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language"></x-import></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/team/angela-stewart.webp" alt="Angela E.B. Stewart" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="512" height="512" decoding="async" loading="lazy">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Angela E.B. Stewart</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Assistant Professor, University of Pittsburgh</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://www.sci.pitt.edu/people/angela-eb-stewart" target="_blank" rel="noopener" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language"></x-import></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/team/laura-allen.webp" alt="Laura Allen" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="512" height="512" decoding="async" loading="lazy">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Laura Allen</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Associate Professor, University of Minnesota</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://www.linkedin.com/in/laura-allen-37344528/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="/assets/icons/linkedin.svg" alt="" style="width:var(--icon-size);height:var(--icon-size);display:block" width="24" height="24" decoding="async" loading="lazy"></a>
+              <a href="https://edpsych.umn.edu/laura-allen" target="_blank" rel="noopener" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language"></x-import></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/team/blair-lehman.webp" alt="Blair Lehman" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="512" height="512" decoding="async" loading="lazy">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Blair Lehman</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Senior Scientist, Brighter Research</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://www.linkedin.com/in/blair-lehman-bb043b11" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="/assets/icons/linkedin.svg" alt="" style="width:var(--icon-size);height:var(--icon-size);display:block" width="24" height="24" decoding="async" loading="lazy"></a>
+              <a href="https://sites.google.com/site/blairlehman/home" target="_blank" rel="noopener" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language"></x-import></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <div style="aspect-ratio:1/1;width:100%;background:var(--color-neutral-lightest);border-radius:var(--radius-image);margin-bottom:var(--space-6)"></div>
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Isa Peczuh</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">PhD Candidate, University of Minnesota</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
+      <div style="margin-inline:auto;max-width:var(--container-xxl)">
+        <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);max-width:var(--container-lg);margin-bottom:clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg))">
+          <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0">Technology Partners</h2>
+        </div>
+        <div class="team-grid-3" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));column-gap:var(--space-8);row-gap:var(--space-12)">
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/team/sarah-zaner.webp" alt="Sarah Zaner" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="512" height="512" decoding="async" loading="lazy">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Sarah Zaner</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Co-founder, Bendable Labs</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://bendablelabs.com/who_we_are/sarah-zaner" target="_blank" rel="noopener" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language"></x-import></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/team/lisa-peterson.webp" alt="Lisa Peterson" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 30%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="512" height="512" decoding="async" loading="lazy">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Lisa Peterson</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Product Design Consultant</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://www.linkedin.com/in/lisa-peterson/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="/assets/icons/linkedin.svg" alt="" style="width:var(--icon-size);height:var(--icon-size);display:block" width="24" height="24" decoding="async" loading="lazy"></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/team/neil-sharma.webp" alt="Neil Sharma" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="512" height="512" decoding="async" loading="lazy">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Neil Sharma</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Engineering Consultant</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://www.linkedin.com/in/neilshar/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="/assets/icons/linkedin.svg" alt="" style="width:var(--icon-size);height:var(--icon-size);display:block" width="24" height="24" decoding="async" loading="lazy"></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/team/joan-lee.webp" alt="Joan Lee" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 4%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="512" height="512" decoding="async" loading="lazy">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Joan Lee</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Project Manager</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://www.linkedin.com/in/about-joan-lee" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="/assets/icons/linkedin.svg" alt="" style="width:var(--icon-size);height:var(--icon-size);display:block" width="24" height="24" decoding="async" loading="lazy"></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
+      <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-inline:auto;max-width:var(--container-xxl);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr));column-gap:var(--space-20);row-gap:var(--space-8);padding-top:clamp(var(--space-10),5vw,var(--space-16))">
+        <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0;text-wrap:pretty">Education Partnerships</h2>
+        <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0;text-wrap:pretty">We collaborated with XQ and High Tech High to identify exceptional educators for our first co-design teams. Our inaugural AugmentED Education Fellowship cohort includes teachers from Crosstown High School (Memphis, TN), Grand Rapids Public Museum High School (Grand Rapids, MI), Thomas A. Edison Career and Technical Education High School (Queens, NY), and several High Tech High campuses in the San Diego region. We've selected these schools for their commitment to transforming the high school experience for students—the majority of whom are students of color and economically disadvantaged—by making learning meaningful and engaging, and preparing them with the critical skills they need to thrive in the age of AI.</p>
+      </div>
+    </section>
+
+    <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
+      <div style="margin-inline:auto;max-width:var(--container-xxl)">
+        <h2 data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg))">Education Fellows</h2>
+        <div class="team-grid-3" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));column-gap:var(--space-8);row-gap:var(--space-12)">
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/team/danielle-ragavanis.webp" alt="Danielle Ragavanis" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="414" height="414" decoding="async" loading="lazy">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Danielle Ragavanis</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Social Studies &amp; Design Thinking Teacher, R&amp;D Department Lead</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:var(--space-1) 0 0">Thomas A. Edison Career and Technical Education High School</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:0">Jamaica, NY</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://www.linkedin.com/in/danielle-ragavanis-passaretti-110b80b0/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="/assets/icons/linkedin.svg" alt="" style="width:var(--icon-size);height:var(--icon-size);display:block" width="24" height="24" decoding="async" loading="lazy"></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/team/alondra-ramos.webp" alt="Alondra Ramos" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="450" height="450" decoding="async" loading="lazy">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Alondra Ramos</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Special Education Teacher</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:var(--space-1) 0 0">Thomas A. Edison Career and Technical Education High School</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:0">Jamaica, NY</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://www.linkedin.com/in/alondra-ramos-31542958/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="/assets/icons/linkedin.svg" alt="" style="width:var(--icon-size);height:var(--icon-size);display:block" width="24" height="24" decoding="async" loading="lazy"></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <div style="aspect-ratio:1/1;width:100%;background:var(--color-neutral-lightest);border-radius:var(--radius-image);margin-bottom:var(--space-6)"></div>
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Philip Baker</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Social Studies &amp; Design Thinking Teacher, R&amp;D Department Lead</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:var(--space-1) 0 0">Thomas A. Edison Career and Technical Education High School</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:0">Jamaica, NY</p>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <div style="aspect-ratio:1/1;width:100%;background:var(--color-neutral-lightest);border-radius:var(--radius-image);margin-bottom:var(--space-6)"></div>
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Ted Cuevas</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Physics Teacher</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:var(--space-1) 0 0">High Tech High Chula Vista</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:0">Chula Vista, CA</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://www.hightechhigh.org/staff/ted-cuevas/" target="_blank" rel="noopener" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language"></x-import></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <div style="aspect-ratio:1/1;width:100%;background:var(--color-neutral-lightest);border-radius:var(--radius-image);margin-bottom:var(--space-6)"></div>
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Alexandra Wiggins</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Humanities Teacher, 504 Coordinator</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:var(--space-1) 0 0">High Tech High Mesa</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:0">San Diego, CA</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://www.hightechhigh.org/staff/alexandra-wiggins/" target="_blank" rel="noopener" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language"></x-import></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <div style="aspect-ratio:1/1;width:100%;background:var(--color-neutral-lightest);border-radius:var(--radius-image);margin-bottom:var(--space-6)"></div>
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Chris Mutter</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Multimedia Teacher</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:var(--space-1) 0 0">High Tech High International</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:0">San Diego, CA</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://www.hightechhigh.org/staff/chris-mutter/" target="_blank" rel="noopener" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language"></x-import></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/team/christopher-hanks.webp" alt="Christopher Hanks" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="512" height="512" decoding="async" loading="lazy">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Christopher Hanks</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Principal on Special Assignment, Innovation Design</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:var(--space-1) 0 0">Grand Rapids Public Museum High School</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:0">Grand Rapids, MI</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://www.linkedin.com/in/christopher-hanks-4a0ba92b9/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="/assets/icons/linkedin.svg" alt="" style="width:var(--icon-size);height:var(--icon-size);display:block" width="24" height="24" decoding="async" loading="lazy"></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <div style="aspect-ratio:1/1;width:100%;background:var(--color-neutral-lightest);border-radius:var(--radius-image);margin-bottom:var(--space-6)"></div>
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Tom Peterson</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Social Studies Teacher</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:var(--space-1) 0 0">Grand Rapids Public Museum High School</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:0">Grand Rapids, MI</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://www.linkedin.com/in/tom-peterson-25776477/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="/assets/icons/linkedin.svg" alt="" style="width:var(--icon-size);height:var(--icon-size);display:block" width="24" height="24" decoding="async" loading="lazy"></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/team/ben-hoff.webp" alt="Ben Hoff" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="512" height="512" decoding="async" loading="lazy">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Ben Hoff</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Science &amp; Computer Science Teacher</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:var(--space-1) 0 0">Grand Rapids Public Museum High School</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:0">Grand Rapids, MI</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://www.linkedin.com/in/ben-hoff-240635272/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="/assets/icons/linkedin.svg" alt="" style="width:var(--icon-size);height:var(--icon-size);display:block" width="24" height="24" decoding="async" loading="lazy"></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/team/nikki-wallace.webp" alt="Nikki Wallace" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="380" height="380" decoding="async" loading="lazy">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Nikki Wallace</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Science Teacher, Director of Research &amp; Innovation</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:var(--space-1) 0 0">Crosstown High School</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:0">Memphis, TN</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://www.linkedin.com/in/nikki-wallace-hmw/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="/assets/icons/linkedin.svg" alt="" style="width:var(--icon-size);height:var(--icon-size);display:block" width="24" height="24" decoding="async" loading="lazy"></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/team/danie-cowden.webp" alt="Danie Cowden" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="400" height="400" decoding="async" loading="lazy">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Danie Cowden</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Photography, Digital Art &amp; Design Teacher, CTE Coordinator</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:var(--space-1) 0 0">Crosstown High School</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:0">Memphis, TN</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://www.linkedin.com/in/danie-cowden/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="/assets/icons/linkedin.svg" alt="" style="width:var(--icon-size);height:var(--icon-size);display:block" width="24" height="24" decoding="async" loading="lazy"></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/team/joshua-sloan.webp" alt="Joshua Sloan" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="512" height="512" decoding="async" loading="lazy">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Joshua Sloan</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Math Teacher, Math Department Lead</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:var(--space-1) 0 0">Crosstown High School</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:0">Memphis, TN</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://www.linkedin.com/in/joshua-sloan-746aa1226/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="/assets/icons/linkedin.svg" alt="" style="width:var(--icon-size);height:var(--icon-size);display:block" width="24" height="24" decoding="async" loading="lazy"></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="/assets/team/mohammed-al-harthy.webp" alt="Mohammed Al Harthy" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="450" height="450" decoding="async" loading="lazy">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Mohammed Al Harthy</h3>
+            <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0">Computer Science Teacher, 9th Grade Lead</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:var(--space-1) 0 0">Crosstown High School</p>
+            <p style="font-size:var(--text-small);line-height:var(--text-body-line-height);color:var(--text-muted);margin:0">Memphis, TN</p>
+            <div style="margin-top:var(--space-5);display:flex;align-items:center;gap:var(--space-4)">
+              <a href="https://www.linkedin.com/in/mohammed-al-harthy/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="/assets/icons/linkedin.svg" alt="" style="width:var(--icon-size);height:var(--icon-size);display:block" width="24" height="24" decoding="async" loading="lazy"></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter) clamp(var(--space-20),9vw,9rem)">
+      <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-inline:auto;max-width:var(--container-lg);text-align:center">
+        <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">Join us in building better foundations for AI in education.</h2>
+        <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">We co-design with educators, publish what we learn, and build infrastructure for the whole field.</p>
+        <div style="margin-top:var(--space-10);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--space-4)">
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button">Follow our work</x-import>
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary" onClick="{{ goApproach }}">Explore our approach</x-import>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  </sc-if>
+
+  <sc-if value="{{ isInvolved }}" hint-placeholder-val="{{ false }}">
+  <main data-screen-label="Get Involved">
+
+    <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter) clamp(var(--space-20),9vw,8rem)">
+      <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-inline:auto;max-width:var(--container-lg);text-align:center;margin-bottom:clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg))">
+        <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0 0 var(--space-4)">Connect</p>
+        <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">Stay in the loop</h2>
+        <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">Get updates on our work and research findings.</p>
+      </div>
+
+      <form onSubmit="{{ onInvolvedSubmit }}" data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-inline:auto;max-width:40rem;display:flex;flex-direction:column;gap:var(--space-8)">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:var(--space-6)">
+          <div>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Label">First name</x-import>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Input" type="text" required=""></x-import>
+          </div>
+          <div>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Label">Last name</x-import>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Input" type="text" required=""></x-import>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:var(--space-6)">
+          <div>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Label">Email</x-import>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Input" type="email" required=""></x-import>
+          </div>
+          <div>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Label">Contact number</x-import>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Input" type="tel"></x-import>
+          </div>
+        </div>
+        <div>
+          <p style="font-size:var(--text-regular);margin:0 0 var(--space-3)">Which best describes you?</p>
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.RadioGroup" default-value="educator" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(160px,100%),1fr));gap:var(--space-3)">
+            <label style="display:flex;align-items:center;gap:var(--space-3)"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.RadioGroupItem" value="educator"></x-import>Educator</label>
+            <label style="display:flex;align-items:center;gap:var(--space-3)"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.RadioGroupItem" value="researcher"></x-import>Researcher</label>
+            <label style="display:flex;align-items:center;gap:var(--space-3)"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.RadioGroupItem" value="engineer"></x-import>Engineer</label>
+            <label style="display:flex;align-items:center;gap:var(--space-3)"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.RadioGroupItem" value="administrator"></x-import>Administrator</label>
+            <label style="display:flex;align-items:center;gap:var(--space-3)"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.RadioGroupItem" value="nonprofit"></x-import>Non-profit professional</label>
+            <label style="display:flex;align-items:center;gap:var(--space-3)"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.RadioGroupItem" value="executive"></x-import>Company executive</label>
+            <label style="display:flex;align-items:center;gap:var(--space-3)"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.RadioGroupItem" value="funder"></x-import>Funder</label>
+            <label style="display:flex;align-items:center;gap:var(--space-3)"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.RadioGroupItem" value="journalist"></x-import>Journalist</label>
+            <label style="display:flex;align-items:center;gap:var(--space-3)"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.RadioGroupItem" value="other"></x-import>Other</label>
+          </x-import>
+        </div>
+        <div>
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Label">Tell us more</x-import>
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Textarea" placeholder="Share what brought you here..." rows="4" required=""></x-import>
+        </div>
+        <label style="display:flex;align-items:flex-start;gap:var(--space-3)">
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Checkbox" required=""></x-import>
+          <span style="font-size:var(--text-small)">I agree to the privacy policy</span>
+        </label>
+        <div>
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" type="submit">Subscribe</x-import>
+        </div>
+      </form>
+    </section>
+
+  </main>
+  </sc-if>
+
+  <footer style="padding:clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg)) var(--page-gutter) var(--space-12)">
+    <div style="margin-inline:auto;max-width:var(--container-xxl)">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));column-gap:var(--space-12);row-gap:var(--space-12);margin-bottom:var(--space-16)">
+        <div>
+          <img src="/assets/logo/logo-light.png" alt="augment^ed" style="width:168px;display:block;margin-bottom:var(--space-6)" width="768" height="149" decoding="async">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+          <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0 0 var(--space-1)">Explore</p>
+          <a href="{{ hrefChallenge }}" onClick="{{ goChallenge }}" style="font-size:var(--text-small)">The Challenge</a>
+          <a href="{{ hrefApproach }}" onClick="{{ goApproach }}" style="font-size:var(--text-small)">Our Approach</a>
+          <a href="{{ hrefTeam }}" onClick="{{ goTeam }}" style="font-size:var(--text-small)">Who We Are</a>
+          <a href="#" style="font-size:var(--text-small)">Research</a>
+          <a href="{{ hrefInvolved }}" onClick="{{ goInvolved }}" style="font-size:var(--text-small)">Get Involved</a>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+          <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0 0 var(--space-1)">AERDF</p>
+          <a href="#" style="font-size:var(--text-small)">Partnerships</a>
+          <a href="#" style="font-size:var(--text-small)">Careers</a>
+          <a href="#" style="font-size:var(--text-small)">Contact</a>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+          <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0 0 var(--space-1)">Follow Us</p>
+          <a href="#" style="font-size:var(--text-small);display:flex;align-items:center;gap:var(--space-3)"><img src="/assets/icons/linkedin.svg" alt="" style="width:var(--icon-size);height:var(--icon-size);display:block" width="24" height="24" decoding="async" loading="lazy">LinkedIn</a>
+          <a href="#" style="font-size:var(--text-small);display:flex;align-items:center;gap:var(--space-3)"><img src="/assets/icons/youtube.svg" alt="" style="width:var(--icon-size);height:var(--icon-size);display:block" width="24" height="24" decoding="async" loading="lazy">Youtube</a>
+        </div>
+      </div>
+      <div style="height:var(--border-width-divider);width:100%;background:var(--border-hairline);margin-bottom:var(--space-6)"></div>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-4)">
+        <p style="font-size:var(--text-small);margin:0">© 2025 AugmentED. All rights reserved.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:var(--space-6)">
+          <a href="#" style="font-size:var(--text-small);text-decoration:underline">Cookie settings</a>
+          <a href="#" style="font-size:var(--text-small);text-decoration:underline">Terms of service</a>
+          <a href="#" style="font-size:var(--text-small);text-decoration:underline">Privacy policy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+const BAR = {
+  display: "block",
+  width: "22px",
+  height: "2px",
+  background: "var(--color-neutral-darkest)",
+  transition: "transform 300ms ease-in-out",
+  transformOrigin: "center"
+};
+
+// Every page has its own URL. The pages still render from one bundle, but the
+// build emits a real file per route, so a direct link or a refresh loads that
+// page from the server rather than dropping the visitor on the home page.
+const ROUTES = [
+  ["challenge", "challenge"],
+  ["approach", "approach"],
+  ["team", "team"],
+  ["involved", "follow"]
+];
+
+const clamp = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
+const smooth = (t) => { const c = clamp(t); return c * c * (3 - 2 * c); };
+
+const TITLES = {
+  home: "AugmentED | Bridging frontier AI and the classroom",
+  challenge: "The Challenge | AugmentED",
+  approach: "Our Approach | AugmentED",
+  team: "Who We Are | AugmentED",
+  involved: "Follow Our Work | AugmentED"
+};
+
+// The site sits under a repo subpath on GitHub Pages (/aug-preview/) but at the
+// root on a custom domain, so read the base off the current path by stripping a
+// known slug rather than hard-coding a prefix that would only hold in one place.
+// In the design editor the document is served at its .dc.html path; pushing route
+// URLs there would break relative asset resolution, so navigation stays state-only.
+const IN_EDITOR = /\.dc\.html$/i.test(location.pathname);
+
+function readRoute() {
+  // 404.html is served from whatever URL was missed, so the build states the
+  // real base there — otherwise the miss path would masquerade as one and every
+  // link on the page would hang off it.
+  const forced = typeof window.__siteBase === "string" ? window.__siteBase : null;
+  let p = location.pathname.replace(/[^/]*\.html$/, "");
+  if (p.charAt(p.length - 1) !== "/") p += "/";
+  for (let i = 0; i < ROUTES.length; i++) {
+    const tail = "/" + ROUTES[i][1] + "/";
+    if (p.length > tail.length - 1 && p.slice(-tail.length) === tail) {
+      return { base: forced || p.slice(0, p.length - (tail.length - 1)), page: ROUTES[i][0] };
+    }
+  }
+  return { base: forced || p, page: "home" };
+}
+
+class Component extends DCLogic {
+  route = readRoute();
+  state = { page: this.route.page, navOpen: false };
+  lastPage = this.route.page;
+
+  componentDidMount() {
+    document.title = TITLES[this.state.page] || TITLES.home;
+    // Back and forward move between pages the way they would on a normal site.
+    this.onPopState = () => this.show(readRoute().page);
+    window.addEventListener("popstate", this.onPopState);
+
+    // Escape closes the menu, the way every other overlay on the web does.
+    this.onKeyDown = (e) => {
+      if (e.key === "Escape" && this.state.navOpen) this.setState({ navOpen: false });
+    };
+    window.addEventListener("keydown", this.onKeyDown);
+
+    this.sweep = () => {
+      const h = window.innerHeight || 800;
+      document.querySelectorAll("[data-reveal]").forEach((el) => {
+        if (el.style.opacity === "1") return;
+        if (el.getBoundingClientRect().top < h * 0.92) el.style.opacity = "1";
+      });
+      document.querySelectorAll("[data-build]").forEach((el) => {
+        const top = el.getBoundingClientRect().top;
+        let p = (h * 0.68 - top) / (h * 0.5);
+        p = p < 0 ? 0 : p > 1 ? 1 : p;
+        el.style.setProperty("--p", p.toFixed(3));
+      });
+    };
+    this.sweepTimer = setInterval(this.sweep, 250);
+
+    // Drops the body copy to sit against the middle of the heading beside it. That
+    // is a two-column idea: below 992px the pair stacks, and the same offset becomes
+    // a gap the height of half a wrapped headline.
+    this.syncApproachOffset = () => {
+      const h = document.querySelector("[data-approach-heading]");
+      const t = document.querySelector("[data-approach-text]");
+      if (!h || !t) return;
+      t.style.marginTop = window.innerWidth >= 992 ? (h.offsetHeight / 2) + "px" : "";
+    };
+    this.syncApproachOffset();
+    this.approachTimer = setInterval(this.syncApproachOffset, 250);
+
+    // The hero's rising block kit used to be driven from here, and the cycle
+    // wheel after it. Both are their own elements now — falling-blocks and
+    // cycle-wheel each listen for their own scroll — so this handler has only the
+    // reveal sweep left to run.
+    this.onScroll = () => this.sweep();
+    window.addEventListener("scroll", this.onScroll, { passive: true });
+    window.addEventListener("resize", this.onScroll, { passive: true });
+    this.sweep();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("popstate", this.onPopState);
+    window.removeEventListener("keydown", this.onKeyDown);
+    document.body.style.overflow = "";
+    window.removeEventListener("scroll", this.onScroll);
+    window.removeEventListener("resize", this.onScroll);
+    clearInterval(this.sweepTimer);
+    clearInterval(this.approachTimer);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    document.body.style.overflow = this.state.navOpen ? "hidden" : "";
+    // The runtime invokes this with prevProps only, so prevState is undefined —
+    // reading it threw on every update and swallowed the sweep below.
+    // go() already scrolls to the top, so track the page change ourselves.
+    if (this.lastPage !== this.state.page) {
+      this.lastPage = this.state.page;
+      window.scrollTo(0, 0);
+    }
+    if (this.sweep) requestAnimationFrame(this.sweep);
+  }
+
+  // The URL a page lives at, relative to wherever the site is mounted.
+  href(page) {
+    for (let i = 0; i < ROUTES.length; i++) {
+      if (ROUTES[i][0] === page) return this.route.base + ROUTES[i][1] + "/";
+    }
+    return this.route.base;
+  }
+
+  // Render a page without touching history — used on boot, on back/forward,
+  // and by go() once it has pushed the new URL.
+  show(page) {
+    document.title = TITLES[page] || TITLES.home;
+    window.scrollTo(0, 0);
+    this.setState({ page: page, navOpen: false }, () => {
+      window.scrollTo(0, 0);
+      if (this.sweep) requestAnimationFrame(this.sweep);
+    });
+  }
+
+  go(page) {
+    return (e) => {
+      // The nav items are real links now, so leave modified clicks to the
+      // browser — "open in new tab" should open the page, not swap it here.
+      const link = e && e.currentTarget && e.currentTarget.tagName === "A";
+      if (link && (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button > 0)) return;
+      if (e && e.preventDefault) e.preventDefault();
+      if (!IN_EDITOR && window.history && window.history.pushState) {
+        try { window.history.pushState({ page: page }, "", this.href(page)); } catch (err) {}
+      }
+      this.show(page);
+    };
+  }
+
+  // The R&D cycle wheel used to be driven from here — a scroll clock, a latch
+  // and an eased travel written against this runtime. It is <cycle-wheel> now
+  // (/assets/cycle-wheel.js), a standalone element like the hero and the CTA, so
+  // the page's whole animated surface ports by copying files. Nothing in this
+  // component references it any more.
+
+  renderVals() {
+    const open = this.state.navOpen;
+    return {
+      isHome: this.state.page === "home",
+      isChallenge: this.state.page === "challenge",
+      isApproach: this.state.page === "approach",
+      isTeam: this.state.page === "team",
+      isInvolved: this.state.page === "involved",
+      goTeam: this.go("team"),
+      goInvolved: this.go("involved"),
+      hrefHome: this.href("home"),
+      hrefChallenge: this.href("challenge"),
+      hrefApproach: this.href("approach"),
+      hrefTeam: this.href("team"),
+      hrefInvolved: this.href("involved"),
+      navOpen: open,
+      navLabel: open ? "Close menu" : "Menu",
+      navExpanded: open ? "true" : "false",
+      goHome: this.go("home"),
+      goChallenge: this.go("challenge"),
+      goApproach: this.go("approach"),
+      onInvolvedSubmit: (e) => { if (e && e.preventDefault) e.preventDefault(); },
+      toggleNav: () => this.setState((s) => ({ navOpen: !s.navOpen })),
+      barTopStyle: { ...BAR, transform: open ? "translateY(4px) rotate(45deg)" : "none" },
+      barBottomStyle: { ...BAR, transform: open ? "translateY(-4px) rotate(-45deg)" : "none" }
+    };
+  }
+}
+</script>
+</body>
+</html>
