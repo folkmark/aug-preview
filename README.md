@@ -359,7 +359,11 @@ an `--space-20` gap need 720px against a 90vw container — so the box runs 351p
 phone, peaks at 719 one pixel before the split, and settles to a flat 600 from 1422 up.
 1264 covers that at 2x and 800 covers every DPR-1 screen; a DPR-3 phone fetches the 1264,
 because 3x the phone box and 2x the desktop box have converged on the same number here.
-The set is 1.6 MB for both tiers, against 56 MB of master.
+The set is 1.26 MB for both tiers, against 100 MB of source. Five of the seven are
+licensed Shutterstock photography, encoded straight from the full-resolution originals
+in `source-material/image-sources/stock-photos-aug/large/` with a crop box on each job
+in `tools/encode-images.mjs`; the other two are the generated frames the whole set used
+to be, and keep their 1856x2304 masters in `image-sources/images/`.
 
 Below that split every one of those rows leads with its photograph, and that is the
 markup rather than a rule: all seven carry the picture first in source order, so the

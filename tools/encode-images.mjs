@@ -42,11 +42,30 @@ const JOBS = [
   { in: 'images/student-notes.png',     out: 'images/student-notes.webp',     width: 1264 },
 
   // The seven portrait photographs on The Challenge and Our Approach, in a 4/5 box, two
-  // tiers each. These arrived in the build hotlinked to a generation CDN under a
-  // user-scoped path, at 1856x2304 and 6.4-9.2 MB apiece; that bucket is not a home for
-  // production images, so the masters are committed here and the page reads the encoded
-  // pair. 56 MB of source for 1.58 MB of shipped WebP across both tiers, and the trade is
-  // the point — the CDN copy can go away and nothing here notices.
+  // tiers each.
+  //
+  // Five of the seven are licensed Shutterstock photography and are read straight from the
+  // full-resolution originals in stock-photos-aug/large/, cropped by the box on each job.
+  // The other two are the generated frames the whole set used to be: they arrived in the
+  // build hotlinked to a generation CDN under a user-scoped path, at 1856x2304 and 6.4-9.2
+  // MB apiece, and that bucket is not a home for production images, so their masters are
+  // committed here. Nothing in the set is hotlinked any more.
+  //
+  // Reading the stock frames from the original rather than from a cropped master is
+  // deliberate and worth keeping. The crop box is then reviewable data — you can see what
+  // was kept and move it — instead of a decision baked into a PNG nobody can undo, the
+  // 1264 tier is resampled once from 2767-5104 px of real detail rather than twice through
+  // an 1856 px intermediate, and the file the licence is traceable through stays the file
+  // the encoder reads. The filenames stay as the Shutterstock asset IDs for that last
+  // reason; `out` is where the descriptive name lives.
+  //
+  // Every box below is exactly 1856:2304 against its own source, measured, so the page's
+  // own `object-fit: cover` is left with nothing to take — same rule as the school shots
+  // further down. An extract that runs past the edge throws rather than clamping, so
+  // re-measure against the source if you move one. The horizontal placement is the whole
+  // job on the four landscape frames: a 3/2 original keeps 54% of its width in a 4/5 box
+  // and a 1.9:1 original keeps 42%, so a centred crop is a coin toss on who survives it.
+  // Each box below is set on the people the caption is about.
   //
   // The box is worth measuring rather than assuming, because it does not break where the
   // rest of the site does. The row is a `repeat(auto-fit, minmax(min(20rem,100%),1fr))`
@@ -68,24 +87,46 @@ const JOBS = [
   // would need a third artifact each and save little; there is no room for it between 800
   // and 1264.
   //
-  // Two of the seven (codesign-tools, test-in-classrooms) arrived RGBA with every alpha
-  // sample at 255. sharp carries an existing alpha channel through regardless of the webp
-  // options below, so without the removeAlpha() in the non-alpha branch those two would
-  // ship a plane that describes nothing, and be the only two of the seven that did.
-  { in: 'images/student-notebook.png',     out: 'images/student-notebook.webp',     width: 1264 },
-  { in: 'images/student-notebook.png',     out: 'images/student-notebook-m.webp',   width: 800 },
+  // build-capabilities.png is the one master left that arrived RGBA with every alpha sample
+  // at 255 — codesign-tools was the other, and is now stock. sharp carries an existing
+  // alpha channel through regardless of the webp options below, so without the removeAlpha()
+  // in the non-alpha branch it would ship a plane that describes nothing, and be the only
+  // one of the seven that did.
+
+  // Two students writing by hand, for the row about the skills built without AI. 9504x6336;
+  // the box holds both of them and the paper, and drops the empty desks to the left.
+  { in: 'stock-photos-aug/large/shutterstock_2763377205.jpg', out: 'images/student-notebook.webp',   width: 1264, crop: [2661, 0, 5104, 6336] },
+  { in: 'stock-photos-aug/large/shutterstock_2763377205.jpg', out: 'images/student-notebook-m.webp', width: 800,  crop: [2661, 0, 5104, 6336] },
+
   { in: 'images/engineers-screens.png',    out: 'images/engineers-screens.webp',    width: 1264 },
   { in: 'images/engineers-screens.png',    out: 'images/engineers-screens-m.webp',  width: 800 },
-  { in: 'images/teacher-two-students.png', out: 'images/teacher-two-students.webp', width: 1264 },
-  { in: 'images/teacher-two-students.png', out: 'images/teacher-two-students-m.webp', width: 800 },
-  { in: 'images/define-the-role.png',      out: 'images/define-the-role.webp',      width: 1264 },
-  { in: 'images/define-the-role.png',      out: 'images/define-the-role-m.webp',    width: 800 },
+
+  // A teacher leaning in over one student's textbook with another beside her, for the row
+  // about what the backlash would cost. 5153x3435; the box is set to keep the teacher whole
+  // — she is at the right edge of the frame — and both students with her.
+  { in: 'stock-photos-aug/large/shutterstock_1136122199.jpg', out: 'images/teacher-two-students.webp',   width: 1264, crop: [928, 0, 2767, 3435] },
+  { in: 'stock-photos-aug/large/shutterstock_1136122199.jpg', out: 'images/teacher-two-students-m.webp', width: 800,  crop: [928, 0, 2767, 3435] },
+
+  // Colleagues working a wall of sticky notes, for Define the role. 8869x5913; the box is
+  // on the man writing and the notes under his hand, keeping two of the group behind him.
+  { in: 'stock-photos-aug/large/shutterstock_2670025731.jpg', out: 'images/define-the-role.webp',   width: 1264, crop: [2483, 0, 4763, 5913] },
+  { in: 'stock-photos-aug/large/shutterstock_2670025731.jpg', out: 'images/define-the-role-m.webp', width: 800,  crop: [2483, 0, 4763, 5913] },
+
   { in: 'images/build-capabilities.png',   out: 'images/build-capabilities.webp',   width: 1264 },
   { in: 'images/build-capabilities.png',   out: 'images/build-capabilities-m.webp', width: 800 },
-  { in: 'images/codesign-tools.png',       out: 'images/codesign-tools.webp',       width: 1264 },
-  { in: 'images/codesign-tools.png',       out: 'images/codesign-tools-m.webp',     width: 800 },
-  { in: 'images/test-in-classrooms.png',   out: 'images/test-in-classrooms.webp',   width: 1264 },
-  { in: 'images/test-in-classrooms.png',   out: 'images/test-in-classrooms-m.webp', width: 800 },
+
+  // A table spread with printed material and someone handing a card across it, for Co-design
+  // the applications. 7680x4050 and the widest source in the set at 1.9:1, so this is the
+  // tightest of the five: the box takes the seated woman, the facilitator and the laptop,
+  // and loses the man at the left end of the table, who does not fit with them.
+  { in: 'stock-photos-aug/large/shutterstock_2380531861.jpg', out: 'images/codesign-tools.webp',   width: 1264, crop: [2304, 0, 3262, 4050] },
+  { in: 'stock-photos-aug/large/shutterstock_2380531861.jpg', out: 'images/codesign-tools-m.webp', width: 800,  crop: [2304, 0, 3262, 4050] },
+
+  // A teacher between two students at a laptop, for Test, learn, begin again. 3952x5532 and
+  // the one portrait original here, so the crop is vertical and the only choice is which end
+  // to lose: the box sits on the bottom edge, trimming 626px of ceiling above their heads.
+  { in: 'stock-photos-aug/large/shutterstock_2757155555.jpg', out: 'images/test-in-classrooms.webp',   width: 1264, crop: [0, 626, 3952, 4906] },
+  { in: 'stock-photos-aug/large/shutterstock_2757155555.jpg', out: 'images/test-in-classrooms-m.webp', width: 800,  crop: [0, 626, 3952, 4906] },
 
   // The three co-design action shots in the Our Current Work row, one school each. 1080
   // is set off the card, which is the narrowest photographic box on the site: 351 CSS px
@@ -229,10 +270,12 @@ for (const job of runnable) {
   const meta = await sharp(src).metadata();
   let pipe = sharp(src);
   // A crop box, [left, top, width, height] in source pixels, taken before the resize.
-  // Only for a photograph that is not a headshot to begin with and cannot be made into
-  // one by the square cover crop below, which takes the top of the frame and would keep
-  // whatever framing the photographer chose. Measure the box against the master rather
-  // than guessing: an extract that runs past the edge throws, it does not clamp.
+  // This is where an original gets framed for the box it ships into, and every job that
+  // carries one says above it what the box was set on. It does the work the page's own
+  // `object-fit: cover` cannot: cover takes its share out of the middle, which is a guess
+  // about where the subject is, and on these sources it is usually the wrong one. Measure
+  // the box against the source rather than guessing: an extract that runs past the edge
+  // throws, it does not clamp.
   if (job.crop) pipe = pipe.extract({ left: job.crop[0], top: job.crop[1], width: job.crop[2], height: job.crop[3] });
   if (job.square) {
     // Never enlarge: withoutEnlargement keeps the two small headshots at their own
