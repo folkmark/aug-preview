@@ -1,0 +1,51 @@
+/* Minimal element defaults. AugmentED sets type family + weight and nothing decorative. */
+*, *::before, *::after { box-sizing: border-box }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--text-regular);
+  line-height: var(--text-body-line-height);
+  color: var(--text-body);
+  background-color: var(--surface-page);
+  -webkit-font-smoothing: antialiased;
+  text-wrap: pretty;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--heading-letter-spacing);
+  margin: 0;
+}
+
+h1 { font-size: var(--text-h1); line-height: var(--text-h1-line-height) }
+h2 { font-size: var(--text-h2); line-height: var(--text-h2-line-height) }
+h3 { font-size: var(--text-h3); line-height: var(--text-h3-line-height) }
+h4 { font-size: var(--text-h4); line-height: var(--text-h4-line-height) }
+h5 { font-size: var(--text-h5); line-height: var(--text-h5-line-height) }
+h6 { font-size: var(--text-h6); line-height: var(--text-h6-line-height) }
+p { margin: 0 }
+
+a { color: inherit; text-decoration: none; transition: opacity var(--transition-fast) }
+a:hover { opacity: 0.7 }
+a.link-underline, .prose a { text-decoration: underline; text-underline-offset: 0.15em }
+
+button:not(:disabled), [role="button"]:not(:disabled) { cursor: pointer }
+
+img { max-width: 100% }
+
+.container { margin-inline: auto; max-width: var(--container-xxl) }
+
+.section {
+  padding-left: var(--page-gutter);
+  padding-right: var(--page-gutter);
+  padding-top: var(--section-pad-y);
+  padding-bottom: var(--section-pad-y);
+}
+@media (min-width: 768px) { .section { padding-top: var(--section-pad-y-md); padding-bottom: var(--section-pad-y-md) } }
+@media (min-width: 992px) { .section { padding-top: var(--section-pad-y-lg); padding-bottom: var(--section-pad-y-lg) } }
+
+.eyebrow { font-weight: var(--font-weight-semibold); font-size: var(--text-regular); margin-bottom: 0.75rem }
+@media (min-width: 768px) { .eyebrow { margin-bottom: 1rem } }

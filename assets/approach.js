@@ -1,0 +1,748 @@
+/* <approach-scrub> — a scroll-scrubbed sequence of alpha plates with copy synced to it.
+
+   Dependency-free and host-agnostic on purpose: no framework, no build step, no
+   bundler, and no assumption about where it is mounted. It drives markup it does not
+   build — every node it touches is authored in the page — so a framework that
+   re-renders around it has nothing of ours to reconcile away, and the copy is real
+   text in the document whether or not this file ever runs. Dropping this into another
+   CMS is this file, approach.css, the frame directory, and the markup below.
+
+   Markup contract (all of it required; see assets/approach.css):
+
+     <approach-scrub base="path/to/approach/">
+       <div data-arch-stage>
+         <div data-arch-box>
+           <div data-arch-cam>
+             <canvas data-arch-layer="0"></canvas>
+             <canvas data-arch-layer="1"></canvas>     <- plus-lighter, see below
+           </div>
+           <div data-arch-scrim aria-hidden="true"></div>
+         </div>
+         <div data-arch-ticks>
+           <button data-arch-tick="0">…</button>       <- one per copy beat, in order
+         </div>
+         <div data-arch-beats>
+           <div data-arch-copy="0">…</div>             <- same count, same order
+         </div>
+       </div>
+     </approach-scrub>
+
+   Frame URLs are base + "ap<0000><cut>.webp", where cut is "" for the full plate and
+   "m" for the tighter crop phones scrub. Which cut is loaded is read from the
+   --arch-variant custom property in approach.css, so the breakpoint that sizes the
+   band is also the one that picks the file and there is no second copy of it here to
+   drift. The frame list and both cuts' dimensions come from manifest.json beside the
+   frames; the encoder writes it, so the page cannot promise a frame that was not made.
+
+   The section's own height is the scroll budget. The stage pins inside it, and the
+   sticky offset is read off the stage's computed `top` rather than measured from a
+   page header — CSS and JS then agree by construction, and a host whose header is a
+   different height, or absent, or overlaid by an admin bar, needs no code change.
+
+   Two canvases, not one. They hold the frames either side of the current position and
+   are cross-faded by CSS opacity under `mix-blend-mode: plus-lighter` over an
+   `isolation: isolate` group. Drawing both into a single context at partial alpha
+   squares the outgoing frame's contribution, so everything the two frames share — here
+   both desks, most of the picture — sags to three-quarters opacity halfway through
+   every transition. plus-lighter adds to exactly the frame in between.
+
+   Attributes, all optional except base:
+     base        URL prefix ending in "/"                    (required)
+     manifest    manifest URL                     (base + "manifest.json")
+     budget-mb   resident decoded-bitmap ceiling             (96)
+     move        share of the whole scroll spent moving (from frame density)
+     near        viewport-heights of lead before loading     (1.25)
+*/
+(function () {
+  if (!window.customElements || customElements.get('approach-scrub')) return;
+
+  var clamp01 = function (v) { return v < 0 ? 0 : v > 1 ? 1 : v; };
+  var smooth = function (t) { var c = clamp01(t); return c * c * (3 - 2 * c); };
+  var pad4 = function (n) { return String(n).padStart(4, '0'); };
+
+  // The scrub's own easing, and it is not smoothstep. Smoothstep's slope peaks at 1.5x
+  // its average halfway through, so the middle of every move — the part with the most
+  // to look at, and the part the eye is actually tracking — runs half again as fast as
+  // the number the whole thing was paced to. Averages are not what a viewer perceives;
+  // the fastest moment is.
+  //
+  // This ramps velocity up over the first RAMP of the move, holds it flat, and ramps it
+  // down over the last RAMP: constant speed through the middle, with the ends still
+  // eased so nothing starts or stops abruptly. Peak is 1/(1 - RAMP) = 1.28x average
+  // rather than 1.5x. The ramps are themselves smoothstepped, so acceleration is
+  // continuous and there is no corner where the flat part begins.
+  //
+  // Copy fades and the camera keep plain smoothstep — they are opacity and scale, where
+  // nobody is tracking a moving object and the softer curve is the better one.
+  var RAMP = 0.22;
+  var glide = function (t) {
+    var c = clamp01(t), r = RAMP, area = 1 - r, x;
+    if (c < r) { x = c / r; return r * (x * x * x - x * x * x * x / 2) / area; }
+    if (c > 1 - r) { x = (1 - c) / r; return 1 - r * (x * x * x - x * x * x * x / 2) / area; }
+    return (r * 0.5 + (c - r)) / area;
+  };
+
+  // Four in flight keeps the window filling faster than a scroll can outrun it without
+  // making the whole machine slow.
+  var MAX_INFLIGHT = 4;
+  var IDLE_FRAMES = 6;
+
+  // What the scroll budget buys besides motion, as relative weights: the settle after
+  // the opening run, each copy beat's reading hold, and the coda. They are weights
+  // rather than fractions because the motion's share is set separately — see load() —
+  // and whatever is left over is divided among these in proportion.
+  //
+  // The lead is deliberately the shortest. It is the one hold with no copy over it, so
+  // every pixel of it is a frozen frame and nothing else — measured at the old 1.05 it
+  // was 834px of the books sitting still before the first word arrived, the longest
+  // dead run in the section and the thing visitors reported as "stuck". 0.4 keeps a
+  // settle after the fall (the camera is still pulling in) without the wait. The coda
+  // is a little shorter than a reading hold because its copy is already up and being
+  // read out.
+  var LEAD_W = 0.4, HOLD_W = 1, TAIL_W = 0.7;
+
+  // Beats that are punctuation rather than a reading hold, by beat frame number. 431 is
+  // the voussoir ring closed and standing with no deck on it — a completed structure
+  // worth stopping on, but Build-the-capabilities' copy has been up since 276 and is
+  // being read out over the fill, so the hold is there to let the arch land, not to buy
+  // reading time. Same reasoning as TAIL_W, further along: 0.45 is about half a reading
+  // hold, which measures ~300px at 1440x900.
+  //
+  // Keyed by frame rather than by index so it survives beats being added either side of
+  // it; a number here that is not in BEATS is simply never consulted.
+  var SHORT_HOLDS = { 431: 0.45 };
+
+  // When each copy block enters, as the render-frame number of the event it narrates.
+  // These are content decisions, read off the plates frame by frame — the same kind of
+  // measured constant as falling-blocks' CONTENT bounds — and they are the other half
+  // of the choreography whose stills live in the encoder's BEATS table:
+  //
+  //   93   the first book enters the frame        -> "Define the role."
+  //   276  the first solid block reaches the       -> "Build the capabilities."
+  //        wireframe (271 is clean, 281 falling)
+  //   436  the first roadway plank enters frame    -> "Co-design the applications."
+  //        (431 clean; laid across 441-476, the AR
+  //        chevrons then rise at 565 with it up)
+  //   621  the first test book rests on the deck   -> "Test, learn, begin again."
+  //        (settles to the crown by 636)
+  //
+  // Each block stays up from its cue, through its beat's still, until the next cue —
+  // so from frame 93 to the coda there is always exactly one step on screen, and every
+  // event plays with its words already up. A cue is a frame NUMBER, not an index: it
+  // does not need to be an encoded frame, because it converts to a progress position
+  // through the same curve the scrub itself runs on (pAtFrame).
+  var CUES = [93, 276, 436, 621];
+
+  // The copy's slide, in pixels of scroll and pixels of travel. Scroll-anchored rather
+  // than segment-fraction-anchored because the segments are different lengths: a fade
+  // that is 14% of its segment gave step 01 a 521px dwell and step 03 a 313px one, so
+  // every beat entered at a different speed and stayed a different time for no reason a
+  // visitor could see. In pixels, every beat behaves identically on every viewport.
+  //
+  // FADE_IN starts exactly at the cue — the words rise with their event, over motion.
+  // FADE_OUT completes exactly at the next cue, so the outgoing and incoming blocks —
+  // which share one grid cell — are never both visible. RISE is the entrance travel;
+  // 8px read as a shimmer, not an arrival.
+  var FADE_IN = 260, FADE_OUT = 220, RISE = 28;
+
+  function num(el, name, dflt) {
+    var v = parseFloat(el.getAttribute(name));
+    return isFinite(v) ? v : dflt;
+  }
+
+  class ApproachScrub extends HTMLElement {
+    connectedCallback() { if (!this._booted) this.boot(); }
+
+    // Boot waits for the markup contract to actually be satisfied, and is not a
+    // one-shot. A host framework may insert this element and only then fill it, so
+    // giving up on an empty element would leave the section a dead pane for the rest
+    // of the session. If the parts are missing, watch for them instead.
+    boot() {
+      if (this._booted) return;
+      var stage = this.querySelector('[data-arch-stage]');
+      var cam = this.querySelector('[data-arch-cam]');
+      var l0 = this.querySelector('[data-arch-layer="0"]');
+      var l1 = this.querySelector('[data-arch-layer="1"]');
+      if (!stage || !cam || !l0 || !l1) {
+        if (!this.mo) {
+          this.mo = new MutationObserver(this.boot.bind(this));
+          this.mo.observe(this, { childList: true, subtree: true });
+        }
+        return;
+      }
+      if (this.mo) { this.mo.disconnect(); this.mo = null; }
+      this._booted = true;
+
+      this.stage = stage; this.cam = cam; this.cvs = [l0, l1];
+      this.base = this.getAttribute('base') || '';
+      this.budget = num(this, 'budget-mb', 96) * 1048576;
+      // Viewport-heights of lead before the sequence starts downloading. Keep this
+      // comfortably below the height of whatever sits above the section, or the gate is
+      // satisfied at rest and there is no laziness at all: with a 290vh hero above it,
+      // a lead of 3 meant a phone fetched 2.4 MB of frames before the visitor had
+      // scrolled a pixel. 1.25 is still around 1300px of warning at both layouts, which
+      // is seconds of scrolling, and the loader fills beats-first so the first hold is
+      // ready well before the reader arrives at it.
+      this.near = num(this, 'near', 1.25);
+      this.moveAttr = this.getAttribute('move');
+
+      this.copies = [].slice.call(this.querySelectorAll('[data-arch-copy]'));
+      this.ticks = [].slice.call(this.querySelectorAll('[data-arch-tick]'));
+      // The body paragraph of each block, cached once: chrome() staggers it behind the
+      // number and heading every tick, and a per-tick querySelector would be a DOM
+      // search inside a scroll handler. The last <p> is the body by the markup
+      // contract — the first is the step number.
+      this.kids = this.copies.map(function (c) {
+        var ps = c.querySelectorAll('p');
+        return ps.length > 1 ? ps[ps.length - 1] : null;
+      });
+
+      // A full-page cache serialises the rendered DOM, tags and all. Left in place,
+      // the next visitor gets a canvas that claims to hold a frame it does not have
+      // and a section that stays blank until something forces a redraw. Clearing on
+      // boot is what makes this safe to cache; do not optimise it away.
+      this.cvs.forEach(function (cv) { delete cv.dataset.f; });
+      delete this.stage.dataset.archPin;
+
+      // Seeded rather than left for the first resize: put() stamps the drawn frame with
+      // this.cut, so an unset value tags the first paint "undefined:12" and a later
+      // resize then redraws every layer for no reason.
+      this.cut = this.variant();
+
+      this.bits = [];
+      this.pend = [];
+      this.inflight = 0;
+      this.gen = 0;
+      this.head = 0;
+      this.drawn = -1;
+      this.p = -1;
+
+      this.mqMotion = matchMedia('(prefers-reduced-motion: reduce)');
+      this.onScroll = this.wake.bind(this);
+      this.onResize = this.resize.bind(this);
+      addEventListener('scroll', this.onScroll, { passive: true, capture: true });
+      addEventListener('resize', this.onResize, { passive: true });
+      addEventListener('orientationchange', this.onResize);
+      this.mqMotion.addEventListener('change', this.onResize);
+
+      // One delegated listener rather than a binding per button: the tick row is
+      // authored markup and a host may re-render it.
+      this.onTick = this.jump.bind(this);
+      var ticks = this.querySelector('[data-arch-ticks]');
+      if (ticks) ticks.addEventListener('click', this.onTick);
+
+      this.load();
+      this.wake();
+    }
+
+    disconnectedCallback() {
+      removeEventListener('scroll', this.onScroll, { capture: true });
+      removeEventListener('resize', this.onResize);
+      removeEventListener('orientationchange', this.onResize);
+      if (this.mqMotion) this.mqMotion.removeEventListener('change', this.onResize);
+      var ticks = this.querySelector('[data-arch-ticks]');
+      if (ticks && this.onTick) ticks.removeEventListener('click', this.onTick);
+      cancelAnimationFrame(this.raf);
+      this.evictAll();
+    }
+
+    // Which cut of the plate this layout wants. Read from the stylesheet rather than
+    // re-tested against innerWidth here: a second copy of the breakpoint is free to
+    // drift from the one that sizes the band, and a band cut to one aspect fed a plate
+    // of another is a silent, invisible bug. getComputedStyle works on a display:none
+    // element, so this is valid even where the section never renders.
+    variant() {
+      var v = getComputedStyle(this).getPropertyValue('--arch-variant').trim().replace(/["']/g, '');
+      return v === 'm' ? 'm' : '';
+    }
+
+    load() {
+      var self = this;
+      var url = this.getAttribute('manifest') || this.base + 'manifest.json';
+      fetch(url)
+        .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+        .then(function (m) {
+          self.FRAMES = m.frames || [];
+          self.BEATS = m.beats || [];
+          self.cuts = m.cuts || { '': m.master, m: m.crop };
+          // N is what everything downstream gates on, so it is set only once there is
+          // something to scrub. A manifest with frames but no beats has no segments to
+          // cut, and half-adopting it would leave frame() reading bounds that plot()
+          // never wrote.
+          if (!self.FRAMES.length || !self.BEATS.length) return;
+          self.N = self.FRAMES.length;
+          self.plot();
+          self.wake();
+        })
+        .catch(function () { /* no manifest: the still markup is what shows */ });
+    }
+
+    // Cuts the scroll budget into segments: one per beat, plus the opening. A segment
+    // moves for its first stretch and is dead still for the rest, and copy lands on the
+    // still part — nothing animates while there are words to read.
+    //
+    // Every move is given scroll in proportion to how many render frames it covers, so
+    // the animation plays at one speed the whole way down. Equal spans with a fixed
+    // move fraction, which is what this replaces, do not: the beats are 68, 118, 124,
+    // 121 and 74 frames apart and the coda is the shortest segment, so the last move ran
+    // at twice the rate of the first and the piece visibly sped up beat by beat, worst
+    // exactly where the books land on the arch and there is most to see. Rate is the
+    // thing that has to be constant here; the spans follow from it.
+    //
+    // Segment 0 runs from the first encoded frame to the first beat. That is the blocks
+    // and books falling onto the desks, and it plays if — and only if — the encoder put
+    // frames in front of the first beat. Where the sequence starts on its first beat, as
+    // it does with the manifest this ships with, the travel is zero and the opening is
+    // the still hold it has always been. So the fix for a missing opening is entirely an
+    // encode: extend the manifest's `frames` back over the fall, leave `beats` alone,
+    // and this plays it at the same rate as everything else with no change here.
+    //
+    // The budget being divided is the section's height, so frames and height move
+    // together: adding the fall's frames without adding height speeds the whole piece
+    // up in proportion, because there is more to show and no more scroll to show it in.
+    plot() {
+      var B = this.BEATS, K = B.length - 1, k;
+
+      // What each segment travels, in render frames.
+      var travel = [], sum = 0;
+      for (k = 0; k <= K; k++) {
+        travel[k] = k ? B[k] - B[k - 1] : B[0] - this.FRAMES[0];
+        sum += travel[k];
+      }
+
+      // The motion's share of the whole scroll. With the in-between frames encoded a
+      // move is a real scrub and is worth well over half the section; with only the
+      // resting frames it is a dissolve between two camera angles and ghosts, so it is
+      // kept brief. A sequence with nothing to travel spends everything on holds.
+      //
+      // This is only half of how fast the piece plays — the other half is the section's
+      // height, which is the budget being shared out. Raising this share without raising
+      // the height buys motion out of reading time; the two are meant to move together.
+      // 0.645 is derived, not chosen: it is the share that keeps each reading hold's
+      // pixel length exactly what it was at 0.60 while the scroll freed by shrinking
+      // LEAD_W flows to the moves — the animation plays a little slower everywhere
+      // rather than the section getting shorter. Change LEAD_W and this moves with it:
+      // a hold is weight x unit x span, and unit is meant to stay put.
+      //
+      // Adding a beat is the one thing that moves unit anyway, and deliberately: the
+      // voussoir hold is paid for out of the other holds (725 -> 667px each at 1440x900,
+      // buying a 300px pause) rather than out of the moves, which would speed the
+      // animation up, or out of the section's height, which would make the page 9%
+      // longer. Add a full-weight beat and that becomes a 13% cut instead — at which
+      // point the height is the honest place to find it.
+      var moveTotal = this.moveAttr !== null ? parseFloat(this.moveAttr)
+        : (this.N > B.length ? 0.645 : 0.12);
+      if (!sum) moveTotal = 0;
+
+      // One rule, read twice: the weights are needed as a total here and per segment in
+      // the loop below. Written out once instead, because the previous pair of copies
+      // agreed only as long as every middle beat weighed the same — a SHORT_HOLDS entry
+      // would have been spent by the loop without ever being counted in the total, and
+      // the section would have run past its own end by exactly that much.
+      var hw = [], wSum = 0;
+      for (k = 0; k <= K; k++) {
+        hw[k] = k === 0 ? LEAD_W : k === K ? TAIL_W : (SHORT_HOLDS[B[k]] || HOLD_W);
+        wSum += hw[k];
+      }
+      var unit = (1 - moveTotal) / wSum;
+      var rate = sum ? moveTotal / sum : 0;
+
+      this.bounds = [0];
+      this.moves = [];
+      var at = 0;
+      for (k = 0; k <= K; k++) {
+        var mv = rate * travel[k];
+        var hd = unit * hw[k];
+        // Per segment rather than one number for all of them, because the segments are
+        // no longer the same length: the fraction of *this* segment spent moving is
+        // what the scrub, the copy and the tick jumps all have to agree on.
+        this.moves[k] = (mv + hd) > 0 ? mv / (mv + hd) : 0;
+        at += mv + hd;
+        // The last bound is written as 1 rather than accumulated to it: the segment
+        // search treats the final entry as the end of the scroll, and a rounding error
+        // there would leave a sliver of the section past the last segment.
+        this.bounds.push(k === K ? 1 : at);
+      }
+
+      // Each copy's window on the progress line, from the CUES table: it rises at its
+      // own event's onset, holds through its beat's still, and leaves as the next
+      // event's copy arrives. The anchors are render-frame numbers, so they are
+      // converted here through the inverse of the scrub — the one place that knows
+      // where a frame lands in p. A cue that precedes the sequence clamps to its
+      // segment's start; one past the end clamps to 1.
+      this.marks = [];
+      for (k = 0; k < CUES.length; k++) {
+        this.marks.push({ up: this.pAtFrame(CUES[k]),
+                          down: k + 1 < CUES.length ? this.pAtFrame(CUES[k + 1]) : 1 });
+      }
+      // The last copy has no next cue and no exit of its own: its window runs to the
+      // end of the section, and it leaves by scrolling away with the stage at the
+      // unpin. It used to dissolve over the coda's last stretch, which read as the
+      // closing line being taken back while its frame was still on screen — the one
+      // step the reader is meant to be left holding.
+      if (this.marks.length) this.marks[this.marks.length - 1].tail = true;
+    }
+
+    // Where a render-frame number lands on the progress line — the exact inverse of
+    // the expression frame() scrubs with, segment by segment. Within a move the frame
+    // advances along glide(), which has no closed inverse worth writing out, so it is
+    // bisected; twenty-four halvings put the answer within a millionth of the span,
+    // which is a fraction of a pixel. Runs once per cue per plot(), not per tick.
+    pAtFrame(F) {
+      var B = this.BEATS, b = this.bounds;
+      for (var k = 0; k <= B.length - 1; k++) {
+        var from = k === 0 ? this.FRAMES[0] : B[k - 1];
+        if (F <= from) return b[k];
+        if (F > B[k]) continue;
+        var mv = this.moves[k] || 0, span = B[k] - from;
+        if (!mv || !span) return b[k];
+        var want = (F - from) / span, lo = 0, hi = 1;
+        for (var i = 0; i < 24; i++) {
+          var mid = (lo + hi) / 2;
+          if (glide(mid) < want) lo = mid; else hi = mid;
+        }
+        return b[k] + (b[k + 1] - b[k]) * mv * ((lo + hi) / 2);
+      }
+      return 1;
+    }
+
+    // What one frame costs decoded, which is its pixel count times four however small the
+    // WebP is on disk. Beats and moves are encoded at different sizes, so they are
+    // budgeted at different sizes: on the full cut a beat is 11.2 MiB and a move 2.1, and
+    // charging every frame the beat's price would hold a fifth of what was paid for.
+    bytesFor(i) {
+      var c = (this.cuts && this.cuts[this.variant()]) || { w: 2048, h: 1432 };
+      if (this.isBeat(i) || !c.moveW) return c.w * c.h * 4;
+      return c.moveW * c.moveH * 4;
+    }
+
+    keep(i) { return !!(this.wanted && this.wanted.has(i)); }
+
+    isBeat(i) { return this.BEATS && this.BEATS.indexOf(this.FRAMES[i]) > -1; }
+
+    evictAll() {
+      if (!this.bits) return;
+      for (var i = 0; i < this.bits.length; i++) {
+        if (this.bits[i]) { this.bits[i].close(); this.bits[i] = null; }
+      }
+    }
+
+    // Chooses the resident set: rank every frame by how much it is worth holding, then
+    // spend the byte budget down that ranking and keep exactly what it paid for.
+    //
+    // The obvious cheaper version — derive a window as budget/frameSize and keep
+    // everything inside it — is what this replaces, and it does not hold. The beats were
+    // pinned on top of that window and two frames behind the head were kept as well, so
+    // the set actually resident was the window plus nine, and on the full cut, where a
+    // beat decodes to 11.2 MiB, a 96 MB budget held 190 MB. A ceiling that is added to is
+    // not a ceiling. Ranking and spending costs one sort of a hundred-odd entries per
+    // head move and makes the number mean what it says.
+    plan() {
+      if (!this.N || this.mqMotion.matches) return;
+
+      var head = this.head, i;
+      var rank = [];
+      for (i = 0; i < this.N; i++) {
+        // Distance from the head, biased forward because reading is a downward act, so a
+        // frame ahead is worth more than one the same distance behind. Beats are
+        // discounted hard rather than exempted: a hold rests on one, so it outranks every
+        // ordinary frame, but it still competes for the budget instead of escaping it.
+        var d = i - head;
+        var cost = (d >= 0 ? d : -d * 2.5) * (this.isBeat(i) ? 0.15 : 1);
+        rank.push([cost, i]);
+      }
+      rank.sort(function (a, b) { return a[0] - b[0]; });
+
+      // Always room for the frame under the playhead and its neighbour, whatever the
+      // budget says — a budget too small to draw with should degrade to stuttering, not
+      // to a blank stage.
+      var spent = 0, wanted = new Set();
+      for (var k = 0; k < rank.length; k++) {
+        i = rank[k][1];
+        var cost = this.bytesFor(i);
+        if (wanted.size >= 2 && spent + cost > this.budget) continue;
+        wanted.add(i);
+        spent += cost;
+      }
+      this.wanted = wanted;
+      this.win = wanted.size;
+      this.resident = spent;
+
+      // Evict first, so the requests below are issued against a truthful budget.
+      for (i = 0; i < this.N; i++) {
+        if (wanted.has(i) || !this.bits[i]) continue;
+        this.bits[i].close();
+        this.bits[i] = null;
+      }
+
+      // Fetch in the same ranking, so the nearest frames and the beats arrive first and
+      // every hold reads correctly even mid-download.
+      for (k = 0; k < rank.length && this.inflight < MAX_INFLIGHT; k++) {
+        i = rank[k][1];
+        if (!wanted.has(i) || this.bits[i] || this.pend[i]) continue;
+        this.request(i);
+      }
+    }
+
+    request(i) {
+      var self = this, gen = this.gen, cut = this.variant();
+      this.pend[i] = 1;
+      this.inflight++;
+      fetch(this.base + 'ap' + pad4(this.FRAMES[i]) + cut + '.webp')
+        .then(function (r) { return r.ok ? r.blob() : Promise.reject(r.status); })
+        // colorSpaceConversion none to match the encoder: these were written
+        // view-transformed sRGB with no ICC profile, so there is nothing to convert and
+        // a round trip here would apply a transfer function twice.
+        .then(function (b) { return createImageBitmap(b, { colorSpaceConversion: 'none' }); })
+        .then(function (bm) {
+          if (gen !== self.gen || cut !== self.variant() || !self.keep(i)) { bm.close(); return; }
+          self.bits[i] = bm;
+          self.wake();
+        })
+        .catch(function () { /* left empty on purpose: nearest() covers it */ })
+        .then(function () { self.pend[i] = 0; self.inflight--; if (gen === self.gen) self.plan(); });
+    }
+
+    // The nearest decoded frame at or before i, else the nearest after. A gap in the
+    // sequence shows the last frame that did arrive rather than clearing to nothing.
+    nearest(i) {
+      for (var d = 0; d < this.N; d++) {
+        if (i - d >= 0 && this.bits[i - d]) return i - d;
+        if (i + d < this.N && this.bits[i + d]) return i + d;
+      }
+      return -1;
+    }
+
+    resize() {
+      // A variant flip is a different picture at the same index, so everything held is
+      // wrong. Bump the generation to strand in-flight requests, drop the bitmaps, and
+      // let the canvases re-tag themselves.
+      var cut = this.variant();
+      if (cut !== this.cut) {
+        this.cut = cut;
+        this.gen++;
+        this.evictAll();
+        this.drawn = -1;
+        this.cvs.forEach(function (cv) { delete cv.dataset.f; });
+      }
+      this.p = -1;
+      this.wake();
+    }
+
+    // Where the stage pins, in pixels. Read off the stage's own sticky top so the
+    // number the JS uses and the number the CSS uses cannot disagree — and so a host
+    // with a taller header, no header, or a CMS admin bar needs no code change.
+    pin() {
+      var t = parseFloat(getComputedStyle(this.stage).top);
+      return isFinite(t) ? t : 0;
+    }
+
+    progress() {
+      var span = this.offsetHeight - this.stage.offsetHeight;
+      return clamp01((this.pin() - this.getBoundingClientRect().top) / (span || 1));
+    }
+
+    frame() {
+      if (!this.N || !this.offsetHeight) return false;
+
+      var p = this.progress();
+      var moved = p !== this.p;
+      this.p = p;
+
+      // Only pay for frames where the section actually renders, and only once it is
+      // near enough to be worth it. A display:none element has no offsetHeight, which
+      // is what suppresses loading under reduced motion and on the static fallback —
+      // one test rather than a media query that would have to be kept in step.
+      if (!this.mqMotion.matches &&
+          this.getBoundingClientRect().top <= (innerHeight || 800) * this.near) {
+        var b = this.bounds, seg = b.length - 2, i;
+        for (i = 0; i < b.length - 1; i++) { if (p < b[i + 1] || i === b.length - 2) { seg = i; break; } }
+        var t = clamp01((p - b[seg]) / ((b[seg + 1] - b[seg]) || 1));
+
+        // Every segment travels from where the one before it left off to its own beat
+        // over the move, then holds. Segment 0's "where it left off" is the first
+        // encoded frame, which is what plays the fall onto the desks when there are
+        // frames in front of the first beat and rests on it when there are not.
+        var B = this.BEATS, mv = this.moves[seg] || 0;
+        var from = seg === 0 ? this.FRAMES[0] : B[seg - 1];
+        var want = mv > 0 ? from + (B[seg] - from) * glide(t / mv) : B[seg];
+        var idx = 0;
+        while (idx < this.N - 1 && this.FRAMES[idx + 1] <= want) idx++;
+        var j = Math.min(idx + 1, this.N - 1);
+        var mix = this.FRAMES[j] > this.FRAMES[idx]
+          ? (want - this.FRAMES[idx]) / (this.FRAMES[j] - this.FRAMES[idx]) : 0;
+
+        if (idx !== this.head) { this.head = idx; this.plan(); }
+        else if (!this.win) this.plan();
+        this.paint(idx, j, mix);
+        this.chrome(p);
+      }
+
+      this.camera(p);
+      return moved;
+    }
+
+    paint(i, j, mix) {
+      var lower = this.put(0, i), upper = this.put(1, j);
+      var haveUpper = !!this.bits[j];
+      if (lower) lower.style.opacity = (haveUpper ? 1 - mix : 1).toFixed(3);
+      if (upper) upper.style.opacity = (haveUpper ? mix : 0).toFixed(3);
+    }
+
+    put(n, k) {
+      var cv = this.cvs[n];
+      if (!cv) return null;
+      var use = this.bits[k] ? k : this.nearest(k);
+      var bm = use < 0 ? null : this.bits[use];
+      if (!bm) return cv;
+      // The drawn frame is recorded on the element, never on this instance: a host
+      // framework can replace the canvas between ticks, and an instance-held index
+      // would then read "already drawn" against a fresh blank element and leave the
+      // layer empty for the rest of the session. The tag carries the cut too, because
+      // the same index is a different picture in the mobile crop.
+      var tag = this.cut + ':' + use;
+      if (cv.dataset.f === tag) return cv;
+      // Backing store is the source frame's size, not the display box times a device
+      // pixel ratio: it therefore changes only when the cut does, which changes the tag
+      // in the same breath, so the clear that assigning width performs can never
+      // strand a stale tag and blank the layer.
+      if (cv.width !== bm.width) { cv.width = bm.width; cv.height = bm.height; }
+      var ctx = cv.getContext('2d');
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      ctx.drawImage(bm, 0, 0);
+      cv.dataset.f = tag;
+      return cv;
+    }
+
+    // Camera. The plate hangs from the top of the box at its own aspect, so at scale 1
+    // it fills the width and the overflow that gets clipped is the desk legs. The
+    // opening pulls back far enough to hold the whole plate, the piece pushes in to
+    // full bleed, and a hair of creep continues the whole way down so a frozen frame is
+    // never a dead frame. Origin is the top edge — that is what keeps the two books
+    // that come to rest on the arch inside the frame, since content reaches within 1.3%
+    // of the plate's top there and any other anchor decapitates it.
+    //
+    // The box is the frame the plate is fitted into: the whole stage on a wide screen,
+    // a band on a phone. Measuring the box rather than the stage is what lets one
+    // camera serve both — on a phone the band is cut to the same aspect as the plate it
+    // holds, so the fit works out to 1 and the formula reports "already fits" rather
+    // than needing a special case.
+    camera(p) {
+      var box = this.querySelector('[data-arch-box]') || this.stage;
+      var c = (this.cuts && this.cuts[this.variant()]) || { w: 2048, h: 1432 };
+      var fit = Math.min(1, (c.w / c.h) * box.clientHeight / (box.clientWidth || 1));
+      var open = smooth(p / 0.24);
+      var sc = fit + (1 - fit) * open + 0.028 * p;
+      this.cam.style.transform = 'translateY(' + (1.2 * open).toFixed(2) + '%) scale(' + sc.toFixed(4) + ')';
+    }
+
+    // The copy's whole life is two anchors from plot() — its own cue and the next —
+    // plus two pixel widths. It rises the moment its event begins on screen, narrates
+    // the event as it plays, sits with the completed state through the beat's still,
+    // and hands off exactly as the next event's copy arrives. From the first cue to
+    // the coda there is always one step up: the relay has no gaps, so a frozen frame
+    // is never wordless and an event never plays unnarrated.
+    //
+    // This inverts the section's original doctrine — copy after the move, never over
+    // it — deliberately, and in two steps of user feedback: first the edges of each
+    // hold were opened to motion, then the whole window was re-anchored from segment
+    // maths to the content itself (see CUES). What survives of the doctrine is its
+    // point: the words are fully readable long before the still arrives, and the
+    // stills themselves are completed states, never mid-event freezes.
+    chrome(p) {
+      var span = (this.offsetHeight - this.stage.offsetHeight) || 1;
+      var fi = FADE_IN / span, fo = FADE_OUT / span;
+      var active = -1;
+      for (var i = 0; i < this.copies.length; i++) {
+        var m = this.marks && this.marks[i];
+        var rise = 0, exit = 0;
+        if (m) {
+          // The rise begins AT the cue — "from the moment the first book enters the
+          // frame" means from that moment, not fully-faded-by it.
+          rise = smooth((p - m.up) / fi);
+          // The exit completes AT the next cue, so the incoming block starts on an
+          // empty grid cell. The last copy is the exception and does not fade at all:
+          // it holds full through the coda and rides out with the stage, so the
+          // section ends on its closing step rather than on an empty frame.
+          exit = m.tail ? 0 : smooth((p - (m.down - fo)) / fo);
+          if (p >= m.up) active = i;
+        }
+        var o = clamp01(rise * (1 - exit));
+        var el = this.copies[i];
+        el.style.opacity = o.toFixed(3);
+        // Two signs, one direction of travel: the block rises RISE px into place, and
+        // on exit keeps going up rather than sinking back where it came from — leaving
+        // with intent reads as a transition, dimming in place reads as a glitch.
+        el.style.transform = 'translateY(' + (RISE * (1 - rise) - 20 * exit).toFixed(2) + 'px)';
+        el.style.pointerEvents = o > 0.4 ? 'auto' : 'none';
+        // The body trails the number and heading by a quarter step, in opacity and in
+        // a shorter travel of its own. One envelope, two phases: the accent lands
+        // first and pulls the eye, the paragraph resolves under it.
+        var body = this.kids && this.kids[i];
+        if (body) {
+          var ob = smooth((o - 0.25) / 0.75);
+          body.style.opacity = ob.toFixed(3);
+          body.style.transform = 'translateY(' + (14 * (1 - ob)).toFixed(2) + 'px)';
+        }
+      }
+      // Exactly one tick lit once the first beat's copy has begun: the one whose copy
+      // the reader is on or approaching. Inactive ticks get no inline value at all —
+      // an inline opacity would sit on top of the stylesheet's :hover forever, which
+      // is how the old '0.4' quietly disabled hover for the life of the session.
+      //
+      // The fill is the same four windows read as a progress bar: each tick's rule is
+      // its step's segment, so the four together sweep once across the row over the
+      // whole section. It is written from p, not from the frame index, and that is the
+      // entire point — the frames advance in 45px steps and then stop dead for up to
+      // 775px at a beat, while this moves with every pixel the thumb does. See the
+      // ::before in approach.css for why the section needs one thing that always does.
+      //
+      // The first segment starts filling at 0 rather than at its cue: the lead hold is
+      // the section's first stretch of frozen frame, and leaving the bar dead through
+      // it would put a dead patch exactly where a reader is deciding whether this
+      // section is worth their thumb. The tick itself still does not light until its
+      // copy is up, so a filling bar under an unlit 01 reads as the step loading.
+      for (i = 0; i < this.ticks.length; i++) {
+        var mk = this.marks && this.marks[i];
+        var from = i === 0 ? 0 : (mk ? mk.up : 0);
+        var to = mk ? mk.down : 1;
+        this.ticks[i].style.setProperty('--arch-fill',
+          clamp01((p - from) / Math.max(1e-4, to - from)).toFixed(4));
+        this.ticks[i].style.opacity = i === active ? '1' : '';
+      }
+    }
+
+    // Land past the move, on the hold, where the frame is still and the copy is up.
+    // This is the inverse of progress(): if the two ever disagree a tick lands on the
+    // wrong beat, so they read the same pin and the same span.
+    jump(e) {
+      var btn = e.target && e.target.closest ? e.target.closest('[data-arch-tick]') : null;
+      if (!btn || !this.bounds) return;
+      var seg = parseInt(btn.dataset.archTick, 10) + 1;
+      var b = this.bounds;
+      if (!(seg > 0 && seg < b.length - 1)) return;
+      // Halfway into this segment's hold, not a fixed 0.6 of the segment: the segments
+      // are no longer the same length or the same shape, and a fixed fraction now lands
+      // mid-move on the longer beats — which is a tick that jumps you to a moving frame
+      // with its own copy still fading up.
+      var mv = this.moves[seg] || 0;
+      var at = b[seg] + (b[seg + 1] - b[seg]) * (mv + (1 - mv) * 0.5);
+      var span = this.offsetHeight - this.stage.offsetHeight;
+      scrollTo({ top: this.getBoundingClientRect().top + scrollY - this.pin() + at * span, behavior: 'smooth' });
+    }
+
+    wake() {
+      this.idle = 0;
+      if (this.raf) return;
+      this.raf = requestAnimationFrame(this.tick.bind(this));
+    }
+
+    tick() {
+      this.raf = 0;
+      this.idle = this.frame() ? 0 : this.idle + 1;
+      if (this.idle < IDLE_FRAMES) this.raf = requestAnimationFrame(this.tick.bind(this));
+    }
+  }
+
+  customElements.define('approach-scrub', ApproachScrub);
+})();
