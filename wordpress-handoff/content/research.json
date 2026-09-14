@@ -1,11 +1,11 @@
 [
   {
     "title": "Measuring critical thinking with AI",
-    "description": "Can AI help assess a skill as complex as critical thinking? We show that carefully scaffolded language models can measure some critical-thinking subskills in student writing, and we map where they still fall short.",
+    "description": "Can AI help assess a skill as complex as critical thinking? We show that AI models—when given skill definitions and training—can measure some critical-thinking subskills in student writing, and we map where they still fall short.",
     "url": "https://educationaldatamining.org/wp-content/uploads/2026/proceedings/2026.EDM.full-papers/2026.EDM.full-papers.174.pdf"
   },
   {
-    "title": "A repeatable method for measuring durable skills",
+    "title": "A repeatable method for testing and strengthening the capacity of AI to measure durable skills",
     "description": "We share a standardized, step-by-step process for improving and validating the capacity of AI systems to detect complex skills like critical thinking, so the field can build AI measurement tools without starting from scratch every time.",
     "url": "https://educationaldatamining.org/wp-content/uploads/2026/proceedings/2026.EDM.full-papers/2026.EDM.full-papers.174.pdf"
   },

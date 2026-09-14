@@ -702,7 +702,7 @@ exported as `content/pages.json`):
 
 | Route | Title | Description |
 |---|---|---|
-| `/` | AugmentED \| Bridging frontier AI and the classroom | AugmentED is an R&D organization closing the gap between what AI can do and what students need. We are teachers, researchers, and engineers building and testing the missing technology, and the evidence to trust it. |
+| `/` | AugmentED \| Bridging frontier AI and the classroom | AugmentED is a team of educators, researchers, and technologists working together to build the evidence base for what AI should (and shouldn’t) do in the classroom, and the technology to do it well. |
 | `/challenge/` | The Challenge \| AugmentED | AI is arriving in classrooms whether schools are ready or not. The danger is that some are rushing in without asking what AI can do well, what teachers uniquely bring, or what students actually need. |
 | `/approach/` | Our Approach \| AugmentED | We believe better educational AI will emerge from discovering what classrooms actually need, building solutions with real educators and students, and testing them in real classrooms. |
 | `/team/` | Who We Are \| AugmentED | AugmentED brings together people from classrooms, research labs, and engineering teams who share a conviction that AI should augment human teaching, not replace it. |
