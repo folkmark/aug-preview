@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- exported from 5522c9fc95d8b9592406c0a3eb489cc8fd4e80db+dirty by tools/export-static.mjs -->
+<!-- exported from 3efb85dc83d4c5aca865ecd90997e122d799b4f2+dirty by tools/export-static.mjs -->
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,7 +12,15 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Follow Our Work | AugmentED">
 <meta name="twitter:description" content="Get updates on AugmentED’s work and research findings.">
-<link rel="icon" href="../../assets/logo/logo-light.png" type="image/png">
+<!-- The square arch mark, not the wordmark. A tab icon is drawn into a square box, so
+     the 768x149 logo-light.png that used to sit here was letterboxed down to a smear
+     about three pixels tall — the "squishing in the tab" the brand kit was asked for.
+     logo-icon.png is 150x150 with its own alpha and needs no encoding, so unlike the
+     photography it ships straight from ../../assets/ with no master in source-material/.
+     Same file serves the iOS home-screen icon; 150 is under Apple's preferred 180, so
+     it is upscaled slightly there and sharp everywhere a favicon is actually drawn. -->
+<link rel="icon" href="../../assets/logo/logo-icon.png" type="image/png" sizes="150x150">
+<link rel="apple-touch-icon" href="../../assets/logo/logo-icon.png">
 <meta name="theme-color" content="#fdfcfa">
 <!-- The design-system stylesheets load from <helmet> once the runtime boots, so
      paint the brand page colour up front rather than flashing white first. -->
