@@ -160,6 +160,10 @@ const JOBS = [
   // frame, between Joan's and the headshot this replaced. It costs nothing — 2078 down to
   // 512 is still a 4x downsample, so this ships sharper than most of the set.
   { in: 'team/sherry-lachman.jpg',     out: 'team/sherry-lachman.webp',     width: 512, square: true, crop: [461, 280, 2078, 2078] },
+  // Caitlin's needs no box, unlike the two above it: the master is already a tight
+  // head-and-shoulders frame, 2560x1707, so the square cover crop lands where a measured
+  // box would have put it. Checked rather than assumed — both were rendered and compared.
+  { in: 'team/caitlin-mills.png',      out: 'team/caitlin-mills.webp',      width: 512, square: true },
   { in: 'team/raquel-romano.png',      out: 'team/raquel-romano.webp',      width: 512, square: true },
   { in: 'team/joan-lee.jpg',           out: 'team/joan-lee.webp',           width: 512, square: true },
   { in: 'team/angela-stewart.jpg',     out: 'team/angela-stewart.webp',     width: 512, square: true },
