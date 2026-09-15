@@ -54,6 +54,21 @@
 <link rel="stylesheet" href="assets/cycle-wheel.css">
 <script src="assets/cycle-wheel.js" defer=""></script>
 <style>
+  /* The header's height, and the only place it is written down. Four sticky components
+     pin to the bottom of the nav and each derives its own stage height by subtracting
+     this: the hero bridge through --hb-pin, the cycle wheel through --cw-pin, the falling
+     blocks through --fb-sticky-top, and the hero headline's own top. It was five copies of
+     --space-18 until the brand lockup landed — the kit's horizontal logo is 2.98:1 against
+     the old wordmark's 5.15:1, so carrying "supported by aerdf" at a readable size needs
+     96px of bar rather than 72px. Change it here and the four follow; change the header
+     alone and every one of them pins 24px into the wrong place, which reads as the
+     artwork being mistimed rather than as a layout bug.
+
+     Name those components in prose, never as a tag: tools/build-site.mjs finds each one
+     by the first /<name\b([^>]*)>/ in this file, and only the hero-bridge scan strips
+     comments first. An angle-bracketed mention here wins that match and hands the scan an
+     element with no attributes — which is a build failure reading "asks for 0 frames". */
+  :root { --header-h: 6rem; }
   body { margin: 0; background: var(--surface-page); }
   /* The intrinsic width/height attributes are there to reserve the box before the
      bytes arrive, not to size the image: every one of these is sized by CSS, and
@@ -208,7 +223,7 @@
      two finish 294px apart at 1440x900 — a third of a screen of scrolling in which the
      headline is pinned, the plate is pinned, and nothing at all moves. */
   hero-bridge {
-    --hb-pin: var(--space-18);
+    --hb-pin: var(--header-h);
     --hb-entry-clear: var(--hero-band);
     --hb-entry-span: var(--hero-band);
     --hb-scrub: var(--hero-scrub);
@@ -456,7 +471,7 @@
            load-bearing now that the rule is gone: a stretched sticky item pins by its box,
            so the headline would hold a position 200px above its own first line. */
         align-self: start;
-        top: calc(var(--space-18) + var(--hero-gap));
+        top: calc(var(--header-h) + var(--hero-gap));
       }
       [data-hero-body] {
         animation: hero-float linear both, hero-dissolve linear both;
@@ -512,7 +527,10 @@
      Static mode (reduced motion, save-data, no bitmap support) collapses to one
      screen via falling-blocks.css's :not([data-fb-motion="on"]) rule, which outweighs
      this bare type selector on purpose — keep this selector bare. */
-  falling-blocks { --fb-sticky-top: var(--space-18); height: calc(240vh - var(--space-18)); height: calc(240svh - var(--space-18)); }
+  falling-blocks { --fb-sticky-top: var(--header-h); height: calc(240vh - var(--header-h)); height: calc(240svh - var(--header-h)); }
+  /* cycle-wheel.css defaults --cw-pin to 4.5rem and names it the one value a host with
+     a different header sets. This is that host. */
+  cycle-wheel { --cw-pin: var(--header-h); }
   /* falling-blocks.css slots an h1 between the plates (near plate in front of the
      heading, far plate behind); the CTA's heading is an h2, so give it the same slot. */
   falling-blocks [data-fb-copy] h2 { position: relative; z-index: 2; }
@@ -541,9 +559,9 @@
 
 <div class="scheme-1" style="min-height:100vh;overflow-x:clip;font-family:var(--font-body);color:var(--text-body);background:var(--surface-page)">
 
-  <header style="position: sticky; top: 0; z-index: 900; display: flex; min-height: var(--space-18); width: 100%; align-items: center; padding-inline: var(--page-gutter); background: var(--surface-page)">
+  <header style="position: sticky; top: 0; z-index: 900; display: flex; min-height: var(--header-h); width: 100%; align-items: center; padding-inline: var(--page-gutter); background: var(--surface-page)">
     <div style="margin-inline:auto;display:flex;width:100%;max-width:var(--container-xxl);align-items:center;justify-content:space-between;gap:var(--space-8)">
-      <a href="{{ hrefHome }}" onClick="{{ goHome }}" style="display:block;flex-shrink:0"><img src="assets/logo/logo-light.png" alt="augment^ed" style="width:168px;display:block" width="768" height="149" decoding="async"></a>
+      <a href="{{ hrefHome }}" onClick="{{ goHome }}" style="display:block;flex-shrink:0"><img src="assets/logo/logo-horiz.svg" alt="augment^ed, supported by AERDF" style="width:220px;display:block" width="504" height="169" decoding="async"></a>
       <nav class="at-desktop" style="display:flex;align-items:center;gap:var(--space-10)">
         <a href="{{ hrefChallenge }}" onClick="{{ goChallenge }}">The Challenge</a>
         <a href="{{ hrefApproach }}" onClick="{{ goApproach }}">Our Approach</a>
@@ -558,7 +576,7 @@
   </header>
 
   <sc-if value="{{ navOpen }}" hint-placeholder-val="{{ false }}">
-    <div id="site-menu" class="scheme-1 at-mobile" style="position:fixed;inset:var(--space-18) 0 0 0;z-index:800;overflow-y:auto;overscroll-behavior:contain;background:var(--surface-page);padding:var(--space-12) var(--page-gutter);display:flex;flex-direction:column;gap:var(--space-8)">
+    <div id="site-menu" class="scheme-1 at-mobile" style="position:fixed;inset:var(--header-h) 0 0 0;z-index:800;overflow-y:auto;overscroll-behavior:contain;background:var(--surface-page);padding:var(--space-12) var(--page-gutter);display:flex;flex-direction:column;gap:var(--space-8)">
       <a href="{{ hrefChallenge }}" onClick="{{ goChallenge }}" style="font-size:var(--text-h4);font-weight:var(--font-weight-bold);letter-spacing:var(--heading-letter-spacing)">The Challenge</a>
       <a href="{{ hrefApproach }}" onClick="{{ goApproach }}" style="font-size:var(--text-h4);font-weight:var(--font-weight-bold);letter-spacing:var(--heading-letter-spacing)">Our Approach</a>
       <a href="{{ hrefTeam }}" onClick="{{ goTeam }}" style="font-size:var(--text-h4);font-weight:var(--font-weight-bold);letter-spacing:var(--heading-letter-spacing)">Who We Are</a>
@@ -1129,7 +1147,7 @@
             <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0">Founder &amp; Executive Director</p>
           </div>
           <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
-            <div style="aspect-ratio:1/1;width:100%;background:var(--color-neutral-lightest);border-radius:var(--radius-image);margin-bottom:var(--space-6)"></div>
+            <img src="assets/team/caitlin-mills.webp" alt="Caitlin Mills" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="512" height="512" decoding="async" loading="lazy">
             <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Caitlin Mills</h3>
             <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0">Co-Founder &amp; Chief of Research and Impact</p>
           </div>
@@ -1474,7 +1492,7 @@
     <div style="margin-inline:auto;max-width:var(--container-xxl)">
       <div style="display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;column-gap:var(--space-12);row-gap:var(--space-12);margin-bottom:var(--space-16)">
         <div>
-          <img src="assets/logo/logo-light.png" alt="augment^ed" style="width:168px;display:block;margin-bottom:var(--space-6)" width="768" height="149" decoding="async">
+          <img src="assets/logo/logo-vert.svg" alt="augment^ed, supported by AERDF" style="width:168px;display:block;margin-bottom:var(--space-6)" width="430" height="266" decoding="async">
         </div>
         <div style="display:flex;flex-direction:column;gap:var(--space-3)">
           <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0 0 var(--space-1)">Explore</p>
