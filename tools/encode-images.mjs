@@ -152,7 +152,14 @@ const JOBS = [
   // there against a 680x600 Drupal derivative in the sheet, Laura 1200x1800 against 300x450,
   // Sarah 2617x2500 against a 1024x978 re-export. Check both before adding anyone new — a
   // photo that has been pasted through a spreadsheet has usually lost a generation.
-  { in: 'team/sherry-lachman.jpg',     out: 'team/sherry-lachman.webp',     width: 512, square: true },
+  // Sherry's master is a studio portrait rather than a headshot: 3000x4500, seated on a
+  // crate, framed from the knees up. `square: true` alone anchors to the top, which takes
+  // the top 3000x3000 — her head lands in the upper third of the tile with a metre of
+  // backdrop above it, the same failure the Nikki Wallace note below describes. The box is
+  // measured to her head and shoulders: 2078 px square, which puts the head at 46% of the
+  // frame, between Joan's and the headshot this replaced. It costs nothing — 2078 down to
+  // 512 is still a 4x downsample, so this ships sharper than most of the set.
+  { in: 'team/sherry-lachman.jpg',     out: 'team/sherry-lachman.webp',     width: 512, square: true, crop: [461, 280, 2078, 2078] },
   { in: 'team/raquel-romano.png',      out: 'team/raquel-romano.webp',      width: 512, square: true },
   { in: 'team/joan-lee.jpg',           out: 'team/joan-lee.webp',           width: 512, square: true },
   { in: 'team/angela-stewart.jpg',     out: 'team/angela-stewart.webp',     width: 512, square: true },
