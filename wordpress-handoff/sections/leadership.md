@@ -1,7 +1,7 @@
 # The Leadership rows — build spec
 
 This is the specification for the five Leadership entries on the Who We Are page:
-a portrait beside a long bio, stacked and hairline-ruled. Unlike the other three
+a full-width portrait above a long bio, two cards across. Unlike the other three
 specs in this directory there is no component and no JavaScript — it is markup and
 CSS only, and porting it is copying both.
 
@@ -103,8 +103,42 @@ about 46 characters for a 190-word bio. The 440px minimum means auto-fit never p
 three at this width, which is correct — but it is not forbidden. Widen the band past
 roughly 1450 and three columns appear on their own, with no rule change.
 
-A leader with no bio yet degrades to exactly the card they had before: portrait,
-name, role. Nothing special is needed for them.
+A leader with no bio yet degrades to portrait, name, role — a short card in the same
+grid. Nothing special is needed for them.
+
+## 2a. The portraits are not tiles, and are not encoded like tiles
+
+The portrait fills the card: no `max-width` on `.person-id`, the `<img>`'s own
+`width: 100%` takes the whole track. That is 608px at 1440 and up to about 893px in
+the band where the grid has fallen to one column.
+
+**So these three are the only headshots on the site encoded at 1264 rather than
+512.** 512 into a 608 box is an 0.84x upscale — soft on any screen and 0.42x on a
+retina one. Measured after the change, natural pixels per CSS pixel:
+
+| | 1440 (608px card) | 992 (893px card) | 400 (360px card) |
+| --- | --- | --- | --- |
+| Sherry | 2.08x | 1.42x | 3.51x |
+| Caitlin | 2.08x | 1.42x | 3.51x |
+| **Raquel** | **1.43x** | **0.98x** | 2.42x |
+
+**Raquel is a known softness, not an oversight.** Her master is 872x1012, so the
+square crop tops out at 872 and her job names 872 explicitly. At the widest
+single-column card she is essentially 1:1 with no retina headroom. A larger original
+fixes it by changing one number in `tools/encode-images.mjs`; nothing else.
+
+Two traps if you touch this:
+
+- **Do not ask the encoder for a width a master cannot reach.** `withoutEnlargement`
+  does not clamp a too-large target, it abandons the resize entirely — asking 1264 of
+  Raquel's 872px master shipped the master untouched and *not square*, at which point
+  the browser's `object-fit: cover` silently took over the framing from the encoder at
+  a different object-position. Name each master's real maximum.
+- **If you change the card width, revisit the encode.** The rule is roughly 2x the
+  widest the card ever gets.
+
+The three files come to 166KB together (Sherry 50, Caitlin 87, Raquel 29), all of it
+on `/team/` and none of it on any other route.
 
 ## 3. Four invariants you must not break
 

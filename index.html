@@ -155,7 +155,15 @@
      line. An :nth-child fix would be wrong at some width by construction, because
      auto-fit means the column count is not fixed. Whitespace separates instead, which
      is what every other grid on this page already does. */
-  .person-id { max-width: var(--container-xxs); }
+  /* The portrait fills the card. It was capped at --container-xxs, which parked a 320px
+     square in the corner of a 608px card; nothing else here sets its width, so the
+     img's own width:100% takes the whole track.
+
+     That width is what sets the encode. tools/encode-images.mjs ships these three at
+     1264 rather than the 512 every other headshot uses, because 512 into a 608 box is
+     an 0.84x upscale — and 0.42x on a retina screen. Raquel is the exception and ships
+     at 872, the most her master holds; the note on her job says so. Change the card
+     width and that encode wants revisiting, at roughly 2x the widest the card gets. */
   .person-id img, .person-id > div { margin-bottom: 0; }
   /* The measure, and the only thing here that decides whether 190 words get read. The
      card runs to 608px at 1440; --container-md caps the bio at 560 and about 67
@@ -1247,7 +1255,7 @@
         <h2 data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg))">Leadership</h2>
         <div class="leadership-rows">
           <article class="person-row" data-reveal="" id="sherry-lachman" aria-labelledby="name-sherry-lachman" style="opacity:0;transition:opacity var(--transition-fade)">
-            <div class="person-id"><img src="assets/team/sherry-lachman.webp" alt="Sherry Lachman" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);display:block" width="512" height="512" decoding="async" loading="lazy"></div>
+            <div class="person-id"><img src="assets/team/sherry-lachman.webp" alt="Sherry Lachman" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);display:block" width="1264" height="1264" decoding="async" loading="lazy"></div>
             <div class="person-copy">
               <h3 id="name-sherry-lachman" style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Sherry Lachman</h3>
               <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0">Founder &amp; Executive Director</p>
@@ -1255,7 +1263,7 @@
             </div>
           </article>
           <article class="person-row" data-reveal="" id="caitlin-mills" aria-labelledby="name-caitlin-mills" style="opacity:0;transition:opacity var(--transition-fade)">
-            <div class="person-id"><img src="assets/team/caitlin-mills.webp" alt="Caitlin Mills" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);display:block" width="512" height="512" decoding="async" loading="lazy"></div>
+            <div class="person-id"><img src="assets/team/caitlin-mills.webp" alt="Caitlin Mills" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);display:block" width="1264" height="1264" decoding="async" loading="lazy"></div>
             <div class="person-copy">
               <h3 id="name-caitlin-mills" style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Caitlin Mills</h3>
               <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0">Co-Founder &amp; Chief of Research and Impact</p>
@@ -1263,7 +1271,7 @@
             </div>
           </article>
           <article class="person-row" data-reveal="" id="raquel-romano" aria-labelledby="name-raquel-romano" style="opacity:0;transition:opacity var(--transition-fade)">
-            <div class="person-id"><img src="assets/team/raquel-romano.webp" alt="Raquel Romano" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 5%;border-radius:var(--radius-image);display:block" width="512" height="512" decoding="async" loading="lazy"></div>
+            <div class="person-id"><img src="assets/team/raquel-romano.webp" alt="Raquel Romano" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 5%;border-radius:var(--radius-image);display:block" width="872" height="872" decoding="async" loading="lazy"></div>
             <div class="person-copy">
               <h3 id="name-raquel-romano" style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Raquel Romano</h3>
               <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0">Chief Technology Officer</p>

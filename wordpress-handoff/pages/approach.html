@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- exported from 1ef911642a74c39d04886acb1db71517c8932ba4+dirty by tools/export-static.mjs -->
+<!-- exported from 6c6793a3e9cda4957aabdb80cc92675ee918abbc+dirty by tools/export-static.mjs -->
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -128,7 +128,15 @@
      line. An :nth-child fix would be wrong at some width by construction, because
      auto-fit means the column count is not fixed. Whitespace separates instead, which
      is what every other grid on this page already does. */
-  .person-id { max-width: var(--container-xxs); }
+  /* The portrait fills the card. It was capped at --container-xxs, which parked a 320px
+     square in the corner of a 608px card; nothing else here sets its width, so the
+     img's own width:100% takes the whole track.
+
+     That width is what sets the encode. tools/encode-images.mjs ships these three at
+     1264 rather than the 512 every other headshot uses, because 512 into a 608 box is
+     an 0.84x upscale — and 0.42x on a retina screen. Raquel is the exception and ships
+     at 872, the most her master holds; the note on her job says so. Change the card
+     width and that encode wants revisiting, at roughly 2x the widest the card gets. */
   .person-id img, .person-id > div { margin-bottom: 0; }
   /* The measure, and the only thing here that decides whether 190 words get read. The
      card runs to 608px at 1440; --container-md caps the bio at 560 and about 67
