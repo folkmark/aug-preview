@@ -105,39 +105,64 @@
      tokens/typography.css's own note on --text-regular that "16px is the floor at
      which running text stays comfortable".
 
-     Two tracks, not 1fr/1fr: the portrait is a fixed --container-xxs identity column,
-     because a 320px portrait floating in a 600px half-track is a proportion this site
-     uses nowhere. The bio is then capped independently — see .person-bio.
+     The card stacks and the CARDS sit side by side, not the other way round. Each card
+     is portrait over name over role over bio; the band is a grid of those cards.
+
+     The column count is not written down — it falls out of a 440px minimum track, the
+     way the partner grids below already work. 440 is set off the measure rather than
+     chosen by eye, and it was raised from 400 after measuring: 400 kept two columns
+     alive down to a 414px card, which sets 46 characters — inside the ~45 floor but
+     with nothing to spare. 440 hands that case a single 893px card instead, where the
+     bio's own --container-md cap sets a comfortable 67. The weakest measure anywhere
+     in the range goes from 46 to about 53 as a result.
+
+     Inside the 1280px band that yields two columns of 608 at 1440, two of about 460
+     around 1100, and one below roughly 944 of content. Three columns would need 384px
+     cards — about 46 characters for a 190-word bio — so auto-fit correctly never
+     picks three at this width. It is not forbidden, though: widen the band past
+     ~1450 and three appear on their own, with no rule change here.
+
+     No max-width of its own. The band spans --container-xxl exactly like the <h2>
+     above it and every partner grid below, which is the point — it used to carry a
+     --container-xl cap and that was the whole reason it looked narrower than the rest
+     of the page.
 
      Source order is never changed. The portrait leads because it leads in every other
      person card on this page; no CSS `order` reversal, which would need alt="" on five
      images to stay honest to a screen reader and would fight the reveal note above. */
-  .leadership-rows { max-width: var(--container-xl); }
-  .person-row {
+  .leadership-rows {
     display: grid;
-    grid-template-columns: var(--container-xxs) minmax(0, 1fr);
-    column-gap: var(--space-20);
-    row-gap: var(--space-8);
-    padding-block: clamp(var(--space-10), 4vw, var(--space-16));
+    grid-template-columns: repeat(auto-fit, minmax(min(440px, 100%), 1fr));
+    column-gap: var(--space-16);
+    row-gap: clamp(var(--space-12), 5vw, var(--space-16));
+    /* Natural height, not stretched to the tallest card in the row. There is no card
+       background to stretch, and the ragged bottoms are honest about bios that run
+       from 95 to 190 words. */
     align-items: start;
-    /* Each row is a deep-link target (/team/#raquel-romano), and the header is sticky,
-       so an un-margined row lands underneath it — measured at exactly --header-h of
-       overlap, i.e. the name is the part you cannot see. */
+  }
+  .person-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    /* Each card is a deep-link target (/team/#raquel-romano), and the header is
+       sticky, so an un-margined card lands underneath it — measured at exactly
+       --header-h of overlap, i.e. the name is the part you cannot see. */
     scroll-margin-top: calc(var(--header-h) + var(--space-8));
   }
-  /* A rule BETWEEN entries, not around them: five bios of 95 to 190 words make rows of
-     visibly ragged height, and the hairline is what makes them read as one set. Same
-     treatment assets/approach.css:111 gives every [data-arch-tick], so a ruled vertical
-     stack is already house form. First row has no rule and no top padding so the band
-     starts flush under the <h2>. */
-  .person-row + .person-row { border-top: var(--border-width-divider) solid var(--border-hairline); }
-  .person-row:first-child { padding-top: 0; }
+  /* No rule between cards. A hairline was right when these were full-width stacked
+     rows; in a grid the adjacent sibling is the card to the RIGHT, so a border-top
+     would rule the top-right card and leave the lone fifth one with a half-width
+     line. An :nth-child fix would be wrong at some width by construction, because
+     auto-fit means the column count is not fixed. Whitespace separates instead, which
+     is what every other grid on this page already does. */
+  .person-id { max-width: var(--container-xxs); }
   .person-id img, .person-id > div { margin-bottom: 0; }
   /* The measure, and the only thing here that decides whether 190 words get read. The
-     copy track runs to 624px at 1440 inside --container-xl, which sets ~70 characters
-     at --text-regular; --container-md caps it at 560 and about 66, which is the middle
-     of the comfortable band rather than its edge. The cap is on the bio alone so the
-     name and the role line — both short — still run the full track. */
+     card runs to 608px at 1440; --container-md caps the bio at 560 and about 67
+     characters, the middle of the comfortable band rather than its edge. The cap is on
+     the bio alone, so the name and the role line — both short — still run the full
+     card. Below 608 the card is narrower than the cap and sets the measure itself,
+     down to the 400px floor the grid enforces. */
   .person-bio { max-width: var(--container-md); margin-top: var(--space-6); display: flex; flex-direction: column; gap: var(--space-6); }
   /* Styleless in the markup, typed here. That is structural, not tidiness:
      tools/export-content.mjs matches a person's role and affiliation with regexes that
@@ -147,16 +172,12 @@
      greying the bio. See wordpress-handoff/sections/leadership.md. */
   .person-bio p { font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0; text-wrap: pretty; }
   @media (max-width: 991px) {
-    /* One column below the design system's only type break. The portrait keeps its
-       --container-xxs width rather than shrinking to a byline thumbnail, which is what
-       makes a leader who has no bio yet degrade to exactly the card they have today. */
-    .person-row { grid-template-columns: minmax(0, 1fr); }
-    .person-id { max-width: var(--container-xxs); }
-    /* A tighter cap than the two-column arm, because the type steps DOWN to 16px here
-       while the column does not: --container-md at 16px measured 79 characters at 768,
-       past the comfortable band. --container-sm brings it back to about 68. Below
-       ~520px the viewport is the constraint anyway and this stops applying (46 at
-       400px). */
+    /* A tighter cap below the design system's only type break, because the type steps
+       DOWN to 16px here while the card does not — and this is where the grid has
+       usually fallen to one column, so the card is at its widest exactly as the type
+       gets smallest. --container-md at 16px measured 79 characters at 768, past the
+       comfortable band; --container-sm brings it back to about 68. Below ~520px the
+       viewport is the constraint anyway and this stops applying (46 at 400px). */
     .person-bio { max-width: var(--container-sm); }
   }
   /* THE PICTURE ROWS on The Challenge and Our Approach — one photograph beside one
