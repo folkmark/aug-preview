@@ -61,16 +61,50 @@ find it in an older copy of this handoff, it is dead.
 </div>
 ```
 
-Two tracks at ≥992px: `var(--container-xxs) minmax(0, 1fr)` with a `--space-20`
-gutter. One track below. The bio is capped independently of the track —
-`--container-md` in the two-column arm, `--container-sm` in the stacked one,
-because the type steps down to 16px below 992 while the column does not.
+**Each card stacks; the cards sit side by side.** `.person-row` is a flex column
+(portrait, name, role, links, bio) at every width. `.leadership-rows` is the grid
+that places those cards.
 
-Measured result, characters per line: **67 at 1440, 67 at 1280, 59 at 992, 67 at
-768, 46 at 400.** All inside the comfortable band.
+There is no breakpoint and no hard-coded column count — the count falls out of a
+minimum track, exactly as the partner grids below already work:
+
+```css
+.leadership-rows {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(440px, 100%), 1fr));
+  column-gap: var(--space-16);
+  row-gap: clamp(var(--space-12), 5vw, var(--space-16));
+  align-items: start;
+}
+```
+
+**440px is set off the measure, not chosen by eye.** It was raised from 400 after
+measuring: 400 kept two columns alive down to a 414px card, which sets 46 characters
+— inside the ~45 floor but with nothing spare. 440 hands that case a single card
+instead, where the bio's own cap sets a comfortable 67.
+
+The band carries **no `max-width` of its own** — it spans the same
+`--container-xxl` as the `<h2>` above it and every partner grid below. It briefly
+had a `--container-xl` cap, and that was the only reason it looked narrower than the
+rest of the page. If you are porting this, do not reintroduce one.
+
+The bio is capped independently of the card: `--container-md` normally,
+`--container-sm` below 992px, because the type steps down to 16px there while the
+card does not — and 992 is usually where the grid has already fallen to one column,
+so the card is at its widest exactly as the type gets smallest.
+
+Measured, characters per line: **67 at 1470, 67 at 1440, 67 at 1280, 67 at 992, 67
+at 768, 46 at 400** — and across the two-column transition band, 59 at 1150, 53 at
+1100, 50 at 1050, back to 67 at 1000 once it drops to one column. The weakest
+measure anywhere in the range is 50.
+
+**On three columns:** inside a 1280px band three columns would mean 384px cards, or
+about 46 characters for a 190-word bio. The 440px minimum means auto-fit never picks
+three at this width, which is correct — but it is not forbidden. Widen the band past
+roughly 1450 and three columns appear on their own, with no rule change.
 
 A leader with no bio yet degrades to exactly the card they had before: portrait,
-name, role, one row tall. Nothing special is needed for them.
+name, role. Nothing special is needed for them.
 
 ## 3. Four invariants you must not break
 
