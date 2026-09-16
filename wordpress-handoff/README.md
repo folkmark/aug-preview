@@ -42,6 +42,7 @@ bug, and I would like to hear about it.
 | [`sections/falling-blocks.md`](sections/falling-blocks.md) | Build specification for the falling-blocks CTA. |
 | [`sections/cycle.md`](sections/cycle.md) | Build specification for the cycle wheel. |
 | [`sections/approach.md`](sections/approach.md) | Build specification for the Approach scrub (not currently mounted). |
+| [`sections/leadership.md`](sections/leadership.md) | Build specification for the Leadership bio rows on Who We Are, and the four structural invariants the team export depends on. |
 | `../_ds/augmented-design-system-*/` | The design system: tokens, stylesheet, fonts. |
 | `../assets/` | Production images, animation frames, and the four components. |
 | `../docs/approach-render-map.md`, `../docs/hero-bridge-render.md` | Render notes. The authority for frame numbers and for what a re-render needs. |
