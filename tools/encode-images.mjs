@@ -44,12 +44,15 @@ const JOBS = [
   // The seven portrait photographs on The Challenge and Our Approach, in a 4/5 box, two
   // tiers each.
   //
-  // Five of the seven are licensed Shutterstock photography and are read straight from the
-  // full-resolution originals in stock-photos-aug/large/, cropped by the box on each job.
-  // The other two are the generated frames the whole set used to be: they arrived in the
-  // build hotlinked to a generation CDN under a user-scoped path, at 1856x2304 and 6.4-9.2
-  // MB apiece, and that bucket is not a home for production images, so their masters are
-  // committed here. Nothing in the set is hotlinked any more.
+  // All seven are licensed Shutterstock photography, read straight from the full-resolution
+  // originals in stock-photos-aug/large/ and cropped by the box on each job.
+  //
+  // Two of them were generated frames until September 2026: they arrived in the build
+  // hotlinked to a generation CDN under a user-scoped path, at 1856x2304 and 6.4-9.2 MB
+  // apiece, and that bucket is not a home for production images, so their masters were
+  // committed here rather than fetched. Those masters now sit in image-sources/unused/
+  // beside the superseded hero frames. Nothing in this set is generated or hotlinked any
+  // more, and the whole row can be re-framed from originals.
   //
   // Reading the stock frames from the original rather than from a cropped master is
   // deliberate and worth keeping. The crop box is then reviewable data — you can see what
@@ -62,10 +65,16 @@ const JOBS = [
   // Every box below is exactly 1856:2304 against its own source, measured, so the page's
   // own `object-fit: cover` is left with nothing to take — same rule as the school shots
   // further down. An extract that runs past the edge throws rather than clamping, so
-  // re-measure against the source if you move one. The horizontal placement is the whole
-  // job on the four landscape frames: a 3/2 original keeps 54% of its width in a 4/5 box
-  // and a 1.9:1 original keeps 42%, so a centred crop is a coin toss on who survives it.
-  // Each box below is set on the people the caption is about.
+  // re-measure against the source if you move one.
+  //
+  // Two of the seven are landscape, and there the horizontal placement is the whole job: a
+  // 3/2 original keeps 54% of its width in a 4/5 box, so a centred crop is a coin toss on
+  // who survives it. The other five are portrait and width-limited, so the box spans the
+  // full width and the only choice is where the vertical slack goes. Each of those was
+  // picked off a three-placement contact sheet — top 0, half the slack, all of it —
+  // rendered side by side and looked at, because the difference between them is a
+  // compositional judgement and not a number. Every box below is set on the people the
+  // caption is about.
   //
   // The box is worth measuring rather than assuming, because it does not break where the
   // rest of the site does. The row is a `repeat(auto-fit, minmax(min(20rem,100%),1fr))`
@@ -87,19 +96,40 @@ const JOBS = [
   // would need a third artifact each and save little; there is no room for it between 800
   // and 1264.
   //
-  // build-capabilities.png is the one master left that arrived RGBA with every alpha sample
-  // at 255 — codesign-tools was the other, and is now stock. sharp carries an existing
-  // alpha channel through regardless of the webp options below, so without the removeAlpha()
-  // in the non-alpha branch it would ship a plane that describes nothing, and be the only
-  // one of the seven that did.
+  // Two of the seven carry a `grade`: a per-channel multiplier that runs after the crop.
+  // It is here because a select can be right in every other way and still read cold beside
+  // its neighbours. Measured over the shipped crop of each frame, mean(R) - mean(B) runs
+  // +13 to +37 across the set, and the two September selects for Approach 02 and 03 came in
+  // at +5 and +7 — not wrong on their own, wrong in the row. `linear([r, 1, b])` is the
+  // smallest thing that moves that number: red up and blue down by amounts solved to hold
+  // luminance, so the frame warms without getting brighter. tint() colourises towards a hue
+  // and modulate() moves saturation wholesale; both do more than is wanted. Both tiers of a
+  // pair must carry the identical grade — an 800 and a 1264 graded differently is a visible
+  // colour shift the moment srcset switches, at a viewport width nobody tests at, and
+  // nothing here would catch it.
+  //
+  // Keep the removeAlpha() in the non-alpha branch of the runner below. sharp carries a
+  // source's alpha channel through regardless of the webp options, and the two masters this
+  // set used to read from — build-capabilities.png, and codesign-tools' first original —
+  // both arrived RGBA with every alpha sample at 255, so without it they shipped a plane
+  // describing nothing. Neither is on the list any more and no current source is RGBA,
+  // which is the reason to keep the guard rather than to drop it: the next master dropped
+  // into this directory is one export setting away from putting it back, and nothing else
+  // would tell you.
 
   // Two students writing by hand, for the row about the skills built without AI. 9504x6336;
   // the box holds both of them and the paper, and drops the empty desks to the left.
   { in: 'stock-photos-aug/large/shutterstock_2763377205.jpg', out: 'images/student-notebook.webp',   width: 1264, crop: [2661, 0, 5104, 6336] },
   { in: 'stock-photos-aug/large/shutterstock_2763377205.jpg', out: 'images/student-notebook-m.webp', width: 800,  crop: [2661, 0, 5104, 6336] },
 
-  { in: 'images/engineers-screens.png',    out: 'images/engineers-screens.webp',    width: 1264 },
-  { in: 'images/engineers-screens.png',    out: 'images/engineers-screens-m.webp',  width: 800 },
+  // Two engineers at adjacent desks, one of them reading code off the monitor in front of
+  // him, for the row about the layer in between. 3333x5000 and portrait, so the box is the
+  // full width and all 862px of the vertical slack goes above it. Bottom-anchored fills the
+  // frame with the two of them and keeps the code on screen legible; anchoring at the top
+  // instead cedes a third of the box to a flat curtain and drops the saturation to 13.
+  // Measured +18 on mean(R) - mean(B) as it stands, inside the set's band, so no grade.
+  { in: 'stock-photos-aug/large/shutterstock_2176735867.jpg', out: 'images/engineers-screens.webp',   width: 1264, crop: [0, 862, 3333, 4138] },
+  { in: 'stock-photos-aug/large/shutterstock_2176735867.jpg', out: 'images/engineers-screens-m.webp', width: 800,  crop: [0, 862, 3333, 4138] },
 
   // A teacher leaning in over one student's textbook with another beside her, for the row
   // about what the backlash would cost. 5153x3435; the box is set to keep the teacher whole
@@ -112,15 +142,33 @@ const JOBS = [
   { in: 'stock-photos-aug/large/shutterstock_2670025731.jpg', out: 'images/define-the-role.webp',   width: 1264, crop: [2483, 0, 4763, 5913] },
   { in: 'stock-photos-aug/large/shutterstock_2670025731.jpg', out: 'images/define-the-role-m.webp', width: 800,  crop: [2483, 0, 4763, 5913] },
 
-  { in: 'images/build-capabilities.png',   out: 'images/build-capabilities.webp',   width: 1264 },
-  { in: 'images/build-capabilities.png',   out: 'images/build-capabilities-m.webp', width: 800 },
+  // Someone leaning in to point at a laptop for three colleagues round it, a chalkboard
+  // behind them, for Build the capabilities. 4480x6720; the box takes the middle of the
+  // 1159px of slack rather than either end — anchored at the top it carries a band of empty
+  // cream wall above the board, and at the bottom it trades that for foreground table
+  // clutter. The coolest frame in the set at +5, so it is graded to +15. Verified through
+  // the encoded file rather than the pipeline: luminance 140.4 -> 140.2, saturation
+  // 20.6 -> 21.6, nothing clipped.
+  { in: 'stock-photos-aug/large/shutterstock_2354739045.jpg', out: 'images/build-capabilities.webp',   width: 1264, crop: [0, 580, 4480, 5561], grade: [1.017, 1, 0.947] },
+  { in: 'stock-photos-aug/large/shutterstock_2354739045.jpg', out: 'images/build-capabilities-m.webp', width: 800,  crop: [0, 580, 4480, 5561], grade: [1.017, 1, 0.947] },
 
-  // A table spread with printed material and someone handing a card across it, for Co-design
-  // the applications. 7680x4050 and the widest source in the set at 1.9:1, so this is the
-  // tightest of the five: the box takes the seated woman, the facilitator and the laptop,
-  // and loses the man at the left end of the table, who does not fit with them.
-  { in: 'stock-photos-aug/large/shutterstock_2380531861.jpg', out: 'images/codesign-tools.webp',   width: 1264, crop: [2304, 0, 3262, 4050] },
-  { in: 'stock-photos-aug/large/shutterstock_2380531861.jpg', out: 'images/codesign-tools-m.webp', width: 800,  crop: [2304, 0, 3262, 4050] },
+  // Five colleagues behind a glass wall of sticky notes, adding to it from the far side, for
+  // Co-design the applications. 4144x5588, bottom-anchored on all 444px of slack, which is
+  // ceiling lighting grid and worth nothing.
+  //
+  // This shares its setting with Define the role two cards up, knowingly — it was picked
+  // that way. The two boxes are therefore deliberately unalike: 01 is tight on one man
+  // writing, this is the wide group seen through the glass, and the alt text in index.html
+  // is written to keep them apart for a screen reader too. If you re-crop either one,
+  // re-read the other.
+  //
+  // Graded from +7 to +15, same reasoning as the frame above. That takes fully clipped red
+  // from 1.7% of the frame to 4.3%, in the blown window light at the left edge, which is
+  // unremarkable for this set: test-in-classrooms already ships at 8.1% and
+  // teacher-two-students at 5.6%. It replaced a 7680x4050 frame of a table spread with
+  // printed material (shutterstock_2380531861, still in large/ if it is ever wanted back).
+  { in: 'stock-photos-aug/large/shutterstock_2129383421.jpg', out: 'images/codesign-tools.webp',   width: 1264, crop: [0, 444, 4144, 5144], grade: [1.014, 1, 0.957] },
+  { in: 'stock-photos-aug/large/shutterstock_2129383421.jpg', out: 'images/codesign-tools-m.webp', width: 800,  crop: [0, 444, 4144, 5144], grade: [1.014, 1, 0.957] },
 
   // A teacher between two students at a laptop, for Test, learn, begin again. 3952x5532 and
   // the one portrait original here, so the crop is vertical and the only choice is which end
@@ -318,6 +366,14 @@ for (const job of runnable) {
   // the box against the source rather than guessing: an extract that runs past the edge
   // throws, it does not clamp.
   if (job.crop) pipe = pipe.extract({ left: job.crop[0], top: job.crop[1], width: job.crop[2], height: job.crop[3] });
+  // A per-channel multiplier, [r, g, b] — see the note on `grade` in the 4/5 block above for
+  // what it is for and why it is not tint() or modulate(). Order matters twice: after the
+  // crop, because each multiplier was solved against its own cropped frame's channel means
+  // and a different box needs a different pair; and before the resize, because that is where
+  // it was measured. Clipping at full resolution and then averaging is not the same as
+  // averaging and then clipping, and the difference lands in exactly the blown highlights
+  // this is most likely to touch.
+  if (job.grade) pipe = pipe.linear(job.grade, [0, 0, 0]);
   if (job.square) {
     // Never enlarge: withoutEnlargement keeps the two small headshots at their own
     // size rather than fabricating pixels.
