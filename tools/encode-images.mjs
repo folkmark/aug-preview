@@ -37,9 +37,27 @@ const sharp = await import('sharp').then((m) => m.default).catch(() => {
 
 // width: the target in real pixels. The comment on each is the box it renders into.
 const JOBS = [
-  // Full-width photography in a 3/2 box: 351 CSS px on a phone, ~640 on desktop.
-  { in: 'images/classroom-morning.png', out: 'images/classroom-morning.webp', width: 1264 },
-  { in: 'images/student-notes.png',     out: 'images/student-notes.webp',     width: 1264 },
+  // Full-width photography in a 3/2 box, sized for ~640 CSS px on desktop.
+  //
+  // NEITHER OF THESE IS ON THE SITE. Nothing references them — not index.html, not
+  // assets/*.js, not support.js, not the design system, not the built _site — and
+  // assets/ ships wholesale, so the two of them are 164 KB published and served to
+  // nobody. That is the same failure the icons note above describes, in a different
+  // directory. Checked with grep across every referencing file type, September 2026.
+  //
+  // They are kept and graded rather than dropped because dropping them is a content
+  // decision and not this file's to take: both are strong editorial frames, and if one
+  // is ever placed it should already match the rest. Whoever settles it either wires
+  // them into a page or deletes these two jobs and the two masters with them.
+  //
+  // They are also the low-key end of the set and are meant to be: classroom-morning is a
+  // dawn classroom at mean luminance 59, student-notes a library at 93, against a stock
+  // set that averages ~145. Neither is brightened — see THE GRADE above. classroom-morning
+  // takes the white-point lift only (it was inside the warmth band at +18 already), and
+  // student-notes, the warmest frame after student-notebook at +30, is cooled to +18 by
+  // pulling red down rather than lifting blue.
+  { in: 'images/classroom-morning.png', out: 'images/classroom-morning.webp', width: 1264, grade: [1.048, 1.048, 1.048] },
+  { in: 'images/student-notes.png',     out: 'images/student-notes.webp',     width: 1264, grade: [0.889, 1, 1] },
 
   // The seven portrait photographs on The Challenge and Our Approach, in a 4/5 box, two
   // tiers each.
@@ -84,8 +102,9 @@ const JOBS = [
   // 351 at 390, 719 at 799 — the widest the box ever gets, one pixel before the split —
   // then 320 at 800, 406 at 992, and a flat 600 from 1422 up, where the container caps.
   //
-  // 1264 is the same width student-notes.webp already ships at in this exact grid: 2.1x
-  // the 600px desktop box, and above the 1053 a 390px phone at DPR 3 asks for. 800 is the
+  // 1264 is 2.1x the 600px desktop box, and above the 1053 a 390px phone at DPR 3 asks
+  // for. (It is also what the two unreferenced 3/2 frames above ship at, but they are not
+  // in this grid and never were — do not read that as corroboration.) 800 is the
   // smallest round width that still covers every DPR-1 viewport including the 719px peak,
   // and a 430px phone at DPR 2 (774).
   //
@@ -96,17 +115,65 @@ const JOBS = [
   // would need a third artifact each and save little; there is no room for it between 800
   // and 1264.
   //
-  // Two of the seven carry a `grade`: a per-channel multiplier that runs after the crop.
-  // It is here because a select can be right in every other way and still read cold beside
-  // its neighbours. Measured over the shipped crop of each frame, mean(R) - mean(B) runs
-  // +13 to +37 across the set, and the two September selects for Approach 02 and 03 came in
-  // at +5 and +7 — not wrong on their own, wrong in the row. `linear([r, 1, b])` is the
-  // smallest thing that moves that number: red up and blue down by amounts solved to hold
-  // luminance, so the frame warms without getting brighter. tint() colourises towards a hue
-  // and modulate() moves saturation wholesale; both do more than is wanted. Both tiers of a
-  // pair must carry the identical grade — an 800 and a 1264 graded differently is a visible
-  // colour shift the moment srcset switches, at a viewport width nobody tests at, and
-  // nothing here would catch it.
+  // --------------------------------------------------------------------------------
+  // THE GRADE. This applies to all twelve photographs this encoder writes into
+  // assets/images/, not only the seven in this block, so it is written out once here.
+  // --------------------------------------------------------------------------------
+  //
+  // The twelve come from four places — two editorial stock frames, seven Shutterstock
+  // selects, three phone snapshots from school visits — and they did not agree on white
+  // balance. Measured over each one's shipped crop, mean(R) - mean(B) ran -17 to +37,
+  // which is four visibly different renderings of white in one set. `grade` is the fix: a
+  // per-channel multiplier, [r, g, b], applied after the crop.
+  //
+  // Two axes, and the difference between them is the whole design:
+  //
+  //   WHITE POINT. Lift each frame until its p99.8 luminance reaches 250, the set median.
+  //   Lift only, never cut: a clipped highlight has no detail left to recover, so scaling
+  //   a whole frame down to move a pixel that is already at 255 is a cost with no benefit.
+  //   Capped at +8%.
+  //
+  //   WARMTH. Target R-B = +17, the set median, with a +-8 deadzone — a frame already
+  //   inside +9..+25 is not touched at all. Outside it, correct toward the target, capped
+  //   at a 12-point shift, so a frame that is an outlier for a reason lands closer without
+  //   being forced onto the number.
+  //
+  // MEAN LUMINANCE IS NOT A TARGET, and this is the decision most likely to be "fixed" by
+  // someone later. It runs 59 to 163 across the twelve and that spread is content, not
+  // exposure: classroom-morning measures 59 because it is a dawn classroom deliberately
+  // dark, student-notes 93 because it is a library at a warm low key. They are the two
+  // best photographs on the site and normalising them to the stock set's ~145 would
+  // destroy both. What a viewer reads as "the same light" is where the white point sits,
+  // not where the average sits, which is why the axis above is p99.8 and not the mean.
+  //
+  // Three implementation details that are load-bearing:
+  //
+  //   The warmth correction ONLY EVER ATTENUATES A CHANNEL, never lifts one — cooling
+  //   pulls red down, warming pulls blue down. Solving it the obvious way instead, by
+  //   lifting the deficient channel to hold luminance, took student-notebook from 1.5% to
+  //   21.9% of the frame with a clipped channel and crosstown-workshop to 99.8%.
+  //   Attenuation cannot clip. The small luminance it costs is what the white-point lift
+  //   is already paying for.
+  //
+  //   The white point is applied first and band membership is judged after it, because a
+  //   gain scales R-B along with everything else. museum-high-workshop needed no warmth
+  //   correction and still came out +23 -> +25 for exactly that reason.
+  //
+  //   Every multiplier below was solved numerically against this pipeline — iterated
+  //   until the measured R-B landed on target — not derived algebraically, because
+  //   clipping makes the algebra approximate.
+  //
+  // Both tiers of a pair must carry the identical grade: an 800 and a 1264 graded
+  // differently is a colour shift the moment srcset switches, at a viewport width nobody
+  // tests at. That used to be a warning here and is now checked — see the pair guard
+  // below the job list.
+  //
+  // tint() colourises towards a hue and modulate() moves saturation wholesale; both do
+  // more than is wanted. Measured on the encoded files after this pass, no frame's
+  // saturation moved more than 1.7 points. Four frames gained clipping, all of them by
+  // under one percentage point and all four from the white-point lift rather than the
+  // warmth step — that is the lift doing its job, pushing the brightest content to white.
+  // For scale, test-in-classrooms ships 12% clipped untouched.
   //
   // Keep the removeAlpha() in the non-alpha branch of the runner below. sharp carries a
   // source's alpha channel through regardless of the webp options, and the two masters this
@@ -119,8 +186,12 @@ const JOBS = [
 
   // Two students writing by hand, for the row about the skills built without AI. 9504x6336;
   // the box holds both of them and the paper, and drops the empty desks to the left.
-  { in: 'stock-photos-aug/large/shutterstock_2763377205.jpg', out: 'images/student-notebook.webp',   width: 1264, crop: [2661, 0, 5104, 6336] },
-  { in: 'stock-photos-aug/large/shutterstock_2763377205.jpg', out: 'images/student-notebook-m.webp', width: 800,  crop: [2661, 0, 5104, 6336] },
+  // The warmest frame in the set at +37, and the only one the 12-point cap binds on from
+  // above: cooled to +25, the top of the band, rather than all the way to +17. Its golden
+  // late-afternoon light is the reason the frame was picked and taking it to the median
+  // would have been correcting the photograph rather than matching the set.
+  { in: 'stock-photos-aug/large/shutterstock_2763377205.jpg', out: 'images/student-notebook.webp',   width: 1264, crop: [2661, 0, 5104, 6336], grade: [0.933, 1, 1] },
+  { in: 'stock-photos-aug/large/shutterstock_2763377205.jpg', out: 'images/student-notebook-m.webp', width: 800,  crop: [2661, 0, 5104, 6336], grade: [0.933, 1, 1] },
 
   // Two engineers at adjacent desks, one of them reading code off the monitor in front of
   // him, for the row about the layer in between. 3333x5000 and portrait, so the box is the
@@ -146,11 +217,11 @@ const JOBS = [
   // behind them, for Build the capabilities. 4480x6720; the box takes the middle of the
   // 1159px of slack rather than either end — anchored at the top it carries a band of empty
   // cream wall above the board, and at the bottom it trades that for foreground table
-  // clutter. The coolest frame in the set at +5, so it is graded to +15. Verified through
-  // the encoded file rather than the pipeline: luminance 140.4 -> 140.2, saturation
-  // 20.6 -> 21.6, nothing clipped.
-  { in: 'stock-photos-aug/large/shutterstock_2354739045.jpg', out: 'images/build-capabilities.webp',   width: 1264, crop: [0, 580, 4480, 5561], grade: [1.017, 1, 0.947] },
-  { in: 'stock-photos-aug/large/shutterstock_2354739045.jpg', out: 'images/build-capabilities-m.webp', width: 800,  crop: [0, 580, 4480, 5561], grade: [1.017, 1, 0.947] },
+  // clutter. The coolest Shutterstock frame in the set at +5, and its white point sat low
+  // at 239, so it takes both axes: +4.5% of lift and blue down to land +17. Measured on
+  // the encoded file, luminance 140 -> 145, saturation 21 -> 22, clipping 0.0% -> 0.1%.
+  { in: 'stock-photos-aug/large/shutterstock_2354739045.jpg', out: 'images/build-capabilities.webp',   width: 1264, crop: [0, 580, 4480, 5561], grade: [1.045, 1.045, 0.961] },
+  { in: 'stock-photos-aug/large/shutterstock_2354739045.jpg', out: 'images/build-capabilities-m.webp', width: 800,  crop: [0, 580, 4480, 5561], grade: [1.045, 1.045, 0.961] },
 
   // Five colleagues behind a glass wall of sticky notes, adding to it from the far side, for
   // Co-design the applications. 4144x5588, bottom-anchored on all 444px of slack, which is
@@ -162,13 +233,11 @@ const JOBS = [
   // is written to keep them apart for a screen reader too. If you re-crop either one,
   // re-read the other.
   //
-  // Graded from +7 to +15, same reasoning as the frame above. That takes fully clipped red
-  // from 1.7% of the frame to 4.3%, in the blown window light at the left edge, which is
-  // unremarkable for this set: test-in-classrooms already ships at 8.1% and
-  // teacher-two-students at 5.6%. It replaced a 7680x4050 frame of a table spread with
-  // printed material (shutterstock_2380531861, still in large/ if it is ever wanted back).
-  { in: 'stock-photos-aug/large/shutterstock_2129383421.jpg', out: 'images/codesign-tools.webp',   width: 1264, crop: [0, 444, 4144, 5144], grade: [1.014, 1, 0.957] },
-  { in: 'stock-photos-aug/large/shutterstock_2129383421.jpg', out: 'images/codesign-tools-m.webp', width: 800,  crop: [0, 444, 4144, 5144], grade: [1.014, 1, 0.957] },
+  // Graded from +7 to +17. Its white point was already at 255 so it takes no lift, only
+  // blue down. It replaced a 7680x4050 frame of a table spread with printed material
+  // (shutterstock_2380531861, still in large/ if it is ever wanted back).
+  { in: 'stock-photos-aug/large/shutterstock_2129383421.jpg', out: 'images/codesign-tools.webp',   width: 1264, crop: [0, 444, 4144, 5144], grade: [1, 1, 0.932] },
+  { in: 'stock-photos-aug/large/shutterstock_2129383421.jpg', out: 'images/codesign-tools-m.webp', width: 800,  crop: [0, 444, 4144, 5144], grade: [1, 1, 0.932] },
 
   // A teacher between two students at a laptop, for Test, learn, begin again. 3952x5532 and
   // the one portrait original here, so the crop is vertical and the only choice is which end
@@ -188,18 +257,42 @@ const JOBS = [
   // pushes the people down against the bottom edge, which at 405 px reads as a photograph
   // of a room rather than of anyone working. Each box below was measured against its own
   // master and is exactly 3:2, so the page's cover crop is left with nothing to take.
-  { in: 'schools/museum-high-workshop.jpg',    out: 'images/museum-high-workshop.webp',    width: 1080, crop: [400, 1000, 2400, 1600] },
-  { in: 'schools/high-tech-high-workshop.jpg', out: 'images/high-tech-high-workshop.webp', width: 1080, crop: [200, 624, 3600, 2400] },
-  { in: 'schools/crosstown-workshop.jpg',      out: 'images/crosstown-workshop.webp',      width: 1080, crop: [0, 300, 5712, 3808] },
+  //
+  // All three are phone frames and all three sat under the white point, so all three take
+  // a lift. The first two needed nothing else — they were inside the warmth band already.
+  //
+  // crosstown-workshop is the exception in this file and the reason THE GRADE above has a
+  // cap at all. At -17 it is the only cool photograph on the site, but the cast is not
+  // uniform: it is a MIXED-LIGHTING frame, cold winter daylight through a wall of windows
+  // against warm interior lights, and no global multiplier can separate the two — the
+  // same blue attenuation that corrects the carpet also drains the sky. Measured on a
+  // fixed 4,396px sky mask inside the window, sampled on the ungraded frame so the same
+  // pixels are compared each time:
+  //
+  //     ungraded    frame -17    sky B-R +43
+  //     cap 8       frame  -9    sky B-R +29   <- this one
+  //     cap 14      frame  -3    sky B-R +17
+  //     cap 20      frame  +3    sky B-R  +6   sky is neutral grey, the daylight is gone
+  //
+  // So it takes 8 rather than the file's 12, and stays the coolest frame in the set on
+  // purpose. Rendered four-up and looked at, not chosen off the table. If a re-shoot ever
+  // replaces this one, drop the exception with it.
+  { in: 'schools/museum-high-workshop.jpg',    out: 'images/museum-high-workshop.webp',    width: 1080, crop: [400, 1000, 2400, 1600], grade: [1.047, 1.047, 1.047] },
+  { in: 'schools/high-tech-high-workshop.jpg', out: 'images/high-tech-high-workshop.webp', width: 1080, crop: [200, 624, 3600, 2400], grade: [1.036, 1.036, 1.036] },
+  { in: 'schools/crosstown-workshop.jpg',      out: 'images/crosstown-workshop.webp',      width: 1080, crop: [0, 300, 5712, 3808], grade: [1.013, 1.013, 0.943],
+    bandExempt: 'mixed lighting; a cap of 8 keeps the sky blue' },
 
   // Headshots in a square cell: 165 CSS px on a phone, ~200 on desktop.
   //
   // Most of these come from the "Website Bio tracking" sheet, where each person's photo is
-  // embedded in a Headshots column. Four do not: where the subject's own institutional page
-  // still had the file the sheet's copy was resized from, the page won. Angela is 1000x1407
-  // there against a 680x600 Drupal derivative in the sheet, Laura 1200x1800 against 300x450,
-  // Sarah 2617x2500 against a 1024x978 re-export. Check both before adding anyone new — a
-  // photo that has been pasted through a spreadsheet has usually lost a generation.
+  // embedded in a Headshots column. Eight do not, under one rule: where the subject's own
+  // institution still publishes the file the sheet's copy was resized from, the institution
+  // wins. Angela is 1000x1407 on her own page against a
+  // 680x600 Drupal derivative in the sheet, Laura 1200x1800 against 300x450, Sarah
+  // 2617x2500 against a 1024x978 re-export, and the four Crosstown fellows below are
+  // 2048-2500 against 400-800. Check both before adding anyone new — a photo that has been
+  // pasted through a spreadsheet has usually lost a generation, and the fellows' entries
+  // in that sheet were mostly LinkedIn renditions, which top out around 400-450px square.
   { in: 'team/joan-lee.jpg',           out: 'team/joan-lee.webp',           width: 512, square: true },
   { in: 'team/angela-stewart.jpg',     out: 'team/angela-stewart.webp',     width: 512, square: true },
   { in: 'team/laura-allen.jpeg',       out: 'team/laura-allen.webp',        width: 512, square: true },
@@ -209,13 +302,38 @@ const JOBS = [
   { in: 'team/neil-sharma.jpg',        out: 'team/neil-sharma.webp',        width: 512, square: true },
   { in: 'team/christopher-hanks.jpg',  out: 'team/christopher-hanks.webp',  width: 512, square: true },
   { in: 'team/ben-hoff.jpg',           out: 'team/ben-hoff.webp',           width: 512, square: true },
+
+  // The four Crosstown High fellows, all four from one shoot on the school's own staff
+  // page (crosstownhigh.org/leadership, served through its Squarespace CDN at
+  // ?format=2500w). They were replaced together in September 2026 and that is the point:
+  // one photographer, one blurred-interior background, one lighting setup, so the
+  // Crosstown group reads as a set rather than as four unrelated photographs. It is the
+  // same argument as the grade on the photography further up, arrived at by swapping
+  // masters rather than by multiplying channels.
+  //
+  // Three of the four were also genuine resolution rescues — Nikki Wallace 380px
+  // effective, Danie Cowden 400, Mohammed Al Harthy 450, all now 2048-2500 — so two of
+  // them left the under-resolution group below and the third lost a crop box. Only
+  // Joshua Sloan was already adequate at 800x800; he is here for the set.
+  //
+  // None needs a crop box. Rendered through this encoder's exact square framing
+  // (fit: 'cover', position: 'top') and looked at: all four put the face in the upper
+  // middle with the shoulders in, at the same scale. Check that again if a master is
+  // ever replaced singly — it holds because they were framed by one photographer, not
+  // because top-anchoring is reliable in general. Sherry Lachman's job below is what
+  // happens when it is not.
+  { in: 'team/nikki-wallace.jpg',      out: 'team/nikki-wallace.webp',      width: 512, square: true },
+  { in: 'team/danie-cowden.jpg',       out: 'team/danie-cowden.webp',       width: 512, square: true },
   { in: 'team/joshua-sloan.jpg',       out: 'team/joshua-sloan.webp',       width: 512, square: true },
+  { in: 'team/mohammed-al-harthy.jpg', out: 'team/mohammed-al-harthy.webp', width: 512, square: true },
 
   // Under-resolution at source; upscaling would only invent detail, so these ship at
-  // their native size and stay soft until someone supplies better originals. Blair Lehman
-  // was in this group at 200x200 and has left it — the sheet supplied an 800x800.
-  // The fellows' photographs mostly arrive this way: pulled from LinkedIn, where the
-  // largest public rendition tops out around 400-450px square.
+  // their native size and stay soft until someone supplies better originals. Two have
+  // left this group — Blair Lehman at 200x200, when the sheet supplied an 800x800, and
+  // Mohammed Al Harthy at 450 with Danie Cowden at 400, when the Crosstown shoot above
+  // replaced both. What is left here is no longer about the fellows: Andrew Lan and Ryan
+  // Baker are research partners whose only public portrait is small. The two jobs after
+  // them are in this stretch of the file for a different reason — see their own note.
   //
   // Andrew Lan is the trap worth naming. cics.umass.edu serves his portrait through a
   // 1_1_2xl image style at 800x800, and that derivative is what got pasted into the sheet,
@@ -224,20 +342,12 @@ const JOBS = [
   // it would ship a mushy tile that merely claims to be sharp, so the 203 is the master.
   { in: 'team/andrew-lan.jpg',         out: 'team/andrew-lan.webp',         width: 512, square: true },
   { in: 'team/ryan-baker.png',         out: 'team/ryan-baker.webp',         width: 512, square: true },
-  { in: 'team/mohammed-al-harthy.jpg', out: 'team/mohammed-al-harthy.webp', width: 512, square: true },
-  { in: 'team/danie-cowden.jpg',       out: 'team/danie-cowden.webp',       width: 512, square: true },
+  // These two came off the site in September 2026 when the Fellowship roster changed, and
+  // nothing references their output any more. Kept on purpose rather than deleted: the
+  // decision was to hold the files in case the roster moves again. Same situation as the
+  // two 3/2 frames at the top of this list — encoded and published, linked from nowhere.
   { in: 'team/danielle-ragavanis.jpg', out: 'team/danielle-ragavanis.webp', width: 512, square: true },
   { in: 'team/alondra-ramos.jpg',      out: 'team/alondra-ramos.webp',      width: 512, square: true },
-
-  // Nikki Wallace's is the one photograph here that is not a headshot: a full-body
-  // conference stage shot against a magenta backdrop, her face about 165 px inside an
-  // 800 px frame. The square cover crop cannot help — the master is already square, so
-  // it would pass straight through and ship a whole stage into a 200 px tile. The crop
-  // box below is measured to her head and shoulders, which is the only way this image
-  // reads as a portrait next to the others. It costs resolution: 380 px, so it ships
-  // soft, and the magenta still does not match anything around it. Replace the master
-  // and drop the crop the moment a real headshot exists.
-  { in: 'team/nikki-wallace.jpg',      out: 'team/nikki-wallace.webp',      width: 512, square: true, crop: [288, 90, 380, 380] },
 
   // ---------------------------------------------------------------------------
   // The three Leadership portraits are NOT tiles, and that is why they are the only
@@ -339,6 +449,25 @@ const JOBS = [
   { in: 'icons/cyc04_test_0001.png',         out: 'approach/cyc04_test_0001.webp',         width: 320, alpha: true }
 ];
 
+// Two jobs that read the same master must frame and grade it the same way. Seven of the
+// photographs ship in two tiers and three of those carry a grade, and a crop or a grade
+// that differs between the 800 and the 1264 is a jump in framing or colour the moment
+// srcset switches — at a viewport width nobody tests at, on a file nobody diffs, with a
+// green build. This used to be a warning in the comment above; it is cheaper to check it.
+const byMaster = new Map();
+for (const j of JOBS) {
+  const key = JSON.stringify([j.crop ?? null, j.grade ?? null]);
+  const seen = byMaster.get(j.in);
+  if (seen && seen.key !== key) {
+    throw new Error(
+      `${j.in} is read by two jobs that disagree:\n` +
+      `  ${seen.out}  crop ${JSON.stringify(seen.crop ?? null)}  grade ${JSON.stringify(seen.grade ?? null)}\n` +
+      `  ${j.out}  crop ${JSON.stringify(j.crop ?? null)}  grade ${JSON.stringify(j.grade ?? null)}`
+    );
+  }
+  if (!seen) byMaster.set(j.in, { key, out: j.out, crop: j.crop, grade: j.grade });
+}
+
 // A job whose source is missing is skipped, not fatal — see the note on SRC above.
 const runnable = JOBS.filter((j) => fs.existsSync(path.join(SRC, j.in)));
 const skipped = JOBS.filter((j) => !runnable.includes(j));
@@ -366,13 +495,12 @@ for (const job of runnable) {
   // the box against the source rather than guessing: an extract that runs past the edge
   // throws, it does not clamp.
   if (job.crop) pipe = pipe.extract({ left: job.crop[0], top: job.crop[1], width: job.crop[2], height: job.crop[3] });
-  // A per-channel multiplier, [r, g, b] — see the note on `grade` in the 4/5 block above for
-  // what it is for and why it is not tint() or modulate(). Order matters twice: after the
-  // crop, because each multiplier was solved against its own cropped frame's channel means
-  // and a different box needs a different pair; and before the resize, because that is where
-  // it was measured. Clipping at full resolution and then averaging is not the same as
-  // averaging and then clipping, and the difference lands in exactly the blown highlights
-  // this is most likely to touch.
+  // A per-channel multiplier, [r, g, b] — see THE GRADE above for the rule that sets every
+  // one of them. Order matters twice: after the crop, because each multiplier was solved
+  // against its own cropped frame's channel means and a different box needs a different
+  // triple; and before the resize, because that is where it was measured. Clipping at full
+  // resolution and then averaging is not the same as averaging and then clipping, and the
+  // difference lands in exactly the blown highlights this is most likely to touch.
   if (job.grade) pipe = pipe.linear(job.grade, [0, 0, 0]);
   if (job.square) {
     // Never enlarge: withoutEnlargement keeps the two small headshots at their own
@@ -404,4 +532,45 @@ console.log(`\n${(before / 1048576).toFixed(2)} MB -> ${(after / 1024).toFixed(0
 if (skipped.length) {
   console.log(`\nskipped ${skipped.length} job(s) whose source is not present:`);
   for (const j of skipped) console.log(`  ${path.relative(root, path.join(SRC, j.in))}`);
+}
+
+// Print the band THE GRADE above holds the photography to, measured off the files just
+// written rather than off the pipeline that wrote them. Every images/ output of this
+// encoder is one of the twelve photographs — the headshots go to team/, the plates to
+// illustrations/ and approach/ — so no job needs to declare itself.
+//
+// Why print and not assert: each grade is a constant solved by hand against one master,
+// and a replaced master silently invalidates it. A new select legitimately starts out of
+// band, so failing the run would be wrong; what is wanted is that the run says so. If a
+// line below is flagged, re-solve that frame's grade before shipping it.
+//
+// A job that is out of band on purpose carries `bandExempt` with the reason, and prints
+// as such. That is the whole point of having it: a flag that fires every run on a frame
+// nobody intends to change is a flag people stop reading.
+const photos = runnable.filter((j) => j.out.startsWith('images/') && !j.out.endsWith('-m.webp'));
+if (photos.length) {
+  const band = [9, 25];
+  const rows = [];
+  for (const j of photos) {
+    const { data, info } = await sharp(path.join(OUT, j.out))
+      .resize({ width: 320, kernel: 'lanczos3' }).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+    const n = info.width * info.height;
+    let R = 0, B = 0;
+    const L = new Float64Array(n);
+    for (let i = 0; i < n; i++) {
+      R += data[i * 3]; B += data[i * 3 + 2];
+      L[i] = 0.2126 * data[i * 3] + 0.7152 * data[i * 3 + 1] + 0.0722 * data[i * 3 + 2];
+    }
+    L.sort();
+    rows.push({ name: j.out.replace('images/', '').replace('.webp', ''), warm: (R - B) / n, white: L[Math.floor(0.998 * (n - 1))], exempt: j.bandExempt });
+  }
+  const warm = rows.map((r) => r.warm);
+  console.log(`\nphotography, measured off the encoded files — see THE GRADE in the job list:`);
+  for (const r of rows) {
+    const out = r.warm < band[0] || r.warm > band[1];
+    const flag = !out ? '' : r.exempt ? `   (out of band on purpose: ${r.exempt})` : '   <- outside the warmth band, re-solve its grade';
+    console.log(`  ${r.name.padEnd(26)} R-B ${(r.warm >= 0 ? '+' : '') + r.warm.toFixed(0)}`.padEnd(42) +
+      `white point ${r.white.toFixed(0)}${flag}`);
+  }
+  console.log(`  ${'spread'.padEnd(26)} R-B ${(Math.max(...warm) - Math.min(...warm)).toFixed(0)} points across ${rows.length}, band is ${band[0]}..${band[1]}`);
 }
