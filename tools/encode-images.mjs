@@ -316,6 +316,10 @@ const JOBS = [
   { in: 'team/ryan-baker.png',         out: 'team/ryan-baker.webp',         width: 512, square: true },
   { in: 'team/mohammed-al-harthy.jpg', out: 'team/mohammed-al-harthy.webp', width: 512, square: true },
   { in: 'team/danie-cowden.jpg',       out: 'team/danie-cowden.webp',       width: 512, square: true },
+  // These two came off the site in September 2026 when the Fellowship roster changed, and
+  // nothing references their output any more. Kept on purpose rather than deleted: the
+  // decision was to hold the files in case the roster moves again. Same situation as the
+  // two 3/2 frames at the top of this list — encoded and published, linked from nowhere.
   { in: 'team/danielle-ragavanis.jpg', out: 'team/danielle-ragavanis.webp', width: 512, square: true },
   { in: 'team/alondra-ramos.jpg',      out: 'team/alondra-ramos.webp',      width: 512, square: true },
 

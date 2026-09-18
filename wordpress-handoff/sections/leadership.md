@@ -160,7 +160,7 @@ before that assertion existed it did not.
 the page stylesheet by `.person-bio p`. This is structural, not tidiness: the
 exporter matches a person's role and affiliation with regexes that require a literal
 `<p style="`. A bio paragraph with any inline style is parsed as that person's
-**affiliation** — I reproduced this, and it gives 28 records, zero errors and a green
+**affiliation** — I reproduced this, and it gives 24 records, zero errors and a green
 build with Sherry's bio sitting in the wrong field.
 
 **4. Icon links stay above the bio in source order.** The exporter reads links from a
@@ -170,7 +170,7 @@ between the role and the links, the links fall outside and vanish from `team.jso
 ## 4. What the exporter produces
 
 `content/team.json` gains a `bio` field: an array of paragraph strings, or `null`
-for the 23 people without one. The array preserves the authored paragraphing, which
+for the 19 people without one. The array preserves the authored paragraphing, which
 is a design decision rather than an accident — 190 words is 19 unbroken lines at
 1440 and 27 at 400px.
 

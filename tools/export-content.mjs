@@ -3,7 +3,7 @@
 // The prototype has no CMS: the team grids, the research cards, the cycle steps and
 // the per-page metadata all live as markup. The WordPress developer models them as
 // post types and fields (JetEngine / CPT UI on the target install), and the honest
-// source for that is data, not HTML — scraping 28 team cards by hand is an hour of
+// source for that is data, not HTML — scraping 24 team cards by hand is an hour of
 // transcription errors waiting to be found in production.
 //
 // This reads the rendered pages in wordpress-handoff/pages/ — the same files the
@@ -72,7 +72,7 @@ const team = heads.map((m, k) => {
   //
   // Do NOT widen `after` to reach it. That 2500 is what stops one person's role, muted
   // lines and links bleeding into the next; widening it enlarges the blast radius for
-  // all 28 to solve a problem this slice solves for free.
+  // all 24 to solve a problem this slice solves for free.
   //
   // Paragraphs, not one string: the bios are authored in 2-3 parts and the break is a
   // design decision (190 words is 19 unbroken lines at 1440), so the array is what
@@ -98,11 +98,11 @@ const team = heads.map((m, k) => {
     links,
   };
 });
-expect(team.length === 28, `team: expected 28 people, parsed ${team.length}`);
+expect(team.length === 24, `team: expected 24 people, parsed ${team.length}`);
 expect(new Set(team.map((p) => p.group)).size >= 4, 'team: expected at least 4 groups');
 
 // Bios asserted RELATIONALLY, not against a hard-coded 5. The count of people with
-// bios is not a fixed fact about this site the way 28 people or 4 redirects are — a
+// bios is not a fixed fact about this site the way 24 people or 4 redirects are — a
 // sixth leader should be a markup change, not a build break. Counting the blocks in
 // the raw markup and matching still fails loudly on the case that matters: a bio that
 // is present in the page and did not survive the parse.
@@ -119,8 +119,8 @@ expect(
 // `<img class="..." src="...">` in index.html takes every headshot to null with a green
 // build and hands the rebuild a photo-less team. This is the cheapest possible guard.
 expect(
-  team.filter((p) => p.photo).length === 20,
-  `team: expected 20 headshots, parsed ${team.filter((p) => p.photo).length} — ` +
+  team.filter((p) => p.photo).length === 18,
+  `team: expected 18 headshots, parsed ${team.filter((p) => p.photo).length} — ` +
     'has src stopped being the first attribute on a team <img>?'
 );
 

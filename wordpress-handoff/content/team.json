@@ -226,61 +226,6 @@
     ]
   },
   {
-    "name": "Danielle Ragavanis",
-    "group": "Education Fellows",
-    "role": "Social Studies & Design Thinking Teacher, R&D Department Lead",
-    "affiliation": "Thomas A. Edison Career and Technical Education High School",
-    "location": "Jamaica, NY",
-    "photo": "assets/team/danielle-ragavanis.webp",
-    "bio": null,
-    "links": [
-      {
-        "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/danielle-ragavanis-passaretti-110b80b0/"
-      }
-    ]
-  },
-  {
-    "name": "Alondra Ramos",
-    "group": "Education Fellows",
-    "role": "Special Education Teacher",
-    "affiliation": "Thomas A. Edison Career and Technical Education High School",
-    "location": "Jamaica, NY",
-    "photo": "assets/team/alondra-ramos.webp",
-    "bio": null,
-    "links": [
-      {
-        "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/alondra-ramos-31542958/"
-      }
-    ]
-  },
-  {
-    "name": "Philip Baker",
-    "group": "Education Fellows",
-    "role": "Social Studies & Design Thinking Teacher, R&D Department Lead",
-    "affiliation": "Thomas A. Edison Career and Technical Education High School",
-    "location": "Jamaica, NY",
-    "photo": null,
-    "bio": null,
-    "links": []
-  },
-  {
-    "name": "Ted Cuevas",
-    "group": "Education Fellows",
-    "role": "Physics Teacher",
-    "affiliation": "High Tech High Chula Vista",
-    "location": "Chula Vista, CA",
-    "photo": null,
-    "bio": null,
-    "links": [
-      {
-        "label": "Website",
-        "url": "https://www.hightechhigh.org/staff/ted-cuevas/"
-      }
-    ]
-  },
-  {
     "name": "Alexandra Wiggins",
     "group": "Education Fellows",
     "role": "Humanities Teacher, 504 Coordinator",
