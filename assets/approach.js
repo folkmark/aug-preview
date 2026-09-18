@@ -120,7 +120,7 @@
   //   93   the first book enters the frame        -> "Define the role."
   //   276  the first solid block reaches the       -> "Build the capabilities."
   //        wireframe (271 is clean, 281 falling)
-  //   436  the first roadway plank enters frame    -> "Co-design the applications."
+  //   436  the first roadway plank enters frame    -> "Co-design the tools."
   //        (431 clean; laid across 441-476, the AR
   //        chevrons then rise at 565 with it up)
   //   621  the first test book rests on the deck   -> "Test, learn, begin again."
