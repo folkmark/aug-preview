@@ -285,11 +285,14 @@ const JOBS = [
   // Headshots in a square cell: 165 CSS px on a phone, ~200 on desktop.
   //
   // Most of these come from the "Website Bio tracking" sheet, where each person's photo is
-  // embedded in a Headshots column. Four do not: where the subject's own institutional page
-  // still had the file the sheet's copy was resized from, the page won. Angela is 1000x1407
-  // there against a 680x600 Drupal derivative in the sheet, Laura 1200x1800 against 300x450,
-  // Sarah 2617x2500 against a 1024x978 re-export. Check both before adding anyone new — a
-  // photo that has been pasted through a spreadsheet has usually lost a generation.
+  // embedded in a Headshots column. Eight do not, under one rule: where the subject's own
+  // institution still publishes the file the sheet's copy was resized from, the institution
+  // wins. Angela is 1000x1407 on her own page against a
+  // 680x600 Drupal derivative in the sheet, Laura 1200x1800 against 300x450, Sarah
+  // 2617x2500 against a 1024x978 re-export, and the four Crosstown fellows below are
+  // 2048-2500 against 400-800. Check both before adding anyone new — a photo that has been
+  // pasted through a spreadsheet has usually lost a generation, and the fellows' entries
+  // in that sheet were mostly LinkedIn renditions, which top out around 400-450px square.
   { in: 'team/joan-lee.jpg',           out: 'team/joan-lee.webp',           width: 512, square: true },
   { in: 'team/angela-stewart.jpg',     out: 'team/angela-stewart.webp',     width: 512, square: true },
   { in: 'team/laura-allen.jpeg',       out: 'team/laura-allen.webp',        width: 512, square: true },
@@ -299,13 +302,38 @@ const JOBS = [
   { in: 'team/neil-sharma.jpg',        out: 'team/neil-sharma.webp',        width: 512, square: true },
   { in: 'team/christopher-hanks.jpg',  out: 'team/christopher-hanks.webp',  width: 512, square: true },
   { in: 'team/ben-hoff.jpg',           out: 'team/ben-hoff.webp',           width: 512, square: true },
+
+  // The four Crosstown High fellows, all four from one shoot on the school's own staff
+  // page (crosstownhigh.org/leadership, served through its Squarespace CDN at
+  // ?format=2500w). They were replaced together in September 2026 and that is the point:
+  // one photographer, one blurred-interior background, one lighting setup, so the
+  // Crosstown group reads as a set rather than as four unrelated photographs. It is the
+  // same argument as the grade on the photography further up, arrived at by swapping
+  // masters rather than by multiplying channels.
+  //
+  // Three of the four were also genuine resolution rescues — Nikki Wallace 380px
+  // effective, Danie Cowden 400, Mohammed Al Harthy 450, all now 2048-2500 — so two of
+  // them left the under-resolution group below and the third lost a crop box. Only
+  // Joshua Sloan was already adequate at 800x800; he is here for the set.
+  //
+  // None needs a crop box. Rendered through this encoder's exact square framing
+  // (fit: 'cover', position: 'top') and looked at: all four put the face in the upper
+  // middle with the shoulders in, at the same scale. Check that again if a master is
+  // ever replaced singly — it holds because they were framed by one photographer, not
+  // because top-anchoring is reliable in general. Sherry Lachman's job below is what
+  // happens when it is not.
+  { in: 'team/nikki-wallace.jpg',      out: 'team/nikki-wallace.webp',      width: 512, square: true },
+  { in: 'team/danie-cowden.jpg',       out: 'team/danie-cowden.webp',       width: 512, square: true },
   { in: 'team/joshua-sloan.jpg',       out: 'team/joshua-sloan.webp',       width: 512, square: true },
+  { in: 'team/mohammed-al-harthy.jpg', out: 'team/mohammed-al-harthy.webp', width: 512, square: true },
 
   // Under-resolution at source; upscaling would only invent detail, so these ship at
-  // their native size and stay soft until someone supplies better originals. Blair Lehman
-  // was in this group at 200x200 and has left it — the sheet supplied an 800x800.
-  // The fellows' photographs mostly arrive this way: pulled from LinkedIn, where the
-  // largest public rendition tops out around 400-450px square.
+  // their native size and stay soft until someone supplies better originals. Two have
+  // left this group — Blair Lehman at 200x200, when the sheet supplied an 800x800, and
+  // Mohammed Al Harthy at 450 with Danie Cowden at 400, when the Crosstown shoot above
+  // replaced both. What is left here is no longer about the fellows: Andrew Lan and Ryan
+  // Baker are research partners whose only public portrait is small. The two jobs after
+  // them are in this stretch of the file for a different reason — see their own note.
   //
   // Andrew Lan is the trap worth naming. cics.umass.edu serves his portrait through a
   // 1_1_2xl image style at 800x800, and that derivative is what got pasted into the sheet,
@@ -314,24 +342,12 @@ const JOBS = [
   // it would ship a mushy tile that merely claims to be sharp, so the 203 is the master.
   { in: 'team/andrew-lan.jpg',         out: 'team/andrew-lan.webp',         width: 512, square: true },
   { in: 'team/ryan-baker.png',         out: 'team/ryan-baker.webp',         width: 512, square: true },
-  { in: 'team/mohammed-al-harthy.jpg', out: 'team/mohammed-al-harthy.webp', width: 512, square: true },
-  { in: 'team/danie-cowden.jpg',       out: 'team/danie-cowden.webp',       width: 512, square: true },
   // These two came off the site in September 2026 when the Fellowship roster changed, and
   // nothing references their output any more. Kept on purpose rather than deleted: the
   // decision was to hold the files in case the roster moves again. Same situation as the
   // two 3/2 frames at the top of this list — encoded and published, linked from nowhere.
   { in: 'team/danielle-ragavanis.jpg', out: 'team/danielle-ragavanis.webp', width: 512, square: true },
   { in: 'team/alondra-ramos.jpg',      out: 'team/alondra-ramos.webp',      width: 512, square: true },
-
-  // Nikki Wallace's is the one photograph here that is not a headshot: a full-body
-  // conference stage shot against a magenta backdrop, her face about 165 px inside an
-  // 800 px frame. The square cover crop cannot help — the master is already square, so
-  // it would pass straight through and ship a whole stage into a 200 px tile. The crop
-  // box below is measured to her head and shoulders, which is the only way this image
-  // reads as a portrait next to the others. It costs resolution: 380 px, so it ships
-  // soft, and the magenta still does not match anything around it. Replace the master
-  // and drop the crop the moment a real headshot exists.
-  { in: 'team/nikki-wallace.jpg',      out: 'team/nikki-wallace.webp',      width: 512, square: true, crop: [288, 90, 380, 380] },
 
   // ---------------------------------------------------------------------------
   // The three Leadership portraits are NOT tiles, and that is why they are the only
