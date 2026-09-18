@@ -363,10 +363,15 @@ The set is 1.02 MB for both tiers, against 100 MB of source. All seven are licen
 Shutterstock photography, encoded straight from the full-resolution originals in
 `source-material/image-sources/stock-photos-aug/large/` with a crop box on each job in
 `tools/encode-images.mjs`. Two were generated frames until September 2026, when new
-selects replaced them; their 1856x2304 masters moved to `image-sources/unused/`. Two of
-the seven also carry a `grade` on their job — a per-channel multiplier that lifts a cool
-select into the same warm band as the rest of the row, measured rather than eyeballed,
-with the numbers in the encoder's own comment.
+selects replaced them; their 1856x2304 masters moved to `image-sources/unused/`.
+
+Three of the seven carry a `grade` on their job, as do five of the other photographs this
+encoder writes — a per-channel multiplier that puts every one of the twelve on one white
+balance and one white point. The rule behind the numbers, and what it deliberately does
+*not* normalise, is written out under THE GRADE in `tools/encode-images.mjs`; the short
+version is that mean(R) - mean(B) ran -17 to +37 across the set and now sits inside
++13..+25 on eleven of the twelve, while mean luminance is left exactly where each
+photographer put it. Every run of the encoder prints the band it measured.
 
 Below that split every one of those rows leads with its photograph, and that is the
 markup rather than a rule: all seven carry the picture first in source order, so the
