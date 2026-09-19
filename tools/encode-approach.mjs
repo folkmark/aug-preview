@@ -46,7 +46,7 @@ const OUT = path.join(root, 'assets/approach');
 //   93   Define the role — the desks barely touched; the copy leads the wireframe.
 //   265  Build the capabilities — BRIDGE_v1 starts, the first solid block falls into
 //        the blueprint outline.
-//   565  Co-design the applications — the AR force-chevrons come on. Measured against
+//   565  Co-design the tools — the AR force-chevrons come on. Measured against
 //        the plates rather than read from the render map, which does not cover it:
 //        frame 562 is clean and 565 carries the first marks.
 //   604  Test, learn, begin again — the first book is placed. Frame-to-frame change

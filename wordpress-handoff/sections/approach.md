@@ -76,7 +76,7 @@ The six beats and what each shows:
 | 0 — opening | 91 | *(none)* | Two bare desks. The sequence's first frame, held. |
 | 1 | 93 | **Define the role.** | The desks barely touched, the gap empty. |
 | 2 | 265 | **Build the capabilities.** | Books and blocks fall, the blueprint arch draws itself, the first solid block lands. |
-| 3 | 565 | **Co-design the applications.** | The finished arch, every block marked with a force annotation. |
+| 3 | 565 | **Co-design the tools.** | The finished arch, every block marked with a force annotation. |
 | 4 | 604 | **Test, learn, begin again.** | The first book being lowered onto the span. |
 | 5 — coda | 672 | *(beat 4's copy, held)* | Two books come to rest on the keystone. |
 

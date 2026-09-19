@@ -224,7 +224,7 @@ const JOBS = [
   { in: 'stock-photos-aug/large/shutterstock_2354739045.jpg', out: 'images/build-capabilities-m.webp', width: 800,  crop: [0, 580, 4480, 5561], grade: [1.045, 1.045, 0.961] },
 
   // Five colleagues behind a glass wall of sticky notes, adding to it from the far side, for
-  // Co-design the applications. 4144x5588, bottom-anchored on all 444px of slack, which is
+  // Co-design the tools. 4144x5588, bottom-anchored on all 444px of slack, which is
   // ceiling lighting grid and worth nothing.
   //
   // This shares its setting with Define the role two cards up, knowingly — it was picked
@@ -446,7 +446,38 @@ const JOBS = [
   { in: 'icons/cyc01_role_0001.png',         out: 'approach/cyc01_role_0001.webp',         width: 320, alpha: true },
   { in: 'icons/cyc02_capabilities_0001.png', out: 'approach/cyc02_capabilities_0001.webp', width: 320, alpha: true },
   { in: 'icons/cyc03_applications_0002.png', out: 'approach/cyc03_applications_0002.webp', width: 320, alpha: true },
-  { in: 'icons/cyc04_test_0001.png',         out: 'approach/cyc04_test_0001.webp',         width: 320, alpha: true }
+  { in: 'icons/cyc04_test_0001.png',         out: 'approach/cyc04_test_0001.webp',         width: 320, alpha: true },
+
+  // The social card — what LinkedIn, Slack, iMessage and X render when the site is shared.
+  // This is the only job in the file that composites rather than resizes, the only one that
+  // writes a PNG, and the only one whose source sits outside image-sources/. Each of those
+  // is deliberate.
+  //
+  // It replaced assets/logo/logo-light.png, which was 768x149: a strip of the PRE-KIT raster
+  // wordmark. Every platform crops a share image to about 1200x630, so a 768x149 source was
+  // letterboxed into a smear of the wrong logo — the same failure, from the same file, that
+  // the favicon note in index.html describes. Nobody sees a share card while building the
+  // site, which is why it outlived the rest of the logo work.
+  //
+  // PNG and not WebP because the scrapers are the audience, not a browser: LinkedIn in
+  // particular does not reliably render a WebP og:image, and a card that fails to render is
+  // worth more bytes than one that saves them. 1200x630 is stated in the markup too
+  // (og:image:width/height), which lets a scraper lay out the card before it has fetched it.
+  //
+  // The source reaches up out of image-sources/ into the brand kit, which no other job does.
+  // That is the lesser evil: source-material/brand-logos/ is the kit exactly as AERDF
+  // supplied it, and copying a lockup into image-sources/ to avoid one `../` would fork it —
+  // two files to keep in step, and no way to tell which is canonical. The colour horizontal
+  // lockup is the one that carries "supported by aerdf", which is the variant the client
+  // asked for by name.
+  //
+  // The canvas is #fdfcfa, the resolved value of --surface-page (--color-ecru-white-lighter),
+  // so the card matches the page it links to rather than sitting on white. `scale` is the
+  // fraction of the canvas width the lockup occupies: 0.62 leaves a wide margin on purpose,
+  // because several clients crop a card's edges and a lockup run close to the sides loses
+  // its "supported by aerdf" line first.
+  { in: '../brand-logos/PNG/AugmentED_Logo_Color_Horiz.png', out: 'logo/og-card.png',
+    card: { width: 1200, height: 630, background: '#fdfcfa', scale: 0.62 } }
 ];
 
 // Two jobs that read the same master must frame and grade it the same way. Seven of the
@@ -487,6 +518,17 @@ for (const job of runnable) {
 
   const meta = await sharp(src).metadata();
   let pipe = sharp(src);
+  // A card job does not resize a source into a box, it places a source ON a canvas — see the
+  // social-card note in the job list. Composite first, then let the rest of the loop run:
+  // `card` and `width` are mutually exclusive, so the resize below is skipped for these.
+  if (job.card) {
+    const inner = await sharp(src)
+      .resize({ width: Math.round(job.card.width * job.card.scale), kernel: 'lanczos3' })
+      .png().toBuffer();
+    pipe = sharp({
+      create: { width: job.card.width, height: job.card.height, channels: 3, background: job.card.background },
+    }).composite([{ input: inner, gravity: 'centre' }]);
+  }
   // A crop box, [left, top, width, height] in source pixels, taken before the resize.
   // This is where an original gets framed for the box it ships into, and every job that
   // carries one says above it what the box was set on. It does the work the page's own
@@ -502,7 +544,9 @@ for (const job of runnable) {
   // resolution and then averaging is not the same as averaging and then clipping, and the
   // difference lands in exactly the blown highlights this is most likely to touch.
   if (job.grade) pipe = pipe.linear(job.grade, [0, 0, 0]);
-  if (job.square) {
+  if (job.card) {
+    // already at its final size — the canvas set it
+  } else if (job.square) {
     // Never enlarge: withoutEnlargement keeps the two small headshots at their own
     // size rather than fabricating pixels.
     pipe.resize({ width: job.width, height: job.width, fit: 'cover', position: 'top', withoutEnlargement: true, kernel: 'lanczos3' });
@@ -513,9 +557,12 @@ for (const job of runnable) {
   // through whatever the webp options say, so without this a photograph that happened to
   // arrive RGBA ships a plane describing nothing — two of the seven 4/5 photographs did.
   if (!job.alpha) pipe.removeAlpha();
-  const info = await pipe
-    .webp(job.alpha ? { quality: 82, alphaQuality: 100, effort: 6 } : { quality: 80, effort: 6 })
-    .toFile(dst);
+  // Format follows the output extension. Everything the page itself loads is WebP; the one
+  // PNG is the social card, and the note on its job says why.
+  const info = await (job.out.endsWith('.png')
+    ? pipe.png({ compressionLevel: 9, palette: true })
+    : pipe.webp(job.alpha ? { quality: 82, alphaQuality: 100, effort: 6 } : { quality: 80, effort: 6 })
+  ).toFile(dst);
 
   const wrote = await sharp(dst).metadata();
   if (job.alpha && !wrote.hasAlpha) throw new Error(`${dst} lost its alpha channel`);
@@ -523,6 +570,7 @@ for (const job of runnable) {
   const src_b = fs.statSync(src).size;
   before += src_b; after += info.size;
   const soft = job.width && wrote.width < job.width ? '  (source too small — ships soft)' : '';
+  // A card job has no `width`, so the soft check above skips it; report its canvas instead.
   console.log(
     `${job.out.padEnd(34)} ${String(meta.width) + 'x' + meta.height} ${(src_b / 1024).toFixed(0)}KB` +
     ` -> ${wrote.width}x${wrote.height} ${(info.size / 1024).toFixed(0)}KB${soft}`

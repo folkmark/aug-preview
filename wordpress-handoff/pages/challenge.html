@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- exported from 50d516f3f013d0584759c7c397295c90d97efacf by tools/export-static.mjs -->
+<!-- exported from 8c305cf942540e06e881453a9588434f0630b5f2+dirty by tools/export-static.mjs -->
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,8 +8,12 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="The Challenge | AugmentED">
 <meta property="og:description" content="AI is arriving in classrooms whether schools are ready or not. The danger is that some are rushing in without asking what AI can do well, what teachers uniquely bring, or what students actually need.">
-<meta property="og:image" content="../../assets/logo/logo-light.png">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="../../assets/logo/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="augment^ed, supported by AERDF">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="../../assets/logo/og-card.png">
 <meta name="twitter:title" content="The Challenge | AugmentED">
 <meta name="twitter:description" content="AI is arriving in classrooms whether schools are ready or not. The danger is that some are rushing in without asking what AI can do well, what teachers uniquely bring, or what students actually need.">
 <!-- The square arch mark, not the wordmark. A tab icon is drawn into a square box, so
@@ -416,16 +420,31 @@
 
      2fr/1fr rather than the house 1fr/1fr, and that is forced rather than chosen. The
      content grid caps at --container-xxl, so an even split is a 600px headline column at
-     every width from 1280 up, and "Bridging frontier AI" alone measures ~750px at the h1's
-     84px. An even split would mean dropping the hero headline to h2 scale — the same size
-     as every section heading on the page. 2fr gives it 800px and it sets in two lines.
+     every width from 1280 up. An even split would mean dropping the hero headline to h2
+     scale — the same size as every section heading on the page. 2fr gives it 800px, and
+     "Bridging AI and the classroom." measures 1185px unwrapped at the h1's 84px, so it sets
+     in two lines there. Measured in Chromium against the built page.
 
-     The 1400px floor is derived from that: two lines needs ~768px, so (content - 80) x 2/3
-     >= 768 puts the content at 1232 and the viewport at ~1370. Measured, 1400 gives a 787px
-     column and 1330 wraps to three. 1366 measures two lines in a 766px column and would be
-     worth having — it is a very common laptop width — but an earlier round measured it as
-     three, the two readings have not been reconciled, and a headline that wraps to three
-     lines at 84px is a worse failure than a stacked rail. Left at 1400 until it is settled.
+     THE 1400px FLOOR IS NOW SLACK, and that is a leftover rather than a judgement. It was
+     derived when the headline still read "Bridging frontier AI and the classroom": two
+     lines needed ~768px, so (content - 80) x 2/3 >= 768 put the content at 1232 and the
+     viewport at ~1370 — measured, 1400 gave a 787px column and 1330 wrapped to three.
+     Sherry's September revision dropped "frontier" from the h1, which is a third of a line
+     shorter. Re-measured in Chromium against the built page, at the h1's 84px:
+
+         unwrapped          narrowest column that still sets two lines
+         was  1498px        752px   (matches the ~768 the old floor was derived from)
+         now  1185px        606px
+
+     By the same arithmetic 606 puts the floor near 990 rather than 1400.
+
+     THE FLOOR WAS NOT LOWERED WITH THIS EDIT. 606px is the narrowest column that holds two
+     lines, not the narrowest that holds them comfortably, and the old note already records
+     two irreconcilable readings at 1366 — so the honest gap between 990 and 1400 wants a
+     pass at several real widths, not one number divided out. A headline that wraps to three
+     lines at 84px is a worse failure than a stacked rail. 1400 stays until someone measures
+     it properly; what changed here is only that the comment stops justifying the number
+     with a string the page no longer contains.
 
      THERE IS NO LONGER A min-height ON THIS, and it is worth knowing why there was one.
      The split's copy block measured 410px against the stacked arm's 380, the extra 30px
