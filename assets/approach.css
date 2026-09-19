@@ -1,0 +1,230 @@
+/* <approach-scrub> — the styles the component's markup contract depends on.
+
+   Everything geometric lives here rather than in JS, including the one thing JS reads
+   back: --arch-variant tells the element which cut of the plate to load, so the
+   breakpoint that sizes the band is also the one that picks the file.
+
+   Design tokens are referenced with literal fallbacks, so this renders correctly with
+   the AugmentED design system loaded and still renders sensibly without it. A host that
+   wants its own palette overrides the custom properties on the element. */
+
+approach-scrub {
+  /* The section's own height is the scroll budget: how far the page scrolls while the
+     stage is pinned. svh, never dvh — progress is derived from this height, so a budget
+     that changed as a mobile URL bar retracted would snap the scrub mid-scroll. The
+     plain-vh line before it is the fallback for engines without svh.
+
+     The budget is divided among the moves in proportion to the render frames each
+     covers, so this height and the length of the encoded sequence are one setting in
+     two places: adding the opening's 76 frames to the 505 that were already here would
+     have sped the whole piece up by 12% at the old 880vh.
+
+     The figure to pace against is not px per frame, which means nothing across two
+     layouts with different viewport heights — it is how much scrolling buys a second of
+     animation. The sequence is 581 render frames at 30fps, so about 19 seconds, and
+     this height spends roughly a third of a screen of scrolling on each of them. The
+     band below is set to the same figure rather than the same height, which is why the
+     two numbers are near each other despite the layouts being nothing alike: at 600svh
+     the phone was playing the whole piece at 1.7x the desktop's speed. */
+  display: block;
+  position: relative;
+  height: 1250vh;
+  --arch-variant: "";
+  /* Where the stage pins. One number drives the sticky offset and the stage's height,
+     and the element reads it back off the stage — so a host with a taller header, or
+     none, sets this and nothing else. */
+  --arch-pin: 4.5rem;
+  --arch-page: var(--surface-page, #fdfcfa);
+  --arch-accent: var(--brand-accent, #255799);
+  --arch-rule: var(--border-hairline, rgba(2, 4, 8, 0.15));
+  box-sizing: border-box;
+}
+approach-scrub *, approach-scrub *::before, approach-scrub *::after { box-sizing: border-box; }
+
+[data-arch-stage] {
+  position: sticky;
+  top: var(--arch-pin);
+  height: calc(100vh - var(--arch-pin));
+}
+
+[data-arch-box] { position: absolute; inset: 0; overflow: hidden; }
+
+/* isolation is load-bearing: it makes the two canvases their own blending group, and
+   without it plus-lighter blends against the page and blows out to white. A host
+   ancestor with a filter, an opacity below 1, or its own mix-blend-mode creates a
+   competing stacking context and can break this — worth checking first if the plates
+   ever look wrong in a new theme. */
+[data-arch-cam] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  aspect-ratio: 2048 / 1432;
+  transform-origin: 50% 0%;
+  isolation: isolate;
+  will-change: transform;
+}
+[data-arch-layer] { position: absolute; inset: 0; width: 100%; height: 100%; display: block; will-change: opacity; }
+[data-arch-layer="1"] { opacity: 0; mix-blend-mode: plus-lighter; }
+
+/* Page-coloured, not dark: the plates are alpha over the page, so this is invisible
+   wherever the frame is empty and only hazes the artwork where it is not. Two corner
+   wedges rather than one full-width band — the copy sits in the bottom corners, and a
+   band dense enough to carry it there would fog the arch.
+
+   Two constraints from two rounds of looking, and both hold at once. The vertical
+   extent is measured: the desks' cubbies — notebooks, pencils, a phone — occupy 46-58%
+   of the stage and the copy sits entirely below them, so the wedges fade out by 60%
+   and the cubbies keep their detail. Within that ceiling the wash is denser than it
+   once was, on report rather than on a measurement failing: the contrast numbers
+   passed, but the legs and floor still read through the text as visual noise, and
+   readability is not only a ratio. The solid stop now reaches the top of the copy
+   block before the falloff begins — text on flat page colour, the plate fading in
+   above it, nothing above 60% touched.
+
+   Keep both relationships if you move the copy: dense under the text, nothing over
+   the cubbies. */
+[data-arch-scrim] {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 1;
+  background:
+    radial-gradient(ellipse 96% 112% at 0% 118%, var(--arch-page) 0%, var(--arch-page) 48%, transparent 75%),
+    radial-gradient(ellipse 96% 112% at 100% 118%, var(--arch-page) 0%, var(--arch-page) 48%, transparent 75%),
+    linear-gradient(0deg, var(--arch-page) 0%, transparent 26%);
+}
+
+/* Sat higher once, which put the top of the block over the desks' cubbies and forced a
+   scrim tall enough to wash them out. Dropped into the band of legs and floor below them:
+   there is nothing there to obscure, and the scrim above only has to reach the text. */
+[data-arch-beats] { position: absolute; left: 5%; bottom: clamp(3.5rem, 8vh, 6rem); width: min(30rem, 34vw); display: grid; }
+[data-arch-copy] { grid-area: 1/1; opacity: 0; will-change: opacity; }
+
+[data-arch-ticks] { position: absolute; right: 5%; bottom: clamp(3.5rem, 8vh, 6rem); width: min(19rem, 24vw); display: grid; gap: 0.25rem; }
+[data-arch-tick] {
+  display: flex;
+  align-items: baseline;
+  gap: 0.625rem;
+  padding: 0.75rem 0 0;
+  border: 0;
+  border-top: 1px solid var(--arch-rule);
+  /* Containing block for the fill below, which rides on this rule. */
+  position: relative;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  /* 0.62, not lower: the ink is rgb(2,4,8) over the cream page, and at the old 0.4 the
+     rendered pixels measured 2.6:1 — below the 4.5:1 floor for text this size, on the
+     only control that navigates the section. 0.62 measures ≈4.6:1 and still reads as
+     clearly quieter than the active tick's full-strength 1. */
+  opacity: 0.62;
+  transition: opacity 200ms ease-in-out;
+}
+/* Each tick's rule doubles as that step's segment of a four-part progress bar, filled
+   from --arch-fill, which the element rewrites every tick — see chrome().
+
+   This is the section's only continuously moving thing, and it exists because the rest
+   of it deliberately is not. Measured on the shipped build at 390x844: the sequence
+   advances one frame per 45px of scroll (median) and the seven beats hold a frozen
+   frame for 3486px, 35% of the section, the longest single run being 775px — nearly a
+   whole screen of thumb travel returning no pixels of change. A reader cannot tell
+   that from a page that has stopped responding, which is exactly what was reported.
+   The fill answers it: any scroll delta at all moves this bar, because it is driven by
+   p rather than by the frame index, and over that same 775px run it travels ~27px on a
+   phone. It answers "how far in" second and "is this thing alive" first.
+
+   A bar rather than a bigger number or a longer label: the eye-tracking evidence on
+   custom scroll indicators is that they mostly go unfixated (Viget/Tobii, 4 of 18
+   participants noticed one at all), so this is not asked to be read — it is asked to
+   be moving in the reader's peripheral vision while they look at the artwork. It sits
+   on the rule that was already there rather than adding furniture.
+
+   The accent at the tick's own opacity, so the hierarchy comes for free: the active
+   tick is at full strength and its bar fills live, while finished steps keep theirs at
+   0.62 and read as done-and-quiet. */
+[data-arch-tick]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 100%;
+  height: 2px;
+  background: var(--arch-accent);
+  transform: scaleX(var(--arch-fill, 0));
+  transform-origin: left center;
+}
+
+/* Guarded: a touch device has no hover to leave, so an unguarded rule sticks the
+   tapped tick at 0.8 until something else is tapped. The element writes an inline
+   opacity only on the active tick and clears it elsewhere — an inline value on every
+   tick would override this rule and hover would never fire. */
+@media (hover: hover) { [data-arch-tick]:hover { opacity: 0.8; } }
+
+/* The phone gets the same act, cut to a band. The plate is 1.43 landscape, so a
+   full-height pinned stage on a 390x844 phone would spend a third of its height on
+   artwork and the rest on nothing — a band is the honest shape, with the copy under it
+   on the page rather than over it. The sticky stage carries no viewport unit here at
+   all: it is auto-height, so a retracting URL bar cannot reflow it. */
+@media (max-width: 991px), (max-aspect-ratio: 5/4) {
+  approach-scrub { height: 1240vh; height: 1240svh; --arch-variant: "m"; }
+  [data-arch-stage] { height: auto; padding-bottom: 1.25rem; }
+  [data-arch-box] { position: relative; inset: auto; width: 100%; aspect-ratio: 1147 / 888; }
+  [data-arch-cam] { height: 100%; aspect-ratio: auto; }
+  /* The copy is on the page now, not over the artwork, so the corner wedges have
+     nothing left to carry — all that remains is softening the cut leg stubs. */
+  [data-arch-scrim] { background: linear-gradient(0deg, var(--arch-page) 0%, transparent 15%); opacity: 1; }
+  [data-arch-ticks] { position: static; width: auto; display: flex; gap: 0.375rem; padding: 1.125rem 5% 0; }
+  [data-arch-tick] { flex: 1; justify-content: center; padding: 0.75rem 0 0.875rem; min-height: 2.75rem; }
+  /* Out of the layout, not out of the accessible name. The label is the only thing
+     that says what step 02 actually IS, and display:none takes it out of the
+     accessibility tree along with the flow — every tick then announced as a button
+     called "02", on the one control that navigates the section. Absolute rather than
+     width:0 so it cannot stretch the flex row; the tick is the containing block. */
+  [data-arch-tick] > span:last-child {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  [data-arch-beats] { position: static; width: auto; padding: 1rem 5% 0; }
+  [data-arch-beats] h3 { font-size: var(--text-h4, 1.5rem); }
+}
+
+/* Only where the copy genuinely will not fit under the band: the claim carries the
+   beat and the elaboration steps aside. One source of copy, not a second mobile set —
+   taller phones still get the whole paragraph.
+
+   780, not 700: media-query height resolves against the LARGE viewport on iOS — the
+   window with the toolbar retracted — while the pinned stage is visible with the
+   toolbar showing. An iPhone 12 is 745 large / 664 small, so at 700 it kept the full
+   paragraph and then pinned a stage 9-32px taller than the box it actually had, and
+   the last copy line sat under the toolbar, unreachable because the stage is pinned.
+   780 catches every phone whose small viewport is what 700 was written to catch. */
+@media (max-width: 991px) and (max-height: 780px), (max-aspect-ratio: 5/4) and (max-height: 780px) {
+  [data-arch-beats] h3 { font-size: var(--text-h5, 1.25rem); }
+  [data-arch-more] { display: none; }
+}
+
+/* The very short phones still overflow by a line after the elaboration steps aside —
+   at 360x640 the stage measured 597px against the 568 the pinned box actually has, and
+   the last 9px of copy sat past the bottom with no way to scroll to it. What gives way
+   is breathing room, not content: the three paddings between band, ticks and copy
+   carry ~24px that a 640px screen cannot afford. */
+@media (max-width: 991px) and (max-height: 660px), (max-aspect-ratio: 5/4) and (max-height: 660px) {
+  [data-arch-stage] { padding-bottom: 0.5rem; }
+  [data-arch-ticks] { padding-top: 0.625rem; }
+  [data-arch-beats] { padding-top: 0.625rem; }
+}
+
+/* Reduced motion gets the stacked stills instead. The element still boots — it just
+   never loads a frame, because a display:none host has no offsetHeight. */
+@media (prefers-reduced-motion: reduce) {
+  approach-scrub { display: none; }
+}
