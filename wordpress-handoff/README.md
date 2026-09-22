@@ -182,6 +182,15 @@ your WordPress templates from these files.
 The files open directly from disk; their asset paths point up two levels at the
 repository's own `assets/` and `_ds/`.
 
+**The leadership bio pages are not in `pages/`**, because they are not part of the app
+and need no expanding: each is already final static HTML. Their template is the
+`bioPage()` function in `tools/build-site.mjs`, and
+[`sections/leadership.md`](sections/leadership.md) specifies them. To see one rendered,
+build and serve the site — `node tools/build-site.mjs _site && npx http-server _site -p 8000`
+— and open `http://localhost:8000/team/sherry-lachman/`. Serve it rather than opening the
+file: the build makes asset paths root-absolute, so from disk the page loads unstyled. In
+WordPress they are one custom post type with one single template.
+
 **Check the export stamp before you build from a page.** The second line of each
 file records the commit it was exported from
 (`<!-- exported from <commit> by tools/export-static.mjs -->`). The build warns

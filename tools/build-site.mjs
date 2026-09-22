@@ -319,16 +319,25 @@ ${DS_SHEETS.map((h) => `<link rel="stylesheet" href="${h}">`).join('\n')}
 `;
 }
 
-const bios = readBios();
+// A page is built only if the team page LINKS to it. Not if a card with that id exists:
+// that was the first version of this check, and it built /team/brandon-bodnar/ — he
+// still has a card, in Technology and Design Partners, but no "Read bio" link, so the
+// page would have shipped linked from nowhere while the docs said it did not exist.
+// Caught in review before it merged. The link is the real coupling, so it is the test.
+//
+// Skipping rather than building is the safe default for the other reason too. Writing a
+// bio before the card is a reasonable order to work in, but on a public site an unlinked
+// page is still a published page: a bio for someone not yet announced would go live the
+// moment it was committed. It is a warning, not a failure, so that order still works.
+const bios = readBios().filter((b) => {
+  if (home.includes(`href="team/${b.slug}/"`)) return true;
+  console.log(`::warning::source-material/bios/${b.slug}.md is not built — no "Read bio" link on the team page points at team/${b.slug}/`);
+  return false;
+});
 for (const b of bios) {
   const dir = path.join(outDir, 'team', b.slug);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, 'index.html'), absolutise(bioPage(b)));
-  // A bio nobody can reach is a warning, not a failure: writing the prose before the
-  // card exists is a reasonable order to work in, and failing the build would punish it.
-  if (!home.includes(`id="${b.slug}"`)) {
-    console.log(`::warning::source-material/bios/${b.slug}.md has no card in index.html — the page builds but nothing links to it`);
-  }
 }
 if (bios.length) console.log(`  bios: ${bios.map((b) => `team/${b.slug}/`).join(', ')}`);
 

@@ -41,11 +41,11 @@ Second paragraph.
 
 `tools/build-site.mjs` reads that directory and writes `/<slug>/` under `team/`. There is
 no Markdown parser — bold, links and lists are not rendered, they ship as literal
-characters. Keep bios to prose, or add a parser; it is about ten lines in `bioPages()`.
+characters. Keep bios to prose, or add a parser; it is about ten lines in `readBios()`.
 
-`brandon-bodnar.md` is in that directory with no page. He moved to Technology and Design
-Partners in September, and partners do not carry bios; the file stays so the text is not
-lost.
+`source-material/bios/unused/` holds bios kept but not published; the build does not read
+it. Brandon Bodnar's is there: he moved to Technology and Design Partners in September,
+and partners do not carry bios.
 
 ## 3. The card contract
 
@@ -61,10 +61,12 @@ A leadership card is an ordinary `.team-grid-3` tile plus two things:
 </div>
 ```
 
-**The `id` is the slug and the slug is the filename.** That is the whole coupling between
-a card and its page. A bio file whose slug matches no card builds a page nothing links to;
-the build prints a warning rather than failing, because writing the prose before adding
-the card is a reasonable order to work in.
+**The link is the coupling.** A bio page is built only when a card carries
+`href="team/<slug>/"`, where the slug is the bio's filename; a bio nothing links to is
+skipped with a warning rather than published. Keep the card's `id` equal to the slug as
+well — it is the deep-link target, `/team/#sherry-lachman` — but it is not what decides
+whether a page exists. It used to be, and that built an orphan page for a person who
+still had a card but no link — caught before it shipped.
 
 **The href is written relative — `team/<slug>/` — and absolutised at build time.** Do not
 "fix" it to a leading slash. Every route in this site is the same `index.html` written out
@@ -107,8 +109,8 @@ drift out of step. Follow the URL.
 5. Bump the counts in `tools/export-content.mjs` — `team.length` and the headshot count are
    hard-coded on purpose, as tripwires.
 
-Steps 1 and 3 are independent: either order builds, and the build tells you if only one
-landed.
+Step 3 can land before step 4: the bio is skipped with a warning until the link exists,
+so nothing is published early.
 
 ### Verification
 

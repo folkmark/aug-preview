@@ -15,17 +15,18 @@ First paragraph.
 Second paragraph.
 ```
 
-`<slug>` is the filename, and it must match the `id` on that person's card in
-`index.html` — the card's "Read bio" link is built from it. A file whose slug matches
-nobody on the page builds a page that nothing links to; the build warns about it rather
-than failing, because a bio written ahead of the card being added is a reasonable
-intermediate state.
+`<slug>` is the filename. **A page is built only when the team page links to it** —
+when a card in `index.html` carries `href="team/<slug>/"`. A file nothing links to is
+skipped with a warning, not published. That is deliberate: a bio written ahead of the
+person being announced should not go live the moment it is committed, and an unlinked
+page on a public site is still a published page.
 
 Blank lines separate paragraphs. There is no Markdown parser here: bold, links and lists
 are not rendered, they ship as literal characters. Keep it to prose. If a bio ever needs
-more than that, the parser is about ten lines in `bioPages()` and the design system
-already has type styles for it.
+more than that, the parser is about ten lines in `readBios()` in `tools/build-site.mjs`,
+and the design system already has type styles for it.
 
-`brandon-bodnar.md` is here and has no page. He moved to Technology and Design Partners
-in September 2026, and partners do not carry bios — keeping the file means the text is
-not lost and re-enabling it is one line if that changes.
+`unused/` holds bios that are kept but not published, and the build does not read it.
+`unused/brandon-bodnar.md` is there because he moved to Technology and Design Partners
+in September 2026 and partners do not carry bios. Keeping the file means the text is not
+lost; moving it back up a level and adding the link to his card re-publishes it.
