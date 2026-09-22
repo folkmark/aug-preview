@@ -358,16 +358,27 @@ const JOBS = [
   // leadership cards are the same ~197px tile as every other person on the page, so the
   // reason for 1264 went with them. Back to 512, like the other seventeen.
   //
-  // Sherry and Raquel keep their boxes, which were never about the size. Sherry's master
-  // is a studio portrait framed from the knees up, 3000x4500: `square: true` alone anchors
-  // to the top and takes the top 3000x3000, leaving her head in the upper third under a
-  // metre of backdrop. The box is measured to her head and shoulders. Raquel's 872 is the
-  // most her 872x1012 master holds and naming it is load-bearing — `withoutEnlargement`
-  // does not clamp a too-large target, it abandons the resize, so asking 1264 of her
-  // shipped the master untouched and NOT square, and the page's `object-fit: cover` then
-  // took over the framing at a different object-position than the encoder's. At 512 she
-  // downsamples honestly and the note is kept because the trap is one edit away.
-  { in: 'team/sherry-lachman.jpg',     out: 'team/sherry-lachman.webp',     width: 512, square: true, crop: [461, 280, 2078, 2078] },
+  // Sherry has NO crop box, and that is the second half of the same decision. She had two
+  // headshots taken: a 3000x4500 studio portrait framed from the waist up, and a 1365x2048
+  // head-and-shoulders frame on a green backdrop. The portrait shipped from September 15th
+  // and needed a measured box — `square: true` on it anchors to the top and takes the top
+  // 3000x3000, leaving her head in the upper third under a metre of backdrop — and even
+  // boxed, a square tile cut it mid-torso. She asked for the other one on the 22nd for
+  // exactly that reason, and she was right: the head-and-shoulders frame is already
+  // composed for a square, so top-anchored cover lands where a measured box would have put
+  // it and there is nothing here to tune.
+  //
+  // The portrait is not lost. It is the version of this file at efa77ea..d651d4b, and
+  // `git show d651d4b:source-material/image-sources/team/sherry-lachman.jpg` brings it
+  // back if the framing ever changes to suit it.
+  //
+  // Raquel's 872x1012 master is the one trap left in this group. Naming her real maximum
+  // is load-bearing — `withoutEnlargement` does not clamp a too-large target, it abandons
+  // the resize, so asking 1264 of her once shipped the master untouched and NOT square, at
+  // which point the page's `object-fit: cover` took over the framing from the encoder at a
+  // different object-position. At 512 she downsamples honestly; the note stays because the
+  // trap is one edit away.
+  { in: 'team/sherry-lachman.jpg',     out: 'team/sherry-lachman.webp',     width: 512, square: true },
   { in: 'team/caitlin-mills.png',      out: 'team/caitlin-mills.webp',      width: 512, square: true },
   { in: 'team/raquel-romano.png',      out: 'team/raquel-romano.webp',      width: 512, square: true },
 
