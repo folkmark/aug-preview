@@ -6,11 +6,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/sherry-lachman.webp",
-    "bio": [
-      "Sherry has dedicated her career to improving government systems for children and families as a senior policymaker in two presidential administrations, social entrepreneur, and public interest attorney.",
-      "Previously, she served as the head of social impact at OpenAI and led the division of the White House Office of Management and Budget charged with overseeing the development of education, labor, and social services policies and budgets. She founded and led Foster America, a nonprofit dedicated to reforming the U.S. child welfare system, and served as a domestic policy advisor to then-Vice President Biden in the Obama Administration.",
-      "Earlier in her career, she was a senior education counsel in the U.S. Senate and a children’s civil rights attorney at the Juvenile Law Center. Sherry holds a master’s in philosophy from the University of Cambridge, a master’s in public policy from Harvard, and a J.D. from Columbia."
-    ],
+    "bioUrl": "/team/sherry-lachman/",
     "links": []
   },
   {
@@ -20,10 +16,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/caitlin-mills.webp",
-    "bio": [
-      "Caitlin is an Associate Professor in the Educational Psychology Department at the University of Minnesota. She received her Ph.D. in Cognitive Psychology from the University of Notre Dame and completed postdoctoral training in Cognitive Neuroscience at the University of British Columbia.",
-      "Her research program centers on engagement, mind-wandering, and affect during complex learning and everyday life. She has published over 100 peer-reviewed papers and was recently awarded the Tom Trabasso Young Investigator Award from the Society for Text and Discourse. She serves on multiple editorial boards and has co-chaired several conferences including Educational Data Mining and Learning Analytics and Knowledge."
-    ],
+    "bioUrl": "/team/caitlin-mills/",
     "links": []
   },
   {
@@ -33,10 +26,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/raquel-romano.webp",
-    "bio": [
-      "Raquel is an engineering leader with experience ranging from startups to big tech to nonprofits to government. She has worked within the federal government to responsibly advance AI initiatives while minimizing risk and spent 9 years at Google as a software engineer on computer vision, accessibility, and social impact efforts.",
-      "Raquel holds a Ph.D. in Computer Science from MIT and a B.A. in Mathematics from Harvard. She is a founding member of Latinas in Computing and an advocate and mentor for people entering computing fields through nontraditional paths."
-    ],
+    "bioUrl": "/team/raquel-romano/",
     "links": [
       {
         "label": "LinkedIn",
@@ -51,25 +41,7 @@
     "affiliation": null,
     "location": null,
     "photo": null,
-    "bio": [
-      "Jenny leads educator recruitment and training for AugmentED’s R&D efforts, builds and manages cross-disciplinary teams, and establishes networks organized around common education goals.",
-      "Prior to joining AugmentED, she served as Senior Director of R&D for EdTech and Emerging Technologies at Digital Promise, where she brought together educators, technology developers, and researchers to co-design innovations with and for historically and systematically excluded learners. She helped develop and operationalize the Inclusive Innovation model, an R&D approach rooted in community that elevates the voices of those with greatest proximity to challenges and solutions.",
-      "Jenny has also held leadership positions at Discovery Education and the Network for Teaching Entrepreneurship, and began her career as a high school English and Humanities teacher."
-    ],
-    "links": []
-  },
-  {
-    "name": "Brandon Bodnar",
-    "group": "Leadership",
-    "role": "Principal Engineer",
-    "affiliation": null,
-    "location": null,
-    "photo": null,
-    "bio": [
-      "Brandon is a hands-on software engineer who turns complex technical challenges into production-ready AI/ML systems, data platforms, and secure cloud infrastructure across civic technology, enterprise, and startup environments.",
-      "Previously, he co-built a federal department’s first generative AI platform and led engineering teams delivering critical systems for immigration and humanitarian missions. He has also built feature stores and model serving pipelines to operationalize petabyte-scale data at John Deere and developed trust and safety tools to detect harmful content at Facebook.",
-      "Brandon holds a B.S. in Computer Science from Iowa State University and a J.D. from Cornell Law School. He is also a U.S. Air Force veteran who served as an Arabic linguist supporting counterterrorism operations."
-    ],
+    "bioUrl": "/team/jenny-bradbury/",
     "links": []
   },
   {
@@ -79,7 +51,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/andrew-lan.webp",
-    "bio": null,
+    "bioUrl": null,
     "links": [
       {
         "label": "Website",
@@ -94,7 +66,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/ryan-baker.webp",
-    "bio": null,
+    "bioUrl": null,
     "links": [
       {
         "label": "Website",
@@ -109,7 +81,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/angela-stewart.webp",
-    "bio": null,
+    "bioUrl": null,
     "links": [
       {
         "label": "Website",
@@ -124,7 +96,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/laura-allen.webp",
-    "bio": null,
+    "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
@@ -143,7 +115,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/blair-lehman.webp",
-    "bio": null,
+    "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
@@ -162,68 +134,8 @@
     "affiliation": null,
     "location": null,
     "photo": null,
-    "bio": null,
+    "bioUrl": null,
     "links": []
-  },
-  {
-    "name": "Sarah Zaner",
-    "group": "Technology Partners",
-    "role": "Co-founder, Bendable Labs",
-    "affiliation": null,
-    "location": null,
-    "photo": "assets/team/sarah-zaner.webp",
-    "bio": null,
-    "links": [
-      {
-        "label": "Website",
-        "url": "https://bendablelabs.com/who_we_are/sarah-zaner"
-      }
-    ]
-  },
-  {
-    "name": "Lisa Peterson",
-    "group": "Technology Partners",
-    "role": "Product Design Consultant",
-    "affiliation": null,
-    "location": null,
-    "photo": "assets/team/lisa-peterson.webp",
-    "bio": null,
-    "links": [
-      {
-        "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/lisa-peterson/"
-      }
-    ]
-  },
-  {
-    "name": "Neil Sharma",
-    "group": "Technology Partners",
-    "role": "Engineering Consultant",
-    "affiliation": null,
-    "location": null,
-    "photo": "assets/team/neil-sharma.webp",
-    "bio": null,
-    "links": [
-      {
-        "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/neilshar/"
-      }
-    ]
-  },
-  {
-    "name": "Joan Lee",
-    "group": "Technology Partners",
-    "role": "Project Manager",
-    "affiliation": null,
-    "location": null,
-    "photo": "assets/team/joan-lee.webp",
-    "bio": null,
-    "links": [
-      {
-        "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/about-joan-lee"
-      }
-    ]
   },
   {
     "name": "Alexandra Wiggins",
@@ -232,7 +144,7 @@
     "affiliation": "High Tech High Mesa",
     "location": "San Diego, CA",
     "photo": null,
-    "bio": null,
+    "bioUrl": null,
     "links": [
       {
         "label": "Website",
@@ -247,7 +159,7 @@
     "affiliation": "High Tech High International",
     "location": "San Diego, CA",
     "photo": null,
-    "bio": null,
+    "bioUrl": null,
     "links": [
       {
         "label": "Website",
@@ -262,7 +174,7 @@
     "affiliation": "Grand Rapids Public Museum High School",
     "location": "Grand Rapids, MI",
     "photo": "assets/team/christopher-hanks.webp",
-    "bio": null,
+    "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
@@ -277,7 +189,7 @@
     "affiliation": "Grand Rapids Public Museum High School",
     "location": "Grand Rapids, MI",
     "photo": null,
-    "bio": null,
+    "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
@@ -292,7 +204,7 @@
     "affiliation": "Grand Rapids Public Museum High School",
     "location": "Grand Rapids, MI",
     "photo": "assets/team/ben-hoff.webp",
-    "bio": null,
+    "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
@@ -307,7 +219,7 @@
     "affiliation": "Crosstown High School",
     "location": "Memphis, TN",
     "photo": "assets/team/nikki-wallace.webp",
-    "bio": null,
+    "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
@@ -322,7 +234,7 @@
     "affiliation": "Crosstown High School",
     "location": "Memphis, TN",
     "photo": "assets/team/danie-cowden.webp",
-    "bio": null,
+    "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
@@ -337,7 +249,7 @@
     "affiliation": "Crosstown High School",
     "location": "Memphis, TN",
     "photo": "assets/team/joshua-sloan.webp",
-    "bio": null,
+    "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
@@ -352,12 +264,82 @@
     "affiliation": "Crosstown High School",
     "location": "Memphis, TN",
     "photo": "assets/team/mohammed-al-harthy.webp",
-    "bio": null,
+    "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
         "url": "https://www.linkedin.com/in/mohammed-al-harthy/"
       }
     ]
+  },
+  {
+    "name": "Sarah Zaner",
+    "group": "Technology and Design Partners",
+    "role": "Co-founder, Bendable Labs",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/sarah-zaner.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "Website",
+        "url": "https://bendablelabs.com/who_we_are/sarah-zaner"
+      }
+    ]
+  },
+  {
+    "name": "Lisa Peterson",
+    "group": "Technology and Design Partners",
+    "role": "Product Design Consultant",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/lisa-peterson.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/lisa-peterson/"
+      }
+    ]
+  },
+  {
+    "name": "Neil Sharma",
+    "group": "Technology and Design Partners",
+    "role": "Engineering Consultant",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/neil-sharma.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/neilshar/"
+      }
+    ]
+  },
+  {
+    "name": "Joan Lee",
+    "group": "Technology and Design Partners",
+    "role": "Project Manager",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/joan-lee.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/about-joan-lee"
+      }
+    ]
+  },
+  {
+    "name": "Brandon Bodnar",
+    "group": "Technology and Design Partners",
+    "role": "Principal Engineer",
+    "affiliation": null,
+    "location": null,
+    "photo": null,
+    "bioUrl": null,
+    "links": []
   }
 ]

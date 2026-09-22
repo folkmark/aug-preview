@@ -96,7 +96,14 @@ function absolutise(html) {
   return html
     .replace(/(["'\s,(])assets\//g, `$1${basePath}assets/`)
     .replace(/(["'\s,(])_ds\//g, `$1${basePath}_ds/`)
-    .replace(/(["'])\.\/support\.js\1/g, `$1${basePath}support.js$1`);
+    .replace(/(["'])\.\/support\.js\1/g, `$1${basePath}support.js$1`)
+    // Leadership bio links, href="team/<slug>/". They have to be absolutised for the
+    // same reason the assets do, and more sharply: every route is this same file, so a
+    // relative bio link resolves against whatever route the reader is on — right from
+    // /team/, and /sherry-lachman/ from the home page. The pattern is deliberately tight
+    // (a quote, team/, one slug, a slash, the same quote) so it cannot catch the nav's
+    // own {{ hrefTeam }} or a path inside a style attribute.
+    .replace(/(["'])team\/([a-z0-9-]+)\/\1/g, `$1${basePath}team/$2/$1`);
 }
 
 function copyDir(from, to) {
@@ -115,6 +122,16 @@ fs.rmSync(outDir, { recursive: true, force: true });
 fs.mkdirSync(outDir, { recursive: true });
 
 const home = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+// The bio pages link the design system directly rather than through <helmet>, so they
+// need its stylesheet list. Read it off index.html instead of repeating it: the
+// directory name carries a hash, and a version bump that changed the hash would
+// otherwise leave the bio pages pointing at a directory that no longer exists, with
+// nothing to catch it but the eye.
+const DS_SHEETS = [...home.matchAll(/<link rel="stylesheet" href="(_ds\/[^"]+)">/g)].map((m) => m[1]);
+if (!DS_SHEETS.length) {
+  console.error('::error::no design-system stylesheets found in index.html — bio pages would ship unstyled');
+  process.exit(1);
+}
 // The root file gets the same treatment as the routes. It is the one the bug starts
 // from: land here, click any nav item, and its relative paths follow you one level down.
 fs.writeFileSync(path.join(outDir, 'index.html'), absolutise(home));
@@ -165,6 +182,155 @@ for (const [from, to] of MOVED) {
 `
   );
 }
+
+// ---------------------------------------------------------------- bio pages
+//
+// One page per file in source-material/bios/, at /team/<slug>/. These are the only
+// pages on the site that are NOT the SPA.
+//
+// Every route above is the whole of index.html written out again with a different
+// <title>; the client then picks which <main> to show. Adding leadership bios that way
+// would have meant a fifth, sixth and seventh entry in each of the four route tables
+// that must already be kept in step by hand — PAGES here, ROUTES and TITLES in
+// index.html, and the is/go/href getter triple beside them — and another entry in all
+// four every time someone joins. The bios are static prose with no behaviour, so they
+// do not need any of it.
+//
+// The pages that result are also the sturdiest on the site, which was not the goal but
+// is worth knowing. index.html loads the design system from <helmet> INSIDE <x-dc>, so
+// its styles only arrive once React, ReactDOM and Babel have been fetched from unpkg
+// and the runtime has booted; in a sandbox without that network, every route renders
+// unstyled. These link the same stylesheets directly from <head>, so a bio page is
+// correct with no JavaScript at all. That is also what makes it portable: in WordPress
+// this is one custom post type with one template, not a route in someone's router.
+//
+// There is no Markdown parser. A bio is a name, a role and paragraphs — see the
+// directory's README. Anything else ships as literal characters, which is the honest
+// failure and an easy one to spot.
+const BIO_DIR = path.join(root, 'source-material/bios');
+const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+function readBios() {
+  if (!fs.existsSync(BIO_DIR)) return [];
+  return fs.readdirSync(BIO_DIR)
+    .filter((f) => f.endsWith('.md') && f !== 'README.md')
+    .sort()
+    .map((f) => {
+      const slug = f.replace(/\.md$/, '');
+      const lines = fs.readFileSync(path.join(BIO_DIR, f), 'utf8').split('\n');
+      const name = (lines.find((l) => l.startsWith('# ')) || '').slice(2).trim();
+      const role = (lines.find((l) => l.startsWith('## ')) || '').slice(3).trim();
+      const paras = lines
+        .filter((l) => !l.startsWith('#'))
+        .join('\n')
+        .split(/\n\s*\n/)
+        .map((x) => x.trim().replace(/\s+/g, ' '))
+        .filter(Boolean);
+      return { slug, name, role, paras };
+    })
+    .filter((b) => {
+      if (b.name && b.paras.length) return true;
+      console.error(`::error::source-material/bios/${b.slug}.md has no name or no paragraphs`);
+      problems.push(`bios/${b.slug}.md is malformed`);
+      return false;
+    });
+}
+
+function bioPage(b) {
+  // The portrait is optional on purpose: a bio can land before a usable headshot does,
+  // and the page should still be worth reading. Same rule the team grid follows.
+  const photo = fs.existsSync(path.join(root, `assets/team/${b.slug}.webp`))
+    // height:auto is not decoration. The width/height ATTRIBUTES are here so the box is
+    // reserved before the image loads, but a height attribute with no CSS height beats
+    // aspect-ratio — the portrait rendered 180x512 until this was explicit. The team grid
+    // gets away without it; this page did not, so it says what it means.
+    ? `<img src="assets/team/${b.slug}.webp" alt="${esc(b.name)}" width="512" height="512" decoding="async"
+         style="width:180px;height:auto;aspect-ratio:1/1;object-fit:cover;border-radius:var(--radius-image);display:block;margin-bottom:var(--space-8)">`
+    : '';
+  // One sentence of the bio, for search results and share cards. Cut at the first
+  // sentence end rather than a character count, so it never stops mid-word.
+  const firstStop = b.paras[0].search(/\.\s/);
+  const desc = esc(firstStop > 0 ? b.paras[0].slice(0, firstStop + 1) : b.paras[0]);
+  const nav = [['challenge', 'The Challenge'], ['approach', 'Our Approach'], ['team', 'Who We Are'], ['follow', 'Follow Our Work']];
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(b.name)} | AugmentED</title>
+<meta name="description" content="${desc}">
+<meta property="og:type" content="profile">
+<meta property="og:title" content="${esc(b.name)} | AugmentED">
+<meta property="og:description" content="${desc}">
+<meta property="og:image" content="assets/logo/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="assets/logo/og-card.png">
+<link rel="icon" href="assets/logo/logo-icon.png" type="image/png" sizes="150x150">
+<link rel="apple-touch-icon" href="assets/logo/logo-icon.png">
+<meta name="theme-color" content="#fdfcfa">
+${DS_SHEETS.map((h) => `<link rel="stylesheet" href="${h}">`).join('\n')}
+<style>
+  html, body { margin: 0; background: var(--surface-page); }
+  a { color: inherit; }
+  .bio-nav a { font-size: var(--text-small); text-decoration: none; }
+  .bio-nav a:hover { text-decoration: underline; }
+  .bio-body p { font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0; text-wrap: pretty; }
+</style>
+</head>
+<body class="scheme-1">
+<header style="padding:var(--space-8) var(--page-gutter);border-bottom:var(--border-width-divider) solid var(--border-hairline)">
+  <div style="margin-inline:auto;max-width:var(--container-xxl);display:flex;align-items:center;justify-content:space-between;gap:var(--space-8);flex-wrap:wrap">
+    <a href="${basePath}" style="display:block;flex-shrink:0"><img src="assets/logo/logo-horiz.svg" alt="augment^ed, supported by AERDF" style="width:200px;display:block" width="1000" height="212" decoding="async"></a>
+    <nav class="bio-nav" style="display:flex;align-items:center;gap:var(--space-8);flex-wrap:wrap">
+      ${nav.map(([sl, label]) => `<a href="${basePath}${sl}/">${label}</a>`).join('\n      ')}
+    </nav>
+  </div>
+</header>
+
+<main style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
+  <div style="margin-inline:auto;max-width:var(--container-md)">
+    <p style="font-size:var(--text-small);margin:0 0 var(--space-8)"><a href="${basePath}team/">&larr; Who We Are</a></p>
+    ${photo}
+    <h1 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2);text-wrap:pretty">${esc(b.name)}</h1>
+    ${b.role ? `<p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0 0 var(--space-10)">${esc(b.role)}</p>` : ''}
+    <div class="bio-body" style="display:flex;flex-direction:column;gap:var(--space-6)">
+      ${b.paras.map((t) => `<p>${esc(t)}</p>`).join('\n      ')}
+    </div>
+  </div>
+</main>
+
+<footer style="padding:clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg)) var(--page-gutter) var(--space-12)">
+  <div style="margin-inline:auto;max-width:var(--container-xxl)">
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;column-gap:var(--space-12);row-gap:var(--space-12);margin-bottom:var(--space-16)">
+      <div><img src="assets/logo/logo-vert.svg" alt="augment^ed, supported by AERDF" style="width:168px;display:block;margin-bottom:var(--space-6)" width="430" height="266" decoding="async"></div>
+      <div class="bio-nav" style="display:flex;flex-direction:column;gap:var(--space-3)">
+        <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0 0 var(--space-1)">Explore</p>
+        ${nav.map(([sl, label]) => `<a href="${basePath}${sl}/">${label}</a>`).join('\n        ')}
+      </div>
+    </div>
+    <div style="height:var(--border-width-divider);width:100%;background:var(--border-hairline);margin-bottom:var(--space-6)"></div>
+    <p style="font-size:var(--text-small);margin:0">&copy; 2026 AugmentED. All rights reserved.</p>
+  </div>
+</footer>
+</body>
+</html>
+`;
+}
+
+const bios = readBios();
+for (const b of bios) {
+  const dir = path.join(outDir, 'team', b.slug);
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, 'index.html'), absolutise(bioPage(b)));
+  // A bio nobody can reach is a warning, not a failure: writing the prose before the
+  // card exists is a reasonable order to work in, and failing the build would punish it.
+  if (!home.includes(`id="${b.slug}"`)) {
+    console.log(`::warning::source-material/bios/${b.slug}.md has no card in index.html — the page builds but nothing links to it`);
+  }
+}
+if (bios.length) console.log(`  bios: ${bios.map((b) => `team/${b.slug}/`).join(', ')}`);
 
 // GitHub Pages serves 404.html from whatever URL was missed, so its references
 // have to be absolute — relative ones would resolve against the bad path — and
@@ -233,6 +399,12 @@ const heroManifest = (() => {
 
 function refsIn(html) {
   const out = new Set();
+  // The component scans below describe the SPA. The bio pages are the one thing here
+  // that is not it — static prose, no runtime, no sequences — so a missing
+  // <falling-blocks> on one of them is the correct state, not a broken scan. <x-dc> is
+  // the marker: every SPA route carries it, the bio pages never do. Keep the scans HARD
+  // for anything that does, which is the case the warnings below are written for.
+  const isSpa = html.includes('<x-dc>');
   for (const m of html.matchAll(/(?:src|href)="([^"]+)"/g)) out.add(m[1]);
   for (const m of html.matchAll(/<meta property="og:image" content="([^"]+)"/g)) out.add(m[1]);
   // The hero frames are addressed by string concatenation inside assets/hero-bridge.js,
@@ -320,7 +492,9 @@ function refsIn(html) {
   // absolutise() misses it, this scan misses it, and every page 404s on all ninety-six
   // frames with nothing here to say so.
   const fall = html.match(/<falling-blocks\b([^>]*)>/);
-  if (!fall || !fallManifest) {
+  if (!isSpa) {
+    // not an SPA page; the sequence scans do not apply
+  } else if (!fall || !fallManifest) {
     problems.push('the falling-blocks element is no longer readable — check this scan');
   } else {
     const attr = (k) => (fall[1].match(new RegExp(k + '="([^"]*)"')) || [, ''])[1];
@@ -368,7 +542,8 @@ function checkFile(rel) {
   if (!/<title>[^<]+<\/title>/.test(html)) problems.push(`${rel} has no title`);
 }
 
-const built = ['index.html', '404.html', ...PAGES.map((p) => `${p.slug}/index.html`)];
+const built = ['index.html', '404.html', ...PAGES.map((p) => `${p.slug}/index.html`),
+  ...bios.map((b) => `team/${b.slug}/index.html`)];
 built.forEach(checkFile);
 
 for (const need of ['.nojekyll', 'support.js', '_ds', 'assets']) {

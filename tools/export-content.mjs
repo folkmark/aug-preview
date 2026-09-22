@@ -78,15 +78,14 @@ const team = heads.map((m, k) => {
   // design decision (190 words is 19 unbroken lines at 1440), so the array is what
   // carries that through to whoever rebuilds this.
   const card = teamHtml.slice(m.index, end);
-  const bioBlock = card.match(/<div class="person-bio"[^>]*>([\s\S]*?)<\/div>/)?.[1];
-  const bio = bioBlock
-    ? [...bioBlock.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/g)].map((x) => decode(x[1]))
-    : null;
+  // The bio URL, not the bio text. Until September the five leadership bios were set
+  // inline in the card and this pulled their paragraphs out; they now live one per file
+  // in source-material/bios/ and build as their own pages at /team/<slug>/, so what the
+  // card carries is a link. Exporting the URL keeps the rebuild honest about where the
+  // prose is without copying it into a second place that can drift out of step.
+  const bioUrl = card.match(/<a href="([^"]*\/team\/[a-z0-9-]+\/)"[^>]*>\s*Read bio/)?.[1] ?? null;
 
   expect(role, `team: ${name} has no role line`);
-  // A bio that parsed to an empty array is worse than no bio: it means the block was
-  // found and the paragraphs were not, which is the shape a stray inline tag produces.
-  expect(!bio || bio.length > 0, `team: ${name} has a bio block with no paragraphs`);
   return {
     name,
     group: groupAt(m.index),
@@ -94,24 +93,24 @@ const team = heads.map((m, k) => {
     affiliation: muted[0] ?? null,
     location: muted[1] ?? null,
     photo,                                    // null = no usable photograph yet
-    bio,                                      // null = no bio written yet
+    bioUrl,                                   // null = no bio page for this person
     links,
   };
 });
 expect(team.length === 24, `team: expected 24 people, parsed ${team.length}`);
 expect(new Set(team.map((p) => p.group)).size >= 4, 'team: expected at least 4 groups');
 
-// Bios asserted RELATIONALLY, not against a hard-coded 5. The count of people with
-// bios is not a fixed fact about this site the way 24 people or 4 redirects are — a
-// sixth leader should be a markup change, not a build break. Counting the blocks in
-// the raw markup and matching still fails loudly on the case that matters: a bio that
-// is present in the page and did not survive the parse.
-const bioBlocks = (teamHtml.match(/<div class="person-bio"/g) ?? []).length;
-const bioParsed = team.filter((p) => p.bio).length;
+// Bio links asserted RELATIONALLY, not against a hard-coded 4. How many leaders have a
+// bio is not a fixed fact about this site the way 24 people or 4 redirects are — a fifth
+// leader should be a markup change, not a build break. Counting the "Read bio" links in
+// the raw markup and matching still fails loudly on the case that matters: a link that is
+// on the page and did not survive the parse, which is what a changed href shape does.
+const bioLinks = (teamHtml.match(/>\s*Read bio\s*</g) ?? []).length;
+const bioParsed = team.filter((p) => p.bioUrl).length;
 expect(
-  bioParsed === bioBlocks,
-  `team: ${bioBlocks} bio block(s) in the markup but ${bioParsed} parsed — ` +
-    `missing: ${team.filter((p) => !p.bio).map((p) => p.name).join(', ')}`
+  bioParsed === bioLinks,
+  `team: ${bioLinks} "Read bio" link(s) in the markup but ${bioParsed} parsed — ` +
+    'has the href shape or the link text changed?'
 );
 
 // Nothing asserted on photo until now, and the photo regex is anchored on `<img src="`.

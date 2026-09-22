@@ -349,48 +349,27 @@ const JOBS = [
   { in: 'team/danielle-ragavanis.jpg', out: 'team/danielle-ragavanis.webp', width: 512, square: true },
   { in: 'team/alondra-ramos.jpg',      out: 'team/alondra-ramos.webp',      width: 512, square: true },
 
-  // ---------------------------------------------------------------------------
-  // The three Leadership portraits are NOT tiles, and that is why they are the only
-  // headshots here at 1264 rather than 512. They fill their whole card on Who We Are:
-  // 608 CSS px at 1440, and up to about 900 in the band where the grid has fallen to
-  // one column. 512 into a 608 box is a 0.84x upscale — soft on any screen and 0.42x
-  // on a retina one, which is where this was noticed. 1264 is the width the rest of
-  // the site's full-width photography already uses, and it is 2.08x at the 608 card.
+  // The three Leadership portraits. They are tiles again.
   //
-  // Costs about 180 KB across the three, all of it on /team/ and none of it on any
-  // other route. Change the card width in index.html and this number should be
-  // revisited: the rule is 2x the widest the card ever gets.
-  // ---------------------------------------------------------------------------
-
-  // Sherry's master is a studio portrait rather than a headshot: 3000x4500, seated on a
-  // crate, framed from the knees up. `square: true` alone anchors to the top, which takes
-  // the top 3000x3000 — her head lands in the upper third of the frame with a metre of
-  // backdrop above it, the same failure the Nikki Wallace note below describes. The box is
-  // measured to her head and shoulders: 2078 px square, which puts the head at 46% of the
-  // frame, between Joan's and the headshot this replaced. 2078 down to 1264 is still a
-  // genuine downsample, so widening the card cost her nothing.
-  { in: 'team/sherry-lachman.jpg',     out: 'team/sherry-lachman.webp',     width: 1264, square: true, crop: [461, 280, 2078, 2078] },
-  // Caitlin's needs no box, unlike the one above it: the master is already a tight
-  // head-and-shoulders frame, 2560x1707, so the square cover crop lands where a measured
-  // box would have put it. Checked rather than assumed — both were rendered and compared.
-  // 1707 square is comfortably above 1264.
-  { in: 'team/caitlin-mills.png',      out: 'team/caitlin-mills.webp',      width: 1264, square: true },
-  // Raquel's is the binding constraint on how wide these cards can go. Her master is
-  // 872x1012, so the square crop tops out at 872 and `withoutEnlargement` means this job
-  // produces 872 rather than 1264 — the encoder prints its own "(source too small — ships
-  // soft)" note for it. That is 1.43x at the 608 card: sharp at 1x, visibly soft on a
-  // retina screen, and softer again in the one-column band. It is the honest outcome
-  // rather than a fabricated upscale, and a better original closes it with no code change
-  // here. Ask her for one before reaching for anything cleverer.
+  // For a week in September they were not: the Who We Are page gave each leader a
+  // full-width portrait over a long bio, the portrait rendered at 608 CSS px, and these
+  // three were the only headshots in the file at 1264 because 512 into a 608 box is an
+  // 0.84x upscale. The bios have since moved to their own pages at /team/<slug>/ and the
+  // leadership cards are the same ~197px tile as every other person on the page, so the
+  // reason for 1264 went with them. Back to 512, like the other seventeen.
   //
-  // 872 and not 1264, and that is load-bearing rather than pedantic. `withoutEnlargement`
-  // does not clamp a too-large target, it abandons the resize altogether — asking for 1264
-  // here shipped the master untouched at 872x1012, so the square crop never happened and
-  // the page's `object-fit: cover` silently took over the framing at a different
-  // object-position than the encoder's. Naming her real maximum keeps the crop where it
-  // belongs: in reviewable data here, not in a browser default. Raise this the day a
-  // bigger original arrives.
-  { in: 'team/raquel-romano.png',      out: 'team/raquel-romano.webp',      width: 872,  square: true },
+  // Sherry and Raquel keep their boxes, which were never about the size. Sherry's master
+  // is a studio portrait framed from the knees up, 3000x4500: `square: true` alone anchors
+  // to the top and takes the top 3000x3000, leaving her head in the upper third under a
+  // metre of backdrop. The box is measured to her head and shoulders. Raquel's 872 is the
+  // most her 872x1012 master holds and naming it is load-bearing — `withoutEnlargement`
+  // does not clamp a too-large target, it abandons the resize, so asking 1264 of her
+  // shipped the master untouched and NOT square, and the page's `object-fit: cover` then
+  // took over the framing at a different object-position than the encoder's. At 512 she
+  // downsamples honestly and the note is kept because the trap is one edit away.
+  { in: 'team/sherry-lachman.jpg',     out: 'team/sherry-lachman.webp',     width: 512, square: true, crop: [461, 280, 2078, 2078] },
+  { in: 'team/caitlin-mills.png',      out: 'team/caitlin-mills.webp',      width: 512, square: true },
+  { in: 'team/raquel-romano.png',      out: 'team/raquel-romano.webp',      width: 512, square: true },
 
   // The three illustrations in the outputs row on the home page. These ship as rendered:
   // the full 1200x1200 plate, scaled down and nothing else.
