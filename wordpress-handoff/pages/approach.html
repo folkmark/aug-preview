@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- exported from 8c305cf942540e06e881453a9588434f0630b5f2+dirty by tools/export-static.mjs -->
+<!-- exported from 115240c47167f6bcbf68c3e915f2883d4a997f09 by tools/export-static.mjs -->
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -67,104 +67,8 @@
   .team-grid-3 h3 { font-size: var(--text-regular) !important; line-height: 1.35 !important; }
   .team-grid-3 p { font-size: var(--text-small) !important; }
   .team-grid-3 img, .team-grid-3 > div > div:first-child { margin-bottom: var(--space-4) !important; }
-  .team-grid-3 a[aria-label], .person-row a[aria-label] { width: var(--icon-size); height: var(--icon-size); align-items: center; justify-content: center; flex: 0 0 auto; }
-  .team-grid-3 a[aria-label] > *, .person-row a[aria-label] > * { width: var(--icon-size) !important; height: var(--icon-size) !important; min-width: var(--icon-size) !important; min-height: var(--icon-size) !important; font-size: var(--icon-size) !important; line-height: var(--icon-size) !important; display: block !important; margin: 0 !important; }
-  /* THE LEADERSHIP ROWS on Who We Are — one portrait beside one long bio.
-     These five left .team-grid-2 rather than growing inside it, and the reason is
-     arithmetic rather than taste: that grid was repeat(5, minmax(0,1fr)) inside a
-     1280px --container-xxl, so a card measured 240px at 1440, 214 at 1280 and 163 at
-     992 — about 30, 26 and 19 characters a line against the ~45 floor where prose
-     stops being readable. 992 is the worst case and NOT the phone, because the
-     five-column rule switched on while the container was still wider than the
-     viewport. No amount of hiding or truncating fixes a 19-character column; only the
-     column count does. The grid also pinned every <p> inside it to --text-small
-     !important, which an inline font-size cannot beat — 13px on a phone, against
-     tokens/typography.css's own note on --text-regular that "16px is the floor at
-     which running text stays comfortable".
-
-     The card stacks and the CARDS sit side by side, not the other way round. Each card
-     is portrait over name over role over bio; the band is a grid of those cards.
-
-     The column count is not written down — it falls out of a 440px minimum track, the
-     way the partner grids below already work. 440 is set off the measure rather than
-     chosen by eye, and it was raised from 400 after measuring: 400 kept two columns
-     alive down to a 414px card, which sets 46 characters — inside the ~45 floor but
-     with nothing to spare. 440 hands that case a single 893px card instead, where the
-     bio's own --container-md cap sets a comfortable 67. The weakest measure anywhere
-     in the range goes from 46 to about 53 as a result.
-
-     Inside the 1280px band that yields two columns of 608 at 1440, two of about 460
-     around 1100, and one below roughly 944 of content. Three columns would need 384px
-     cards — about 46 characters for a 190-word bio — so auto-fit correctly never
-     picks three at this width. It is not forbidden, though: widen the band past
-     ~1450 and three appear on their own, with no rule change here.
-
-     No max-width of its own. The band spans --container-xxl exactly like the <h2>
-     above it and every partner grid below, which is the point — it used to carry a
-     --container-xl cap and that was the whole reason it looked narrower than the rest
-     of the page.
-
-     Source order is never changed. The portrait leads because it leads in every other
-     person card on this page; no CSS `order` reversal, which would need alt="" on five
-     images to stay honest to a screen reader and would fight the reveal note above. */
-  .leadership-rows {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(440px, 100%), 1fr));
-    column-gap: var(--space-16);
-    row-gap: clamp(var(--space-12), 5vw, var(--space-16));
-    /* Natural height, not stretched to the tallest card in the row. There is no card
-       background to stretch, and the ragged bottoms are honest about bios that run
-       from 95 to 190 words. */
-    align-items: start;
-  }
-  .person-row {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-8);
-    /* Each card is a deep-link target (/team/#raquel-romano), and the header is
-       sticky, so an un-margined card lands underneath it — measured at exactly
-       --header-h of overlap, i.e. the name is the part you cannot see. */
-    scroll-margin-top: calc(var(--header-h) + var(--space-8));
-  }
-  /* No rule between cards. A hairline was right when these were full-width stacked
-     rows; in a grid the adjacent sibling is the card to the RIGHT, so a border-top
-     would rule the top-right card and leave the lone fifth one with a half-width
-     line. An :nth-child fix would be wrong at some width by construction, because
-     auto-fit means the column count is not fixed. Whitespace separates instead, which
-     is what every other grid on this page already does. */
-  /* The portrait fills the card. It was capped at --container-xxs, which parked a 320px
-     square in the corner of a 608px card; nothing else here sets its width, so the
-     img's own width:100% takes the whole track.
-
-     That width is what sets the encode. tools/encode-images.mjs ships these three at
-     1264 rather than the 512 every other headshot uses, because 512 into a 608 box is
-     an 0.84x upscale — and 0.42x on a retina screen. Raquel is the exception and ships
-     at 872, the most her master holds; the note on her job says so. Change the card
-     width and that encode wants revisiting, at roughly 2x the widest the card gets. */
-  .person-id img, .person-id > div { margin-bottom: 0; }
-  /* The measure, and the only thing here that decides whether 190 words get read. The
-     card runs to 608px at 1440; --container-md caps the bio at 560 and about 67
-     characters, the middle of the comfortable band rather than its edge. The cap is on
-     the bio alone, so the name and the role line — both short — still run the full
-     card. Below 608 the card is narrower than the cap and sets the measure itself,
-     down to the 400px floor the grid enforces. */
-  .person-bio { max-width: var(--container-md); margin-top: var(--space-6); display: flex; flex-direction: column; gap: var(--space-6); }
-  /* Styleless in the markup, typed here. That is structural, not tidiness:
-     tools/export-content.mjs matches a person's role and affiliation with regexes that
-     require a literal `<p style="`, so a bio paragraph carrying any inline style is
-     silently parsed as that person's affiliation — 28 records, no error, green build.
-     Setting the type from here means a future editor cannot reintroduce that by
-     greying the bio. See wordpress-handoff/sections/leadership.md. */
-  .person-bio p { font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0; text-wrap: pretty; }
-  @media (max-width: 991px) {
-    /* A tighter cap below the design system's only type break, because the type steps
-       DOWN to 16px here while the card does not — and this is where the grid has
-       usually fallen to one column, so the card is at its widest exactly as the type
-       gets smallest. --container-md at 16px measured 79 characters at 768, past the
-       comfortable band; --container-sm brings it back to about 68. Below ~520px the
-       viewport is the constraint anyway and this stops applying (46 at 400px). */
-    .person-bio { max-width: var(--container-sm); }
-  }
+  .team-grid-3 a[aria-label] { width: var(--icon-size); height: var(--icon-size); align-items: center; justify-content: center; flex: 0 0 auto; }
+  .team-grid-3 a[aria-label] > * { width: var(--icon-size) !important; height: var(--icon-size) !important; min-width: var(--icon-size) !important; min-height: var(--icon-size) !important; font-size: var(--icon-size) !important; line-height: var(--icon-size) !important; display: block !important; margin: 0 !important; }
   /* THE PICTURE ROWS on The Challenge and Our Approach — one photograph beside one
      block of copy, the sides alternating down the page.
 
@@ -582,15 +486,17 @@
     [data-reveal] { opacity: 1 !important; transition: none !important; }
   }
 
-  /* PRINT. The page had no print rules at all, and sweep() only reveals what has
-     crossed 92% of the viewport during a scroll — so printing /team/ today drops every
-     block the reader never scrolled past, which after the Leadership rows is most of
-     the page. These bios are the most print-and-share-worthy copy on the site; a
-     funder asked for a one-pager should not get five blank bands. break-inside keeps a
-     person whole rather than splitting a portrait from the name it belongs to. */
+  /* PRINT. sweep() only reveals what has crossed 92% of the viewport during a scroll,
+     so without this, printing any page drops every block the reader never scrolled
+     past — on /team/, most of the people on it. break-inside keeps a person whole
+     rather than splitting a portrait from the name beneath it across a page break.
+
+     The leadership bios used to be the reason this existed; they now live on their own
+     pages at /team/<slug>/, which carry no [data-reveal] and print complete without
+     help. The rule is still needed for everything else. */
   @media print {
     [data-reveal] { opacity: 1 !important; transition: none !important; }
-    .person-row { break-inside: avoid; }
+    .team-grid-3 > * { break-inside: avoid; }
   }
 
   /* WHERE THERE IS NO ROOM TO OVERLAY, DO NOT OVERLAY. Below about 560px of viewport the
@@ -653,7 +559,7 @@
     /* The wordmark is a 168x33 link. min-height rather than a display change, so the
        header's own flex layout is left alone. */
     header a, footer a:has(img) { min-height: 2.75rem; }
-    .team-grid-3 a[aria-label], .person-row a[aria-label] { width: 44px !important; height: 44px !important; margin: -10px; }
+    .team-grid-3 a[aria-label] { width: 44px !important; height: 44px !important; margin: -10px; }
     /* Radios and checkboxes are wrapped in their label, so the row is what a finger
        hits — the 18px control is only the mark. Give the row the height. Not a
        direct-child selector: the design system nests the control in a wrapper. */
@@ -786,6 +692,21 @@
   </main>
   
 
+  </div>
+    
+
+    <section style="padding: clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter) clamp(var(--space-20),9vw,9rem);">
+      <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); margin-inline: auto; max-width: var(--container-lg); text-align: center;">
+        <h2 style="font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-6); text-wrap: pretty;">Join us in building better foundations for AI in education.</h2>
+        <p style="font-size: var(--text-medium); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">We co-design with educators, publish what we learn, and create infrastructure for the whole field.</p>
+        <div style="margin-top: var(--space-10); display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space-4);">
+          <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="default" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border-width: 1px; border-style: solid; border-color: var(--color-st-tropaz); border-image: initial; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-st-tropaz); color: var(--color-scheme-btn-text, var(--color-white)); padding: 0.375rem 0.75rem; font-weight: var(--font-weight-medium);">Follow our work</button></div>
+          <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="secondary" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-neutral-darkest-5); color: inherit; padding: 0.375rem 0.75rem; font-weight: var(--font-weight-medium); backdrop-filter: blur(var(--blur-glass));">Explore our approach</button></div>
+        </div>
+      </div>
+    </section>
+
+  
   
 
   
@@ -809,4 +730,4 @@
         <p style="font-size: var(--text-small); margin: 0px;">© 2026 AugmentED. All rights reserved.</p>
       </div>
     </div>
-  </footer></div></div></body></html>
+  </footer></div></body></html>

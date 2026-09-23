@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- exported from 8c305cf942540e06e881453a9588434f0630b5f2+dirty by tools/export-static.mjs -->
+<!-- exported from 115240c47167f6bcbf68c3e915f2883d4a997f09 by tools/export-static.mjs -->
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -67,104 +67,8 @@
   .team-grid-3 h3 { font-size: var(--text-regular) !important; line-height: 1.35 !important; }
   .team-grid-3 p { font-size: var(--text-small) !important; }
   .team-grid-3 img, .team-grid-3 > div > div:first-child { margin-bottom: var(--space-4) !important; }
-  .team-grid-3 a[aria-label], .person-row a[aria-label] { width: var(--icon-size); height: var(--icon-size); align-items: center; justify-content: center; flex: 0 0 auto; }
-  .team-grid-3 a[aria-label] > *, .person-row a[aria-label] > * { width: var(--icon-size) !important; height: var(--icon-size) !important; min-width: var(--icon-size) !important; min-height: var(--icon-size) !important; font-size: var(--icon-size) !important; line-height: var(--icon-size) !important; display: block !important; margin: 0 !important; }
-  /* THE LEADERSHIP ROWS on Who We Are — one portrait beside one long bio.
-     These five left .team-grid-2 rather than growing inside it, and the reason is
-     arithmetic rather than taste: that grid was repeat(5, minmax(0,1fr)) inside a
-     1280px --container-xxl, so a card measured 240px at 1440, 214 at 1280 and 163 at
-     992 — about 30, 26 and 19 characters a line against the ~45 floor where prose
-     stops being readable. 992 is the worst case and NOT the phone, because the
-     five-column rule switched on while the container was still wider than the
-     viewport. No amount of hiding or truncating fixes a 19-character column; only the
-     column count does. The grid also pinned every <p> inside it to --text-small
-     !important, which an inline font-size cannot beat — 13px on a phone, against
-     tokens/typography.css's own note on --text-regular that "16px is the floor at
-     which running text stays comfortable".
-
-     The card stacks and the CARDS sit side by side, not the other way round. Each card
-     is portrait over name over role over bio; the band is a grid of those cards.
-
-     The column count is not written down — it falls out of a 440px minimum track, the
-     way the partner grids below already work. 440 is set off the measure rather than
-     chosen by eye, and it was raised from 400 after measuring: 400 kept two columns
-     alive down to a 414px card, which sets 46 characters — inside the ~45 floor but
-     with nothing to spare. 440 hands that case a single 893px card instead, where the
-     bio's own --container-md cap sets a comfortable 67. The weakest measure anywhere
-     in the range goes from 46 to about 53 as a result.
-
-     Inside the 1280px band that yields two columns of 608 at 1440, two of about 460
-     around 1100, and one below roughly 944 of content. Three columns would need 384px
-     cards — about 46 characters for a 190-word bio — so auto-fit correctly never
-     picks three at this width. It is not forbidden, though: widen the band past
-     ~1450 and three appear on their own, with no rule change here.
-
-     No max-width of its own. The band spans --container-xxl exactly like the <h2>
-     above it and every partner grid below, which is the point — it used to carry a
-     --container-xl cap and that was the whole reason it looked narrower than the rest
-     of the page.
-
-     Source order is never changed. The portrait leads because it leads in every other
-     person card on this page; no CSS `order` reversal, which would need alt="" on five
-     images to stay honest to a screen reader and would fight the reveal note above. */
-  .leadership-rows {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(440px, 100%), 1fr));
-    column-gap: var(--space-16);
-    row-gap: clamp(var(--space-12), 5vw, var(--space-16));
-    /* Natural height, not stretched to the tallest card in the row. There is no card
-       background to stretch, and the ragged bottoms are honest about bios that run
-       from 95 to 190 words. */
-    align-items: start;
-  }
-  .person-row {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-8);
-    /* Each card is a deep-link target (/team/#raquel-romano), and the header is
-       sticky, so an un-margined card lands underneath it — measured at exactly
-       --header-h of overlap, i.e. the name is the part you cannot see. */
-    scroll-margin-top: calc(var(--header-h) + var(--space-8));
-  }
-  /* No rule between cards. A hairline was right when these were full-width stacked
-     rows; in a grid the adjacent sibling is the card to the RIGHT, so a border-top
-     would rule the top-right card and leave the lone fifth one with a half-width
-     line. An :nth-child fix would be wrong at some width by construction, because
-     auto-fit means the column count is not fixed. Whitespace separates instead, which
-     is what every other grid on this page already does. */
-  /* The portrait fills the card. It was capped at --container-xxs, which parked a 320px
-     square in the corner of a 608px card; nothing else here sets its width, so the
-     img's own width:100% takes the whole track.
-
-     That width is what sets the encode. tools/encode-images.mjs ships these three at
-     1264 rather than the 512 every other headshot uses, because 512 into a 608 box is
-     an 0.84x upscale — and 0.42x on a retina screen. Raquel is the exception and ships
-     at 872, the most her master holds; the note on her job says so. Change the card
-     width and that encode wants revisiting, at roughly 2x the widest the card gets. */
-  .person-id img, .person-id > div { margin-bottom: 0; }
-  /* The measure, and the only thing here that decides whether 190 words get read. The
-     card runs to 608px at 1440; --container-md caps the bio at 560 and about 67
-     characters, the middle of the comfortable band rather than its edge. The cap is on
-     the bio alone, so the name and the role line — both short — still run the full
-     card. Below 608 the card is narrower than the cap and sets the measure itself,
-     down to the 400px floor the grid enforces. */
-  .person-bio { max-width: var(--container-md); margin-top: var(--space-6); display: flex; flex-direction: column; gap: var(--space-6); }
-  /* Styleless in the markup, typed here. That is structural, not tidiness:
-     tools/export-content.mjs matches a person's role and affiliation with regexes that
-     require a literal `<p style="`, so a bio paragraph carrying any inline style is
-     silently parsed as that person's affiliation — 28 records, no error, green build.
-     Setting the type from here means a future editor cannot reintroduce that by
-     greying the bio. See wordpress-handoff/sections/leadership.md. */
-  .person-bio p { font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0; text-wrap: pretty; }
-  @media (max-width: 991px) {
-    /* A tighter cap below the design system's only type break, because the type steps
-       DOWN to 16px here while the card does not — and this is where the grid has
-       usually fallen to one column, so the card is at its widest exactly as the type
-       gets smallest. --container-md at 16px measured 79 characters at 768, past the
-       comfortable band; --container-sm brings it back to about 68. Below ~520px the
-       viewport is the constraint anyway and this stops applying (46 at 400px). */
-    .person-bio { max-width: var(--container-sm); }
-  }
+  .team-grid-3 a[aria-label] { width: var(--icon-size); height: var(--icon-size); align-items: center; justify-content: center; flex: 0 0 auto; }
+  .team-grid-3 a[aria-label] > * { width: var(--icon-size) !important; height: var(--icon-size) !important; min-width: var(--icon-size) !important; min-height: var(--icon-size) !important; font-size: var(--icon-size) !important; line-height: var(--icon-size) !important; display: block !important; margin: 0 !important; }
   /* THE PICTURE ROWS on The Challenge and Our Approach — one photograph beside one
      block of copy, the sides alternating down the page.
 
@@ -582,15 +486,17 @@
     [data-reveal] { opacity: 1 !important; transition: none !important; }
   }
 
-  /* PRINT. The page had no print rules at all, and sweep() only reveals what has
-     crossed 92% of the viewport during a scroll — so printing /team/ today drops every
-     block the reader never scrolled past, which after the Leadership rows is most of
-     the page. These bios are the most print-and-share-worthy copy on the site; a
-     funder asked for a one-pager should not get five blank bands. break-inside keeps a
-     person whole rather than splitting a portrait from the name it belongs to. */
+  /* PRINT. sweep() only reveals what has crossed 92% of the viewport during a scroll,
+     so without this, printing any page drops every block the reader never scrolled
+     past — on /team/, most of the people on it. break-inside keeps a person whole
+     rather than splitting a portrait from the name beneath it across a page break.
+
+     The leadership bios used to be the reason this existed; they now live on their own
+     pages at /team/<slug>/, which carry no [data-reveal] and print complete without
+     help. The rule is still needed for everything else. */
   @media print {
     [data-reveal] { opacity: 1 !important; transition: none !important; }
-    .person-row { break-inside: avoid; }
+    .team-grid-3 > * { break-inside: avoid; }
   }
 
   /* WHERE THERE IS NO ROOM TO OVERLAY, DO NOT OVERLAY. Below about 560px of viewport the
@@ -653,7 +559,7 @@
     /* The wordmark is a 168x33 link. min-height rather than a display change, so the
        header's own flex layout is left alone. */
     header a, footer a:has(img) { min-height: 2.75rem; }
-    .team-grid-3 a[aria-label], .person-row a[aria-label] { width: 44px !important; height: 44px !important; margin: -10px; }
+    .team-grid-3 a[aria-label] { width: 44px !important; height: 44px !important; margin: -10px; }
     /* Radios and checkboxes are wrapped in their label, so the row is what a finger
        hits — the 18px control is only the mark. Give the row the height. Not a
        direct-child selector: the design system nests the control in a wrapper. */
@@ -703,52 +609,35 @@
     <section style="padding: clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg)) var(--page-gutter);">
       <div style="margin-inline: auto; max-width: var(--container-xxl);">
         <h2 data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg));">Leadership</h2>
-        <div class="leadership-rows">
-          <article class="person-row" data-reveal="" id="sherry-lachman" aria-labelledby="name-sherry-lachman" style="opacity: 0; transition: opacity var(--transition-fade);">
-            <div class="person-id"><img src="../../assets/team/sherry-lachman.webp" alt="Sherry Lachman" width="1264" height="1264" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 50%; border-radius: var(--radius-image); display: block;"></div>
-            <div class="person-copy">
-              <h3 id="name-sherry-lachman" style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Sherry Lachman</h3>
-              <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-regular); margin: 0px;">Founder &amp; Executive Director</p>
-              <div class="person-bio"><p>Sherry has dedicated her career to improving government systems for children and families as a senior policymaker in two presidential administrations, social entrepreneur, and public interest attorney.</p><p>Previously, she served as the head of social impact at OpenAI and led the division of the White House Office of Management and Budget charged with overseeing the development of education, labor, and social services policies and budgets. She founded and led Foster America, a nonprofit dedicated to reforming the U.S. child welfare system, and served as a domestic policy advisor to then-Vice President Biden in the Obama Administration.</p><p>Earlier in her career, she was a senior education counsel in the U.S. Senate and a children’s civil rights attorney at the Juvenile Law Center. Sherry holds a master’s in philosophy from the University of Cambridge, a master’s in public policy from Harvard, and a J.D. from Columbia.</p></div>
+        <div class="team-grid-3" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); column-gap: var(--space-8); row-gap: var(--space-12);">
+          <div data-reveal="" id="sherry-lachman" style="opacity: 0; transition: opacity var(--transition-fade);">
+            <img src="../../assets/team/sherry-lachman.webp" alt="Sherry Lachman" width="512" height="512" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 50%; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: block;">
+            <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Sherry Lachman</h3>
+            <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0px;">Founder &amp; Executive Director</p>
+            <p style="margin: var(--space-4) 0 0;"><a href="/team/sherry-lachman/" style="font-size: var(--text-small); font-weight: var(--font-weight-semibold);">Read bio</a></p>
+          </div>
+          <div data-reveal="" id="caitlin-mills" style="opacity: 0; transition: opacity var(--transition-fade);">
+            <img src="../../assets/team/caitlin-mills.webp" alt="Caitlin Mills" width="512" height="512" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 50%; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: block;">
+            <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Caitlin Mills</h3>
+            <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0px;">Co-Founder &amp; Chief of Research and Impact</p>
+            <p style="margin: var(--space-4) 0 0;"><a href="/team/caitlin-mills/" style="font-size: var(--text-small); font-weight: var(--font-weight-semibold);">Read bio</a></p>
+          </div>
+          <div data-reveal="" id="raquel-romano" style="opacity: 0; transition: opacity var(--transition-fade);">
+            <img src="../../assets/team/raquel-romano.webp" alt="Raquel Romano" width="512" height="512" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 5%; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: block;">
+            <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Raquel Romano</h3>
+            <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0px;">Chief Technology Officer</p>
+            <div style="margin-top: var(--space-5); display: flex; align-items: center; gap: var(--space-4);">
+              <a href="https://www.linkedin.com/in/romano" target="_blank" rel="noopener" aria-label="LinkedIn" style="display: flex;"><img src="../../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: var(--icon-size); height: var(--icon-size); display: block;"></a>
             </div>
-          </article>
-          <article class="person-row" data-reveal="" id="caitlin-mills" aria-labelledby="name-caitlin-mills" style="opacity: 0; transition: opacity var(--transition-fade);">
-            <div class="person-id"><img src="../../assets/team/caitlin-mills.webp" alt="Caitlin Mills" width="1264" height="1264" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 50%; border-radius: var(--radius-image); display: block;"></div>
-            <div class="person-copy">
-              <h3 id="name-caitlin-mills" style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Caitlin Mills</h3>
-              <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-regular); margin: 0px;">Co-Founder &amp; Chief of Research and Impact</p>
-              <div class="person-bio"><p>Caitlin is an Associate Professor in the Educational Psychology Department at the University of Minnesota. She received her Ph.D. in Cognitive Psychology from the University of Notre Dame and completed postdoctoral training in Cognitive Neuroscience at the University of British Columbia.</p><p>Her research program centers on engagement, mind-wandering, and affect during complex learning and everyday life. She has published over 100 peer-reviewed papers and was recently awarded the Tom Trabasso Young Investigator Award from the Society for Text and Discourse. She serves on multiple editorial boards and has co-chaired several conferences including Educational Data Mining and Learning Analytics and Knowledge.</p></div>
-            </div>
-          </article>
-          <article class="person-row" data-reveal="" id="raquel-romano" aria-labelledby="name-raquel-romano" style="opacity: 0; transition: opacity var(--transition-fade);">
-            <div class="person-id"><img src="../../assets/team/raquel-romano.webp" alt="Raquel Romano" width="872" height="872" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 5%; border-radius: var(--radius-image); display: block;"></div>
-            <div class="person-copy">
-              <h3 id="name-raquel-romano" style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Raquel Romano</h3>
-              <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-regular); margin: 0px;">Chief Technology Officer</p>
-              <div style="margin-top: var(--space-5); display: flex; align-items: center; gap: var(--space-4);">
-                <a href="https://www.linkedin.com/in/romano" target="_blank" rel="noopener" aria-label="LinkedIn" style="display: flex;"><img src="../../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: var(--icon-size); height: var(--icon-size); display: block;"></a>
-              </div>
-              <div class="person-bio"><p>Raquel is an engineering leader with experience ranging from startups to big tech to nonprofits to government. She has worked within the federal government to responsibly advance AI initiatives while minimizing risk and spent 9 years at Google as a software engineer on computer vision, accessibility, and social impact efforts.</p><p>Raquel holds a Ph.D. in Computer Science from MIT and a B.A. in Mathematics from Harvard. She is a founding member of Latinas in Computing and an advocate and mentor for people entering computing fields through nontraditional paths.</p></div>
-            </div>
-          </article>
-          <article class="person-row" data-reveal="" id="jenny-bradbury" aria-labelledby="name-jenny-bradbury" style="opacity: 0; transition: opacity var(--transition-fade);">
-            <div class="person-id"><div style="aspect-ratio: 1 / 1; width: 100%; background: var(--color-neutral-lightest); border-radius: var(--radius-image);"></div></div>
-            <div class="person-copy">
-              <h3 id="name-jenny-bradbury" style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Jenny Bradbury</h3>
-              <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-regular); margin: 0px;">Vice President of Education Innovation and Partnerships</p>
-              <div class="person-bio"><p>Jenny leads educator recruitment and training for AugmentED’s R&amp;D efforts, builds and manages cross-disciplinary teams, and establishes networks organized around common education goals.</p><p>Prior to joining AugmentED, she served as Senior Director of R&amp;D for EdTech and Emerging Technologies at Digital Promise, where she brought together educators, technology developers, and researchers to co-design innovations with and for historically and systematically excluded learners. She helped develop and operationalize the Inclusive Innovation model, an R&amp;D approach rooted in community that elevates the voices of those with greatest proximity to challenges and solutions.</p><p>Jenny has also held leadership positions at Discovery Education and the Network for Teaching Entrepreneurship, and began her career as a high school English and Humanities teacher.</p></div>
-            </div>
-          </article>
-          <article class="person-row" data-reveal="" id="brandon-bodnar" aria-labelledby="name-brandon-bodnar" style="opacity: 0; transition: opacity var(--transition-fade);">
-            <div class="person-id"><div style="aspect-ratio: 1 / 1; width: 100%; background: var(--color-neutral-lightest); border-radius: var(--radius-image);"></div></div>
-            <div class="person-copy">
-              <h3 id="name-brandon-bodnar" style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Brandon Bodnar</h3>
-              <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-regular); margin: 0px;">Principal Engineer</p>
-              <div class="person-bio"><p>Brandon is a hands-on software engineer who turns complex technical challenges into production-ready AI/ML systems, data platforms, and secure cloud infrastructure across civic technology, enterprise, and startup environments.</p><p>Previously, he co-built a federal department’s first generative AI platform and led engineering teams delivering critical systems for immigration and humanitarian missions. He has also built feature stores and model serving pipelines to operationalize petabyte-scale data at John Deere and developed trust and safety tools to detect harmful content at Facebook.</p><p>Brandon holds a B.S. in Computer Science from Iowa State University and a J.D. from Cornell Law School. He is also a U.S. Air Force veteran who served as an Arabic linguist supporting counterterrorism operations.</p></div>
-            </div>
-          </article>
-        </div>
-      </div>
+            <p style="margin: var(--space-4) 0 0;"><a href="/team/raquel-romano/" style="font-size: var(--text-small); font-weight: var(--font-weight-semibold);">Read bio</a></p>
+          </div>
+          <div data-reveal="" id="jenny-bradbury" style="opacity: 0; transition: opacity var(--transition-fade);">
+            <div style="aspect-ratio: 1 / 1; width: 100%; background: var(--color-neutral-lightest); border-radius: var(--radius-image); margin-bottom: var(--space-6);"></div>
+            <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Jenny Bradbury</h3>
+            <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0px;">Vice President of Education Innovation and Partnerships</p>
+            <p style="margin: var(--space-4) 0 0;"><a href="/team/jenny-bradbury/" style="font-size: var(--text-small); font-weight: var(--font-weight-semibold);">Read bio</a></p>
+          </div>
+        </div></div>
     </section>
 
     <section style="padding: clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter);">
@@ -803,55 +692,6 @@
             <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0px;">PhD Candidate, University of Minnesota</p>
           </div>
         </div>
-      </div>
-    </section>
-
-    <section style="padding: clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter);">
-      <div style="margin-inline: auto; max-width: var(--container-xxl);">
-        <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); max-width: var(--container-lg); margin-bottom: clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg));">
-          <h2 style="font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0px;">Technology Partners</h2>
-        </div>
-        <div class="team-grid-3" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); column-gap: var(--space-8); row-gap: var(--space-12);">
-          <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade);">
-            <img src="../../assets/team/sarah-zaner.webp" alt="Sarah Zaner" width="512" height="512" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 50%; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: block;">
-            <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Sarah Zaner</h3>
-            <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0px;">Co-founder, Bendable Labs</p>
-            <div style="margin-top: var(--space-5); display: flex; align-items: center; gap: var(--space-4);">
-              <a href="https://bendablelabs.com/who_we_are/sarah-zaner" target="_blank" rel="noopener" aria-label="Website" style="display: flex;"><div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 24px; width: 24px; height: 24px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 24;">language</span></div></a>
-            </div>
-          </div>
-          <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade);">
-            <img src="../../assets/team/lisa-peterson.webp" alt="Lisa Peterson" width="512" height="512" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 30%; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: block;">
-            <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Lisa Peterson</h3>
-            <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0px;">Product Design Consultant</p>
-            <div style="margin-top: var(--space-5); display: flex; align-items: center; gap: var(--space-4);">
-              <a href="https://www.linkedin.com/in/lisa-peterson/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display: flex;"><img src="../../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: var(--icon-size); height: var(--icon-size); display: block;"></a>
-            </div>
-          </div>
-          <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade);">
-            <img src="../../assets/team/neil-sharma.webp" alt="Neil Sharma" width="512" height="512" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 50%; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: block;">
-            <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Neil Sharma</h3>
-            <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0px;">Engineering Consultant</p>
-            <div style="margin-top: var(--space-5); display: flex; align-items: center; gap: var(--space-4);">
-              <a href="https://www.linkedin.com/in/neilshar/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display: flex;"><img src="../../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: var(--icon-size); height: var(--icon-size); display: block;"></a>
-            </div>
-          </div>
-          <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade);">
-            <img src="../../assets/team/joan-lee.webp" alt="Joan Lee" width="512" height="512" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 4%; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: block;">
-            <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Joan Lee</h3>
-            <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0px;">Project Manager</p>
-            <div style="margin-top: var(--space-5); display: flex; align-items: center; gap: var(--space-4);">
-              <a href="https://www.linkedin.com/in/about-joan-lee" target="_blank" rel="noopener" aria-label="LinkedIn" style="display: flex;"><img src="../../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: var(--icon-size); height: var(--icon-size); display: block;"></a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section style="padding: clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter);">
-      <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); margin-inline: auto; max-width: var(--container-xxl); display: grid; grid-template-columns: repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr)); column-gap: var(--space-20); row-gap: var(--space-8); padding-top: clamp(var(--space-10),5vw,var(--space-16));">
-        <h2 style="font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0px; text-wrap: pretty;">Education Partnerships</h2>
-        <p style="font-size: var(--text-medium); line-height: var(--text-body-line-height); font-weight: var(--font-weight-light); margin: 0px; text-wrap: pretty;">We collaborated with XQ and High Tech High to identify exceptional educators for our first co-design teams. Our inaugural AugmentED Education Fellowship cohort includes teachers from Crosstown High School (Memphis, TN), Grand Rapids Public Museum High School (Grand Rapids, MI), and two High Tech High campuses in the San Diego region. We've selected these schools for their commitment to transforming the high school experience for students—the majority of whom are students of color and economically disadvantaged—by making learning meaningful and engaging, and preparing them with the critical skills they need to thrive in the age of AI.</p>
       </div>
     </section>
 
@@ -953,6 +793,54 @@
       </div>
     </section>
 
+    <section style="padding: clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter);">
+      <div style="margin-inline: auto; max-width: var(--container-xxl);">
+        <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); max-width: var(--container-lg); margin-bottom: clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg));">
+          <h2 style="font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0px;">Technology and Design Partners</h2>
+        </div>
+        <div class="team-grid-3" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); column-gap: var(--space-8); row-gap: var(--space-12);">
+          <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade);">
+            <img src="../../assets/team/sarah-zaner.webp" alt="Sarah Zaner" width="512" height="512" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 50%; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: block;">
+            <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Sarah Zaner</h3>
+            <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0px;">Co-founder, Bendable Labs</p>
+            <div style="margin-top: var(--space-5); display: flex; align-items: center; gap: var(--space-4);">
+              <a href="https://bendablelabs.com/who_we_are/sarah-zaner" target="_blank" rel="noopener" aria-label="Website" style="display: flex;"><div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 24px; width: 24px; height: 24px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 24;">language</span></div></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade);">
+            <img src="../../assets/team/lisa-peterson.webp" alt="Lisa Peterson" width="512" height="512" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 30%; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: block;">
+            <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Lisa Peterson</h3>
+            <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0px;">Product Design Consultant</p>
+            <div style="margin-top: var(--space-5); display: flex; align-items: center; gap: var(--space-4);">
+              <a href="https://www.linkedin.com/in/lisa-peterson/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display: flex;"><img src="../../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: var(--icon-size); height: var(--icon-size); display: block;"></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade);">
+            <img src="../../assets/team/neil-sharma.webp" alt="Neil Sharma" width="512" height="512" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 50%; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: block;">
+            <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Neil Sharma</h3>
+            <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0px;">Engineering Consultant</p>
+            <div style="margin-top: var(--space-5); display: flex; align-items: center; gap: var(--space-4);">
+              <a href="https://www.linkedin.com/in/neilshar/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display: flex;"><img src="../../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: var(--icon-size); height: var(--icon-size); display: block;"></a>
+            </div>
+          </div>
+          <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade);">
+            <img src="../../assets/team/joan-lee.webp" alt="Joan Lee" width="512" height="512" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 4%; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: block;">
+            <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Joan Lee</h3>
+            <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0px;">Project Manager</p>
+            <div style="margin-top: var(--space-5); display: flex; align-items: center; gap: var(--space-4);">
+              <a href="https://www.linkedin.com/in/about-joan-lee" target="_blank" rel="noopener" aria-label="LinkedIn" style="display: flex;"><img src="../../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: var(--icon-size); height: var(--icon-size); display: block;"></a>
+            </div>
+          </div>
+        </div>
+          <div data-reveal="" id="brandon-bodnar" style="opacity: 0; transition: opacity var(--transition-fade);">
+            <div style="aspect-ratio: 1 / 1; width: 100%; background: var(--color-neutral-lightest); border-radius: var(--radius-image); margin-bottom: var(--space-6);"></div>
+            <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Brandon Bodnar</h3>
+            <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0px;">Principal Engineer</p>
+          </div>
+        </div>
+      </section></main></div>
+    
+
     <section style="padding: clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter) clamp(var(--space-20),9vw,9rem);">
       <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); margin-inline: auto; max-width: var(--container-lg); text-align: center;">
         <h2 style="font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-6); text-wrap: pretty;">Join us in building better foundations for AI in education.</h2>
@@ -964,7 +852,7 @@
       </div>
     </section>
 
-  </main>
+  
   
 
   
@@ -988,4 +876,4 @@
         <p style="font-size: var(--text-small); margin: 0px;">© 2026 AugmentED. All rights reserved.</p>
       </div>
     </div>
-  </footer></div></div></body></html>
+  </footer></div></body></html>

@@ -42,7 +42,7 @@ bug, and I would like to hear about it.
 | [`sections/falling-blocks.md`](sections/falling-blocks.md) | Build specification for the falling-blocks CTA. |
 | [`sections/cycle.md`](sections/cycle.md) | Build specification for the cycle wheel. |
 | [`sections/approach.md`](sections/approach.md) | Build specification for the Approach scrub (not currently mounted). |
-| [`sections/leadership.md`](sections/leadership.md) | Build specification for the Leadership bio rows on Who We Are, and the four structural invariants the team export depends on. |
+| [`sections/leadership.md`](sections/leadership.md) | Build specification for the leadership bio pages — the only pages here that are not the single-page app — and the invariants the team export depends on. |
 | `../_ds/augmented-design-system-*/` | The design system: tokens, stylesheet, fonts. |
 | `../assets/` | Production images, animation frames, and the four components. |
 | `../docs/approach-render-map.md`, `../docs/hero-bridge-render.md` | Render notes. The authority for frame numbers and for what a re-render needs. |
@@ -181,6 +181,15 @@ your WordPress templates from these files.
 
 The files open directly from disk; their asset paths point up two levels at the
 repository's own `assets/` and `_ds/`.
+
+**The leadership bio pages are not in `pages/`**, because they are not part of the app
+and need no expanding: each is already final static HTML. Their template is the
+`bioPage()` function in `tools/build-site.mjs`, and
+[`sections/leadership.md`](sections/leadership.md) specifies them. To see one rendered,
+build and serve the site — `node tools/build-site.mjs _site && npx http-server _site -p 8000`
+— and open `http://localhost:8000/team/sherry-lachman/`. Serve it rather than opening the
+file: the build makes asset paths root-absolute, so from disk the page loads unstyled. In
+WordPress they are one custom post type with one single template.
 
 **Check the export stamp before you build from a page.** The second line of each
 file records the commit it was exported from
@@ -668,8 +677,10 @@ with the tools already on your install (JetEngine, CPT UI).
 — import from those files rather than transcribing from the pages.
 
 - **Team members** (`content/team.json`): 24 people across four grids —
-  Leadership, Research Partners, Technology Partners, Education Fellows. Fields:
-  headshot (optional — 6 of 24 currently render a placeholder), name, role,
+  Leadership, Research Partners, Education Fellows, Technology and Design Partners.
+  Fields:
+  headshot (optional — 6 of 24 currently render a placeholder), name, role, bio page
+  URL (four leaders have one),
   optional affiliation and location, optional LinkedIn and website links. Bios
   exist only in our tracking sheet — ask us. The obvious custom post type.
 - **Research items** (`content/research.json`): title, description, link.

@@ -443,6 +443,12 @@ derives the site base from the path at load, so the same build works under the
 Route slugs live in two places that must agree: `ROUTES` and `TITLES` in
 `index.html`, and `PAGES` in `tools/build-site.mjs`.
 
+The leadership bio pages at `/team/<slug>/` are not routes and appear in neither. They
+are small static pages that `tools/build-site.mjs` generates from
+`source-material/bios/`, one per bio the team page links to, and they render without
+the runtime. `source-material/bios/README.md` has the format and the rule for when a
+page is built.
+
 ## Building
 
 ```sh
