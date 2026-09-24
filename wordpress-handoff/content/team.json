@@ -30,7 +30,7 @@
     "links": [
       {
         "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/romano"
+        "url": "https://www.linkedin.com/in/romano/"
       }
     ]
   },
@@ -40,9 +40,14 @@
     "role": "Vice President of Education Innovation and Partnerships",
     "affiliation": null,
     "location": null,
-    "photo": null,
+    "photo": "assets/team/jenny-bradbury.webp",
     "bioUrl": "/team/jenny-bradbury/",
-    "links": []
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/jennysbradbury/"
+      }
+    ]
   },
   {
     "name": "Andrew Lan",
@@ -84,8 +89,12 @@
     "bioUrl": null,
     "links": [
       {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/angelastewart1/"
+      },
+      {
         "label": "Website",
-        "url": "https://www.sci.pitt.edu/people/angela-eb-stewart"
+        "url": "https://www.angelaebstewart.com/"
       }
     ]
   },
@@ -119,7 +128,7 @@
     "links": [
       {
         "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/blair-lehman-bb043b11"
+        "url": "https://www.linkedin.com/in/blair-lehman-bb043b11/"
       },
       {
         "label": "Website",
@@ -133,9 +142,63 @@
     "role": "PhD Candidate, University of Minnesota",
     "affiliation": null,
     "location": null,
+    "photo": "assets/team/isa-peczuh.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/isa-peczuh/"
+      },
+      {
+        "label": "Website",
+        "url": "https://marisapeczuh.wixsite.com/website"
+      }
+    ]
+  },
+  {
+    "name": "Aarav Kalkar",
+    "group": "Research Partners",
+    "role": null,
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/aarav-kalkar.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/aaravkalkar/"
+      }
+    ]
+  },
+  {
+    "name": "Byungyeon Yun",
+    "group": "Research Partners",
+    "role": null,
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/byungyeon-yun.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/byungyeon-yun-a6671b425/"
+      }
+    ]
+  },
+  {
+    "name": "Stephen Hutt",
+    "group": "Research Partners",
+    "role": null,
+    "affiliation": null,
+    "location": null,
     "photo": null,
     "bioUrl": null,
-    "links": []
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/stephen-j-hutt/"
+      }
+    ]
   },
   {
     "name": "Alexandra Wiggins",
@@ -328,7 +391,7 @@
     "links": [
       {
         "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/about-joan-lee"
+        "url": "https://www.linkedin.com/in/about-joan-lee/"
       }
     ]
   },
@@ -341,5 +404,39 @@
     "photo": null,
     "bioUrl": null,
     "links": []
+  },
+  {
+    "name": "Sonia Prusaitis",
+    "group": "Technology and Design Partners",
+    "role": null,
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/sonia-prusaitis.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/soniaprusaitis/"
+      }
+    ]
+  },
+  {
+    "name": "Abby Petre",
+    "group": "Technology and Design Partners",
+    "role": null,
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/abby-petre.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/csaba-abby-petre-3618708a/"
+      },
+      {
+        "label": "Website",
+        "url": "https://asingularity.github.io/"
+      }
+    ]
   }
 ]

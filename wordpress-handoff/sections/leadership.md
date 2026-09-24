@@ -105,8 +105,8 @@ handed on is wrong.
 **1. `src` must be the first attribute on a team `<img>`.** `export-content.mjs` anchors
 its headshot regex on the literal `<img src="`. React preserves author attribute order for
 everything except `style`, so writing `<img class="shot" src="…">` in `index.html` takes
-all 18 headshots to `null` — with a green build. There is an assertion for this
-(`expected 18 headshots, parsed 0`), so it fails loudly now; before it existed it did not.
+all 24 headshots to `null` — with a green build. There is an assertion for this
+(`expected 24 headshots, parsed 0`), so it fails loudly now; before it existed it did not.
 
 **2. The link text starts with exactly "Read bio".** The exporter finds each bio page by
 the `href` of the `<a>` whose text starts `Read bio`, and asserts that the number of

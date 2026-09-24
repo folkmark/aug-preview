@@ -676,11 +676,11 @@ with the tools already on your install (JetEngine, CPT UI).
 **The structured content is exported as data in [`content/`](content/README.md)**
 — import from those files rather than transcribing from the pages.
 
-- **Team members** (`content/team.json`): 24 people across four grids —
+- **Team members** (`content/team.json`): 29 people across four grids —
   Leadership, Research Partners, Education Fellows, Technology and Design Partners.
   Fields:
-  headshot (optional — 6 of 24 currently render a placeholder), name, role, bio page
-  URL (four leaders have one),
+  headshot (optional — 5 of 29 currently render a placeholder), name, role (optional —
+  5 people are on the page before their titles), bio page URL (four leaders have one),
   optional affiliation and location, optional LinkedIn and website links. Bios
   exist only in our tracking sheet — ask us. The obvious custom post type.
 - **Research items** (`content/research.json`): title, description, link.
