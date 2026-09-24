@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- exported from 115240c47167f6bcbf68c3e915f2883d4a997f09 by tools/export-static.mjs -->
+<!-- exported from 1a47a54ca237bd256c29de33f1bf40ecefc1e2af by tools/export-static.mjs -->
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,12 +8,12 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Who We Are | AugmentED">
 <meta property="og:description" content="AugmentED brings together people from classrooms, research labs, and engineering teams who share a conviction that AI should augment human teaching, not replace it.">
-<meta property="og:image" content="../../assets/logo/og-card.png">
+<meta property="og:image" content="https://augmented2.folkmark.com/assets/logo/og-card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="augment^ed, supported by AERDF">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="../../assets/logo/og-card.png">
+<meta name="twitter:image" content="https://augmented2.folkmark.com/assets/logo/og-card.png">
 <meta name="twitter:title" content="Who We Are | AugmentED">
 <meta name="twitter:description" content="AugmentED brings together people from classrooms, research labs, and engineering teams who share a conviction that AI should augment human teaching, not replace it.">
 <!-- The square arch mark, not the wordmark. A tab icon is drawn into a square box, so
@@ -69,6 +69,48 @@
   .team-grid-3 img, .team-grid-3 > div > div:first-child { margin-bottom: var(--space-4) !important; }
   .team-grid-3 a[aria-label] { width: var(--icon-size); height: var(--icon-size); align-items: center; justify-content: center; flex: 0 0 auto; }
   .team-grid-3 a[aria-label] > * { width: var(--icon-size) !important; height: var(--icon-size) !important; min-width: var(--icon-size) !important; min-height: var(--icon-size) !important; font-size: var(--icon-size) !important; line-height: var(--icon-size) !important; display: block !important; margin: 0 !important; }
+  /* THE BIO TILES. The four Leadership cards each link to a page of their own at
+     /team/<slug>/, and the whole tile is that link: photo, name, role and the space
+     between them. One link per person, one tab stop, a target the size of the card.
+
+     The link is the design system's link button, the same "Read more ›" the papers and
+     every "Learn more ›" on the site use. It was a bare semibold "Read bio" in body ink
+     with no underline and no glyph, the only text link on the site that was not the
+     system's, and at 64x16 it read as a caption rather than something to click.
+
+     THE WHOLE TILE is the link's ::after, stretched over .bio-tile, which is why the tile
+     is position:relative and the button is not (it sets no position of its own; give it
+     one and the overlay shrinks back to the words). This is the stretched-link pattern,
+     not an <a> wrapped round the card. A wrapped card makes a screen reader read the
+     entire card as the link's name, and would put the photo, the name and "Read bio"
+     all in one link. The cost is that text under the overlay cannot be selected.
+     Raquel's LinkedIn icon is lifted above it, or the overlay would swallow the click.
+
+     THE NAME IN THE LINK is a .visually-hidden span, so a screen reader hears "Read bio
+     of Sherry Lachman" instead of four identical "Read bio"s. Not an aria-label: the
+     rules just above style every .team-grid-3 a[aria-label] as a 24px icon box (44px on
+     a coarse pointer), and an aria-label here would shrink the link into one.
+
+     margin-top:auto on .bio-cta pins every "Read bio" to the bottom of its tile, and so
+     to one line across the row. Before, it followed its role line and any icon row, and
+     sat at 320, 320, 340 and 344px down the four tiles.
+
+     Hover follows the design system's two rules: links dim to 70% (the global a:hover
+     already covers the whole tile, since the overlay belongs to the link) and hover goes
+     darker, never lighter, so the photo or its placeholder darkens a little. The focus
+     ring is ours. The system has none and says to add one in --brand-accent; it is drawn
+     on the overlay, so keyboard focus outlines the whole tile. */
+  .visually-hidden { position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+  .bio-tile { position: relative; display: flex; flex-direction: column; }
+  .bio-tile .bio-cta { margin: auto 0 0; padding-top: var(--space-2); }
+  .bio-tile [data-variant="link"] { padding-inline: 0 !important; }
+  .bio-tile [data-variant="link"]::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius-image); }
+  .bio-tile [data-variant="link"]:focus-visible { outline: none; }
+  .bio-tile [data-variant="link"]:focus-visible::after { outline: 2px solid var(--brand-accent); outline-offset: 6px; }
+  .bio-tile [data-variant="link"] .ds-icon { font-size: 1.25em !important; width: 1em !important; height: 1em !important; }
+  .bio-tile a[aria-label] { position: relative; z-index: 1; }
+  .bio-tile > :first-child { transition: filter var(--transition-fast); }
+  @media (hover: hover) { .bio-tile:has([data-variant="link"]:hover) > :first-child { filter: brightness(0.92); } }
   /* THE PICTURE ROWS on The Challenge and Our Approach — one photograph beside one
      block of copy, the sides alternating down the page.
 
@@ -610,32 +652,32 @@
       <div style="margin-inline: auto; max-width: var(--container-xxl);">
         <h2 data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg));">Leadership</h2>
         <div class="team-grid-3" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); column-gap: var(--space-8); row-gap: var(--space-12);">
-          <div data-reveal="" id="sherry-lachman" style="opacity: 0; transition: opacity var(--transition-fade);">
+          <div class="bio-tile" data-reveal="" id="sherry-lachman" style="opacity: 0; transition: opacity var(--transition-fade);">
             <img src="../../assets/team/sherry-lachman.webp" alt="Sherry Lachman" width="512" height="512" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 50%; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: block;">
             <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Sherry Lachman</h3>
             <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0px;">Founder &amp; Executive Director</p>
-            <p style="margin: var(--space-4) 0 0;"><a href="/team/sherry-lachman/" style="font-size: var(--text-small); font-weight: var(--font-weight-semibold);">Read bio</a></p>
+            <p class="bio-cta"><div class="sc-host-x" style="display: contents;"><a data-slot="button" data-variant="link" href="/team/sherry-lachman/" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background: none; color: var(--color-scheme-text, var(--text-body)); padding: 0.375rem 0.75rem;">Read bio<span class="visually-hidden"> of Sherry Lachman</span><div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 20px; width: 20px; height: 20px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 20;">chevron_right</span></div></a></div></p>
           </div>
-          <div data-reveal="" id="caitlin-mills" style="opacity: 0; transition: opacity var(--transition-fade);">
+          <div class="bio-tile" data-reveal="" id="caitlin-mills" style="opacity: 0; transition: opacity var(--transition-fade);">
             <img src="../../assets/team/caitlin-mills.webp" alt="Caitlin Mills" width="512" height="512" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 50%; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: block;">
             <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Caitlin Mills</h3>
             <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0px;">Co-Founder &amp; Chief of Research and Impact</p>
-            <p style="margin: var(--space-4) 0 0;"><a href="/team/caitlin-mills/" style="font-size: var(--text-small); font-weight: var(--font-weight-semibold);">Read bio</a></p>
+            <p class="bio-cta"><div class="sc-host-x" style="display: contents;"><a data-slot="button" data-variant="link" href="/team/caitlin-mills/" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background: none; color: var(--color-scheme-text, var(--text-body)); padding: 0.375rem 0.75rem;">Read bio<span class="visually-hidden"> of Caitlin Mills</span><div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 20px; width: 20px; height: 20px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 20;">chevron_right</span></div></a></div></p>
           </div>
-          <div data-reveal="" id="raquel-romano" style="opacity: 0; transition: opacity var(--transition-fade);">
+          <div class="bio-tile" data-reveal="" id="raquel-romano" style="opacity: 0; transition: opacity var(--transition-fade);">
             <img src="../../assets/team/raquel-romano.webp" alt="Raquel Romano" width="512" height="512" decoding="async" loading="lazy" style="aspect-ratio: 1 / 1; width: 100%; object-fit: cover; object-position: 50% 5%; border-radius: var(--radius-image); margin-bottom: var(--space-6); display: block;">
             <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Raquel Romano</h3>
             <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0px;">Chief Technology Officer</p>
             <div style="margin-top: var(--space-5); display: flex; align-items: center; gap: var(--space-4);">
               <a href="https://www.linkedin.com/in/romano" target="_blank" rel="noopener" aria-label="LinkedIn" style="display: flex;"><img src="../../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: var(--icon-size); height: var(--icon-size); display: block;"></a>
             </div>
-            <p style="margin: var(--space-4) 0 0;"><a href="/team/raquel-romano/" style="font-size: var(--text-small); font-weight: var(--font-weight-semibold);">Read bio</a></p>
+            <p class="bio-cta"><div class="sc-host-x" style="display: contents;"><a data-slot="button" data-variant="link" href="/team/raquel-romano/" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background: none; color: var(--color-scheme-text, var(--text-body)); padding: 0.375rem 0.75rem;">Read bio<span class="visually-hidden"> of Raquel Romano</span><div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 20px; width: 20px; height: 20px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 20;">chevron_right</span></div></a></div></p>
           </div>
-          <div data-reveal="" id="jenny-bradbury" style="opacity: 0; transition: opacity var(--transition-fade);">
+          <div class="bio-tile" data-reveal="" id="jenny-bradbury" style="opacity: 0; transition: opacity var(--transition-fade);">
             <div style="aspect-ratio: 1 / 1; width: 100%; background: var(--color-neutral-lightest); border-radius: var(--radius-image); margin-bottom: var(--space-6);"></div>
             <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Jenny Bradbury</h3>
             <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0px;">Vice President of Education Innovation and Partnerships</p>
-            <p style="margin: var(--space-4) 0 0;"><a href="/team/jenny-bradbury/" style="font-size: var(--text-small); font-weight: var(--font-weight-semibold);">Read bio</a></p>
+            <p class="bio-cta"><div class="sc-host-x" style="display: contents;"><a data-slot="button" data-variant="link" href="/team/jenny-bradbury/" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background: none; color: var(--color-scheme-text, var(--text-body)); padding: 0.375rem 0.75rem;">Read bio<span class="visually-hidden"> of Jenny Bradbury</span><div class="sc-host-x" style="display: contents;"><span class="ds-icon " aria-hidden="true" style="font-size: 20px; width: 20px; height: 20px; color: inherit; flex-shrink: 0; font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 400, &quot;GRAD&quot; 0, &quot;opsz&quot; 20;">chevron_right</span></div></a></div></p>
           </div>
         </div></div>
     </section>
@@ -831,15 +873,14 @@
               <a href="https://www.linkedin.com/in/about-joan-lee" target="_blank" rel="noopener" aria-label="LinkedIn" style="display: flex;"><img src="../../assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async" loading="lazy" style="width: var(--icon-size); height: var(--icon-size); display: block;"></a>
             </div>
           </div>
-        </div>
           <div data-reveal="" id="brandon-bodnar" style="opacity: 0; transition: opacity var(--transition-fade);">
             <div style="aspect-ratio: 1 / 1; width: 100%; background: var(--color-neutral-lightest); border-radius: var(--radius-image); margin-bottom: var(--space-6);"></div>
             <h3 style="font-size: var(--text-h5); line-height: var(--text-h5-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2);">Brandon Bodnar</h3>
             <p style="font-weight: var(--font-weight-semibold); font-size: var(--text-small); margin: 0px;">Principal Engineer</p>
           </div>
         </div>
-      </section></main></div>
-    
+      </div>
+    </section>
 
     <section style="padding: clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter) clamp(var(--space-20),9vw,9rem);">
       <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); margin-inline: auto; max-width: var(--container-lg); text-align: center;">
@@ -852,7 +893,7 @@
       </div>
     </section>
 
-  
+  </main>
   
 
   
@@ -876,4 +917,4 @@
         <p style="font-size: var(--text-small); margin: 0px;">© 2026 AugmentED. All rights reserved.</p>
       </div>
     </div>
-  </footer></div></body></html>
+  </footer></div></div></body></html>
