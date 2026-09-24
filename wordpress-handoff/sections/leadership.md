@@ -107,7 +107,7 @@ photo, the name and the empty space all open the bio.
 Every headshot on the page — all four groups, not only Leadership — is a finished
 512 × 512 WebP: the person cut out of their photograph, framed by one rule for everybody
 (the face 46% of the tile's height, the eyes 38% down, centred across), their shoulders
-fading into the background, and the whole composited in a navy duotone (`#0b1a2d` to white)
+running off the tile's bottom and sides, and the whole composited in a navy duotone (`#0b1a2d` to white)
 onto `#e9eef4`, which is `--color-st-tropaz-lightest`. **Place them as they are:**
 `aspect-ratio: 1 / 1`, `object-fit: cover` at the default centre, no filter, nothing
 behind them. A person without a photo gets an empty square in the same `#e9eef4`, so an
@@ -115,7 +115,10 @@ empty tile and a photographed one sit on one colour.
 
 Do not re-crop them — no Media Library "crop to square", no theme `object-position`. The
 framing is what makes 24 photographs from 24 photographers read as one team, and it is
-already done. They are 5–25 KB each.
+already done. They are 5–25 KB each. Seven of the photographs stop short of where the
+framing wants them, and those fade out where the photo ends (clearly for Ryan Baker,
+Andrew Lan, Byungyeon Yun and Sonia Prusaitis); that is baked into the file, not an
+effect to reproduce, and it goes away when a looser original replaces one.
 
 They are made in two steps, and the split is on purpose. `tools/cutout-headshots.py`
 does the slow part once — a matting model, face and eye detection, the framing — and
