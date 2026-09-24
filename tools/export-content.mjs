@@ -64,19 +64,17 @@ const team = heads.map((m, k) => {
   const links = [...after.matchAll(/<a href="(https?:[^"]+)"[^>]*aria-label="(LinkedIn|Website)"/g)]
     .map((x) => ({ label: x[2], url: x[1] }));
 
-  // The bio link, read from the UNCAPPED card slice rather than from
-  // `after`. `after` stops at 2500 characters and the longest bio closes past that
-  // (measured: Brandon Bodnar at ~2600 from his own <h3>), so reading it from there
-  // returns null with no error and a green build. `end` — the next <h3> — is the real
-  // bound and is already computed above.
+  // The bio link, read from the UNCAPPED card slice rather than from `after`. The link
+  // is the last thing in its card, after the role, any muted lines and the icon row, so
+  // it is the part of a card most likely to fall past `after`'s 2500-character cap. It
+  // does not today — measured on this export, "Read bio" sits 904 to 1847 characters
+  // after its <h3>, the far end being a Fellow's card — but when the bios were still set
+  // inline it did, silently: null, no error, a green build. `end` — the next <h3> — is
+  // the real bound and is already computed above.
   //
   // Do NOT widen `after` to reach it. That 2500 is what stops one person's role, muted
   // lines and links bleeding into the next; widening it enlarges the blast radius for
-  // all 24 to solve a problem this slice solves for free.
-  //
-  // Paragraphs, not one string: the bios are authored in 2-3 parts and the break is a
-  // design decision (190 words is 19 unbroken lines at 1440), so the array is what
-  // carries that through to whoever rebuilds this.
+  // everyone to solve a problem this slice solves for free.
   const card = teamHtml.slice(m.index, end);
   // The bio URL, not the bio text. Until September the five leadership bios were set
   // inline in the card and this pulled their paragraphs out; they now live one per file

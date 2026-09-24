@@ -56,7 +56,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/andrew-lan.webp",
-    "bioUrl": null,
+    "bioUrl": "/team/andrew-lan/",
     "links": [
       {
         "label": "Website",
@@ -71,7 +71,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/ryan-baker.webp",
-    "bioUrl": null,
+    "bioUrl": "/team/ryan-baker/",
     "links": [
       {
         "label": "Website",
@@ -86,7 +86,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/angela-stewart.webp",
-    "bioUrl": null,
+    "bioUrl": "/team/angela-stewart/",
     "links": [
       {
         "label": "LinkedIn",
@@ -105,7 +105,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/laura-allen.webp",
-    "bioUrl": null,
+    "bioUrl": "/team/laura-allen/",
     "links": [
       {
         "label": "LinkedIn",
@@ -124,7 +124,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/blair-lehman.webp",
-    "bioUrl": null,
+    "bioUrl": "/team/blair-lehman/",
     "links": [
       {
         "label": "LinkedIn",
@@ -143,7 +143,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/isa-peczuh.webp",
-    "bioUrl": null,
+    "bioUrl": "/team/isa-peczuh/",
     "links": [
       {
         "label": "LinkedIn",
@@ -207,7 +207,7 @@
     "affiliation": "High Tech High Mesa",
     "location": "San Diego, CA",
     "photo": null,
-    "bioUrl": null,
+    "bioUrl": "/team/alexandra-wiggins/",
     "links": [
       {
         "label": "Website",
@@ -222,7 +222,7 @@
     "affiliation": "High Tech High International",
     "location": "San Diego, CA",
     "photo": null,
-    "bioUrl": null,
+    "bioUrl": "/team/chris-mutter/",
     "links": [
       {
         "label": "Website",
@@ -282,7 +282,7 @@
     "affiliation": "Crosstown High School",
     "location": "Memphis, TN",
     "photo": "assets/team/nikki-wallace.webp",
-    "bioUrl": null,
+    "bioUrl": "/team/nikki-wallace/",
     "links": [
       {
         "label": "LinkedIn",
@@ -297,7 +297,7 @@
     "affiliation": "Crosstown High School",
     "location": "Memphis, TN",
     "photo": "assets/team/danie-cowden.webp",
-    "bioUrl": null,
+    "bioUrl": "/team/danie-cowden/",
     "links": [
       {
         "label": "LinkedIn",
@@ -312,7 +312,7 @@
     "affiliation": "Crosstown High School",
     "location": "Memphis, TN",
     "photo": "assets/team/joshua-sloan.webp",
-    "bioUrl": null,
+    "bioUrl": "/team/joshua-sloan/",
     "links": [
       {
         "label": "LinkedIn",
@@ -327,7 +327,7 @@
     "affiliation": "Crosstown High School",
     "location": "Memphis, TN",
     "photo": "assets/team/mohammed-al-harthy.webp",
-    "bioUrl": null,
+    "bioUrl": "/team/mohammed-al-harthy/",
     "links": [
       {
         "label": "LinkedIn",
@@ -342,7 +342,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/sarah-zaner.webp",
-    "bioUrl": null,
+    "bioUrl": "/team/sarah-zaner/",
     "links": [
       {
         "label": "Website",
@@ -357,7 +357,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/lisa-peterson.webp",
-    "bioUrl": null,
+    "bioUrl": "/team/lisa-peterson/",
     "links": [
       {
         "label": "LinkedIn",
@@ -372,7 +372,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/neil-sharma.webp",
-    "bioUrl": null,
+    "bioUrl": "/team/neil-sharma/",
     "links": [
       {
         "label": "LinkedIn",
@@ -402,7 +402,7 @@
     "affiliation": null,
     "location": null,
     "photo": null,
-    "bioUrl": null,
+    "bioUrl": "/team/brandon-bodnar/",
     "links": []
   },
   {
