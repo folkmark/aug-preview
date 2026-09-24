@@ -94,7 +94,7 @@ nav's own links.
 | Hover | Link to 70% opacity (the site's `a:hover`); the photo or placeholder to `brightness(.92)` | The design system's two hover rules: links dim, and hover goes darker, never lighter. |
 | Keyboard focus | 2px `--brand-accent` outline on the overlay, 6px offset | The design system has no focus ring and says to add one in that colour. Drawn on the overlay, it outlines the whole tile. |
 
-Measured at 1440: tile 197x364, link 99x39, four links on one line; clicks on the
+Measured at 1440: tile 197x363, link 94x38, four links on one line; clicks on the
 photo, the name and the empty space all open the bio.
 
 ## 4. Two invariants you must not break
