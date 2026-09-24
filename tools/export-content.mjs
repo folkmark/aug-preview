@@ -89,7 +89,6 @@ const team = heads.map((m, k) => {
   // href inside the tag. The relational count below is what catches a shape this misses.
   const bioUrl = card.match(/<a\b[^>]*?\shref="([^"]*\/team\/[a-z0-9-]+\/)"[^>]*>\s*Read bio/)?.[1] ?? null;
 
-  expect(role, `team: ${name} has no role line`);
   return {
     name,
     group: groupAt(m.index),
@@ -101,7 +100,23 @@ const team = heads.map((m, k) => {
     links,
   };
 });
-expect(team.length === 24, `team: expected 24 people, parsed ${team.length}`);
+expect(team.length === 29, `team: expected 29 people, parsed ${team.length}`);
+
+// A role line is no longer on every card. In September five people were added from the
+// website info form (Aarav Kalkar, Byungyeon Yun, Stephen Hutt, Sonia Prusaitis, Abby
+// Petre) before anyone had given their titles, and the client chose to show them without.
+// Their records carry `role: null` until the titles arrive.
+//
+// Not simply dropped, though: every card used to be asserted to have one, and that check is
+// what would catch the role <p> changing shape and every role in the export silently going
+// to null. So the number without one is pinned, the same way the people and headshot counts
+// are, and filling in a title means changing this 5 on purpose.
+const roleless = team.filter((p) => !p.role).map((p) => p.name);
+expect(
+  roleless.length === 5,
+  `team: expected 5 people without a role line, parsed ${roleless.length} (${roleless.join(', ')}) — ` +
+    'has the role <p> changed shape?'
+);
 expect(new Set(team.map((p) => p.group)).size >= 4, 'team: expected at least 4 groups');
 
 // Bio links asserted RELATIONALLY, not against a hard-coded 4. How many leaders have a
@@ -122,8 +137,8 @@ expect(
 // `<img class="..." src="...">` in index.html takes every headshot to null with a green
 // build and hands the rebuild a photo-less team. This is the cheapest possible guard.
 expect(
-  team.filter((p) => p.photo).length === 18,
-  `team: expected 18 headshots, parsed ${team.filter((p) => p.photo).length} — ` +
+  team.filter((p) => p.photo).length === 24,
+  `team: expected 24 headshots, parsed ${team.filter((p) => p.photo).length} — ` +
     'has src stopped being the first attribute on a team <img>?'
 );
 

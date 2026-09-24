@@ -356,7 +356,7 @@ const JOBS = [
   // three were the only headshots in the file at 1264 because 512 into a 608 box is an
   // 0.84x upscale. The bios have since moved to their own pages at /team/<slug>/ and the
   // leadership cards are the same ~197px tile as every other person on the page, so the
-  // reason for 1264 went with them. Back to 512, like the other seventeen.
+  // reason for 1264 went with them. Back to 512, like every other headshot.
   //
   // Sherry has NO crop box, and that is the second half of the same decision. She had two
   // headshots taken: a 3000x4500 studio portrait framed from the waist up, and a 1365x2048
@@ -381,6 +381,30 @@ const JOBS = [
   { in: 'team/sherry-lachman.jpg',     out: 'team/sherry-lachman.webp',     width: 512, square: true },
   { in: 'team/caitlin-mills.png',      out: 'team/caitlin-mills.webp',      width: 512, square: true },
   { in: 'team/raquel-romano.png',      out: 'team/raquel-romano.webp',      width: 512, square: true },
+
+  // From the "AugmentED Website Info" form, whose uploads land in a "Headshot (File
+  // responses)" Drive folder: Jenny (Leadership, 7 Aug) and Isa (Research, 2 Aug), who
+  // were placeholders until now, and four people new to the page: Aarav (22 Sep) and
+  // Byungyeon (28 Jul) in Research, Sonia (30 Jul) and Abby (30 Jul, filed by the form as
+  // "csaba petre") in Technology and Design. Each is the upload exactly as submitted.
+  //
+  // The form was checked against every master already here, byte for byte, before any of
+  // it was used. Joan's, Lisa's and Raquel's uploads are the files above. Angela's is the
+  // same photograph as hers, cropped to 888x1088, so the 1000x1407 stays. Blair's is
+  // 200x200 and Laura's 21.5 KB, both smaller than what the page already has. Stephen
+  // Hutt's is 7.7 MB and could not be fetched through the Drive connector at all, and
+  // Tom Keefe's is a 237x222 screenshot; neither is here.
+  //
+  // Byungyeon (413x531) and Abby (421x505) are asked for their own short side, not 512,
+  // and that is Raquel's trap from the note above: `withoutEnlargement` abandons a resize
+  // it cannot make without enlarging, so 512 would ship both uncropped and not square.
+  // At their own width the square is a crop with no scaling at all.
+  { in: 'team/jenny-bradbury.jpg',     out: 'team/jenny-bradbury.webp',     width: 512, square: true },
+  { in: 'team/isa-peczuh.jpg',         out: 'team/isa-peczuh.webp',         width: 512, square: true },
+  { in: 'team/aarav-kalkar.jpg',       out: 'team/aarav-kalkar.webp',       width: 512, square: true },
+  { in: 'team/byungyeon-yun.jpg',      out: 'team/byungyeon-yun.webp',      width: 413, square: true },
+  { in: 'team/sonia-prusaitis.jpg',    out: 'team/sonia-prusaitis.webp',    width: 512, square: true },
+  { in: 'team/abby-petre.png',         out: 'team/abby-petre.webp',         width: 421, square: true },
 
   // The three illustrations in the outputs row on the home page. These ship as rendered:
   // the full 1200x1200 plate, scaled down and nothing else.
