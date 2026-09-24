@@ -215,6 +215,11 @@ for (const p of PAGES) {
       n.removeAttribute('disabled');
     });
     doc.querySelectorAll('[data-cycle] [data-hub], [data-cycle] [data-hub-line]').forEach((h) => { h.style.opacity = '0'; });
+    // The headshots' colour layers. team-colour.js inserts them the first time a pointer
+    // crosses a team grid, never on load, so this export should never meet one — but if
+    // it does, it is session state, not markup, and it would also sit in the card
+    // export-content.mjs reads each person's photo out of.
+    doc.querySelectorAll('[data-team-colour]').forEach((n) => n.remove());
     const rootEl = doc.querySelector('#dc-root');
     const body = doc.querySelector('body');
     if (rootEl && body) { while (rootEl.firstChild) body.appendChild(rootEl.firstChild); rootEl.remove(); }

@@ -280,9 +280,10 @@ produce everything (see [Regenerating the artifacts](#regenerating-the-artifacts
 | `assets/approach/ap*.webp` + `manifest.json` | Approach sequence: 122 frames × 2 cuts. 6.25 MB full, 4.05 MB crop. | Not currently mounted. Filenames are load-bearing. |
 | `assets/approach/cyc0*.webp` | The four cycle-wheel node icons, 320 px square with alpha. | Used by the home page wheel. Not part of the sequence; the manifest does not track them. |
 | `assets/cycle-wheel.js` / `.css` | The `<cycle-wheel>` component. | See [The cycle wheel](#the-cycle-wheel-cycle-wheel). |
+| `assets/team-colour.js` / `.css` | The headshots' colour bloom on Who We Are. Not an element: it finds the team cards from the document and lays each photo's colour twin over it on hover. | Mouse and trackpad only; phones never fetch the twins. See [Headshots](sections/leadership.md#headshots) for what it needs of the markup. |
 | `assets/approach.js` / `.css` | The `<approach-scrub>` component. | See [The Approach scrub](#the-approach-scrub-approach-scrub). |
 | `assets/images/`, `assets/icons/`, `assets/logo/` | Photography, marks. | Plain images. The seven portrait photos ship in two widths picked by `srcset`. |
-| `assets/team/` | Headshots, 512 × 512, finished: each person cut out, framed identically (same face height, same eye line) and composited in a navy duotone onto `#e9eef4`. | Use as-is — no CSS filter, no `object-position`, nothing behind them. A person without a photo gets an empty square in the same `#e9eef4` (`--color-st-tropaz-lightest`). See [Headshots](sections/leadership.md#headshots). |
+| `assets/team/`, `assets/team/colour/` | Headshots, 512 × 512, finished: each person cut out, framed identically (same face height, same eye line) and composited in a navy duotone onto `#e9eef4`. `colour/` holds the same 24 in their own colour, which the hover reveals. | Use as-is — no CSS filter, no `object-position`, nothing behind them. A person without a photo gets an empty square in the same `#e9eef4` (`--color-st-tropaz-lightest`). See [Headshots](sections/leadership.md#headshots). |
 | `assets/illustrations/{brain,blocks,laptop}.webp` | The three home-page illustrations, 810 × 810 with alpha. | See the note below. |
 
 **The illustrations are framed plates; do not crop them.** Each carries its own
@@ -682,9 +683,9 @@ with the tools already on your install (JetEngine, CPT UI).
   Fields:
   headshot (optional — 5 of 29 currently render a placeholder square in the headshots'
   own `#e9eef4`), name, role (optional —
-  5 people are on the page before their titles), bio page URL (four leaders have one),
-  optional affiliation and location, optional LinkedIn and website links. Bios
-  exist only in our tracking sheet — ask us. The obvious custom post type.
+  5 people are on the page before their titles), bio page URL (20 of 29 have one; the
+  prose is in `source-material/bios/`), optional affiliation and location, optional
+  LinkedIn and website links. The obvious custom post type.
 - **Research items** (`content/research.json`): title, description, link.
 - **Cycle wheel steps** (`content/cycle.json`): four steps, each a number, a
   title, a body paragraph, and an icon. Editable copy, fixed count of four — the
@@ -832,5 +833,5 @@ repository and print the restore path they need if you run them without it.
 | `node tools/encode-falling-blocks.mjs` | Re-encodes the CTA frames and manifest. Tiers: `WIDTHS` in the script. |
 | `node tools/encode-approach.mjs` | Re-encodes the Approach frames and manifest. Sequence: `OPEN` / `BEATS` / `STRIDE` in the script. |
 | `python3 tools/cutout-headshots.py [--only=<slug>]` | Cuts a headshot out of its photo and frames it; writes `source-material/image-sources/team-cutout/`. Needs a 973 MB model that is not committed — the script's header says where to get it. Only for a new or replaced photo. |
-| `node tools/encode-images.mjs` | Re-encodes photography and headshots from committed sources, including the headshots' duotone. |
+| `node tools/encode-images.mjs` | Re-encodes photography and headshots from committed sources, including the headshots' duotone and their colour twins. |
 | `node tools/build-site.mjs _site` | Builds the static site for comparison while rebuilding. |

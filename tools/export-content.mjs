@@ -64,7 +64,7 @@ const team = heads.map((m, k) => {
   const links = [...after.matchAll(/<a href="(https?:[^"]+)"[^>]*aria-label="(LinkedIn|Website)"/g)]
     .map((x) => ({ label: x[2], url: x[1] }));
 
-  // The bio, on Leadership only, read from the UNCAPPED card slice rather than from
+  // The bio link, read from the UNCAPPED card slice rather than from
   // `after`. `after` stops at 2500 characters and the longest bio closes past that
   // (measured: Brandon Bodnar at ~2600 from his own <h3>), so reading it from there
   // returns null with no error and a green build. `end` — the next <h3> — is the real

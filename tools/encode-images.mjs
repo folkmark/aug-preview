@@ -317,6 +317,12 @@ const JOBS = [
   // colour treatment, so changing the look — another ink, another page colour, back to
   // colour — is an edit to DUOTONE and a re-run of this file.
   //
+  // Each of these also writes a colour twin, team/colour/<slug>.webp: the same cut-out in
+  // its own colour on the same background, which the page reveals under the cursor (THE
+  // COLOUR BLOOM in index.html). The twins are not listed here. They are derived from
+  // these jobs just after the list, so adding a person adds both, and nobody can give one
+  // a crop or a framing the other lacks.
+  //
   // The photographs in team/ are still the masters, and a better original is now the one
   // thing that improves a tile. Where they came from:
   //
@@ -498,6 +504,14 @@ const JOBS = [
     card: { width: 1200, height: 630, background: '#fdfcfa', scale: 0.62 } }
 ];
 
+// The headshots' colour twins — see THE HEADSHOTS in the list above. Same cut-out, same
+// size, same background, and the duotone pass's own compositing with the luma mapping left
+// out. tools/build-site.mjs fails the build if a pictured person is missing one, because
+// the page builds these URLs in script and the build's reference check never sees them.
+for (const j of JOBS.filter((j) => j.duotone)) {
+  JOBS.push({ in: j.in, out: j.out.replace(/^team\//, 'team/colour/'), width: j.width, square: true, flatten: j.duotone.background });
+}
+
 // Two jobs that read the same master must frame and grade it the same way. Seven of the
 // photographs ship in two tiers and three of those carry a grade, and a crop or a grade
 // that differs between the 800 and the 1264 is a jump in framing or colour the moment
@@ -554,15 +568,27 @@ for (const job of runnable) {
   // encoded space too, as a browser would composite it. It runs at the cut-out's full 768
   // and the resize below takes the finished, opaque tile down to 512, so there is no alpha
   // left for the resize to get wrong.
-  if (job.duotone) {
+  //
+  // A flatten job is the same pass without the luma mapping: the cut-out's own colour over
+  // the background. It is here rather than sharp's .flatten() on purpose. The colour twin
+  // of each headshot has to meet its duotone exactly — THE COLOUR BLOOM in index.html
+  // wipes one into the other — so both come out of the same arithmetic, and wherever the
+  // matte is empty the two composites hold exactly the same background. After WebP each
+  // rounds its own way; measured over all 24, the shipped pairs differ there by 0.05 of a
+  // level on average, invisible under a moving mask.
+  if (job.duotone || job.flatten) {
     const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
-    const [ink, paper, ground] = [job.duotone.ink, job.duotone.paper, job.duotone.background].map(hex);
+    const tone = job.duotone && [job.duotone.ink, job.duotone.paper].map(hex);
+    const ground = hex(job.duotone ? job.duotone.background : job.flatten);
     const { data, info } = await sharp(src).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
     const tile = Buffer.alloc(info.width * info.height * 3);
     for (let i = 0, o = 0; i < data.length; i += 4, o += 3) {
       const y = (0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2]) / 255;
       const a = data[i + 3] / 255;
-      for (let c = 0; c < 3; c++) tile[o + c] = Math.round((ink[c] + (paper[c] - ink[c]) * y) * a + ground[c] * (1 - a));
+      for (let c = 0; c < 3; c++) {
+        const fg = tone ? tone[0][c] + (tone[1][c] - tone[0][c]) * y : data[i + c];
+        tile[o + c] = Math.round(fg * a + ground[c] * (1 - a));
+      }
     }
     pipe = sharp(tile, { raw: { width: info.width, height: info.height, channels: 3 } });
   }
