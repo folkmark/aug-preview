@@ -132,6 +132,64 @@ if (!DS_SHEETS.length) {
   console.error('::error::no design-system stylesheets found in index.html — bio pages would ship unstyled');
   process.exit(1);
 }
+
+// THE MARKUP'S SHAPE. Every screen is hand-written HTML inside <x-dc>, parsed by the
+// browser before the runtime sees it, and a browser does not reject a misplaced tag: it
+// repairs it, silently, into something that renders. PR #51 shipped two such repairs on
+// the team page and nothing else here noticed either one.
+//
+//   A card outside its grid. Brandon Bodnar's card went in after the Technology and
+//   Design Partners grid's closing </div>, so it sat in the section's container
+//   instead. The placeholder is aspect-ratio 1/1 at width 100%, so his card measured
+//   1280x1378 at a 1440 viewport, against 197 wide for every other card on the page.
+//
+//   A </div> that closes nothing. The same edit left one over. With no open <div> inside
+//   <main>, the parser walks up the stack to the nearest one outside it and closes
+//   everything on the way, <main> included, so the closing "Join us" section rendered
+//   outside <main> and outside the team page's <sc-if> guard.
+//
+// Both are checked here against the source, per screen, before anything is written.
+// The walk counts <div> only. It is the one element the screens nest deeply by hand,
+// and the one both failures were made of. The grid test is specific to Who We Are: every
+// <h3> there names a person, and a person's card must be a direct child of .team-grid-3.
+// Comments are blanked rather than removed, so line numbers still point into index.html.
+function markupShape(html) {
+  const errs = [];
+  const src = html.replace(/<!--[\s\S]*?-->/g, (c) => c.replace(/[^\n]/g, ' '));
+  const lineOf = (i) => src.slice(0, i).split('\n').length;
+  for (const screen of src.matchAll(/<main data-screen-label="([^"]+)">([\s\S]*?)<\/main>/g)) {
+    const [, label, body] = screen;
+    const base = screen.index + screen[0].indexOf(body);
+    const stack = [];
+    for (const t of body.matchAll(/<(\/?)(div|h3)\b([^>]*)>/g)) {
+      const at = base + t.index;
+      if (t[2] === 'h3') {
+        if (t[1] || label !== 'Who We Are') continue;
+        const grid = stack[stack.length - 2];
+        if (!grid || !/\bclass="[^"]*\bteam-grid-3\b/.test(grid.attrs)) {
+          const name = body.slice(t.index).match(/<h3[^>]*>([^<]*)/)[1].trim();
+          errs.push(`${label}: the card for ${name} (index.html:${lineOf(at)}) is not a direct child of a .team-grid-3 grid`);
+        }
+      } else if (!t[1]) {
+        stack.push({ attrs: t[3], line: lineOf(at) });
+      } else if (!stack.pop()) {
+        errs.push(`${label}: the </div> at index.html:${lineOf(at)} closes nothing inside <main>, so the browser will close <main> itself`);
+      }
+    }
+    if (stack.length) errs.push(`${label}: ${stack.length} <div> never closed, the first at index.html:${stack[0].line}`);
+  }
+  return errs;
+}
+const shape = markupShape(home);
+if (shape.length) {
+  for (const e of shape) console.error(`::error::${e}`);
+  process.exit(1);
+}
+
+// Declared here rather than with the checks under "verify" below, because readBios()
+// pushes into it and runs first. Declared there, a malformed bio threw a ReferenceError
+// from inside the filter instead of reaching the ::error:: line written for it.
+const problems = [];
 // The root file gets the same treatment as the routes. It is the one the bug starts
 // from: land here, click any nav item, and its relative paths follow you one level down.
 fs.writeFileSync(path.join(outDir, 'index.html'), absolutise(home));
@@ -353,8 +411,6 @@ fs.writeFileSync(path.join(outDir, '404.html'), notFound);
 fs.writeFileSync(path.join(outDir, '.nojekyll'), '');
 
 // ---------------------------------------------------------------- verify
-
-const problems = [];
 
 // The falling-block frames are addressed by string concatenation inside
 // assets/falling-blocks.js, from a base and a frame count the page carries as
