@@ -83,7 +83,11 @@ const team = heads.map((m, k) => {
   // in source-material/bios/ and build as their own pages at /team/<slug>/, so what the
   // card carries is a link. Exporting the URL keeps the rebuild honest about where the
   // prose is without copying it into a second place that can drift out of step.
-  const bioUrl = card.match(/<a href="([^"]*\/team\/[a-z0-9-]+\/)"[^>]*>\s*Read bio/)?.[1] ?? null;
+  //
+  // href is NOT the first attribute. The link is the design system's link button, which
+  // renders data-slot and data-variant ahead of it, so the pattern allows anything before
+  // href inside the tag. The relational count below is what catches a shape this misses.
+  const bioUrl = card.match(/<a\b[^>]*?\shref="([^"]*\/team\/[a-z0-9-]+\/)"[^>]*>\s*Read bio/)?.[1] ?? null;
 
   expect(role, `team: ${name} has no role line`);
   return {
