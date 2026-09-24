@@ -7,8 +7,10 @@
 // The originals were dropped in as received: PNGs of soft-shaded 3D renders, 24-bit for
 // the photography, 48-bit for the three illustration plates and 32-bit for the four cycle
 // plates beside them, and headshots ranging from a 300-DPI print export down to a 190px
-// thumbnail. Every target below is set from the box the image actually occupies, at
-// roughly three device pixels per CSS pixel, which is what a phone
+// thumbnail. The headshots are not read from those directly: tools/cutout-headshots.py
+// cuts each person out and frames them first, and the jobs here read its output — see
+// THE HEADSHOTS in the job list. Every target below is set from the box the image
+// actually occupies, at roughly three device pixels per CSS pixel, which is what a phone
 // at DPR 3 can resolve and no more. The approach frames have their own encoder,
 // tools/encode-approach.mjs.
 
@@ -34,6 +36,13 @@ const sharp = await import('sharp').then((m) => m.default).catch(() => {
   console.error('sharp is not installed. Run:\n\n  npm i --no-save sharp\n');
   process.exit(1);
 });
+
+// The headshots' look — see THE HEADSHOTS in the job list. Ink is
+// --color-st-tropaz-darkest and the background --color-st-tropaz-lightest, resolved,
+// because an image cannot read a custom property: if either token moves, move these with
+// it. The placeholder squares for people without a photo use the same lightest tint in
+// index.html, so an empty tile and a photographed one sit on one colour.
+const DUOTONE = { ink: '#0b1a2d', paper: '#ffffff', background: '#e9eef4' };
 
 // width: the target in real pixels. The comment on each is the box it renders into.
 const JOBS = [
@@ -282,111 +291,111 @@ const JOBS = [
   { in: 'schools/crosstown-workshop.jpg',      out: 'images/crosstown-workshop.webp',      width: 1080, crop: [0, 300, 5712, 3808], grade: [1.013, 1.013, 0.943],
     bandExempt: 'mixed lighting; a cap of 8 keeps the sky blue' },
 
-  // Headshots in a square cell: 165 CSS px on a phone, ~200 on desktop.
+  // THE HEADSHOTS: everyone pictured on Who We Are, in a square tile — 165 CSS px on a
+  // phone, ~200 on desktop, so 512 is about 2.6x the desktop tile.
   //
-  // Most of these come from the "Website Bio tracking" sheet, where each person's photo is
-  // embedded in a Headshots column. Eight do not, under one rule: where the subject's own
-  // institution still publishes the file the sheet's copy was resized from, the institution
-  // wins. Angela is 1000x1407 on her own page against a
-  // 680x600 Drupal derivative in the sheet, Laura 1200x1800 against 300x450, Sarah
-  // 2617x2500 against a 1024x978 re-export, and the four Crosstown fellows below are
-  // 2048-2500 against 400-800. Check both before adding anyone new — a photo that has been
-  // pasted through a spreadsheet has usually lost a generation, and the fellows' entries
-  // in that sheet were mostly LinkedIn renditions, which top out around 400-450px square.
-  { in: 'team/joan-lee.jpg',           out: 'team/joan-lee.webp',           width: 512, square: true },
-  { in: 'team/angela-stewart.jpg',     out: 'team/angela-stewart.webp',     width: 512, square: true },
-  { in: 'team/laura-allen.jpeg',       out: 'team/laura-allen.webp',        width: 512, square: true },
-  { in: 'team/blair-lehman.jpeg',      out: 'team/blair-lehman.webp',       width: 512, square: true },
-  { in: 'team/sarah-zaner.png',        out: 'team/sarah-zaner.webp',        width: 512, square: true },
-  { in: 'team/lisa-peterson.png',      out: 'team/lisa-peterson.webp',      width: 512, square: true },
-  { in: 'team/neil-sharma.jpg',        out: 'team/neil-sharma.webp',        width: 512, square: true },
-  { in: 'team/christopher-hanks.jpg',  out: 'team/christopher-hanks.webp',  width: 512, square: true },
-  { in: 'team/ben-hoff.jpg',           out: 'team/ben-hoff.webp',           width: 512, square: true },
+  // These jobs do not read the photographs. They read team-cutout/, which
+  // tools/cutout-headshots.py writes from the photographs in team/: each person lifted off
+  // their background by a matting model and framed by one rule for all of them — every
+  // face the same height, every eye line at the same height, the same soft fade at the
+  // shoulders. That file explains the framing and is where it changes; the cut-outs it
+  // writes are 768 square, so the square resize here is a plain downsample with nothing to
+  // crop, and the withoutEnlargement trap described at the resize never comes up.
+  //
+  // What is left for this file is the look, which is DUOTONE above: every pixel's luma
+  // mapped from the ink at black to the paper at white, then laid on the background by the
+  // cut-out's own matte. Before it, the tile showed 24 photographs by 24 photographers —
+  // bookshelves, a mountainside, studio grey, a blurred school interior, lit warm and cold
+  // — and no crop or white point makes that read as one team. The Crosstown fellows were
+  // once swapped for masters from a single shoot for exactly that reason (see below); the
+  // duotone makes the same argument for everybody at once. It was chosen off full-page
+  // renders of the Who We Are page, against black-and-white on the same blue and on warm
+  // paper, and against colour cut-outs on warm paper, soft blue and neutral grey.
+  //
+  // It lives here rather than in the cut-out tool because the tool needs a 973 MB model and
+  // about 40 s a photograph, and this needs sharp and a few seconds. The cut-outs carry no
+  // colour treatment, so changing the look — another ink, another page colour, back to
+  // colour — is an edit to DUOTONE and a re-run of this file.
+  //
+  // The photographs in team/ are still the masters, and a better original is now the one
+  // thing that improves a tile. Where they came from:
+  //
+  // Most are from the "Website Bio tracking" sheet, where each person's photo is embedded
+  // in a Headshots column. Eight are not, under one rule: where the subject's own
+  // institution still publishes the file the sheet's copy was resized from, the
+  // institution wins. Angela is 1000x1407 on her own page against a 680x600 Drupal
+  // derivative in the sheet, Laura 1200x1800 against 300x450, Sarah 2617x2500 against a
+  // 1024x978 re-export, and the four Crosstown fellows below are 2048-2500 against 400-800.
+  // Check both before adding anyone new — a photo that has been pasted through a
+  // spreadsheet has usually lost a generation, and the fellows' entries in that sheet were
+  // mostly LinkedIn renditions, which top out around 400-450px square.
+  { in: 'team-cutout/joan-lee.webp',           out: 'team/joan-lee.webp',           width: 512, square: true, duotone: DUOTONE },
+  { in: 'team-cutout/angela-stewart.webp',     out: 'team/angela-stewart.webp',     width: 512, square: true, duotone: DUOTONE },
+  { in: 'team-cutout/laura-allen.webp',        out: 'team/laura-allen.webp',        width: 512, square: true, duotone: DUOTONE },
+  { in: 'team-cutout/blair-lehman.webp',       out: 'team/blair-lehman.webp',       width: 512, square: true, duotone: DUOTONE },
+  { in: 'team-cutout/sarah-zaner.webp',        out: 'team/sarah-zaner.webp',        width: 512, square: true, duotone: DUOTONE },
+  { in: 'team-cutout/lisa-peterson.webp',      out: 'team/lisa-peterson.webp',      width: 512, square: true, duotone: DUOTONE },
+  { in: 'team-cutout/neil-sharma.webp',        out: 'team/neil-sharma.webp',        width: 512, square: true, duotone: DUOTONE },
+  { in: 'team-cutout/christopher-hanks.webp',  out: 'team/christopher-hanks.webp',  width: 512, square: true, duotone: DUOTONE },
+  { in: 'team-cutout/ben-hoff.webp',           out: 'team/ben-hoff.webp',           width: 512, square: true, duotone: DUOTONE },
 
   // The four Crosstown High fellows, all four from one shoot on the school's own staff
   // page (crosstownhigh.org/leadership, served through its Squarespace CDN at
-  // ?format=2500w). They were replaced together in September 2026 and that is the point:
-  // one photographer, one blurred-interior background, one lighting setup, so the
-  // Crosstown group reads as a set rather than as four unrelated photographs. It is the
-  // same argument as the grade on the photography further up, arrived at by swapping
-  // masters rather than by multiplying channels.
-  //
-  // Three of the four were also genuine resolution rescues — Nikki Wallace 380px
-  // effective, Danie Cowden 400, Mohammed Al Harthy 450, all now 2048-2500 — so two of
-  // them left the under-resolution group below and the third lost a crop box. Only
-  // Joshua Sloan was already adequate at 800x800; he is here for the set.
-  //
-  // None needs a crop box. Rendered through this encoder's exact square framing
-  // (fit: 'cover', position: 'top') and looked at: all four put the face in the upper
-  // middle with the shoulders in, at the same scale. Check that again if a master is
-  // ever replaced singly — it holds because they were framed by one photographer, not
-  // because top-anchoring is reliable in general. Sherry Lachman's job below is what
-  // happens when it is not.
-  { in: 'team/nikki-wallace.jpg',      out: 'team/nikki-wallace.webp',      width: 512, square: true },
-  { in: 'team/danie-cowden.jpg',       out: 'team/danie-cowden.webp',       width: 512, square: true },
-  { in: 'team/joshua-sloan.jpg',       out: 'team/joshua-sloan.webp',       width: 512, square: true },
-  { in: 'team/mohammed-al-harthy.jpg', out: 'team/mohammed-al-harthy.webp', width: 512, square: true },
+  // ?format=2500w). They were replaced together in September 2026 so that the group would
+  // read as a set — one photographer, one background, one lighting setup — which is the
+  // argument the duotone above now makes for everyone. Three were also genuine resolution
+  // rescues: Nikki Wallace 380px effective, Danie Cowden 400, Mohammed Al Harthy 450, all
+  // now 2048-2500. Joshua Sloan was already adequate at 800x800 and is here for the set.
+  { in: 'team-cutout/nikki-wallace.webp',      out: 'team/nikki-wallace.webp',      width: 512, square: true, duotone: DUOTONE },
+  { in: 'team-cutout/danie-cowden.webp',       out: 'team/danie-cowden.webp',       width: 512, square: true, duotone: DUOTONE },
+  { in: 'team-cutout/joshua-sloan.webp',       out: 'team/joshua-sloan.webp',       width: 512, square: true, duotone: DUOTONE },
+  { in: 'team-cutout/mohammed-al-harthy.webp', out: 'team/mohammed-al-harthy.webp', width: 512, square: true, duotone: DUOTONE },
 
-  // Under-resolution at source; upscaling would only invent detail, so these ship at
-  // their native size and stay soft until someone supplies better originals. Two have
-  // left this group — Blair Lehman at 200x200, when the sheet supplied an 800x800, and
-  // Mohammed Al Harthy at 450 with Danie Cowden at 400, when the Crosstown shoot above
-  // replaced both. What is left here is no longer about the fellows: Andrew Lan and Ryan
-  // Baker are research partners whose only public portrait is small. The two jobs after
-  // them are in this stretch of the file for a different reason — see their own note.
+  // Under-resolution at source. Andrew Lan and Ryan Baker are research partners whose only
+  // public portrait is small — 203x203 and 190x213 — and the shared framing enlarges them
+  // 2.0x and 1.7x to put their faces at everyone else's height. That is the price of one
+  // scale for everybody, and it is paid here rather than by shrinking their faces: these
+  // are the two soft tiles, and stay so until someone supplies better originals. (Abby's
+  // and Neil's are enlarged too, 1.31x and 1.24x, which does not show at tile size.) Ryan's
+  // photo also stops at his hairline, and it is the only one whose top edge the cut-out
+  // tool has to fade.
   //
-  // Andrew Lan is the trap worth naming. cics.umass.edu serves his portrait through a
-  // 1_1_2xl image style at 800x800, and that derivative is what got pasted into the sheet,
-  // but the file behind it — /files/2022-10/lan.jpg — is 203x203. The big one is a 4x
-  // upscale carrying no detail the small one lacks, at 48 KB against 17 KB. Encoding from
-  // it would ship a mushy tile that merely claims to be sharp, so the 203 is the master.
-  { in: 'team/andrew-lan.jpg',         out: 'team/andrew-lan.webp',         width: 512, square: true },
-  { in: 'team/ryan-baker.png',         out: 'team/ryan-baker.webp',         width: 512, square: true },
+  // Andrew is the trap worth naming. cics.umass.edu serves his portrait through a 1_1_2xl
+  // image style at 800x800, and that derivative is what got pasted into the sheet, but the
+  // file behind it — /files/2022-10/lan.jpg — is 203x203. The big one is a 4x upscale
+  // carrying no detail the small one lacks, at 48 KB against 17 KB. Cutting out from it
+  // would ship a mushy tile that merely claims to be sharp, so the 203 is the master.
+  { in: 'team-cutout/andrew-lan.webp',         out: 'team/andrew-lan.webp',         width: 512, square: true, duotone: DUOTONE },
+  { in: 'team-cutout/ryan-baker.webp',         out: 'team/ryan-baker.webp',         width: 512, square: true, duotone: DUOTONE },
   // These two came off the site in September 2026 when the Fellowship roster changed, and
   // nothing references their output any more. Kept on purpose rather than deleted: the
   // decision was to hold the files in case the roster moves again. Same situation as the
   // two 3/2 frames at the top of this list — encoded and published, linked from nowhere.
+  // They are still the colour photographs, cropped by top-anchored cover, because they left
+  // before the cut-outs came in; tools/cutout-headshots.py only cuts out the people
+  // index.html pictures, so whoever brings one back gives them a card first, runs it with
+  // --only, and moves this job over to the others' form.
   { in: 'team/danielle-ragavanis.jpg', out: 'team/danielle-ragavanis.webp', width: 512, square: true },
   { in: 'team/alondra-ramos.jpg',      out: 'team/alondra-ramos.webp',      width: 512, square: true },
 
-  // The three Leadership portraits. They are tiles again.
+  // The three Leadership portraits, the same ~197px tile as everyone else; their long bios
+  // are on their own pages at /team/<slug>/.
   //
-  // For a week in September they were not: the Who We Are page gave each leader a
-  // full-width portrait over a long bio, the portrait rendered at 608 CSS px, and these
-  // three were the only headshots in the file at 1264 because 512 into a 608 box is an
-  // 0.84x upscale. The bios have since moved to their own pages at /team/<slug>/ and the
-  // leadership cards are the same ~197px tile as every other person on the page, so the
-  // reason for 1264 went with them. Back to 512, like every other headshot.
-  //
-  // Sherry has NO crop box, and that is the second half of the same decision. She had two
-  // headshots taken: a 3000x4500 studio portrait framed from the waist up, and a 1365x2048
-  // head-and-shoulders frame on a green backdrop. The portrait shipped from September 15th
-  // and needed a measured box — `square: true` on it anchors to the top and takes the top
-  // 3000x3000, leaving her head in the upper third under a metre of backdrop — and even
-  // boxed, a square tile cut it mid-torso. She asked for the other one on the 22nd for
-  // exactly that reason, and she was right: the head-and-shoulders frame is already
-  // composed for a square, so top-anchored cover lands where a measured box would have put
-  // it and there is nothing here to tune.
-  //
-  // The portrait is not lost. It is the version of this file at efa77ea..d651d4b, and
-  // `git show d651d4b:source-material/image-sources/team/sherry-lachman.jpg` brings it
-  // back if the framing ever changes to suit it.
-  //
-  // Raquel's 872x1012 master is the one trap left in this group. Naming her real maximum
-  // is load-bearing — `withoutEnlargement` does not clamp a too-large target, it abandons
-  // the resize, so asking 1264 of her once shipped the master untouched and NOT square, at
-  // which point the page's `object-fit: cover` took over the framing from the encoder at a
-  // different object-position. At 512 she downsamples honestly; the note stays because the
-  // trap is one edit away.
-  { in: 'team/sherry-lachman.jpg',     out: 'team/sherry-lachman.webp',     width: 512, square: true },
-  { in: 'team/caitlin-mills.png',      out: 'team/caitlin-mills.webp',      width: 512, square: true },
-  { in: 'team/raquel-romano.png',      out: 'team/raquel-romano.webp',      width: 512, square: true },
+  // Sherry had two headshots taken: a 3000x4500 studio portrait framed from the waist up,
+  // and a 1365x2048 head-and-shoulders frame on a green backdrop. The portrait shipped from
+  // September 15th, and she asked for the other on the 22nd because the square tile cut it
+  // mid-torso. The shared framing would now make either work, but the one she chose is the
+  // master. The portrait is the version of this file at efa77ea..d651d4b, and `git show
+  // d651d4b:source-material/image-sources/team/sherry-lachman.jpg` brings it back.
+  { in: 'team-cutout/sherry-lachman.webp',     out: 'team/sherry-lachman.webp',     width: 512, square: true, duotone: DUOTONE },
+  { in: 'team-cutout/caitlin-mills.webp',      out: 'team/caitlin-mills.webp',      width: 512, square: true, duotone: DUOTONE },
+  { in: 'team-cutout/raquel-romano.webp',      out: 'team/raquel-romano.webp',      width: 512, square: true, duotone: DUOTONE },
 
   // From the "AugmentED Website Info" form, whose uploads land in a "Headshot (File
   // responses)" Drive folder: Jenny (Leadership, 7 Aug) and Isa (Research, 2 Aug), who
-  // were placeholders until now, and four people new to the page: Aarav (22 Sep) and
+  // were placeholders until then, and four people new to the page: Aarav (22 Sep) and
   // Byungyeon (28 Jul) in Research, Sonia (30 Jul) and Abby (30 Jul, filed by the form as
-  // "csaba petre") in Technology and Design. Each is the upload exactly as submitted.
+  // "csaba petre") in Technology and Design. Each master is the upload exactly as submitted.
   //
   // The form was checked against every master already here, byte for byte, before any of
   // it was used. Joan's, Lisa's and Raquel's uploads are the files above. Angela's is the
@@ -394,17 +403,12 @@ const JOBS = [
   // 200x200 and Laura's 21.5 KB, both smaller than what the page already has. Stephen
   // Hutt's is 7.7 MB and could not be fetched through the Drive connector at all, and
   // Tom Keefe's is a 237x222 screenshot; neither is here.
-  //
-  // Byungyeon (413x531) and Abby (421x505) are asked for their own short side, not 512,
-  // and that is Raquel's trap from the note above: `withoutEnlargement` abandons a resize
-  // it cannot make without enlarging, so 512 would ship both uncropped and not square.
-  // At their own width the square is a crop with no scaling at all.
-  { in: 'team/jenny-bradbury.jpg',     out: 'team/jenny-bradbury.webp',     width: 512, square: true },
-  { in: 'team/isa-peczuh.jpg',         out: 'team/isa-peczuh.webp',         width: 512, square: true },
-  { in: 'team/aarav-kalkar.jpg',       out: 'team/aarav-kalkar.webp',       width: 512, square: true },
-  { in: 'team/byungyeon-yun.jpg',      out: 'team/byungyeon-yun.webp',      width: 413, square: true },
-  { in: 'team/sonia-prusaitis.jpg',    out: 'team/sonia-prusaitis.webp',    width: 512, square: true },
-  { in: 'team/abby-petre.png',         out: 'team/abby-petre.webp',         width: 421, square: true },
+  { in: 'team-cutout/jenny-bradbury.webp',     out: 'team/jenny-bradbury.webp',     width: 512, square: true, duotone: DUOTONE },
+  { in: 'team-cutout/isa-peczuh.webp',         out: 'team/isa-peczuh.webp',         width: 512, square: true, duotone: DUOTONE },
+  { in: 'team-cutout/aarav-kalkar.webp',       out: 'team/aarav-kalkar.webp',       width: 512, square: true, duotone: DUOTONE },
+  { in: 'team-cutout/byungyeon-yun.webp',      out: 'team/byungyeon-yun.webp',      width: 512, square: true, duotone: DUOTONE },
+  { in: 'team-cutout/sonia-prusaitis.webp',    out: 'team/sonia-prusaitis.webp',    width: 512, square: true, duotone: DUOTONE },
+  { in: 'team-cutout/abby-petre.webp',         out: 'team/abby-petre.webp',         width: 512, square: true, duotone: DUOTONE },
 
   // The three illustrations in the outputs row on the home page. These ship as rendered:
   // the full 1200x1200 plate, scaled down and nothing else.
@@ -543,6 +547,25 @@ for (const job of runnable) {
       create: { width: job.card.width, height: job.card.height, channels: 3, background: job.card.background },
     }).composite([{ input: inner, gravity: 'centre' }]);
   }
+  // A duotone job reads an RGBA cut-out and writes an opaque tile: one pass over the
+  // pixels, luma to a point between ink and paper, then over the background by the
+  // cut-out's alpha. Luma is Rec. 709 weights on the encoded values rather than luminance
+  // in linear light, because that is what the look was chosen from; the blend is in the
+  // encoded space too, as a browser would composite it. It runs at the cut-out's full 768
+  // and the resize below takes the finished, opaque tile down to 512, so there is no alpha
+  // left for the resize to get wrong.
+  if (job.duotone) {
+    const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+    const [ink, paper, ground] = [job.duotone.ink, job.duotone.paper, job.duotone.background].map(hex);
+    const { data, info } = await sharp(src).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    const tile = Buffer.alloc(info.width * info.height * 3);
+    for (let i = 0, o = 0; i < data.length; i += 4, o += 3) {
+      const y = (0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2]) / 255;
+      const a = data[i + 3] / 255;
+      for (let c = 0; c < 3; c++) tile[o + c] = Math.round((ink[c] + (paper[c] - ink[c]) * y) * a + ground[c] * (1 - a));
+    }
+    pipe = sharp(tile, { raw: { width: info.width, height: info.height, channels: 3 } });
+  }
   // A crop box, [left, top, width, height] in source pixels, taken before the resize.
   // This is where an original gets framed for the box it ships into, and every job that
   // carries one says above it what the box was set on. It does the work the page's own
@@ -561,8 +584,12 @@ for (const job of runnable) {
   if (job.card) {
     // already at its final size — the canvas set it
   } else if (job.square) {
-    // Never enlarge: withoutEnlargement keeps the two small headshots at their own
-    // size rather than fabricating pixels.
+    // Never enlarge. Note that withoutEnlargement does not clamp a too-large target, it
+    // abandons the resize: a square job asked for more than its source's short side ships
+    // the source untouched and NOT square, and the page's object-fit then does the
+    // framing instead. Raquel's 872px master once shipped that way when asked for 1264.
+    // Every square job now reads a 768 cut-out and asks for 512, but a new one is one
+    // edit away from the trap.
     pipe.resize({ width: job.width, height: job.width, fit: 'cover', position: 'top', withoutEnlargement: true, kernel: 'lanczos3' });
   } else {
     pipe.resize({ width: job.width, withoutEnlargement: true, kernel: 'lanczos3' });
