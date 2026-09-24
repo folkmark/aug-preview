@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- exported from 115240c47167f6bcbf68c3e915f2883d4a997f09 by tools/export-static.mjs -->
+<!-- exported from 1a47a54ca237bd256c29de33f1bf40ecefc1e2af by tools/export-static.mjs -->
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,12 +8,12 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="The Challenge | AugmentED">
 <meta property="og:description" content="AI is arriving in classrooms whether schools are ready or not. The danger is that some are rushing in without asking what AI can do well, what teachers uniquely bring, or what students actually need.">
-<meta property="og:image" content="../../assets/logo/og-card.png">
+<meta property="og:image" content="https://augmented2.folkmark.com/assets/logo/og-card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="augment^ed, supported by AERDF">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="../../assets/logo/og-card.png">
+<meta name="twitter:image" content="https://augmented2.folkmark.com/assets/logo/og-card.png">
 <meta name="twitter:title" content="The Challenge | AugmentED">
 <meta name="twitter:description" content="AI is arriving in classrooms whether schools are ready or not. The danger is that some are rushing in without asking what AI can do well, what teachers uniquely bring, or what students actually need.">
 <!-- The square arch mark, not the wordmark. A tab icon is drawn into a square box, so
@@ -69,6 +69,48 @@
   .team-grid-3 img, .team-grid-3 > div > div:first-child { margin-bottom: var(--space-4) !important; }
   .team-grid-3 a[aria-label] { width: var(--icon-size); height: var(--icon-size); align-items: center; justify-content: center; flex: 0 0 auto; }
   .team-grid-3 a[aria-label] > * { width: var(--icon-size) !important; height: var(--icon-size) !important; min-width: var(--icon-size) !important; min-height: var(--icon-size) !important; font-size: var(--icon-size) !important; line-height: var(--icon-size) !important; display: block !important; margin: 0 !important; }
+  /* THE BIO TILES. The four Leadership cards each link to a page of their own at
+     /team/<slug>/, and the whole tile is that link: photo, name, role and the space
+     between them. One link per person, one tab stop, a target the size of the card.
+
+     The link is the design system's link button, the same "Read more ›" the papers and
+     every "Learn more ›" on the site use. It was a bare semibold "Read bio" in body ink
+     with no underline and no glyph, the only text link on the site that was not the
+     system's, and at 64x16 it read as a caption rather than something to click.
+
+     THE WHOLE TILE is the link's ::after, stretched over .bio-tile, which is why the tile
+     is position:relative and the button is not (it sets no position of its own; give it
+     one and the overlay shrinks back to the words). This is the stretched-link pattern,
+     not an <a> wrapped round the card. A wrapped card makes a screen reader read the
+     entire card as the link's name, and would put the photo, the name and "Read bio"
+     all in one link. The cost is that text under the overlay cannot be selected.
+     Raquel's LinkedIn icon is lifted above it, or the overlay would swallow the click.
+
+     THE NAME IN THE LINK is a .visually-hidden span, so a screen reader hears "Read bio
+     of Sherry Lachman" instead of four identical "Read bio"s. Not an aria-label: the
+     rules just above style every .team-grid-3 a[aria-label] as a 24px icon box (44px on
+     a coarse pointer), and an aria-label here would shrink the link into one.
+
+     margin-top:auto on .bio-cta pins every "Read bio" to the bottom of its tile, and so
+     to one line across the row. Before, it followed its role line and any icon row, and
+     sat at 320, 320, 340 and 344px down the four tiles.
+
+     Hover follows the design system's two rules: links dim to 70% (the global a:hover
+     already covers the whole tile, since the overlay belongs to the link) and hover goes
+     darker, never lighter, so the photo or its placeholder darkens a little. The focus
+     ring is ours. The system has none and says to add one in --brand-accent; it is drawn
+     on the overlay, so keyboard focus outlines the whole tile. */
+  .visually-hidden { position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+  .bio-tile { position: relative; display: flex; flex-direction: column; }
+  .bio-tile .bio-cta { margin: auto 0 0; padding-top: var(--space-2); }
+  .bio-tile [data-variant="link"] { padding-inline: 0 !important; }
+  .bio-tile [data-variant="link"]::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius-image); }
+  .bio-tile [data-variant="link"]:focus-visible { outline: none; }
+  .bio-tile [data-variant="link"]:focus-visible::after { outline: 2px solid var(--brand-accent); outline-offset: 6px; }
+  .bio-tile [data-variant="link"] .ds-icon { font-size: 1.25em !important; width: 1em !important; height: 1em !important; }
+  .bio-tile a[aria-label] { position: relative; z-index: 1; }
+  .bio-tile > :first-child { transition: filter var(--transition-fast); }
+  @media (hover: hover) { .bio-tile:has([data-variant="link"]:hover) > :first-child { filter: brightness(0.92); } }
   /* THE PICTURE ROWS on The Challenge and Our Approach — one photograph beside one
      block of copy, the sides alternating down the page.
 
@@ -651,21 +693,6 @@
 
   
 
-  </div>
-    
-
-    <section style="padding: clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter) clamp(var(--space-20),9vw,9rem);">
-      <div data-reveal="" style="opacity: 0; transition: opacity var(--transition-fade); margin-inline: auto; max-width: var(--container-lg); text-align: center;">
-        <h2 style="font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-6); text-wrap: pretty;">Join us in building better foundations for AI in education.</h2>
-        <p style="font-size: var(--text-medium); line-height: var(--text-body-line-height); margin: 0px; text-wrap: pretty;">We co-design with educators, publish what we learn, and create infrastructure for the whole field.</p>
-        <div style="margin-top: var(--space-10); display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space-4);">
-          <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="default" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border-width: 1px; border-style: solid; border-color: var(--color-st-tropaz); border-image: initial; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-st-tropaz); color: var(--color-scheme-btn-text, var(--color-white)); padding: 0.375rem 0.75rem; font-weight: var(--font-weight-medium);">Follow our work</button></div>
-          <div class="sc-host-x" style="display: contents;"><button data-slot="button" data-variant="secondary" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border-radius: var(--radius-button); white-space: nowrap; transition: all var(--transition-fast); font-family: var(--font-body); font-size: inherit; line-height: var(--text-body-line-height); border: 1px solid transparent; background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: var(--color-neutral-darkest-5); color: inherit; padding: 0.375rem 0.75rem; font-weight: var(--font-weight-medium); backdrop-filter: blur(var(--blur-glass));">Explore our approach</button></div>
-        </div>
-      </div>
-    </section>
-
-  
   
 
   
@@ -689,4 +716,4 @@
         <p style="font-size: var(--text-small); margin: 0px;">© 2026 AugmentED. All rights reserved.</p>
       </div>
     </div>
-  </footer></div></body></html>
+  </footer></div></div></body></html>
