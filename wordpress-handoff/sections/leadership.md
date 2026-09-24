@@ -97,6 +97,27 @@ nav's own links.
 Measured at 1440: tile 197x363, link 94x38, four links on one line; clicks on the
 photo, the name and the empty space all open the bio.
 
+### Headshots
+
+Every headshot on the page — all four groups, not only Leadership — is a finished
+512 × 512 WebP: the person cut out of their photograph, framed by one rule for everybody
+(the face 46% of the tile's height, the eyes 38% down, centred across), their shoulders
+fading into the background, and the whole composited in a navy duotone (`#0b1a2d` to white)
+onto `#e9eef4`, which is `--color-st-tropaz-lightest`. **Place them as they are:**
+`aspect-ratio: 1 / 1`, `object-fit: cover` at the default centre, no filter, nothing
+behind them. A person without a photo gets an empty square in the same `#e9eef4`, so an
+empty tile and a photographed one sit on one colour.
+
+Do not re-crop them — no Media Library "crop to square", no theme `object-position`. The
+framing is what makes 24 photographs from 24 photographers read as one team, and it is
+already done. They are 5–20 KB each.
+
+They are made in two steps, and the split is on purpose. `tools/cutout-headshots.py`
+does the slow part once — a matting model, face and eye detection, the framing — and
+writes 768px cut-outs to `source-material/image-sources/team-cutout/`, with no colour.
+`tools/encode-images.mjs` then applies the look, from the `DUOTONE` object at the top of
+the file, in seconds. Change the colours there; change the framing in the cut-out tool.
+
 ## 4. Two invariants you must not break
 
 These are silent failures: the page still renders, the build still passes, and the content
@@ -153,7 +174,7 @@ porting. It exists so the static build does not look like a different site.
 | --- | --- | --- |
 | Portrait | Own column, 288px (`18rem`), larger than the 197px tile | Stacked, 192px (`12rem`) |
 | Text column | Up to `38rem`, 62–69 characters per line measured | Full width, about 45 characters |
-| No photo (Jenny) | One text column, not a grey square | Same |
+| No photo (nobody at present; Jenny's page until her headshot arrived) | One text column, not an empty square | Same |
 
 Everything aligns to the same `--container-xxl` edge as the logo. Above the layout is a
 "‹ Who We Are" link to `/team/`, whose chevron is `chevron_right` mirrored, because the
@@ -182,8 +203,14 @@ filling them with paths, and warns.
 
 1. Add their card to the Leadership grid in `index.html` with `class="bio-tile"` and
    `id="<slug>"`.
-2. Add their headshot master to `source-material/image-sources/team/<slug>.jpg` and a job
-   to `tools/encode-images.mjs` at `width: 512, square: true`.
+2. Add their photograph to `source-material/image-sources/team/<slug>.jpg` — the largest
+   original that exists; see the headshot notes in `tools/encode-images.mjs` for where to
+   look. Run `python3 tools/cutout-headshots.py --only=<slug>`, which needs the card from
+   step 1 (it reads who is pictured from `index.html`) and a model its header says how to
+   fetch, and read its report: a warning means the photo is cropped too tight for the
+   shared framing and wants a looser one. Then add a job to `tools/encode-images.mjs` in
+   the others' form — `in: 'team-cutout/<slug>.webp'`, `width: 512, square: true,
+   duotone: DUOTONE` — and run it. The same step adds anyone to the other three groups.
 3. Write `source-material/bios/<slug>.md`.
 4. Add the `Read bio` link to their card, copying another leader's `.bio-cta` paragraph,
    with the slug in the href and the name in the hidden span.

@@ -348,6 +348,15 @@ need the bulk renders restored (see above) — and the hero's masters are the on
 that has never been in the history at all, so re-encoding that sequence needs them
 from me.
 
+The headshots have one step before the encoder. `tools/cutout-headshots.py` cuts each
+person out of their photograph with a matting model and frames all 24 by one rule — the
+same face height, the same eye line — and writes 768px cut-outs to
+`source-material/image-sources/team-cutout/`, which are committed. `encode-images.mjs`
+reads those and applies the navy duotone, so re-encoding the headshots or changing their
+colours runs from a clean checkout like the rest. Only a new or replaced photograph needs
+the cut-out step, and that needs Python and a 973 MB model that is not in the repository;
+the script's header says where to get both.
+
 Each target size is set from the box the image actually occupies, at about three
 device pixels per CSS pixel — what a phone at DPR 3 can resolve and no more.
 
