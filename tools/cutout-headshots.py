@@ -62,11 +62,9 @@ the scale for anyone whose photo was cropped too tight to fill the square, so fo
 people got bigger faces than everyone else — and it read as unfair once all 24 were
 side by side.
 
-Two fades then finish the figure, and neither is chosen per person.
-
-THE VIGNETTE is the same for all 24: the shoulders dissolve into the background along a
-soft U towards the bottom corners, so every tile has one silhouette whatever its
-photographer framed.
+The shoulders then run straight off the bottom and sides of the tile, the way a
+photographed headshot's do. There is no fade on the figure except one, and it is not
+chosen per person.
 
 THE EDGE FADE is one rule applied to all 24: wherever a photograph's own edge cuts
 through the person, the figure fades to nothing over EDGE_FADE as it approaches that
@@ -80,14 +78,27 @@ fade is measured from the cut itself — the stretch of the border the matte act
 touches — not from the whole edge, so a photo cut at the shoulder does not also fade
 the cheek above it.
 
-The first attempt tried to do both jobs with the vignette alone: one shape, tuned so
-every one of those cuts fell where it had already faded out. It cannot be done
-gracefully. Ryan's chest and Byungyeon's shoulders force the fade to finish just below
-everybody's chin, which kept 4-13% of anyone's shoulders — 24 floating heads, with the
-curve of the U cutting through Angela's, Nikki's and Mohammed's hair. Scale and eye line
-are what make a row of portraits read as fair; a fade that only shows where a photo ran
-out is far less visible than a vignette that decapitates everybody to match the
-tightest one.
+So the seven do look different from the other seventeen at the bottom of the tile, and
+that is the one inequality left. Two shared fades were tried to hide it and both went:
+- A single vignette tuned so every one of those cuts fell where it had already faded
+  out. Ryan's chest and Byungyeon's shoulders force it to finish just below everybody's
+  chin, which kept 4-13% of anyone's shoulders — 24 floating heads, with the curve cutting
+  through Angela's, Nikki's and Mohammed's hair.
+- A soft U at the shoulders for everyone, on top of the edge fade. It shipped briefly in
+  September 2026. A feather below the shoulders reads as a floating bust, and on the
+  seventeen photos that are not cropped short it was a fade with nothing to hide.
+Nor can scale close the gap: measured, even a face share of 58% leaves Ryan's, Andrew's
+and Byungyeon's photos ending inside the tile. Better originals for those seven are the
+fix, and nothing here needs to change when they arrive.
+
+THE EDGE CLAMP handles the photos that only just stop short. Sarah's ends 1% above the
+bottom of the tile, Abby's and Aarav's 1% in from the side, Ben's 3%: faded, each of those
+grew a 12% feather along a whole edge to hide a gap of a few pixels, which is the look
+this framing exists to avoid. Where a photo stops within
+EDGE_CLAMP of the tile's bottom or side edge, its last row or column is repeated out to
+the edge instead — at most 8 CSS px of clothing at the tile's 197, which reads as
+nothing. Never at the top, where repeated hair looks like exactly what it is, and never
+further in than that; everything deeper is the fade's.
 
 If a fade would reach into someone's face, the report warns. That is the check for
 anyone added later: a photograph that trips it is too tight for the shared framing and
@@ -95,9 +106,9 @@ wants a looser original, not a special case.
 
 THE GRADE is the same white-point rule as the rest of the site's photography (see THE
 GRADE in tools/encode-images.mjs): the subject's p99.8 luminance is lifted towards 250,
-lift only, capped at +8%. It is measured over what the tile actually shows — the figure
-inside the vignette — rather than over the whole frame, so a white shirt that fades out
-of view does not decide the exposure of a face."""
+lift only, capped at +8%. It is measured over the head — everything in the tile above the
+bottom of the face box — not the whole figure, so a white shirt running off the bottom of
+the tile does not decide the exposure of a face."""
 import glob, hashlib, os, re, subprocess, sys
 import numpy as np
 from PIL import Image, ImageOps
@@ -116,18 +127,9 @@ EYE = 0.38        # eye line, from the top, as a fraction of the tile
 EYE_IN_BOX = 0.39 # where the eye line sits in the face box, for anyone whose eyes are not found
 DETECT = 1400     # longest side the detectors run at; the cascades were tuned there
 
-# THE VIGNETTE, in fractions of the tile. The figure is fully opaque inside a U whose
-# walls stand WALL either side of centre and whose floor is a half-ellipse hanging from
-# SHOULDER, BOTTOM deep; it fades across BAND beyond that outline, on a smoothstep so
-# neither end of the fade shows as a line. As set, the walls stand 4% inside the tile's
-# sides, where only the widest hair reaches and loses at most 13% of its opacity at the
-# very edge, and the floor is down to 42% opacity at the tile's bottom edge: the
-# shoulders go soft towards the corners and still run off the bottom of the tile, which
-# is what keeps them reading as shoulders rather than as a cameo. Picked off
-# a four-way contact sheet of all 24 in the finished duotone, against the strict version
-# described above and against no vignette at all.
-WALL, SHOULDER, BOTTOM, BAND = 0.46, 0.64, 0.26, 0.18
 EDGE_FADE = 0.12  # THE EDGE FADE's length, from a cut in a source to full opacity
+EDGE_CLAMP = 0.04 # THE EDGE CLAMP: how short of the tile's bottom or sides a photo may stop
+                  # and be extended to it rather than faded
 
 
 def pictured():
@@ -214,22 +216,7 @@ def detect(rgb, alpha):
     return [v / k for v in (fx, fy, fw, fh)], eye_y / k, how
 
 
-def vignette():
-    u = (np.arange(T) + 0.5) / T - 0.5
-    v = (np.arange(T) + 0.5) / T
-    U, V = np.meshgrid(u, v)
-    # How far outside the U a point is, in tile fractions, measured along the ray from the
-    # floor's centre (0, SHOULDER): above SHOULDER that is plain distance past a wall, and
-    # below it the ray's overshoot of the ellipse. Not the true distance to an ellipse, but
-    # continuous, exact along both axes, and all a fade needs.
-    dv = np.maximum(0, V - SHOULDER)
-    r = np.hypot(U, dv)
-    e = np.maximum(np.hypot(U / WALL, dv / BOTTOM), 1e-6)
-    t = np.clip(r * (1 - 1 / e) / BAND, 0, 1)
-    return (1 - t * t * (3 - 2 * t)).astype(np.float32)
-
-
-def frame(slug, vig):
+def frame(slug):
     rgb = load(slug)
     W, H = rgb.size
     a = alpha_of(slug, (W, H))
@@ -238,9 +225,28 @@ def frame(slug, vig):
         sys.exit(f'{slug}: no face found on the matte')
     (fx, fy, fw, fh), eye_y, how = found
     s = FACE * T / fh
-    ox, oy = T / 2 - (fx + fw / 2) * s, EYE * T - eye_y * s
-    nw, nh = max(1, round(W * s)), max(1, round(H * s))
-    px, py = round(ox), round(oy)
+
+    def place():
+        ox, oy = T / 2 - (fx + fw / 2) * s, EYE * T - eye_y * s
+        return max(1, round(W * s)), max(1, round(H * s)), round(ox), round(oy)
+    nw, nh, px, py = place()
+
+    # THE EDGE CLAMP. Pad in source pixels, far enough that the padded edge lands past the
+    # tile (the +2) so the edge fade below never sees it as a cut.
+    # Only where the person reaches the photo's edge: an edge that is all background leaves
+    # nothing to clamp, and would only make the report claim an extension that isn't there.
+    gaps = {'bottom': T - (py + nh), 'left': px, 'right': T - (px + nw)}
+    touches = {'bottom': a[-1, :], 'left': a[:, 0], 'right': a[:, -1]}
+    grow = {k: int(np.ceil((g + 2) / s)) for k, g in gaps.items()
+            if 0 < g <= EDGE_CLAMP * T and (touches[k] > 0.5).any()}
+    if grow:
+        pads = ((0, grow.get('bottom', 0)), (grow.get('left', 0), grow.get('right', 0)))
+        rgb = Image.fromarray(np.pad(np.asarray(rgb), pads + ((0, 0),), mode='edge'))
+        a = np.pad(a, pads, mode='edge')
+        fx += grow.get('left', 0)
+        W, H = rgb.size
+        nw, nh, px, py = place()
+    extended = {k: gaps[k] / T for k in grow}
 
     # Resample premultiplied, in float: an unpremultiplied resize drags the background's
     # colour out along every soft edge of the matte, which is the halo this is meant to lose.
@@ -279,15 +285,16 @@ def frame(slug, vig):
         import cv2
         t = np.clip(cv2.distanceTransform((~cut).astype(np.uint8), cv2.DIST_L2, 5) / (EDGE_FADE * T), 0, 1)
         fade = t * t * (3 - 2 * t)
-    A = A * vig * fade
-    # Neither fade may reach the face: the middle of the face box, inset by a sixth on each
+    A = A * fade
+    # The fade may not reach the face: the middle of the face box, inset by a sixth on each
     # side so the check is about features, not the box's loose corners.
     fx0, fy0 = px + (fx + fw / 6) * s, py + (fy + fh / 6) * s
-    core = (vig * fade)[max(0, round(fy0)):round(fy0 + fh * s * 2 / 3), max(0, round(fx0)):round(fx0 + fw * s * 2 / 3)]
+    core = fade[max(0, round(fy0)):round(fy0 + fh * s * 2 / 3), max(0, round(fx0)):round(fx0 + fw * s * 2 / 3)]
     face_kept = float(core.min()) if core.size else 0.0
 
-    # THE GRADE, over what the tile shows.
+    # THE GRADE, over the head: the figure above the bottom of the face box.
     shown = A > 0.8
+    shown[max(0, round(py + (fy + fh) * s)):] = False
     lum = (rgbf[..., 0] * 0.2126 + rgbf[..., 1] * 0.7152 + rgbf[..., 2] * 0.0722)[shown] * 255
     p = float(np.percentile(lum, 99.8)) if lum.size else 250.0
     lift = min(1.08, max(1.0, 250 / max(p, 1)))
@@ -300,7 +307,7 @@ def frame(slug, vig):
     Image.fromarray(out, 'RGBA').save(os.path.join(OUT, slug + '.webp'), lossless=True, quality=100, method=6, exact=False)
     return {
         'source': f'{W}x{H}', 'face_px': round(fh), 'eye_line': how, 'scale': round(s * 512 / T, 2),
-        'cuts': depth, 'face_kept': round(face_kept, 3), 'white_point': round(p), 'lift': round(lift, 3),
+        'cuts': depth, 'extended': extended, 'face_kept': round(face_kept, 3), 'white_point': round(p), 'lift': round(lift, 3),
     }
 
 
@@ -328,15 +335,16 @@ def main():
         for s in todo:
             print(f'matting {s}', flush=True)
             subprocess.run([sys.executable, __file__, f'--matte={s}'], check=True)
-    vig = vignette()
     warn = []
     # scale is against the 512 the tile ships at, so anything over 1 is a photograph being
-    # enlarged; "cut in" is how far inside the tile each source edge that cuts the person lands.
-    print(f"\n{'':22}{'source':>11} {'face':>5} {'eye line':>9} {'scale':>6}  {'cut in by the source':34}lift")
+    # enlarged; "faded" is how far inside the tile each source edge that cuts the person
+    # lands, and "extended" the ones close enough to the tile's edge to be clamped out to it.
+    print(f"\n{'':22}{'source':>11} {'face':>5} {'eye line':>9} {'scale':>6}  {'faded':28}{'extended':24}lift")
     for s in slugs:
-        r = frame(s, vig)
-        cuts = ', '.join(f'{k} {v:.0%}' for k, v in sorted(r['cuts'].items(), key=lambda kv: -kv[1])) or '-'
-        print(f"{s:22}{r['source']:>11} {r['face_px']:>5} {r['eye_line']:>9} {r['scale']:>5}x  {cuts:34}{r['lift']:.3f}")
+        r = frame(s)
+        pct = lambda d: ', '.join(f'{k} {v:.0%}' for k, v in sorted(d.items(), key=lambda kv: -kv[1])) or '-'
+        print(f"{s:22}{r['source']:>11} {r['face_px']:>5} {r['eye_line']:>9} {r['scale']:>5}x  "
+              f"{pct(r['cuts']):28}{pct(r['extended']):24}{r['lift']:.3f}")
         if r['face_kept'] < 0.95:
             warn.append(f"{s} ({r['face_kept']:.0%})")
     if warn:

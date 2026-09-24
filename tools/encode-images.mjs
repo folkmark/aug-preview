@@ -297,8 +297,8 @@ const JOBS = [
   // These jobs do not read the photographs. They read team-cutout/, which
   // tools/cutout-headshots.py writes from the photographs in team/: each person lifted off
   // their background by a matting model and framed by one rule for all of them — every
-  // face the same height, every eye line at the same height, the same soft fade at the
-  // shoulders. That file explains the framing and is where it changes; the cut-outs it
+  // face the same height, every eye line at the same height, the shoulders running off
+  // the tile. That file explains the framing and is where it changes; the cut-outs it
   // writes are 768 square, so the square resize here is a plain downsample with nothing to
   // crop, and the withoutEnlargement trap described at the resize never comes up.
   //
