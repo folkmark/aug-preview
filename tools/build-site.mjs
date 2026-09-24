@@ -106,6 +106,25 @@ function absolutise(html) {
     .replace(/(["'])team\/([a-z0-9-]+)\/\1/g, `$1${basePath}team/$2/$1`);
 }
 
+// The origin the site is served from, for the few things that must be absolute URLs
+// and not paths: og:image and twitter:image on every page, and the bio pages'
+// canonical, og:url and structured data. Read from CNAME, which is also what tells
+// Pages the domain. Without one (a fork, a preview build) those are left as paths or
+// left out, with a warning, rather than guessed.
+const CNAME = fs.existsSync(path.join(root, 'CNAME')) ? fs.readFileSync(path.join(root, 'CNAME'), 'utf8').trim() : '';
+const ORIGIN = CNAME ? `https://${CNAME}` : '';
+if (!ORIGIN) console.log('::warning::no CNAME — og:image stays a path, and the bio pages ship without canonical, og:url or structured data');
+
+// og:image and twitter:image as absolute URLs. absolutise() leaves them root-relative
+// (/assets/logo/og-card.png). A browser can resolve that against the page; a link
+// unfurler reads the tag on its own, and the Open Graph protocol defines og:image as a
+// URL, so a path is at best tolerated. The share card added in September went out as
+// a path on every page. Runs after absolutise(), which is what puts the base in it.
+function share(html) {
+  if (!ORIGIN) return html;
+  return html.replace(/(<meta (?:property="og:image"|name="twitter:image") content=")(\/[^/"][^"]*)"/g, `$1${ORIGIN}$2"`);
+}
+
 function copyDir(from, to) {
   fs.mkdirSync(to, { recursive: true });
   for (const entry of fs.readdirSync(from, { withFileTypes: true })) {
@@ -192,7 +211,7 @@ if (shape.length) {
 const problems = [];
 // The root file gets the same treatment as the routes. It is the one the bug starts
 // from: land here, click any nav item, and its relative paths follow you one level down.
-fs.writeFileSync(path.join(outDir, 'index.html'), absolutise(home));
+fs.writeFileSync(path.join(outDir, 'index.html'), share(absolutise(home)));
 
 for (const file of COPY_FILES) fs.copyFileSync(path.join(root, file), path.join(outDir, file));
 for (const dir of COPY_DIRS) copyDir(path.join(root, dir), path.join(outDir, dir));
@@ -207,7 +226,7 @@ if (fs.existsSync(path.join(root, 'CNAME'))) {
 for (const page of PAGES) {
   const dir = path.join(outDir, page.slug);
   fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, 'index.html'), absolutise(retitle(home, page)));
+  fs.writeFileSync(path.join(dir, 'index.html'), share(absolutise(retitle(home, page))));
 }
 
 // The slugs were shortened after the preview had been shared, so links to the old
@@ -294,22 +313,70 @@ function readBios() {
     });
 }
 
+// The person's LinkedIn and website, read off their own tile on the team page, so the
+// tile stays the one place they are written. The slice runs from the tile's id to its
+// "Read bio" paragraph. Every built bio has one (a page is only built when its link
+// exists), and it comes after the icon row, so the next person's links cannot leak in.
+function tileLinks(slug) {
+  const start = home.indexOf(`id="${slug}"`);
+  const end = start < 0 ? -1 : home.indexOf('class="bio-cta"', start);
+  if (end < 0) return [];
+  return [...home.slice(start, end).matchAll(/<a href="(https?:[^"]+)"[^>]*aria-label="(LinkedIn|Website)"/g)]
+    .map((m) => ({ url: m[1], label: m[2] }));
+}
+
 function bioPage(b) {
   // The portrait is optional on purpose: a bio can land before a usable headshot does,
-  // and the page should still be worth reading. Same rule the team grid follows.
-  const photo = fs.existsSync(path.join(root, `assets/team/${b.slug}.webp`))
-    // height:auto is not decoration. The width/height ATTRIBUTES are here so the box is
-    // reserved before the image loads, but a height attribute with no CSS height beats
-    // aspect-ratio — the portrait rendered 180x512 until this was explicit. The team grid
-    // gets away without it; this page did not, so it says what it means.
-    ? `<img src="assets/team/${b.slug}.webp" alt="${esc(b.name)}" width="512" height="512" decoding="async"
-         style="width:180px;height:auto;aspect-ratio:1/1;object-fit:cover;border-radius:var(--radius-image);display:block;margin-bottom:var(--space-8)">`
+  // and the page should still be worth reading. Without one the page is a single column
+  // of text rather than a grey placeholder square. The team tile keeps its square
+  // because it sits in a grid with other people; a page about one person that leads
+  // with an empty box reads as broken.
+  const hasPhoto = fs.existsSync(path.join(root, `assets/team/${b.slug}.webp`));
+  const photo = hasPhoto
+    ? `<img class="bio-portrait" src="assets/team/${b.slug}.webp" alt="${esc(b.name)}" width="512" height="512" decoding="async">`
     : '';
   // One sentence of the bio, for search results and share cards. Cut at the first
   // sentence end rather than a character count, so it never stops mid-word.
   const firstStop = b.paras[0].search(/\.\s/);
-  const desc = esc(firstStop > 0 ? b.paras[0].slice(0, firstStop + 1) : b.paras[0]);
-  const nav = [['challenge', 'The Challenge'], ['approach', 'Our Approach'], ['team', 'Who We Are'], ['follow', 'Follow Our Work']];
+  const lede = firstStop > 0 ? b.paras[0].slice(0, firstStop + 1) : b.paras[0];
+  const desc = esc(lede);
+  const links = tileLinks(b.slug);
+  const url = ORIGIN && `${ORIGIN}${basePath}team/${b.slug}/`;
+  const [first, ...rest] = b.name.split(' ');
+  const nav = [['challenge', 'The Challenge'], ['approach', 'Our Approach'], ['team', 'Who We Are']];
+
+  // ProfilePage structured data. Google's documentation lists "an employee page on a
+  // company website" as a page this type is for: one person, affiliated with the site.
+  // mainEntity and its name are required; image, description and sameAs are the
+  // recommended fields, and sameAs is the person's own links from their tile. Built
+  // from ORIGIN because every URL in it must be absolute. Without a CNAME it is left
+  // out, not filled with paths.
+  const ld = url && {
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    url,
+    mainEntity: {
+      '@type': 'Person',
+      name: b.name,
+      ...(b.role && { jobTitle: b.role }),
+      description: lede,
+      ...(hasPhoto && { image: `${ORIGIN}${basePath}assets/team/${b.slug}.webp` }),
+      ...(links.length && { sameAs: links.map((l) => l.url) }),
+      worksFor: { '@type': 'Organization', name: 'AugmentED', url: `${ORIGIN}${basePath}` },
+      url,
+    },
+  };
+
+  const linkItem = (l) => {
+    // The same marks the tiles use: Simple Icons' LinkedIn as an <img>, and the
+    // design system's "language" glyph for a website. The design system puts brand
+    // marks "under team bios", and names them here rather than leaving an icon alone.
+    const mark = l.label === 'LinkedIn'
+      ? '<img src="assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async">'
+      : '<span class="ds-icon" aria-hidden="true">language</span>';
+    return `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${mark}${l.label}<span class="visually-hidden"> (opens in a new tab)</span></a></li>`;
+  };
+
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -317,44 +384,140 @@ function bioPage(b) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(b.name)} | AugmentED</title>
 <meta name="description" content="${desc}">
-<meta property="og:type" content="profile">
+${url ? `<link rel="canonical" href="${url}">\n` : ''}<meta property="og:type" content="profile">
+<meta property="og:site_name" content="AugmentED">
 <meta property="og:title" content="${esc(b.name)} | AugmentED">
 <meta property="og:description" content="${desc}">
-<meta property="og:image" content="assets/logo/og-card.png">
+${url ? `<meta property="og:url" content="${url}">\n` : ''}<meta property="profile:first_name" content="${esc(first)}">
+${rest.length ? `<meta property="profile:last_name" content="${esc(rest.join(' '))}">\n` : ''}<meta property="og:image" content="assets/logo/og-card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="augment^ed, supported by AERDF">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="assets/logo/og-card.png">
 <link rel="icon" href="assets/logo/logo-icon.png" type="image/png" sizes="150x150">
 <link rel="apple-touch-icon" href="assets/logo/logo-icon.png">
 <meta name="theme-color" content="#fdfcfa">
 ${DS_SHEETS.map((h) => `<link rel="stylesheet" href="${h}">`).join('\n')}
-<style>
+${ld ? `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>\n` : ''}<style>
+  /* THE CHROME is the SPA's, restated. index.html writes its header and footer as
+     inline styles inside the runtime's template, so there is nothing here to import;
+     these rules copy the values it renders with, measured in Chromium off /team/:
+     a 96px sticky bar, the logo at 220x74, nav at the body size with --space-10
+     between, the "Follow our work" pill 37px tall. Change the SPA's header and this
+     goes stale, so the two are worth diffing by eye after any header change.
+
+     img[width][height] { height: auto } is the SPA's rule too, and this page shipped
+     without it. Every width/height attribute then set its box: the header logo sat in
+     a 200x212 box and the footer's in 168x266, which made the header 276px tall. The
+     portrait had already been fixed one-off for the same reason. This covers all three. */
+  :root { --header-h: 6rem; }
   html, body { margin: 0; background: var(--surface-page); }
-  a { color: inherit; }
-  .bio-nav a { font-size: var(--text-small); text-decoration: none; }
-  .bio-nav a:hover { text-decoration: underline; }
+  img[width][height] { height: auto; }
+  a { color: inherit; text-decoration: none; transition: opacity var(--transition-fast); }
+  @media (hover: hover) { a:hover { opacity: 0.7; } }
+  @media (max-width: 991px) { .at-desktop { display: none !important; } }
+  @media (min-width: 992px) { .at-mobile { display: none !important; } }
+  .visually-hidden { position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+  .ds-icon { font-size: 1.25em; width: 1em; height: 1em; }
+
+  .bio-header { position: sticky; top: 0; z-index: 900; display: flex; min-height: var(--header-h); width: 100%; align-items: center; padding-inline: var(--page-gutter); background: var(--surface-page); }
+  .bio-header-row { margin-inline: auto; display: flex; width: 100%; max-width: var(--container-xxl); align-items: center; justify-content: space-between; gap: var(--space-8); }
+  .bio-logo { display: block; flex-shrink: 0; }
+  .bio-logo img { width: 220px; display: block; }
+  .bio-nav { display: flex; align-items: center; gap: var(--space-10); }
+  /* The design system's default button at the SPA's small size, as an <a>: this page
+     has no React to render the component, and a link that navigates should be a link.
+     Hover goes darker, as the system's buttons do, not to the 70% links get. */
+  .bio-pill { display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--color-st-tropaz); border-radius: var(--radius-button); background: var(--color-st-tropaz); color: var(--color-white); padding: 0.25rem 1.875rem; font-weight: var(--font-weight-medium); line-height: var(--text-body-line-height); white-space: nowrap; transition: background-color var(--transition-fast), border-color var(--transition-fast); }
+  @media (hover: hover) { .bio-pill:hover { opacity: 1; background: var(--color-st-tropaz-dark); border-color: var(--color-st-tropaz-dark); } }
+  /* The SPA's mobile menu, without its script. <details> gives the open and closed
+     states and the keyboard handling for nothing; the bars and the overlay copy the
+     SPA's values. What it cannot do without script is close on Escape or lock the
+     page behind it, and on a page this short neither is worth a runtime. */
+  .bio-menu > summary { list-style: none; display: flex; flex-direction: column; justify-content: center; gap: 6px; width: 44px; height: 44px; cursor: pointer; }
+  .bio-menu > summary::-webkit-details-marker { display: none; }
+  .bio-menu > summary span { display: block; width: 22px; height: 2px; background: var(--color-neutral-darkest); transition: transform 300ms ease-in-out; transform-origin: center; }
+  .bio-menu[open] > summary span:first-child { transform: translateY(4px) rotate(45deg); }
+  .bio-menu[open] > summary span:last-child { transform: translateY(-4px) rotate(-45deg); }
+  .bio-menu-panel { position: fixed; inset: var(--header-h) 0 0 0; z-index: 800; overflow-y: auto; overscroll-behavior: contain; background: var(--surface-page); padding: var(--space-12) var(--page-gutter); display: flex; flex-direction: column; gap: var(--space-8); }
+  .bio-menu-panel a { font-size: var(--text-h4); font-weight: var(--font-weight-bold); letter-spacing: var(--heading-letter-spacing); }
+
+  /* THE PROFILE. Aligned to the same --container-xxl edge as the logo and every SPA
+     section. On a desktop the portrait takes a column of its own at up to 18rem (288px),
+     which is larger than the 197px tile the reader clicked to get here. Before, it
+     was 180px, smaller than the tile, above a 560px column with the right 60% of the
+     page empty. The text column stops at 38rem, about 65 characters of body text, in
+     the 50-75 range line-length research settles on.
+
+     The back link's chevron is chevron_right mirrored. The design system's icon font
+     is subset to five glyphs and chevron_left is not one of them, and the system says
+     not to hand-draw SVG paths. Mirroring costs nothing; a sixth glyph means
+     regenerating the subset. It goes to /team/ rather than /team/#<slug>: the SPA
+     renders after the browser has already tried to jump to a fragment, so the fragment
+     lands at the top anyway (measured: scrollY 0). */
+  .bio { padding: clamp(var(--space-8), 4vw, var(--space-12)) var(--page-gutter) clamp(var(--section-pad-y), 7vw, var(--section-pad-y-lg)); }
+  .bio-wrap { margin-inline: auto; max-width: var(--container-xxl); }
+  .bio-back { margin: 0 0 clamp(var(--space-8), 4vw, var(--space-12)); font-size: var(--text-small); }
+  .bio-back a { display: inline-flex; align-items: center; gap: var(--space-1); min-height: 24px; }
+  .bio-back .ds-icon { transform: scaleX(-1); }
+  .bio-layout { display: grid; gap: var(--space-8); }
+  .bio-portrait { width: 12rem; aspect-ratio: 1 / 1; object-fit: cover; border-radius: var(--radius-image); display: block; }
+  .bio-text { max-width: 38rem; }
+  .bio h1 { font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2); text-wrap: pretty; }
+  .bio-role { font-weight: var(--font-weight-semibold); font-size: var(--text-regular); margin: 0 0 var(--space-10); }
+  .bio-body { display: flex; flex-direction: column; gap: var(--space-6); }
   .bio-body p { font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0; text-wrap: pretty; }
+  .bio-links { list-style: none; margin: var(--space-10) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-8); }
+  .bio-links a { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; font-size: var(--text-small); font-weight: var(--font-weight-semibold); }
+  .bio-links img, .bio-links .ds-icon { width: var(--icon-size); height: var(--icon-size); font-size: var(--icon-size); display: block; }
+  /* The SPA's touch-target rule, for the links this page has. Below the desktop
+     breakpoint every link gets 44px of height from padding, not a bigger glyph. The
+     logo, not every header link: the menu panel sits inside this page's <header>, but
+     the SPA's sits outside its own, so its links never got the rule. Given it here,
+     the panel's rows spread from 68px to 76px apart. */
+  @media (max-width: 991px) {
+    footer a { display: inline-flex; align-items: center; min-height: 2.75rem; }
+    .bio-logo, .bio-back a { min-height: 2.75rem; }
+  }
+  @media (min-width: 992px) {
+    .bio-layout { grid-template-columns: minmax(0, 18rem) minmax(0, 38rem); column-gap: clamp(var(--space-12), 5vw, var(--space-20)); align-items: start; }
+    .bio-layout.is-text-only { grid-template-columns: minmax(0, 38rem); }
+    .bio-portrait { width: 100%; }
+  }
 </style>
 </head>
 <body class="scheme-1">
-<header style="padding:var(--space-8) var(--page-gutter);border-bottom:var(--border-width-divider) solid var(--border-hairline)">
-  <div style="margin-inline:auto;max-width:var(--container-xxl);display:flex;align-items:center;justify-content:space-between;gap:var(--space-8);flex-wrap:wrap">
-    <a href="${basePath}" style="display:block;flex-shrink:0"><img src="assets/logo/logo-horiz.svg" alt="augment^ed, supported by AERDF" style="width:200px;display:block" width="1000" height="212" decoding="async"></a>
-    <nav class="bio-nav" style="display:flex;align-items:center;gap:var(--space-8);flex-wrap:wrap">
+<header class="bio-header">
+  <div class="bio-header-row">
+    <a class="bio-logo" href="${basePath}"><img src="assets/logo/logo-horiz.svg" alt="augment^ed, supported by AERDF" width="504" height="169" decoding="async"></a>
+    <nav class="bio-nav at-desktop" aria-label="Main">
       ${nav.map(([sl, label]) => `<a href="${basePath}${sl}/">${label}</a>`).join('\n      ')}
+      <a class="bio-pill" href="${basePath}follow/">Follow our work</a>
     </nav>
+    <details class="bio-menu at-mobile">
+      <summary aria-label="Menu"><span></span><span></span></summary>
+      <nav class="bio-menu-panel" aria-label="Main">
+        ${nav.map(([sl, label]) => `<a href="${basePath}${sl}/">${label}</a>`).join('\n        ')}
+        <a href="${basePath}follow/">Follow Our Work</a>
+      </nav>
+    </details>
   </div>
 </header>
 
-<main style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
-  <div style="margin-inline:auto;max-width:var(--container-md)">
-    <p style="font-size:var(--text-small);margin:0 0 var(--space-8)"><a href="${basePath}team/">&larr; Who We Are</a></p>
-    ${photo}
-    <h1 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2);text-wrap:pretty">${esc(b.name)}</h1>
-    ${b.role ? `<p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0 0 var(--space-10)">${esc(b.role)}</p>` : ''}
-    <div class="bio-body" style="display:flex;flex-direction:column;gap:var(--space-6)">
-      ${b.paras.map((t) => `<p>${esc(t)}</p>`).join('\n      ')}
+<main class="bio">
+  <div class="bio-wrap">
+    <p class="bio-back"><a href="${basePath}team/"><span class="ds-icon" aria-hidden="true">chevron_right</span>Who We Are</a></p>
+    <div class="bio-layout${hasPhoto ? '' : ' is-text-only'}">
+      ${photo}
+      <div class="bio-text">
+        <h1>${esc(b.name)}</h1>
+        ${b.role ? `<p class="bio-role">${esc(b.role)}</p>` : ''}
+        <div class="bio-body">
+          ${b.paras.map((t) => `<p>${esc(t)}</p>`).join('\n          ')}
+        </div>
+        ${links.length ? `<ul class="bio-links">\n          ${links.map(linkItem).join('\n          ')}\n        </ul>` : ''}
+      </div>
     </div>
   </div>
 </main>
@@ -363,9 +526,10 @@ ${DS_SHEETS.map((h) => `<link rel="stylesheet" href="${h}">`).join('\n')}
   <div style="margin-inline:auto;max-width:var(--container-xxl)">
     <div style="display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;column-gap:var(--space-12);row-gap:var(--space-12);margin-bottom:var(--space-16)">
       <div><img src="assets/logo/logo-vert.svg" alt="augment^ed, supported by AERDF" style="width:168px;display:block;margin-bottom:var(--space-6)" width="430" height="266" decoding="async"></div>
-      <div class="bio-nav" style="display:flex;flex-direction:column;gap:var(--space-3)">
+      <div style="display:flex;flex-direction:column;gap:var(--space-3)">
         <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0 0 var(--space-1)">Explore</p>
-        ${nav.map(([sl, label]) => `<a href="${basePath}${sl}/">${label}</a>`).join('\n        ')}
+        ${nav.map(([sl, label]) => `<a href="${basePath}${sl}/" style="font-size:var(--text-small)">${label}</a>`).join('\n        ')}
+        <a href="${basePath}follow/" style="font-size:var(--text-small)">Get Involved</a>
       </div>
     </div>
     <div style="height:var(--border-width-divider);width:100%;background:var(--border-hairline);margin-bottom:var(--space-6)"></div>
@@ -395,14 +559,14 @@ const bios = readBios().filter((b) => {
 for (const b of bios) {
   const dir = path.join(outDir, 'team', b.slug);
   fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, 'index.html'), absolutise(bioPage(b)));
+  fs.writeFileSync(path.join(dir, 'index.html'), share(absolutise(bioPage(b))));
 }
 if (bios.length) console.log(`  bios: ${bios.map((b) => `team/${b.slug}/`).join(', ')}`);
 
 // GitHub Pages serves 404.html from whatever URL was missed, so its references
 // have to be absolute — relative ones would resolve against the bad path — and
 // it has to be told the real base so its links point back into the site.
-const notFound = absolutise(home)
+const notFound = share(absolutise(home))
   .replace('<head>', `<head>\n<script>window.__siteBase = ${JSON.stringify(basePath)};</script>`);
 fs.writeFileSync(path.join(outDir, '404.html'), notFound);
 
@@ -471,7 +635,11 @@ function refsIn(html) {
   // for anything that does, which is the case the warnings below are written for.
   const isSpa = html.includes('<x-dc>');
   for (const m of html.matchAll(/(?:src|href)="([^"]+)"/g)) out.add(m[1]);
-  for (const m of html.matchAll(/<meta property="og:image" content="([^"]+)"/g)) out.add(m[1]);
+  // og:image is an absolute URL by now (see share()), which the filter below would
+  // skip as off-site. It is this site's own file, so check it as the path it names.
+  for (const m of html.matchAll(/<meta property="og:image" content="([^"]+)"/g)) {
+    out.add(ORIGIN && m[1].startsWith(ORIGIN + '/') ? m[1].slice(ORIGIN.length) : m[1]);
+  }
   // The hero frames are addressed by string concatenation inside assets/hero-bridge.js,
   // the same way the other two sequences are, so nothing the scan above can see refers to
   // any of them. Same cross product for the same reason: shipping one cut without the
