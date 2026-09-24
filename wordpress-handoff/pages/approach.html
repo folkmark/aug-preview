@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- exported from 1b17d1bc285e051b70b21414667c1b128ed6c0ab by tools/export-static.mjs -->
+<!-- exported from 6008fab05c402453d1d046fd8ae36f4776516566 by tools/export-static.mjs -->
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -31,7 +31,7 @@
 <style>html, body { margin: 0; background: #fdfcfa; }</style>
 
 <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" data-bg-color="#FBF9F4"><rect width="120" height="120" fill="#FBF9F4"></rect><g fill="none" stroke="#255799" stroke-width="7" stroke-linecap="square"><path d="M36 86V60a24 24 0 0 1 48 0v26"></path><path d="M28 86h64"></path></g></svg></template>
-<link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/fonts.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/colors.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/typography.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/layout.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/icons.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/schemes.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/base.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/styles.css"><link rel="stylesheet" href="../../assets/hero-bridge.css"><script src="../../assets/hero-bridge.js" defer=""></script><link rel="stylesheet" href="../../assets/falling-blocks.css"><script src="../../assets/falling-blocks.js" defer=""></script><link rel="stylesheet" href="../../assets/cycle-wheel.css"><script src="../../assets/cycle-wheel.js" defer=""></script><style>/* The header's height, and the only place it is written down. Four sticky components
+<link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/fonts.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/colors.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/typography.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/layout.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/icons.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/schemes.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/tokens/base.css"><link rel="stylesheet" href="../../_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/styles.css"><link rel="stylesheet" href="../../assets/hero-bridge.css"><script src="../../assets/hero-bridge.js" defer=""></script><link rel="stylesheet" href="../../assets/falling-blocks.css"><script src="../../assets/falling-blocks.js" defer=""></script><link rel="stylesheet" href="../../assets/cycle-wheel.css"><script src="../../assets/cycle-wheel.js" defer=""></script><link rel="stylesheet" href="../../assets/team-colour.css"><script src="../../assets/team-colour.js" defer=""></script><style>/* The header's height, and the only place it is written down. Four sticky components
      pin to the bottom of the nav and each derives its own stage height by subtracting
      this: the hero bridge through --hb-pin, the cycle wheel through --cw-pin, the falling
      blocks through --fb-sticky-top, and the hero headline's own top. It was five copies of
@@ -95,9 +95,12 @@
      to one line across the row. Before, it followed its role line and any icon row, and
      sat at 320, 320, 340 and 344px down the four tiles.
 
-     Hover follows the design system's two rules: links dim to 70% (the global a:hover
-     already covers the whole tile, since the overlay belongs to the link) and hover goes
-     darker, never lighter, so the photo or its placeholder darkens a little. The focus
+     Hover: the link dims to 70% (the global a:hover already covers the whole tile,
+     since the overlay belongs to the link), and the first child darkens a little, which
+     is the design system's "darker, never lighter". On a placeholder that is all there
+     is. On a photo the colour bloom then pours the photograph's own colour over it from
+     the pointer's way in — ../../assets/team-colour.css, which breaks that rule on purpose and
+     says why; the darkened duotone still shows at the bloom's soft front. The focus
      ring is ours. The system has none and says to add one in --brand-accent; it is drawn
      on the overlay, so keyboard focus outlines the whole tile. */
   .visually-hidden { position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }

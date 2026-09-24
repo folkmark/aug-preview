@@ -352,7 +352,9 @@ The headshots have one step before the encoder. `tools/cutout-headshots.py` cuts
 person out of their photograph with a matting model and frames all 24 by one rule — the
 same face height, the same eye line — and writes 768px cut-outs to
 `source-material/image-sources/team-cutout/`, which are committed. `encode-images.mjs`
-reads those and applies the navy duotone, so re-encoding the headshots or changing their
+reads those and writes each person twice — the navy duotone the page shows, and a colour
+twin in `assets/team/colour/` that pours in under the cursor on hover (`assets/team-colour.js`)
+— so re-encoding the headshots or changing their
 colours runs from a clean checkout like the rest. Only a new or replaced photograph needs
 the cut-out step, and that needs Python and a 973 MB model that is not in the repository;
 the script's header says where to get both.

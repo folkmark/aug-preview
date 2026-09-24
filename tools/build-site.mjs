@@ -325,6 +325,18 @@ function tileLinks(slug) {
     .map((m) => ({ url: m[1], label: m[2] }));
 }
 
+// What else the tile says, read off it the same way. The muted lines under the role are a
+// Fellow's school and city, which their page repeats; the group heading the tile sits
+// under decides what the page's structured data may claim about who they work for.
+function tileFacts(slug) {
+  const start = home.indexOf(`id="${slug}"`);
+  const end = start < 0 ? -1 : home.indexOf('class="bio-cta"', start);
+  const muted = end < 0 ? [] : [...home.slice(start, end).matchAll(/<p style="[^"]*--text-muted[^"]*">([^<]+)<\/p>/g)].map((m) => m[1]);
+  const heads = [...home.slice(0, Math.max(0, start)).matchAll(/<h2[^>]*>([^<]+)<\/h2>/g)];
+  return { muted, group: heads.length ? heads[heads.length - 1][1].trim() : '' };
+}
+const unesc = (t) => t.replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+
 function bioPage(b) {
   // The portrait is optional on purpose: a bio can land before a usable headshot does,
   // and the page should still be worth reading. Without one the page is a single column
@@ -341,6 +353,7 @@ function bioPage(b) {
   const lede = firstStop > 0 ? b.paras[0].slice(0, firstStop + 1) : b.paras[0];
   const desc = esc(lede);
   const links = tileLinks(b.slug);
+  const facts = tileFacts(b.slug);
   const url = ORIGIN && `${ORIGIN}${basePath}team/${b.slug}/`;
   const [first, ...rest] = b.name.split(' ');
   const nav = [['challenge', 'The Challenge'], ['approach', 'Our Approach'], ['team', 'Who We Are']];
@@ -351,6 +364,13 @@ function bioPage(b) {
   // recommended fields, and sameAs is the person's own links from their tile. Built
   // from ORIGIN because every URL in it must be absolute. Without a CNAME it is left
   // out, not filled with paths.
+  //
+  // Only Leadership works FOR AugmentED. Until September 2026 only Leadership had pages,
+  // and every page said worksFor; now a university professor and a Memphis science
+  // teacher have them too, and saying their employer is AugmentED would be wrong in the
+  // one place a search engine takes literally. Everyone else is a memberOf it, with
+  // their own institution as the affiliation where their tile names one.
+  const org = { '@type': 'Organization', name: 'AugmentED', url: `${ORIGIN}${basePath}` };
   const ld = url && {
     '@context': 'https://schema.org',
     '@type': 'ProfilePage',
@@ -362,7 +382,9 @@ function bioPage(b) {
       description: lede,
       ...(hasPhoto && { image: `${ORIGIN}${basePath}assets/team/${b.slug}.webp` }),
       ...(links.length && { sameAs: links.map((l) => l.url) }),
-      worksFor: { '@type': 'Organization', name: 'AugmentED', url: `${ORIGIN}${basePath}` },
+      ...(facts.group === 'Leadership'
+        ? { worksFor: org }
+        : { memberOf: org, ...(facts.muted[0] && { affiliation: { '@type': 'Organization', name: unesc(facts.muted[0]) } }) }),
       url,
     },
   };
@@ -466,6 +488,9 @@ ${ld ? `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\
   .bio-text { max-width: 38rem; }
   .bio h1 { font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2); text-wrap: pretty; }
   .bio-role { font-weight: var(--font-weight-semibold); font-size: var(--text-regular); margin: 0 0 var(--space-10); }
+  /* A Fellow's school and city, muted like the same two lines on their tile. */
+  .bio-role:has(+ .bio-meta) { margin-bottom: var(--space-2); }
+  .bio-meta { color: var(--text-muted); font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0 0 var(--space-10); }
   .bio-body { display: flex; flex-direction: column; gap: var(--space-6); }
   .bio-body p { font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0; text-wrap: pretty; }
   .bio-links { list-style: none; margin: var(--space-10) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-8); }
@@ -513,6 +538,7 @@ ${ld ? `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\
       <div class="bio-text">
         <h1>${esc(b.name)}</h1>
         ${b.role ? `<p class="bio-role">${esc(b.role)}</p>` : ''}
+        ${facts.muted.length ? `<p class="bio-meta">${facts.muted.join('<br>')}</p>` : ''}
         <div class="bio-body">
           ${b.paras.map((t) => `<p>${esc(t)}</p>`).join('\n          ')}
         </div>
@@ -625,6 +651,18 @@ const heroManifest = (() => {
     return null;
   }
 })();
+
+// The headshots' colour twins are the same kind of reference. assets/team-colour.js
+// builds each one's URL from its duotone's (assets/team/<slug>.webp becomes
+// assets/team/colour/<slug>.webp), so no page names them and the src/href scan below
+// never sees them. Check the pairing here instead. A missing twin would not break the
+// page — the script drops a layer whose image fails to load — it would leave one person
+// who never blooms, which is exactly the gap nobody notices in review.
+for (const slug of new Set([...home.matchAll(/assets\/team\/([a-z0-9-]+)\.webp/g)].map((m) => m[1]))) {
+  if (!fs.existsSync(path.join(root, `assets/team/colour/${slug}.webp`))) {
+    problems.push(`assets/team/colour/${slug}.webp is missing — every pictured headshot has a colour twin; run tools/encode-images.mjs`);
+  }
+}
 
 function refsIn(html) {
   const out = new Set();

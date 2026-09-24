@@ -3,7 +3,7 @@
  * AugmentED asset loading for a classic WordPress theme.
  *
  * This file registers everything the AugmentED pages need — the design-system
- * stylesheets in their required order, and the three page components — with
+ * stylesheets in their required order, and the four page components — with
  * the loading behavior the handoff specifies: filemtime() cache-busting versions,
  * deferred scripts, and the attributes that tell optimization plugins to leave
  * the component scripts alone.
@@ -49,7 +49,7 @@
 const AUGMENTED_ED_PAGES = array( 'augmented', 'challenge', 'approach', 'team', 'follow' );
 
 /** Script handles that must survive optimization plugins untouched. */
-const AUGMENTED_ED_PROTECTED_HANDLES = array( 'augmented-hero-bridge', 'augmented-falling-blocks', 'augmented-cycle-wheel' );
+const AUGMENTED_ED_PROTECTED_HANDLES = array( 'augmented-hero-bridge', 'augmented-falling-blocks', 'augmented-cycle-wheel', 'augmented-team-colour' );
 
 /**
  * Whether the current request is an AugmentED page.
@@ -94,8 +94,11 @@ add_action( 'wp_enqueue_scripts', function () {
 	// The components. Every script is defer-safe and order-independent; the two
 	// canvas rigs find their frames through the `base` attribute your template
 	// sets on the element, never through their own URL, and the cycle wheel
-	// touches only the markup you author.
-	foreach ( array( 'hero-bridge', 'falling-blocks', 'cycle-wheel' ) as $component ) {
+	// touches only the markup you author. team-colour is not an element: it
+	// finds the team tiles from the document and lays each headshot's colour
+	// twin over it on hover, deriving the twin's URL from the <img> src your
+	// template writes (assets/team/x.webp -> assets/team/colour/x.webp).
+	foreach ( array( 'hero-bridge', 'falling-blocks', 'cycle-wheel', 'team-colour' ) as $component ) {
 		wp_enqueue_style(
 			'augmented-' . $component,
 			$uri . 'assets/' . $component . '.css',

@@ -1,8 +1,11 @@
-# The leadership bio pages — build spec
+# The team bio pages — build spec
 
-Four pages, one per member of the leadership team, at `/team/<slug>/`. They are the only
-pages on this site that are **not** the single-page app, and porting them is the easiest
-job in this package: in WordPress they are one custom post type with one template.
+Twenty pages, one for each person on the team who has a bio, at `/team/<slug>/`: the four
+leaders, and since late September 2026 sixteen of the partners and fellows. They are the
+only pages on this site that are **not** the single-page app, and porting them is the
+easiest job in this package: in WordPress they are one custom post type with one template.
+(This file is still called leadership.md because Leadership had the only pages when it
+was written, and other documents link to it by that name.)
 
 **Audience.** You're rebuilding the Who We Are page, or adding a person to it. Read
 [the handoff README](../README.md) first for the rules shared by everything here.
@@ -43,13 +46,15 @@ Second paragraph.
 no Markdown parser — bold, links and lists are not rendered, they ship as literal
 characters. Keep bios to prose, or add a parser; it is about ten lines in `readBios()`.
 
-`source-material/bios/unused/` holds bios kept but not published; the build does not read
-it. Brandon Bodnar's is there: he moved to Technology and Design Partners in September,
-and partners do not carry bios.
+Anyone in any group can have one; nine people currently do not, because the tracking
+sheet has no bio for them, and their cards have no link. `source-material/bios/unused/`,
+when it exists, holds bios kept but not published; the build does not read it.
 
 ## 3. The card contract
 
-A leadership card is an ordinary `.team-grid-3` tile plus a class and a link:
+A card with a bio is an ordinary `.team-grid-3` tile plus a class, an id and a link. This is
+one of the leaders; a partner's or a fellow's is the same, with their muted lines and icon
+row where the tile already has them:
 
 ```html
 <div class="bio-tile" data-reveal="" id="sherry-lachman" style="opacity:0;transition:…">
@@ -91,7 +96,7 @@ nav's own links.
 | Icon links stay clickable | `.bio-tile a[aria-label] { position:relative; z-index:1 }` | Otherwise the overlay swallows Raquel's LinkedIn. |
 | Screen readers hear "Read bio of Sherry Lachman" | A `.visually-hidden` span after the visible words | Four identical "Read bio" links are ambiguous out of context. The visible words come first so speech-control users can say what they see (WCAG 2.5.3). **Not an `aria-label`**: the team grid styles every `.team-grid-3 a[aria-label]` as a 24px icon box (44px on touch), and it would shrink the link into one. |
 | Every "Read bio" in a row sits on one line | `.bio-tile` is a flex column; `.bio-cta` has `margin-top:auto` | Before this, the link followed the role line and any icon row, and sat at 320, 320, 340 and 344px down the four tiles. |
-| Hover | Link to 70% opacity (the site's `a:hover`); the photo or placeholder to `brightness(.92)` | The design system's two hover rules: links dim, and hover goes darker, never lighter. |
+| Hover | Link to 70% opacity (the site's `a:hover`); the photo or placeholder to `brightness(.92)`; on a photo, its colour then pours back in from the pointer's side (see Headshots) | The design system's two hover rules — links dim, hover goes darker — plus the colour bloom, which breaks the second on purpose. A placeholder has no colour to show, so it only darkens. |
 | Keyboard focus | 2px `--brand-accent` outline on the overlay, 6px offset | The design system has no focus ring and says to add one in that colour. Drawn on the overlay, it outlines the whole tile. |
 
 Measured at 1440: tile 197x363, link 94x38, four links on one line; clicks on the
@@ -110,13 +115,31 @@ empty tile and a photographed one sit on one colour.
 
 Do not re-crop them — no Media Library "crop to square", no theme `object-position`. The
 framing is what makes 24 photographs from 24 photographers read as one team, and it is
-already done. They are 5–20 KB each.
+already done. They are 5–25 KB each.
 
 They are made in two steps, and the split is on purpose. `tools/cutout-headshots.py`
 does the slow part once — a matting model, face and eye detection, the framing — and
 writes 768px cut-outs to `source-material/image-sources/team-cutout/`, with no colour.
 `tools/encode-images.mjs` then applies the look, from the `DUOTONE` object at the top of
 the file, in seconds. Change the colours there; change the framing in the cut-out tool.
+
+**Each has a colour twin**, `assets/team/colour/<slug>.webp`: the same cut-out in its own
+colour on the same `#e9eef4`, 6–30 KB. On hover, the colour pours back into the duotone
+from wherever the pointer came in — a radial mask, 900 ms in, draining out where the
+pointer leaves in 450 ms — and a keyboard focus on "Read bio" blooms it from the face.
+That is `assets/team-colour.js` and `.css`, enqueued like the other components; porting it
+needs three things of the markup, all already true here:
+- the headshot is an `<img>` whose `src` contains `assets/team/<slug>.webp`, and it is the
+  first child of a card that is a direct child of `.team-grid-3`;
+- the twin sits at the same path with `colour/` after `team/` — the script derives it
+  from the `src` attribute and never needs a list;
+- hover is judged on the whole card, so it works through the stretched link.
+
+It only runs on a device with a mouse or trackpad (`(hover: hover) and (pointer: fine)`),
+and it creates the colour layers only when a pointer first crosses a team grid, so phones
+never download the twins. Reduced motion gets a 200 ms crossfade instead of the bloom.
+The encoder derives the twins from the duotone jobs, so they cannot drift apart, and the
+build fails if a pictured person is missing one.
 
 ## 4. Two invariants you must not break
 
@@ -174,13 +197,14 @@ porting. It exists so the static build does not look like a different site.
 | --- | --- | --- |
 | Portrait | Own column, 288px (`18rem`), larger than the 197px tile | Stacked, 192px (`12rem`) |
 | Text column | Up to `38rem`, 62–69 characters per line measured | Full width, about 45 characters |
-| No photo (nobody at present; Jenny's page until her headshot arrived) | One text column, not an empty square | Same |
+| No photo (Alexandra Wiggins, Chris Mutter, Brandon Bodnar) | One text column, not an empty square | Same |
 
 Everything aligns to the same `--container-xxl` edge as the logo. Above the layout is a
 "‹ Who We Are" link to `/team/`, whose chevron is `chevron_right` mirrored, because the
-icon font is subset to five glyphs and `chevron_left` is not one of them. After the bio
-come the person's LinkedIn and website, read off their own tile so the tile stays the one
-place they are written. Each is shown as its mark plus a label, per the design system,
+icon font is subset to five glyphs and `chevron_left` is not one of them. Under the role
+line come the card's muted lines, where it has them — a Fellow's school and city, muted as
+on the card. After the bio come the person's LinkedIn and website. Both are read off their
+own tile so the tile stays the one place they are written. Each is shown as its mark plus a label, per the design system,
 which puts brand marks under team bios.
 
 **The metadata:**
@@ -189,7 +213,10 @@ which puts brand marks under team bios.
 - A canonical link and `og:url`; `og:type=profile` with `profile:first_name` and
   `profile:last_name`.
 - `ProfilePage` JSON-LD whose `mainEntity` is a `Person` with `name`, `jobTitle`,
-  `description`, `image`, `sameAs` (the tile's links) and `worksFor` set to AugmentED.
+  `description`, `image`, `sameAs` (the tile's links), and either `worksFor` AugmentED
+  (Leadership only) or `memberOf` AugmentED with their own institution as `affiliation`
+  where their card names one. A professor or a teacher does not work for AugmentED, and
+  this is the one place a search engine takes that literally.
   Google lists "an employee page on a company website" as a use for this type:
   <https://developers.google.com/search/docs/appearance/structured-data/profile-page>.
 - The site's share card as `og:image`. It is an **absolute** URL on every page, not
@@ -201,8 +228,8 @@ filling them with paths, and warns.
 
 ## 7. Adding a person
 
-1. Add their card to the Leadership grid in `index.html` with `class="bio-tile"` and
-   `id="<slug>"`.
+1. Add their card to their group's grid in `index.html`. If they have a bio, give the
+   card `class="bio-tile"` and `id="<slug>"`.
 2. Add their photograph to `source-material/image-sources/team/<slug>.jpg` — the largest
    original that exists; see the headshot notes in `tools/encode-images.mjs` for where to
    look. Run `python3 tools/cutout-headshots.py --only=<slug>`, which needs the card from
@@ -210,9 +237,10 @@ filling them with paths, and warns.
    fetch, and read its report: a warning means the photo is cropped too tight for the
    shared framing and wants a looser one. Then add a job to `tools/encode-images.mjs` in
    the others' form — `in: 'team-cutout/<slug>.webp'`, `width: 512, square: true,
-   duotone: DUOTONE` — and run it. The same step adds anyone to the other three groups.
-3. Write `source-material/bios/<slug>.md`.
-4. Add the `Read bio` link to their card, copying another leader's `.bio-cta` paragraph,
+   duotone: DUOTONE` — and run it. Their colour twin comes with it; there is nothing to add.
+3. If they have a bio, write `source-material/bios/<slug>.md`, with the role line from their
+   card. Their affiliation, location and links are read off the card, not repeated here.
+4. Add the `Read bio` link to their card, copying another card's `.bio-cta` paragraph,
    with the slug in the href and the name in the hidden span.
 5. Bump the counts in `tools/export-content.mjs` — `team.length` and the headshot count are
    hard-coded on purpose, as tripwires.
@@ -224,8 +252,10 @@ so nothing is published early.
 
 Build, then confirm at 1440, 992 and 400:
 - every card on the page is the same width, and each row's "Read bio" links share a line;
-- clicking a leader's photo, name or the space between opens their page;
-- Tab stops once per leader;
+- clicking the photo, name or the space between on a card with a bio opens their page;
+- Tab stops once per card with a bio;
+- with a mouse, hovering a photo pours its colour in from the side the pointer entered,
+  and it drains out where the pointer leaves; a touch device fetches no `colour/` files;
 - a bio page's header and footer match `/team/`'s;
 - a bio page renders correctly **with JavaScript disabled**. That last one is the
   property that makes these pages portable, and it is easy to lose by reaching for the
