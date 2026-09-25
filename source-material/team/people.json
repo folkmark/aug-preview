@@ -1040,7 +1040,7 @@
         "drive": "10FCxGPA87YEhKgufQ0oINaAE3kOr6neA",
         "from": "form",
         "ref": "https://drive.google.com/open?id=10FCxGPA87YEhKgufQ0oINaAE3kOr6neA",
-        "notes": "Ready to cut out once her group is confirmed."
+        "notes": "927x1800, usable. Not committed until she has a group: this repository is public."
       },
       "form": {
         "submitted": "2026-09-24 11:46:23",
@@ -1071,26 +1071,28 @@
       "linkedin": "https://www.linkedin.com/in/tom-keefe/",
       "website": null,
       "photo": {
-        "drive": "1lWFQOIo4Wib_MLC97PXRwscpBe6V-T7F",
+        "drive": "1liA-Hru9egI0JxDTDy6dHpYWADLNg1OP",
         "from": "form",
-        "ref": "https://drive.google.com/open?id=1lWFQOIo4Wib_MLC97PXRwscpBe6V-T7F",
-        "notes": "Screenshot of a kayaking photo, sunglasses; would be enlarged ~4×."
+        "ref": "https://drive.google.com/open?id=1liA-Hru9egI0JxDTDy6dHpYWADLNg1OP",
+        "notes": "Replaced by Joan Lee on 25 September 2026 with a 1187x1240 head-and-shoulders photo on a plain wall, usable. The 237x222 kayaking screenshot he first sent (1lWFQOIo4Wib_MLC97PXRwscpBe6V-T7F) is superseded. Not committed until he has a group: this repository is public."
       },
       "form": {
         "submitted": "2026-09-24 13:44:15",
         "name": "Tom Keefe",
         "linkedin": "https://www.linkedin.com/in/tom-keefe/",
         "other": null,
-        "headshot": "1lWFQOIo4Wib_MLC97PXRwscpBe6V-T7F",
+        "headshot": "1liA-Hru9egI0JxDTDy6dHpYWADLNg1OP",
         "group": null,
         "outcome": "held",
-        "detail": "237×222 screenshot of a kayaking photo; person held until group is confirmed"
+        "detail": "Headshot replaced by Joan Lee on 2026-09-25 (1187x1240, usable); the first upload was a 237x222 screenshot"
       },
       "notes": "Submitted the website info form; group and title not yet confirmed.",
       "actions": [
-        "[joan] Confirm group and title, and ask for a real headshot (upload is a 237×222 screenshot)."
+        "[joan] Confirm group and title, then add to the page (photo is in the form)."
       ],
-      "history": []
+      "history": [
+        "2026-09-25 headshot: 237x222 screenshot -> 1187x1240 photo, replaced in the form by Joan Lee"
+      ]
     },
     {
       "id": 32,
@@ -1108,7 +1110,7 @@
         "drive": "16kOPcBQcItb99LDwUHyYYaJo_HDvRTwN",
         "from": "form",
         "ref": "https://drive.google.com/open?id=16kOPcBQcItb99LDwUHyYYaJo_HDvRTwN",
-        "notes": "Uploaded 2026-09-24; not downloaded yet."
+        "notes": "1273x1636, reviewed 25 September 2026, usable. Not committed until she has a group: this repository is public."
       },
       "form": {
         "submitted": "2026-09-24 17:10:06",
@@ -1144,7 +1146,12 @@
       "location": null,
       "linkedin": null,
       "website": null,
-      "photo": null,
+      "photo": {
+        "master": "adam-bachman.jpg",
+        "from": "tracker",
+        "ref": "Website Bio tracking sheet, Headshots column",
+        "notes": "Restored from history (ddc7848^) on 25 September 2026; identical to the tracker's copy, 500x500. Never cut out: he left the page before the cut-outs came in."
+      },
       "bioSource": {
         "from": "tracker",
         "trackerApproved": true
@@ -1176,7 +1183,12 @@
       "location": null,
       "linkedin": null,
       "website": null,
-      "photo": null,
+      "photo": {
+        "master": "suzanna-smith.jpg",
+        "from": "tracker",
+        "ref": "Website Bio tracking sheet, Headshots column",
+        "notes": "Restored from history (ddc7848^) on 25 September 2026; identical to the tracker's copy, 800x800. Never cut out: she left the page before the cut-outs came in."
+      },
       "bioSource": {
         "from": "tracker",
         "trackerApproved": false
@@ -1209,9 +1221,10 @@
       "linkedin": "https://www.linkedin.com/in/danielle-ragavanis-passaretti-110b80b0/",
       "website": null,
       "photo": {
+        "master": "danielle-ragavanis.jpg",
         "from": "tracker",
         "ref": "Website Bio tracking sheet",
-        "notes": "Predates the cut-outs. Her encodes stayed published for a week after she left the page, until 8db345c removed them."
+        "notes": "Restored from history (3087ca5) on 25 September 2026; identical to the tracker's copy, 414x414. Predates the cut-outs. Her encodes stayed published for a week after she left the page, until 8db345c removed them."
       },
       "form": null,
       "notes": "Removed on purpose per Joan; still listed in the tracker.",
@@ -1241,9 +1254,10 @@
       "linkedin": "https://www.linkedin.com/in/alondra-ramos-31542958/",
       "website": null,
       "photo": {
+        "master": "alondra-ramos.jpg",
         "from": "tracker",
         "ref": "Website Bio tracking sheet",
-        "notes": "Predates the cut-outs. Her encodes stayed published for a week after she left the page, until 8db345c removed them."
+        "notes": "Restored from history (3087ca5) on 25 September 2026; identical to the tracker's copy, 450x450. Predates the cut-outs. Her encodes stayed published for a week after she left the page, until 8db345c removed them."
       },
       "form": null,
       "notes": "Removed on purpose per Joan; still listed in the tracker.",

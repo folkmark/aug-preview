@@ -764,7 +764,9 @@ files.set('ship.json', JSON.stringify(shipList, null, 1) + '\n');
 // Inputs, hashed, so --check can say which input moved when generated/ is stale.
 const inputs = ['index.html', ...PAGES.map((p) => `wordpress-handoff/pages/${p.file}`), 'wordpress-handoff/pages/states.json',
   'wordpress-handoff/content/team.json', 'wordpress-handoff/content/pages.json', ...dsTokens, ...componentSheets,
-  ...[...bios.keys()].sort().map((s) => `source-material/bios/${s}.md`)];
+  // Only the bios the page links. The roster keeps the bios of people off the page in the
+  // same folder, and hashing those would call generated/ stale over a file it never reads.
+  ...team.filter((p) => p.bioUrl).map((p) => p.slug).sort().map((s) => `source-material/bios/${s}.md`)];
 files.set('build.json', JSON.stringify({ export: stampLine, inputs: Object.fromEntries(inputs.map((f) => [f, sha(fs.readFileSync(path.join(root, f)))])) }, null, 1) + '\n');
 
 // ---------------------------------------------------------------- write or check
