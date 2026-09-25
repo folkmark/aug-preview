@@ -26,22 +26,22 @@ affiliation and location (a Fellow's school and city) are not repeated here: the
 reads them off the card, the same way it reads their LinkedIn and website, so the card
 stays the one place those are written.
 
-**A page is built only when the team page links to it** — when a card in `index.html`
-carries `href="team/<slug>/"`. A file nothing links to is skipped with a warning, not
-published. That is deliberate: a bio written ahead of the person being announced should
-not go live the moment it is committed, and an unlinked page on a public site is still a
-published page.
+**A page is built only for someone on the page.** Every bio here belongs to someone in the
+team roster, `source-material/team/people.json` (the build fails on one that does not), and
+the roster decides who appears: a person with a group who is not tagged `Archived` gets a
+tile, and a tile gets a "Read bio" link when their file exists here. Everyone else's bio is
+kept and not built — the build lists them as "bios kept, not built" — so it is here with
+all their other details the day they come back. That is also why a bio can be written
+ahead of someone being announced: until the roster gives them a group, nothing publishes.
 
 Blank lines separate paragraphs. There is no Markdown parser here: bold, links and lists
 are not rendered, they ship as literal characters. Keep it to prose. If a bio ever needs
-more than that, the parser is about ten lines in `readBios()` in `tools/build-site.mjs`,
+more than that, the parser is about ten lines in `readBios()` in `tools/lib/bio-page.mjs`,
 and the design system already has type styles for it. Apostrophes are typographic (’),
 as on the rest of the site; the sheet's are mostly straight and were converted, and
 nothing else about anyone's wording was changed.
 
-`unused/` is where a bio goes to be kept but not published; the build does not read it.
-There is none at the moment — Brandon Bodnar's was the last one there, parked when he
-moved to Technology and Design Partners and back now that partners have pages — and git
-keeps no empty directory, so create it when it is needed. Moving a file into it takes
-the page down without losing the text; moving it back up a level, with the link on the
-card, re-publishes it.
+The three archived people the tracker has bios for — Ted Cuevas, Adam Bachman and Suzanna
+Smith — have theirs here, word for word from the sheet, with apostrophes made typographic.
+(`unused/`, where a bio used to be parked to take its page down, is retired: the roster's
+`Archived` tag does that now, without moving the file.)
