@@ -51,7 +51,7 @@
         "[joan] Mark the published bio Approved in the tracker."
       ],
       "history": [
-        "2026-09-25 linkedin: — → https://www.linkedin.com/in/sherry-lachman-1920494/ (Joan Lee, comments on the \"website Edits\" slides, 2026-09-25)"
+        "2026-09-25 linkedin: — → https://www.linkedin.com/in/sherry-lachman-1920494/ (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
       ]
     },
     {
@@ -83,7 +83,7 @@
         "[joan] Mark the published bio Approved in the tracker."
       ],
       "history": [
-        "2026-09-25 linkedin: — → https://www.linkedin.com/in/caitlin-mills-60107a350/ (Joan Lee, comments on the \"website Edits\" slides, 2026-09-25)"
+        "2026-09-25 linkedin: — → https://www.linkedin.com/in/caitlin-mills-60107a350/ (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
       ]
     },
     {
@@ -440,7 +440,7 @@
       ],
       "history": [
         "2026-09-24 status: — → on_site (32a0c09)",
-        "2026-09-25 title: — → Data Scientist (Joan Lee, comments on the \"website Edits\" slides, 2026-09-25)"
+        "2026-09-25 title: — → Data Scientist (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
       ]
     },
     {
@@ -480,7 +480,7 @@
       ],
       "history": [
         "2026-09-24 status: — → on_site (32a0c09)",
-        "2026-09-25 title: — → Graduate Student, University of Minnesota (Joan Lee, comments on the \"website Edits\" slides, 2026-09-25)"
+        "2026-09-25 title: — → Graduate Student, University of Minnesota (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
       ]
     },
     {
@@ -518,7 +518,7 @@
       "history": [
         "2026-09-24 status: — → on_site (32a0c09)",
         "2026-09-25 headshot: placeholder → form upload (44275f4)",
-        "2026-09-25 title: — → Assistant Professor, University of Minnesota (Joan Lee, comments on the \"website Edits\" slides, 2026-09-25)"
+        "2026-09-25 title: — → Assistant Professor, University of Minnesota (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
       ]
     },
     {
@@ -559,8 +559,8 @@
       ],
       "history": [
         "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/alexandra-wiggins/ (6008fab)",
-        "2026-09-25 full_name: Alexandra Wiggins → Alexandra (Lexi) Wiggins",
-        "2026-09-25 headshot: placeholder → form upload"
+        "2026-09-25 full_name: Alexandra Wiggins → Alexandra (Lexi) Wiggins (daf7a21)",
+        "2026-09-25 headshot: placeholder → form upload (daf7a21)"
       ]
     },
     {
@@ -646,7 +646,7 @@
       "notes": "The form (filled in by Joan Lee) gives LinkedIn as \"N/A\"; the LinkedIn from her Bio tracking sheet stays on his tile (decided 2026-09-25).",
       "actions": [],
       "history": [
-        "2026-09-25 headshot: placeholder → form upload"
+        "2026-09-25 headshot: placeholder → form upload (daf7a21)"
       ]
     },
     {
@@ -944,7 +944,7 @@
       "notes": null,
       "actions": [],
       "history": [
-        "2026-09-25 title: Project Manager → Project Consultant & Manager (Joan Lee, comments on the \"website Edits\" slides, 2026-09-25)"
+        "2026-09-25 title: Project Manager → Project Consultant & Manager (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
       ]
     },
     {
@@ -1010,7 +1010,7 @@
       ],
       "history": [
         "2026-09-24 status: — → on_site (32a0c09)",
-        "2026-09-25 title: — → Program Manager (Joan Lee, comments on the \"website Edits\" slides, 2026-09-25)"
+        "2026-09-25 title: — → Program Manager (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
       ]
     },
     {
@@ -1057,7 +1057,7 @@
         "2026-09-25 full_name: Abby Petre → Abby (Csaba) Petre (44275f4)",
         "2026-09-25 title: — → Head of Engineering (44275f4)",
         "2026-09-25 bio_page: — → https://augmented2.folkmark.com/team/abby-petre/ (44275f4)",
-        "2026-09-25 group: technology-and-design-partners → leadership (Joan Lee, comments on the \"website Edits\" slides, 2026-09-25)"
+        "2026-09-25 group: technology-and-design-partners → leadership (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
       ]
     },
     {
@@ -1076,6 +1076,7 @@
         "master": "katie-butler.jpg",
         "from": "form",
         "ref": "https://drive.google.com/open?id=10FCxGPA87YEhKgufQ0oINaAE3kOr6neA",
+        "approved": false,
         "upscale": 0.52,
         "edgesExtended": "left 3%, right 2%",
         "notes": "927x1800, as received through the form on 24 September 2026."
@@ -1088,14 +1089,14 @@
         "headshot": "10FCxGPA87YEhKgufQ0oINaAE3kOr6neA",
         "group": null,
         "outcome": "used",
-        "detail": "927×1800, usable; person held until group and title are confirmed"
+        "detail": "927×1800, usable; used since her group was confirmed on 2026-09-25"
       },
       "notes": "Submitted the website info form. Group confirmed by Brendan on 25 September 2026; no title yet, so the tile shows none.",
       "actions": [
         "[joan] Send a title and organisation."
       ],
       "history": [
-        "2026-09-25 group: — → research-partners (confirmed by Brendan); on the page"
+        "2026-09-25 status: held → on_site; group: — → research-partners, confirmed by Brendan (daf7a21)"
       ]
     },
     {
@@ -1114,6 +1115,7 @@
         "master": "tom-keefe.jpg",
         "from": "form",
         "ref": "https://drive.google.com/open?id=1liA-Hru9egI0JxDTDy6dHpYWADLNg1OP",
+        "approved": false,
         "upscale": 0.54,
         "notes": "1187x1240, the photo Joan Lee put in the form on 25 September 2026 in place of his first upload, a 237x222 screenshot of a kayaking photo (1lWFQOIo4Wib_MLC97PXRwscpBe6V-T7F)."
       },
@@ -1132,8 +1134,8 @@
         "[joan] Send a title and organisation."
       ],
       "history": [
-        "2026-09-25 headshot: 237x222 screenshot -> 1187x1240 photo, replaced in the form by Joan Lee",
-        "2026-09-25 group: — → technology-and-design-partners (confirmed by Brendan); on the page"
+        "2026-09-25 headshot: 237x222 screenshot → 1187x1240 photo, replaced in the form by Joan Lee",
+        "2026-09-25 status: held → on_site; group: — → technology-and-design-partners, confirmed by Brendan (daf7a21)"
       ]
     },
     {
@@ -1152,6 +1154,7 @@
         "master": "allison-rapoport.jpeg",
         "from": "form",
         "ref": "https://drive.google.com/open?id=16kOPcBQcItb99LDwUHyYYaJo_HDvRTwN",
+        "approved": false,
         "upscale": 0.38,
         "edgesFaded": "left 6%",
         "notes": "1273x1636, as received through the form on 24 September 2026."
@@ -1164,14 +1167,14 @@
         "headshot": "16kOPcBQcItb99LDwUHyYYaJo_HDvRTwN",
         "group": null,
         "outcome": "used",
-        "detail": "not reviewed; person held until group and title are confirmed"
+        "detail": "1273×1636, usable; used since her group was confirmed on 2026-09-25"
       },
       "notes": "Submitted the website info form. Group confirmed by Brendan on 25 September 2026; no title yet, so the tile shows none.",
       "actions": [
         "[joan] Send a title and organisation."
       ],
       "history": [
-        "2026-09-25 group: — → technology-and-design-partners (confirmed by Brendan); on the page"
+        "2026-09-25 status: held → on_site; group: — → technology-and-design-partners, confirmed by Brendan (daf7a21)"
       ]
     },
     {
@@ -1209,7 +1212,7 @@
       ],
       "history": [
         "2026-08-20 status: on_site → removed (ddc7848)",
-        "2026-09-25 status: removed → tagged Archived (the roster keeps everyone; the tag keeps them off the page)"
+        "2026-09-25 status: removed → tagged Archived; the roster keeps everyone and the tag keeps them off the page (d4b4525)"
       ]
     },
     {
@@ -1247,7 +1250,7 @@
       ],
       "history": [
         "2026-08-20 status: on_site → removed (ddc7848)",
-        "2026-09-25 status: removed → tagged Archived (the roster keeps everyone; the tag keeps them off the page)"
+        "2026-09-25 status: removed → tagged Archived; the roster keeps everyone and the tag keeps them off the page (d4b4525)"
       ]
     },
     {
@@ -1281,7 +1284,7 @@
       ],
       "history": [
         "2026-09-18 status: on_site → removed (50d516f)",
-        "2026-09-25 status: removed → tagged Archived (the roster keeps everyone; the tag keeps them off the page)"
+        "2026-09-25 status: removed → tagged Archived; the roster keeps everyone and the tag keeps them off the page (d4b4525)"
       ]
     },
     {
@@ -1315,7 +1318,7 @@
       ],
       "history": [
         "2026-09-18 status: on_site → removed (50d516f)",
-        "2026-09-25 status: removed → tagged Archived (the roster keeps everyone; the tag keeps them off the page)"
+        "2026-09-25 status: removed → tagged Archived; the roster keeps everyone and the tag keeps them off the page (d4b4525)"
       ]
     },
     {
@@ -1344,7 +1347,7 @@
       ],
       "history": [
         "2026-09-18 status: on_site → removed (50d516f)",
-        "2026-09-25 status: removed → tagged Archived (the roster keeps everyone; the tag keeps them off the page)"
+        "2026-09-25 status: removed → tagged Archived; the roster keeps everyone and the tag keeps them off the page (d4b4525)"
       ]
     },
     {
@@ -1377,7 +1380,7 @@
       ],
       "history": [
         "2026-09-18 status: on_site → removed (50d516f)",
-        "2026-09-25 status: removed → tagged Archived (the roster keeps everyone; the tag keeps them off the page)"
+        "2026-09-25 status: removed → tagged Archived; the roster keeps everyone and the tag keeps them off the page (d4b4525)"
       ]
     }
   ]
