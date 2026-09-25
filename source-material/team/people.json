@@ -538,6 +538,7 @@
         "from": "form",
         "ref": "https://drive.google.com/open?id=1emfjjCW4d7qdFN14aRHBPPLs_XqzJA8o",
         "approved": false,
+        "upscale": 1.43,
         "notes": "Sent through the website info form by Joan Lee on 24 September 2026, as received: a 576x576 PNG (\"unnamed (1)\"). Small, so the shared framing enlarges it; a larger original would sharpen the tile. Her High Tech High staff page may have one, but it refused this session's requests (403)."
       },
       "bioSource": {
@@ -630,6 +631,8 @@
         "from": "form",
         "ref": "https://drive.google.com/open?id=1dZjNORv0Bzllr9Y_pZ-MUJXuQp2Ljngn",
         "approved": false,
+        "upscale": 0.32,
+        "edgesFaded": "right 11%, left 8%",
         "notes": "Sent through the website info form by Joan Lee on 25 September 2026, as received: 1280x1600."
       },
       "form": {
@@ -1073,6 +1076,8 @@
         "master": "katie-butler.jpg",
         "from": "form",
         "ref": "https://drive.google.com/open?id=10FCxGPA87YEhKgufQ0oINaAE3kOr6neA",
+        "upscale": 0.52,
+        "edgesExtended": "left 3%, right 2%",
         "notes": "927x1800, as received through the form on 24 September 2026."
       },
       "form": {
@@ -1109,6 +1114,7 @@
         "master": "tom-keefe.jpg",
         "from": "form",
         "ref": "https://drive.google.com/open?id=1liA-Hru9egI0JxDTDy6dHpYWADLNg1OP",
+        "upscale": 0.54,
         "notes": "1187x1240, the photo Joan Lee put in the form on 25 September 2026 in place of his first upload, a 237x222 screenshot of a kayaking photo (1lWFQOIo4Wib_MLC97PXRwscpBe6V-T7F)."
       },
       "form": {
@@ -1146,6 +1152,8 @@
         "master": "allison-rapoport.jpeg",
         "from": "form",
         "ref": "https://drive.google.com/open?id=16kOPcBQcItb99LDwUHyYYaJo_HDvRTwN",
+        "upscale": 0.38,
+        "edgesFaded": "left 6%",
         "notes": "1273x1636, as received through the form on 24 September 2026."
       },
       "form": {
@@ -1200,7 +1208,8 @@
         "[joan] Prune from the tracker, or confirm they should stay listed; removed from the site on purpose."
       ],
       "history": [
-        "2026-08-20 status: on_site → removed (ddc7848)"
+        "2026-08-20 status: on_site → removed (ddc7848)",
+        "2026-09-25 status: removed → tagged Archived (the roster keeps everyone; the tag keeps them off the page)"
       ]
     },
     {
@@ -1237,7 +1246,8 @@
         "[joan] Prune from the tracker, or confirm they should stay listed; removed from the site on purpose."
       ],
       "history": [
-        "2026-08-20 status: on_site → removed (ddc7848)"
+        "2026-08-20 status: on_site → removed (ddc7848)",
+        "2026-09-25 status: removed → tagged Archived (the roster keeps everyone; the tag keeps them off the page)"
       ]
     },
     {
@@ -1270,7 +1280,8 @@
         "[joan] Prune from the tracker, or confirm they should stay listed; removed from the site on purpose."
       ],
       "history": [
-        "2026-09-18 status: on_site → removed (50d516f)"
+        "2026-09-18 status: on_site → removed (50d516f)",
+        "2026-09-25 status: removed → tagged Archived (the roster keeps everyone; the tag keeps them off the page)"
       ]
     },
     {
@@ -1303,7 +1314,8 @@
         "[joan] Prune from the tracker, or confirm they should stay listed; removed from the site on purpose."
       ],
       "history": [
-        "2026-09-18 status: on_site → removed (50d516f)"
+        "2026-09-18 status: on_site → removed (50d516f)",
+        "2026-09-25 status: removed → tagged Archived (the roster keeps everyone; the tag keeps them off the page)"
       ]
     },
     {
@@ -1331,7 +1343,8 @@
         "[joan] Prune from the tracker, or confirm they should stay listed; removed from the site on purpose."
       ],
       "history": [
-        "2026-09-18 status: on_site → removed (50d516f)"
+        "2026-09-18 status: on_site → removed (50d516f)",
+        "2026-09-25 status: removed → tagged Archived (the roster keeps everyone; the tag keeps them off the page)"
       ]
     },
     {
@@ -1363,7 +1376,8 @@
         "[joan] Prune from the tracker, or confirm they should stay listed; removed from the site on purpose."
       ],
       "history": [
-        "2026-09-18 status: on_site → removed (50d516f)"
+        "2026-09-18 status: on_site → removed (50d516f)",
+        "2026-09-25 status: removed → tagged Archived (the roster keeps everyone; the tag keeps them off the page)"
       ]
     }
   ]

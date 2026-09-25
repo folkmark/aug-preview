@@ -56,3 +56,14 @@ node tools/build-site.mjs _site
 
 `node tools/build-team.mjs --check` is what CI runs (inside `build-site`), and
 `--format` puts this file back in its canonical two-space form.
+
+## The Team Universe sheet
+
+The Google Sheet "AugmentED — Team Universe" is a view of this file for people who do not
+read JSON: one row per person, with their status (on the page, held or archived), tags,
+sources, photograph details, bio text, open actions and history. Regenerate it after a
+roster change, then upload the CSV to Drive as a new sheet:
+
+```sh
+npm i --no-save sharp && node tools/team-universe.mjs team-universe.csv
+```
