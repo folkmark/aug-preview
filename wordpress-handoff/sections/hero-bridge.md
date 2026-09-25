@@ -72,8 +72,8 @@ element. Section 5 specifies the contract between the two.
 
 ## 2. The frame contract
 
-**Naming.** `hb<frame><cut>.webp` — for example `hb0353.webp` and
-`hb0353m.webp`. The number is the **Blender frame number**, zero-padded to four
+**Naming.** `hb<frame><cut>.webp` — for example `hb0351.webp` and
+`hb0351m.webp`. The number is the **Blender frame number**, zero-padded to four
 digits, so a file, the render notes, and the manifest all name the same thing.
 
 **Two cuts of every frame, and both are the whole plate:**
@@ -336,7 +336,8 @@ ranked by distance from the playhead, biased forward (a frame behind costs 2.5×
 its distance — reading is a downward act); the byte budget is spent down the
 ranking; two frames are always kept whatever the budget says, so a starved
 budget degrades to stutter, never to a blank hero. Decoded cost is
-width × height × 4: 7.2 MiB per full-cut frame, 4.0 MiB on the mobile cut. The
+width × height × 4: 7.2 MB (6.8 MiB) per full-cut frame, 4.0 MB (3.8 MiB) on the
+mobile cut. The
 budget comes from `--hb-budget` in the stylesheet (the attribute is only the
 fallback): the desktop default resolves to 96 MB, phones set 48 — a ceiling
 alone buys *more* frames when each gets cheaper, so the phone's number is set
