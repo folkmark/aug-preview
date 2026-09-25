@@ -139,7 +139,9 @@ together.
 - **Two site files carry plugin requirements.** `assets/hero-bridge.js` `settle()` measures from
   the pin, and the hero copy's fade in `index.html` starts at `--hero-lead`. Both are no-ops
   here and load-bearing under a host header.
-- **The zip is never published.** It packages the licensed Avenir files. It goes out as the
-  `plugin` job's artifact, and `dist/` and `.wp-verify/` are git-ignored.
+- **The zip is not a release.** It packages the licensed Avenir files, so never attach it to
+  a release or put it on gh-pages. It goes out as the `plugin` job's artifact, which on this
+  public repository any signed-in GitHub user can download (the same fonts are already
+  committed under `_ds/`). `dist/` and `.wp-verify/` are git-ignored.
 - **The team goes into AERDF's existing `team` post type**, in an "AugmentED Team" category.
   There is no `team_member` type; that was an earlier, wrong plan.

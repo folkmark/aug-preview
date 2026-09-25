@@ -158,7 +158,11 @@ hero ships only frames 276–417, the ones it plays.
   the tile test.
 - The job then uploads the assembled plugin as the `augmented-ed-plugin` artifact. It never
   blocks the site's own publish.
-- The zip is never published anywhere public: it packages the licensed Avenir files.
+- The zip is not a release, and it is never put on gh-pages or anywhere else. It packages the
+  licensed Avenir files. This repository is public, though, so anyone signed in to GitHub can
+  download a run's artifacts. That adds nothing to what the repository and the preview site
+  already serve, since the same font files are committed under `_ds/`. See
+  [DECISIONS.md](DECISIONS.md#delivering-the-zip--brendan).
 
 ## How the plugin fits aerdf.org
 

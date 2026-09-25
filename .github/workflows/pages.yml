@@ -70,7 +70,9 @@ jobs:
   # The assembled plugin — the runtime plus exactly the assets the pages use, about 22 MB —
   # is uploaded as this run's artifact. Download it from the run's summary page: the zip
   # GitHub gives you has augmented-ed/ at its root, which is what WordPress's Upload Plugin
-  # expects. It is never published anywhere public: it packages the licensed Avenir files.
+  # expects. It packages the licensed Avenir files, so it is never put on gh-pages or a
+  # release. This repository is public, so any signed-in GitHub user can download a run's
+  # artifacts. That exposes nothing new, since the same fonts are committed under _ds/.
   plugin:
     runs-on: ubuntu-latest
     steps:

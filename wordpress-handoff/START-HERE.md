@@ -33,9 +33,9 @@ The zip is about 22 MB (it carries every image and animation frame the pages use
 upload is refused for size, copy the unzipped `augmented-ed/` folder into
 `wp-content/plugins/` over SFTP instead, or `wp plugin install augmented-ed.zip --activate`.
 
-Where the zip comes from: every push to the repository builds it (the `plugin` job of the
-"Publish site to gh-pages" workflow, artifact **augmented-ed-plugin**). It is never
-published anywhere public.
+Where the zip comes from: AugmentED sends it. It is built by the repository's CI (the
+`plugin` job of the "Publish site to gh-pages" workflow, artifact **augmented-ed-plugin**)
+on every pull request and every change to `main`.
 
 ### 2. Create the pages
 

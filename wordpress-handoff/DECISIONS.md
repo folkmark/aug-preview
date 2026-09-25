@@ -125,3 +125,8 @@ working default.
 
 - **Default:** download the `augmented-ed-plugin` artifact from the repository's latest
   workflow run and send it. Artifacts are kept 90 days from main.
+- The repository is public, so anyone signed in to GitHub can download those artifacts too.
+  The Avenir files inside are already public in the repository (`_ds/`) and on the preview
+  site, so this adds no exposure. If the licence says otherwise, it affects those as well.
+  The alternative is to drop the upload from CI and build the zip locally
+  (`node tools/build-wp-plugin.mjs --assemble dist --zip`).
