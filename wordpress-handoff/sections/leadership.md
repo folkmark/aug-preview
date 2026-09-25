@@ -2,11 +2,11 @@
 
 Twenty-one pages, one for each person on the team who has a bio, at `/team/<slug>/`: the
 four leaders, and since late September 2026 seventeen of the partners and fellows. They are the
-only pages on this site that are **not** the single-page app, and porting them is the
-easiest job in this package: in WordPress they are the single template of one custom post
-type, `team_member`, which the team members use only as storage — see Content in
-[the handoff README](../README.md#content). [`wp/augmented-ed-assets.php`](../wp/augmented-ed-assets.php)
-enqueues the design system on that template.
+only pages on this site that are **not** the single-page app. In WordPress each person is
+a post of aerdf.org's existing `team` post type, in an "AugmentED Team" category, and the
+plugin draws their page with `generated/templates/bio.php`, rendered from the same template
+as this site's bio pages (`tools/lib/bio-page.mjs`) — see Content in
+[the handoff README](../README.md#content).
 (This file is still called leadership.md because Leadership had the only pages when it
 was written, and other documents link to it by that name.)
 
@@ -175,8 +175,10 @@ drift out of step. Follow the URL.
 
 ## 6. The bio page template
 
-`bioPage()` in `tools/build-site.mjs`. It is static HTML with the design system's
-stylesheets in `<head>`, so it renders correctly with JavaScript disabled.
+`bioPage()` in `tools/build-site.mjs` for this site, around the profile in
+`tools/lib/bio-page.mjs`, which the WordPress plugin renders too (as
+`generated/templates/bio.php`). It is static HTML with the design system's stylesheets in
+`<head>`, so it renders correctly with JavaScript disabled.
 
 **The header and footer restate the app's.** The app writes its chrome as inline styles
 inside the runtime's template, so there is nothing to import; the template copies the
@@ -194,8 +196,9 @@ header, logo, pill, footer and the menu's link positions (144, 212, 280, 348 at 
 all match. What it cannot do without script is close on Escape or lock the page behind
 the overlay.
 
-In WordPress the page uses the theme's own header and footer, so none of this needs
-porting. It exists so the static build does not look like a different site.
+In WordPress the page uses the theme's own header and footer, under the plugin's program
+bar, so none of this is ported. It exists so the static build does not look like a
+different site.
 
 **The layout, measured at 1440:**
 
@@ -232,6 +235,11 @@ which puts brand marks under team bios.
 Without a `CNAME` the build leaves out the canonical, `og:url` and JSON-LD rather than
 filling them with paths, and warns.
 
+In WordPress, Yoast writes the title, canonical and Open Graph tags, and the plugin makes
+Yoast's page a `ProfilePage` whose `mainEntity` is the same `Person` (without Yoast, the
+plugin prints that JSON-LD itself). The meta description is the same first sentence, seeded
+into Yoast by the import.
+
 ## 7. Adding a person
 
 1. Add their card to their group's grid in `index.html`. If they have a bio, give the
@@ -251,6 +259,11 @@ filling them with paths, and warns.
 5. Bump the counts in `tools/export-content.mjs` — `team.length`, the headshot count and
    the number of people without a title (`roleless.length`) are hard-coded on purpose, as
    tripwires.
+6. Re-export, regenerate the plugin (`node tools/build-wp-plugin.mjs`), and on aerdf.org
+   re-run the import. It creates the new person and changes nothing else. Or add them in
+   WordPress directly: a team post in their AugmentED group, with the "AugmentED card"
+   filled in. A person added that way shows their featured image, without the colour
+   bloom, unless a bundled headshot is chosen.
 
 Step 3 can land before step 4: the bio is skipped with a warning until the link exists,
 so nothing is published early.

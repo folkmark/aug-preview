@@ -12,16 +12,15 @@ build it, or the documents that hand it on. The finished thing is live at
 Pick the path that matches why you're reading this, and follow it — each
 document links onward to the more specific ones it needs:
 
-1. **You're rebuilding the site in WordPress** (the AERDF developer): go
-   straight to [`wordpress-handoff/README.md`](wordpress-handoff/README.md).
-   It is the complete package — a build order, the rendered markup, the
-   components, the content as data, and a spec for every animated section —
-   and it doesn't assume you've read anything else here first.
+1. **You're putting the site on aerdf.org** (the AERDF developer): go straight to
+   [`wordpress-handoff/START-HERE.md`](wordpress-handoff/START-HERE.md). The site ships
+   as a WordPress plugin you install, not pages you rebuild, and that page is the whole
+   install. [`wordpress-handoff/README.md`](wordpress-handoff/README.md) is the reference
+   behind it, and it doesn't assume you've read anything else here first.
 2. **You're on the AugmentED team** and want the story of what was built, what
    it costs, and what's still open: this file for the site itself, and
-   [`docs/wordpress-handoff-review.md`](docs/wordpress-handoff-review.md) for
-   my working notes on the handoff — what AERDF's site runs, what I checked,
-   and the decisions that are yours to make.
+   [`wordpress-handoff/DECISIONS.md`](wordpress-handoff/DECISIONS.md) for the decisions
+   that are yours (or AERDF's) to make, each with the default the plugin uses until then.
 3. **You're changing this repository** — the preview site, the encoders, the
    publish: read [`CLAUDE.md`](CLAUDE.md) first (where work goes and what
    breaks quietly), then the rest of this file.
@@ -40,7 +39,7 @@ document links onward to the more specific ones it needs:
 | `assets/`         | Web-ready images — everything here is sized and encoded for the page |
 | `docs/`           | Render notes, including the frame ↔ beat map for the Approach section |
 | `tools/`          | The build, and the encoders that turn originals into `assets/`       |
-| `wordpress-handoff/` | The rebuild package — start at its README to rebuild the site in WordPress |
+| `wordpress-handoff/` | The WordPress plugin and its handoff — start at START-HERE.md to put the site on aerdf.org |
 | `source-material/` | Inputs, not outputs: the original Webflow export and its style guide, the image and block originals the encoders read, the brand explorations and the headshots at full resolution. See its own README. |
 
 The whole repository is about 120 MB cloned, and everything in it either ships,

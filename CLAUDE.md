@@ -114,3 +114,32 @@ is the way it is and what breaks if it changes*, often at length, and they cite
 measurements. Match that when editing them — a change that leaves a comment
 describing the old behaviour is worse than no comment. Several of those comments are
 load-bearing warnings; read them before simplifying the code they sit on.
+
+## The WordPress plugin is generated from the site
+
+`wordpress-handoff/plugin/augmented-ed/` is how the site reaches aerdf.org: a plugin AERDF's
+developer installs (`wordpress-handoff/START-HERE.md`). Half of it is generated from the site,
+and that half goes stale silently unless the chain is re-run:
+
+```sh
+npm i --no-save playwright@1.63.0 linkedom@0.18.13 postcss@8.5.28 postcss-selector-parser@7.1.6 pixelmatch@7.2.0 pngjs@7.0.0
+node tools/export-static.mjs && node tools/export-content.mjs   # after any index.html change
+node tools/build-wp-plugin.mjs                                   # writes plugin/augmented-ed/generated/
+node tools/build-wp-plugin.mjs --assemble dist && node tools/verify-wp-plugin.mjs [--live]
+```
+
+`npm i --no-save` prunes whatever it is not named in the same call, so name everything
+together.
+
+- **Never edit `generated/` by hand.** Commit it with the export it came from. CI's `plugin` job
+  fails when it does not match (`--check`), without blocking the site's publish.
+- **The hand-written half** is `augmented-ed.php`, `includes/`, `js/` and `css/host.css`.
+  `host.css` reverts only leaks measured on aerdf.org. Add to it only what `verify-wp-plugin.mjs
+  --live` reports, never speculatively, and never `all: revert`.
+- **Two site files carry plugin requirements.** `assets/hero-bridge.js` `settle()` measures from
+  the pin, and the hero copy's fade in `index.html` starts at `--hero-lead`. Both are no-ops
+  here and load-bearing under a host header.
+- **The zip is never published.** It packages the licensed Avenir files. It goes out as the
+  `plugin` job's artifact, and `dist/` and `.wp-verify/` are git-ignored.
+- **The team goes into AERDF's existing `team` post type**, in an "AugmentED Team" category.
+  There is no `team_member` type; that was an earlier, wrong plan.
