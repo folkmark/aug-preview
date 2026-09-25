@@ -78,7 +78,11 @@ down Andrew's striped shirt and Ryan's tweed and left a flat block on Ben's shou
 Stretched, all three read as cloth.
 
 The band must never reach THE FACE KEEP: the face box grown by FACE_KEEP of its size on every
-side, so the jaw, the ears and a little of the neck are inside it. So the stretch covers at
+side, so the jaw, the ears and the top of the neck are inside it. Below that, under an open
+collar, what the band lengthens can be neck as well as cloth: measured on the final tiles,
+Aarav's collar V and Byungyeon's throat came out 18-21% longer (7-8 CSS px), and Andrew's
+neck 15%. No judge saw that at tile size; keeping the whole neck out would have cost them
+the reach. So the stretch covers at
 most a quarter of the room between that and the photo's edge, as well as EDGE_STRETCH. The
 first version had only the 8% limit, and on the tightest photos the band reached up past
 the chin. A judge measuring Byungyeon's tile found his lip-to-chin 28% longer than in his
@@ -342,7 +346,8 @@ def frame(slug):
         d = most * least(lambda u: fits('bottom', z, most * u))
     stretch_ok = {k: shoulder[k] and stretchable(k, z, d) for k in ('bottom', 'left', 'right')}
     s, eye = s * z, EYE + d
-    reach = {'zoom': round(z, 3), 'drop': round(d, 4), 'unreached': unreached}
+    reach = {'zoom': round(z, 3), 'drop': round(d, 4), 'unreached': unreached,
+             'not_shoulder': [k for k in ('left', 'right') if touches[k] and not shoulder[k]]}
 
     def place():
         ox, oy = T / 2 - (fx + fw / 2) * s, eye * T - eye_y * s
@@ -466,7 +471,7 @@ def main():
         for s in todo:
             print(f'matting {s}', flush=True)
             subprocess.run([sys.executable, __file__, f'--matte={s}'], check=True)
-    warn, loose = [], []
+    warn, loose, beside = [], [], []
     # scale is against the 512 the tile ships at, so anything over 1 is a photograph being
     # enlarged; "reach" is THE REACH's enlargement of the face and lowering of the eye line;
     # "faded" is how far inside the tile each source edge that still cuts the person lands,
@@ -482,8 +487,12 @@ def main():
             warn.append(f"{s} ({r['face_kept']:.0%})")
         if r['unreached']:
             loose.append(f"{s} ({', '.join(r['unreached'])})")
+        if r['not_shoulder']:
+            beside.append(f"{s} ({', '.join(r['not_shoulder'])})")
     if loose:
         print(f'\nbeyond the reach, so still fading: {", ".join(loose)}. A looser original is the fix.')
+    if beside:
+        print(f'\nmet above the chin, so not a shoulder and left to the fade: {", ".join(beside)}.')
     if warn:
         print(f'\na fade reaches into the face: {", ".join(warn)}. That photograph is too tight for the '
               'shared framing; ask for a looser one rather than special-casing it.')
