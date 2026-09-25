@@ -1,5 +1,6 @@
 [
   {
+    "slug": "sherry-lachman",
     "name": "Sherry Lachman",
     "group": "Leadership",
     "role": "Founder & Executive Director",
@@ -10,6 +11,7 @@
     "links": []
   },
   {
+    "slug": "caitlin-mills",
     "name": "Caitlin Mills",
     "group": "Leadership",
     "role": "Co-Founder & Chief of Research and Impact",
@@ -20,6 +22,7 @@
     "links": []
   },
   {
+    "slug": "raquel-romano",
     "name": "Raquel Romano",
     "group": "Leadership",
     "role": "Chief Technology Officer",
@@ -35,6 +38,7 @@
     ]
   },
   {
+    "slug": "jenny-bradbury",
     "name": "Jenny Bradbury",
     "group": "Leadership",
     "role": "Vice President of Education Innovation and Partnerships",
@@ -50,6 +54,7 @@
     ]
   },
   {
+    "slug": "andrew-lan",
     "name": "Andrew Lan",
     "group": "Research Partners",
     "role": "Associate Professor of Computer Science, University of Massachusetts Amherst",
@@ -65,6 +70,7 @@
     ]
   },
   {
+    "slug": "ryan-baker",
     "name": "Ryan Baker",
     "group": "Research Partners",
     "role": "Professor of Artificial Intelligence and Education, Adelaide University",
@@ -80,6 +86,7 @@
     ]
   },
   {
+    "slug": "angela-stewart",
     "name": "Angela E.B. Stewart",
     "group": "Research Partners",
     "role": "Assistant Professor, University of Pittsburgh",
@@ -99,6 +106,7 @@
     ]
   },
   {
+    "slug": "laura-allen",
     "name": "Laura Allen",
     "group": "Research Partners",
     "role": "Associate Professor, University of Minnesota",
@@ -118,6 +126,7 @@
     ]
   },
   {
+    "slug": "blair-lehman",
     "name": "Blair Lehman",
     "group": "Research Partners",
     "role": "Senior Scientist, Brighter Research",
@@ -137,6 +146,7 @@
     ]
   },
   {
+    "slug": "isa-peczuh",
     "name": "Isa Peczuh",
     "group": "Research Partners",
     "role": "PhD Candidate, University of Minnesota",
@@ -156,6 +166,7 @@
     ]
   },
   {
+    "slug": "aarav-kalkar",
     "name": "Aarav Kalkar",
     "group": "Research Partners",
     "role": null,
@@ -171,6 +182,7 @@
     ]
   },
   {
+    "slug": "byungyeon-yun",
     "name": "Byungyeon Yun",
     "group": "Research Partners",
     "role": null,
@@ -186,6 +198,7 @@
     ]
   },
   {
+    "slug": "stephen-hutt",
     "name": "Stephen Hutt",
     "group": "Research Partners",
     "role": null,
@@ -201,6 +214,7 @@
     ]
   },
   {
+    "slug": "alexandra-wiggins",
     "name": "Alexandra Wiggins",
     "group": "Education Fellows",
     "role": "Humanities Teacher, 504 Coordinator",
@@ -216,6 +230,7 @@
     ]
   },
   {
+    "slug": "chris-mutter",
     "name": "Chris Mutter",
     "group": "Education Fellows",
     "role": "Multimedia Teacher",
@@ -231,6 +246,7 @@
     ]
   },
   {
+    "slug": "christopher-hanks",
     "name": "Christopher Hanks",
     "group": "Education Fellows",
     "role": "Principal on Special Assignment, Innovation Design",
@@ -246,6 +262,7 @@
     ]
   },
   {
+    "slug": "tom-peterson",
     "name": "Tom Peterson",
     "group": "Education Fellows",
     "role": "Social Studies Teacher",
@@ -261,6 +278,7 @@
     ]
   },
   {
+    "slug": "ben-hoff",
     "name": "Ben Hoff",
     "group": "Education Fellows",
     "role": "Science & Computer Science Teacher",
@@ -276,6 +294,7 @@
     ]
   },
   {
+    "slug": "nikki-wallace",
     "name": "Nikki Wallace",
     "group": "Education Fellows",
     "role": "Science Teacher, Director of Research & Innovation",
@@ -291,6 +310,7 @@
     ]
   },
   {
+    "slug": "danie-cowden",
     "name": "Danie Cowden",
     "group": "Education Fellows",
     "role": "STEM, Design, and Media Teacher",
@@ -306,6 +326,7 @@
     ]
   },
   {
+    "slug": "joshua-sloan",
     "name": "Joshua Sloan",
     "group": "Education Fellows",
     "role": "Math Teacher, Math Department Lead",
@@ -321,6 +342,7 @@
     ]
   },
   {
+    "slug": "mohammed-al-harthy",
     "name": "Mohammed Al Harthy",
     "group": "Education Fellows",
     "role": "Computer Science Teacher, 9th Grade Lead",
@@ -336,6 +358,7 @@
     ]
   },
   {
+    "slug": "sarah-zaner",
     "name": "Sarah Zaner",
     "group": "Technology and Design Partners",
     "role": "Co-founder, Bendable Labs",
@@ -351,6 +374,7 @@
     ]
   },
   {
+    "slug": "lisa-peterson",
     "name": "Lisa Peterson",
     "group": "Technology and Design Partners",
     "role": "Product Design Consultant",
@@ -366,6 +390,7 @@
     ]
   },
   {
+    "slug": "neil-sharma",
     "name": "Neil Sharma",
     "group": "Technology and Design Partners",
     "role": "Engineering Consultant",
@@ -381,6 +406,7 @@
     ]
   },
   {
+    "slug": "joan-lee",
     "name": "Joan Lee",
     "group": "Technology and Design Partners",
     "role": "Project Manager",
@@ -396,6 +422,7 @@
     ]
   },
   {
+    "slug": "brandon-bodnar",
     "name": "Brandon Bodnar",
     "group": "Technology and Design Partners",
     "role": "Principal Engineer",
@@ -406,6 +433,7 @@
     "links": []
   },
   {
+    "slug": "sonia-prusaitis",
     "name": "Sonia Prusaitis",
     "group": "Technology and Design Partners",
     "role": null,
@@ -421,6 +449,7 @@
     ]
   },
   {
+    "slug": "abby-petre",
     "name": "Abby (Csaba) Petre",
     "group": "Technology and Design Partners",
     "role": "Head of Engineering",
