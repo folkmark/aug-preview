@@ -14,3 +14,8 @@ _site/
 /project/
 /Falling Blocks/
 /desk render preview/
+
+# The assembled WordPress plugin (node tools/build-wp-plugin.mjs --assemble dist) and the
+# local WordPress the verification harness installs. Both are rebuilt from the repository.
+/dist/
+/.wp-verify/
