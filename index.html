@@ -550,7 +550,13 @@
       [data-hero-body] {
         animation: hero-float linear both, hero-dissolve linear both;
         animation-timeline: scroll(root block), scroll(root block);
-        animation-range: 0 var(--hero-band), 0 var(--hero-band);
+        /* --hero-lead is how far the page scrolls BEFORE the hero reaches the header: zero
+           here, where the hero is the first thing under the header, and the host's own
+           chrome where it is not (the WordPress plugin sets it to the page's offset under
+           AERDF's header, 189px at 1440). The timeline is the document's, not the hero's,
+           so without the lead the band is spent scrolling the host's header away and the
+           body has dissolved before the reader has reached it. */
+        animation-range: var(--hero-lead, 0px) calc(var(--hero-lead, 0px) + var(--hero-band)), var(--hero-lead, 0px) calc(var(--hero-lead, 0px) + var(--hero-band));
         will-change: transform, opacity;
       }
     }
