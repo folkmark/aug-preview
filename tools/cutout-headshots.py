@@ -58,30 +58,77 @@ photographer chose: face heights measured 26% to 71% of the tile. Now:
             report says so.
   - across: the face box is centred.
 
-Nothing is zoomed to suit a photograph. The first version of this did that — it raised
-the scale for anyone whose photo was cropped too tight to fill the square, so four
-people got bigger faces than everyone else — and it read as unfair once all 24 were
-side by side.
+Nothing is zoomed to suit a photograph beyond what THE REACH below allows, and that is
+bounded on purpose. The first version of this zoomed without a limit — it raised the scale
+for anyone whose photo was cropped too tight to fill the square, so four people got bigger
+faces than everyone else — and it read as unfair once all 24 were side by side.
 
 The shoulders then run straight off the bottom and sides of the tile, the way a
-photographed headshot's do. There is no fade on the figure except one, and it is not
-chosen per person.
+photographed headshot's do. Where a photograph is cropped tighter than that, its own edge
+lands inside the tile and would leave the figure ending in mid-air, and three rules deal
+with it, in order.
 
-THE EDGE FADE is one rule applied to everyone: wherever a photograph's own edge cuts
-through the person, the figure fades to nothing over EDGE_FADE as it approaches that
-cut. It only does anything where a source is cropped tighter than the framing, and nine
-are, noticeably: Ryan's photo ends across his chest at 77% of the tile, 23% above its
-bottom edge, and stops at his hairline at the top; Andrew's and Byungyeon's end at 82%, and
-Byungyeon's shoulders are cut 18% in from both sides; Sonia's photo ends 15% above the
-bottom; Tom Peterson's is cut 11% and 8% in from the sides; and Raquel's, Blair's,
-Aarav's and Allison Rapoport's up to 10% in. Abby, Ben, Sarah and Katie Butler are cut by
-1-3%, where the fade is barely there. The
-fade is measured from the cut itself — the stretch of the border the matte actually
-touches — not from the whole edge, so a photo cut at the shoulder does not also fade
-the cheek above it.
+THE EDGE STRETCH handles a photo that stops a little short. Where it stops within
+EDGE_STRETCH of the tile's bottom or side edge, the band of it nearest that edge, STRETCH_BAND
+times the gap deep, is resampled to cover the gap as well. That is the last few percent of a
+shirt, lengthened by a quarter at most, and never at the top, where stretched hair looks like
+what it is. Until September 2026 this repeated the photo's last row or column instead, for
+gaps up to 4%. That was invisible on plain cloth, but it drew a barcode of vertical streaks
+down Andrew's striped shirt and Ryan's tweed and left a flat block on Ben's shoulder.
+Stretched, all three read as cloth.
 
-So those nine do look different from the others at the bottom of the tile, and
-that is the one inequality left. Two shared fades were tried to hide it and both went:
+The band must never reach THE FACE KEEP: the face box grown by FACE_KEEP of its size on every
+side, so the jaw, the ears and a little of the neck are inside it. So the stretch covers at
+most a quarter of the room between that and the photo's edge, as well as EDGE_STRETCH. The
+first version had only the 8% limit, and on the tightest photos the band reached up past
+the chin. A judge measuring Byungyeon's tile found his lip-to-chin 28% longer than in his
+photo, and Andrew's, Sonia's and Ryan's jaws and necks had grown the same way; at the sides,
+Tom Peterson's, Raquel's and Blair's cheeks had widened. No judge looking only at the grid
+had noticed. Checked since: inside every face keep, the stretched cut-out and the same
+framing unstretched agree to under a pixel.
+
+A side is stretched, or reached for, only where the person meets it below the chin. A side
+met above the chin is hair, or someone standing beside them: Allison's photo has a
+neighbour's shoulder and hair at its left edge, which the matte keeps joined to her.
+Stretching that edge carried a strip of someone else's hair to the tile's edge, so it keeps
+the fade, as it always had.
+
+THE REACH handles a photo that stops further in than the stretch can cover. Its eye line is
+lowered by up to REACH_DROP of the tile and its face enlarged by up to REACH_ZOOM, each by the
+same fraction of its limit, and by the least that brings the photo's edge within the stretch.
+Sharing it is what keeps it from showing. Enlarging alone pushes a tall head of hair off the
+top of the tile (Andrew's, at 1.34x). Lowering alone sinks a head below everyone else's
+(Sonia's crown sat 14% down at 8%, against 2-8% for everyone else). Half of each barely
+moves the crown.
+- The sides are reached by enlarging alone, since lowering does nothing for them.
+- A photo cut at the top is lowered no further than keeps that cut above the tile.
+- An edge the limits cannot reach is not reached at all, and if that edge is the bottom,
+  nothing is: a figure that still floats gains nothing from a larger face.
+The limits were set by eye, on sheets of each person's options beside people framed
+normally, by independent judges looking at colour and duotone at 200 and 400px. Faces up to
+about 1.2x and eye lines up to 6% lower read as the same crop; 8% lower read as a sunken head,
+and 1.34x as a cramped passport photo with the crown cut off.
+
+Where it landed in September 2026:
+- enlarged 1.03x and 1% lower: Aarav's photo;
+- enlarged 1.15-1.21x: Blair's, Raquel's and Tom Peterson's (cut at the sides);
+- enlarged 1.16x and 4% lower: Sonia's;
+- enlarged 1.22x and 5% lower: Andrew's, and at 2.4x his 203px original, one of the softest
+  tiles on the page.
+Byungyeon's is grounded the same way, but his passport photo cuts his shoulders 18% in from
+both sides, and reaching them would take more than the limit, so his sides still fade.
+Ryan's 190px photo is cut at the hairline and across the chest, and cannot be grounded
+within the limits without stretching his chin, so it is left exactly as it was. A 1.29x
+framing that grounded him was preferred by every judge to the floating bust, but its
+stretch reached his jaw, and that is not a trade this makes on someone's face.
+
+THE EDGE FADE is what is left: wherever a photograph's own edge still cuts through the
+person, the figure fades to nothing over EDGE_FADE as it approaches that cut. The fade is
+measured from the cut itself — the stretch of the border the matte actually touches — not
+from the whole edge, so a photo cut at the shoulder does not also fade the cheek above it.
+Before the stretch and the reach, nine photos faded like this, and they looked different
+from everyone else. Three still do, as described above: Ryan's, Byungyeon's sides and
+Allison's left edge. Two shared fades were tried to hide that, and both went:
 - A single vignette tuned so every one of those cuts fell where it had already faded
   out. Ryan's chest and Byungyeon's shoulders force it to finish just below everybody's
   chin, which kept 4-13% of anyone's shoulders — 24 floating heads, with the curve cutting
@@ -89,18 +136,9 @@ that is the one inequality left. Two shared fades were tried to hide it and both
 - A soft U at the shoulders for everyone, on top of the edge fade. It shipped briefly in
   September 2026. A feather below the shoulders reads as a floating bust, and on the
   seventeen photos that are not cropped short it was a fade with nothing to hide.
-Nor can scale close the gap: measured, even a face share of 58% leaves Ryan's, Andrew's
-and Byungyeon's photos ending inside the tile. Better originals for those seven are the
-fix, and nothing here needs to change when they arrive.
-
-THE EDGE CLAMP handles the photos that only just stop short. Sarah's ends 1% above the
-bottom of the tile, Abby's and Aarav's 1% in from the side, Ben's 3%: faded, each of those
-grew a 12% feather along a whole edge to hide a gap of a few pixels, which is the look
-this framing exists to avoid. Where a photo stops within
-EDGE_CLAMP of the tile's bottom or side edge, its last row or column is repeated out to
-the edge instead — at most 8 CSS px of clothing at the tile's 197, which reads as
-nothing. Never at the top, where repeated hair looks like exactly what it is, and never
-further in than that; everything deeper is the fade's.
+Better originals remain the real fix for everyone the reach enlarges or leaves fading, and
+nothing here needs to change when they arrive: a photograph loose enough for the framing
+is not touched by any of this. The report names every edge still fading.
 
 If a fade would reach into someone's face, the report warns. That is the check for
 anyone added later: a photograph that trips it is too tight for the shared framing and
@@ -130,8 +168,14 @@ EYE_IN_BOX = 0.39 # where the eye line sits in the face box, for anyone whose ey
 DETECT = 1400     # longest side the detectors run at; the cascades were tuned there
 
 EDGE_FADE = 0.12  # THE EDGE FADE's length, from a cut in a source to full opacity
-EDGE_CLAMP = 0.04 # THE EDGE CLAMP: how short of the tile's bottom or sides a photo may stop
-                  # and be extended to it rather than faded
+EDGE_STRETCH = 0.08 # THE EDGE STRETCH: how short of the tile's bottom or sides a photo may
+                    # stop and be stretched to it rather than faded
+STRETCH_BAND = 4  # how deep a band the stretch resamples, in multiples of the gap it covers,
+                  # so the clothing it lengthens is lengthened by a quarter at most
+FACE_KEEP = 0.10  # THE FACE KEEP: the face box grown by this much of its size on every side,
+                  # which the stretch may never reach into
+REACH_DROP = 0.06 # THE REACH's limits: how far below EYE an eye line may be lowered, as a
+REACH_ZOOM = 1.25 # fraction of the tile, and how much larger than FACE a face may be made
 
 
 def pictured():
@@ -227,24 +271,108 @@ def frame(slug):
         sys.exit(f'{slug}: no face found on the matte')
     (fx, fy, fw, fh), eye_y, how = found
     s = FACE * T / fh
+    eye = EYE
+
+    # Which edges of the photo the person runs into. A side the person meets above the chin
+    # is not their shoulder but their hair, or someone standing beside them; neither is
+    # stretched or reached for, and the edge fade below deals with it as it always has.
+    chin = int(fy + fh)
+    touches = {'top': a[0, :], 'bottom': a[-1, :], 'left': a[:, 0], 'right': a[:, -1]}
+    touches = {k: bool((v > 0.5).any()) for k, v in touches.items()}
+    shoulder = {'bottom': touches['bottom'],
+                'left': touches['left'] and not (a[:chin, 0] > 0.5).any(),
+                'right': touches['right'] and not (a[:chin, -1] > 0.5).any()}
+
+    def edges(z, d):
+        # tile pixels: how far inside the tile each edge of the photo lands, and how far that
+        # edge is from THE FACE KEEP (the face box grown by FACE_KEEP of its size)
+        sz = s * z
+        ox, oy = T / 2 - (fx + fw / 2) * sz, (EYE + d) * T - eye_y * sz
+        kx, ky = FACE_KEEP * fw * sz, FACE_KEEP * fh * sz
+        gap = {'bottom': T - (oy + H * sz), 'left': ox, 'right': T - (ox + W * sz)}
+        room = {'bottom': (oy + H * sz) - (oy + (fy + fh) * sz + ky),
+                'left': (ox + fx * sz - kx) - ox,
+                'right': (ox + W * sz) - (ox + (fx + fw) * sz + kx)}
+        return gap, room
+
+    def stretchable(k, z, d, slack=0):
+        # THE EDGE STRETCH's limit at this edge: EDGE_STRETCH, and never so far that its band
+        # (STRETCH_BAND times the gap) would reach the face keep
+        gap, room = edges(z, d)
+        return gap[k] <= min(EDGE_STRETCH * T, max(0.0, room[k]) / STRETCH_BAND) - slack
+
+    # THE REACH. Where the person runs into an edge of the photo that lands further inside
+    # the tile than the stretch can cover, lower the eye line and enlarge, each by the same
+    # fraction of its limit, until it no longer does. The sides are reached by enlarging
+    # alone, since lowering does nothing for them, and a photo cut at the top is lowered no
+    # further than keeps that cut above the tile. An edge the limits cannot reach is left to
+    # the fade and costs the face nothing. Every test is a pixel inside its limit (slack),
+    # so the rounding in place() cannot push an edge back over it.
+    fits = lambda k, z, d: stretchable(k, z, d, slack=1)
+
+    def least(ok):
+        # the smallest fraction of the limits that satisfies ok, which holds at 1
+        lo, hi = 0.0, 1.0
+        for _ in range(30):
+            lo, hi = (lo, (lo + hi) / 2) if ok((lo + hi) / 2) else ((lo + hi) / 2, hi)
+        return hi
+    zoom_at = lambda t: 1 + (REACH_ZOOM - 1) * t
+
+    def drop_at(t, z):
+        d = REACH_DROP * t
+        if touches['top']:
+            # the photo's top edge sits at (EYE + d) * T - eye_y * s * z; keep it two pixels
+            # above the tile, so rounding cannot land it on the first row and fade the crown
+            d = min(d, max(0.0, (eye_y * s * z - 2) / T - EYE))
+        return d
+    short = [k for k in ('bottom', 'left', 'right') if shoulder[k] and not fits(k, 1, 0)]
+    unreached = [k for k in short if not fits(k, REACH_ZOOM, drop_at(1, REACH_ZOOM) if k == 'bottom' else 0)]
+    if 'bottom' in unreached:
+        # A figure that still floats gains nothing from a larger face: reach nothing.
+        unreached = short
+    sides = [k for k in short if k != 'bottom' and k not in unreached]
+    z = zoom_at(least(lambda t: all(fits(k, zoom_at(t), 0) for k in sides))) if sides else 1.0
+    d = 0.0
+    if 'bottom' in short and 'bottom' not in unreached:
+        tb = least(lambda t: fits('bottom', max(z, zoom_at(t)), drop_at(t, max(z, zoom_at(t)))))
+        z = max(z, zoom_at(tb))
+        # With the zoom settled (the sides may have asked for more), lower no further than
+        # the bottom still needs.
+        most = drop_at(tb, z)
+        d = most * least(lambda u: fits('bottom', z, most * u))
+    stretch_ok = {k: shoulder[k] and stretchable(k, z, d) for k in ('bottom', 'left', 'right')}
+    s, eye = s * z, EYE + d
+    reach = {'zoom': round(z, 3), 'drop': round(d, 4), 'unreached': unreached}
 
     def place():
-        ox, oy = T / 2 - (fx + fw / 2) * s, EYE * T - eye_y * s
+        ox, oy = T / 2 - (fx + fw / 2) * s, eye * T - eye_y * s
         return max(1, round(W * s)), max(1, round(H * s)), round(ox), round(oy)
     nw, nh, px, py = place()
 
-    # THE EDGE CLAMP. Pad in source pixels, far enough that the padded edge lands past the
-    # tile (the +2) so the edge fade below never sees it as a cut.
+    # THE EDGE STRETCH. Grow the photo in source pixels, far enough that the new edge lands
+    # past the tile (the +2) so the edge fade below never sees it as a cut, by resampling
+    # the band nearest that edge — STRETCH_BAND times the gap deep — to cover the gap too.
     # Only where the person reaches the photo's edge: an edge that is all background leaves
-    # nothing to clamp, and would only make the report claim an extension that isn't there.
+    # nothing to stretch, and would only make the report claim an extension that isn't there.
     gaps = {'bottom': T - (py + nh), 'left': px, 'right': T - (px + nw)}
-    touches = {'bottom': a[-1, :], 'left': a[:, 0], 'right': a[:, -1]}
-    grow = {k: int(np.ceil((g + 2) / s)) for k, g in gaps.items()
-            if 0 < g <= EDGE_CLAMP * T and (touches[k] > 0.5).any()}
+    grow = {k: int(np.ceil((g + 2) / s)) for k, g in gaps.items() if 0 < g and stretch_ok[k]}
     if grow:
-        pads = ((0, grow.get('bottom', 0)), (grow.get('left', 0), grow.get('right', 0)))
-        rgb = Image.fromarray(np.pad(np.asarray(rgb), pads + ((0, 0),), mode='edge'))
-        a = np.pad(a, pads, mode='edge')
+        def stretch(p, n, side):
+            h, w = p.shape
+            b = min(h if side == 'bottom' else w, max(STRETCH_BAND * n, 8))
+            rs = lambda band, size: np.asarray(Image.fromarray(np.ascontiguousarray(band), 'F').resize(size, Image.BICUBIC))
+            if side == 'bottom':
+                return np.concatenate([p[:h - b], rs(p[h - b:], (w, b + n))], 0)
+            if side == 'left':
+                return np.concatenate([rs(p[:, :b], (b + n, h)), p[:, b:]], 1)
+            return np.concatenate([p[:, :w - b], rs(p[:, w - b:], (b + n, h))], 1)
+        src = np.asarray(rgb, np.float32)
+        planes = [src[..., i] for i in range(3)] + [a]
+        for k in ('bottom', 'left', 'right'):
+            if k in grow:
+                planes = [stretch(p, grow[k], k) for p in planes]
+        rgb = Image.fromarray(np.rint(np.stack(planes[:3], -1)).clip(0, 255).astype(np.uint8))
+        a = planes[3].clip(0, 1)
         fx += grow.get('left', 0)
         W, H = rgb.size
         nw, nh, px, py = place()
@@ -310,6 +438,7 @@ def frame(slug):
     return {
         'source': f'{W}x{H}', 'face_px': round(fh), 'eye_line': how, 'scale': round(s * 512 / T, 2),
         'cuts': depth, 'extended': extended, 'face_kept': round(face_kept, 3), 'white_point': round(p), 'lift': round(lift, 3),
+        **reach,
     }
 
 
@@ -337,18 +466,24 @@ def main():
         for s in todo:
             print(f'matting {s}', flush=True)
             subprocess.run([sys.executable, __file__, f'--matte={s}'], check=True)
-    warn = []
+    warn, loose = [], []
     # scale is against the 512 the tile ships at, so anything over 1 is a photograph being
-    # enlarged; "faded" is how far inside the tile each source edge that cuts the person
-    # lands, and "extended" the ones close enough to the tile's edge to be clamped out to it.
-    print(f"\n{'':22}{'source':>11} {'face':>5} {'eye line':>9} {'scale':>6}  {'faded':28}{'extended':24}lift")
+    # enlarged; "reach" is THE REACH's enlargement of the face and lowering of the eye line;
+    # "faded" is how far inside the tile each source edge that still cuts the person lands,
+    # and "stretched" the ones close enough to the tile's edge to be stretched out to it.
+    print(f"\n{'':22}{'source':>11} {'face':>5} {'eye line':>9} {'scale':>6}  {'reach':16}{'faded':22}{'stretched':30}lift")
     for s in slugs:
         r = frame(s)
         pct = lambda d: ', '.join(f'{k} {v:.0%}' for k, v in sorted(d.items(), key=lambda kv: -kv[1])) or '-'
+        reach = (f"{r['zoom']:.2f}x" + (f", eye -{r['drop']:.0%}" if r['drop'] >= 0.005 else '')) if r['zoom'] > 1 else '-'
         print(f"{s:22}{r['source']:>11} {r['face_px']:>5} {r['eye_line']:>9} {r['scale']:>5}x  "
-              f"{pct(r['cuts']):28}{pct(r['extended']):24}{r['lift']:.3f}")
+              f"{reach:16}{pct(r['cuts']):22}{pct(r['extended']):30}{r['lift']:.3f}")
         if r['face_kept'] < 0.95:
             warn.append(f"{s} ({r['face_kept']:.0%})")
+        if r['unreached']:
+            loose.append(f"{s} ({', '.join(r['unreached'])})")
+    if loose:
+        print(f'\nbeyond the reach, so still fading: {", ".join(loose)}. A looser original is the fix.')
     if warn:
         print(f'\na fade reaches into the face: {", ".join(warn)}. That photograph is too tight for the '
               'shared framing; ask for a looser one rather than special-casing it.')

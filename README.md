@@ -353,7 +353,8 @@ from me.
 
 The headshots have one step before the encoder. `tools/cutout-headshots.py` cuts each
 person out of their photograph with a matting model and frames everyone on the page by one rule — the
-same face height, the same eye line — and writes 768px cut-outs to
+same face height, the same eye line, the shoulders running off the tile, with bounded
+adjustments for a photo cropped too tight for that — and writes 768px cut-outs to
 `source-material/image-sources/team-cutout/`, which are committed. `encode-images.mjs`
 reads those and writes each person twice — the navy duotone the page shows, and a colour
 twin in `assets/team/colour/` that pours in under the cursor on hover (`assets/team-colour.js`)

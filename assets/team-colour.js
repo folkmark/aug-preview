@@ -16,7 +16,7 @@
      booted against the first copy of the grid would be holding a detached one.
    - A colour <img> in the markup would be downloaded by every phone, which has no
      hover to show it with. Here the layers are only created once a mouse crosses a
-     team grid, so a touch device never fetches the colour set (528 KB for 30).
+     team grid, so a touch device never fetches the colour set (554 KB for 30).
    - tools/export-content.mjs reads each person's photo as the first team <img> in the
      card, and the handoff pages are a snapshot of the DOM. Nothing here exists until a
      pointer moves, and tools/export-static.mjs removes it if it ever does.
@@ -41,7 +41,8 @@
    way it came. Re-entering mid-drain picks up where it is rather than restarting.
 
    Keyboard focus on a "Read bio" link blooms from the face: 50% across, 38% down, which
-   is where every eye line on the page now sits (tools/cutout-headshots.py). Only
+   is where the eye lines on the page sit; a photo cropped too tight sits up to 6% lower
+   (THE REACH in tools/cutout-headshots.py), still well inside the bloom's first frames. Only
    :focus-visible, so a mouse click on the link does not leave a tile coloured.
 */
 (function () {

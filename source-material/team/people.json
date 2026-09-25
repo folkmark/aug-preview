@@ -103,9 +103,9 @@
         "from": "tracker",
         "ref": "Website Bio tracking sheet, Headshots column",
         "approved": false,
-        "upscale": 0.48,
-        "edgesFaded": "left 10%, right 7%, bottom 7%",
-        "notes": "Her form upload is this file, byte for byte."
+        "upscale": 0.57,
+        "edgesExtended": "left 3%",
+        "notes": "Her form upload is this file, byte for byte. Cut short at the bottom and both sides; enlarged 1.17x, then stretched to the tile's left edge (THE REACH in tools/cutout-headshots.py)."
       },
       "bioSource": {
         "from": "tracker",
@@ -123,7 +123,6 @@
       },
       "notes": null,
       "actions": [
-        "[joan] Optional: a looser photo; the current one fades slightly at the bottom.",
         "[joan] Mark the published bio Approved in the tracker."
       ],
       "history": []
@@ -187,9 +186,9 @@
         "from": "institution",
         "ref": "cics.umass.edu /files/2022-10/lan.jpg (203×203)",
         "approved": false,
-        "upscale": 2,
-        "edgesFaded": "bottom 18%, left 10%",
-        "notes": "His only public portrait is 203x203, enlarged 2.0x to put his face at everyone else's height, so this is one of the two soft tiles until a better original arrives. cics.umass.edu serves it at 800x800 through an image style, and that is what the tracker has, but it is an upscale of this file with no extra detail: do not cut out from it."
+        "upscale": 2.43,
+        "edgesExtended": "bottom 4%, left 1%",
+        "notes": "His only public portrait is 203x203 and ends across his chest. The framing enlarges it 2.4x: 2.0x to put his face at everyone else's height, then 1.22x more with his eye line 5% lower, so his shoulders reach the bottom of the tile (THE REACH in tools/cutout-headshots.py). So this is one of the two soft tiles until a better original arrives. cics.umass.edu serves it at 800x800 through an image style, and that is what the tracker has, but it is an upscale of this file with no extra detail: do not cut out from it."
       },
       "bioSource": {
         "from": "tracker",
@@ -198,7 +197,7 @@
       "form": null,
       "notes": null,
       "actions": [
-        "[joan] Send a larger or looser photo; the current one stops inside the tile and fades where it ends."
+        "[joan] Send a larger original if one exists; the tile enlarges a 203px photo 2.4x, so it is soft."
       ],
       "history": [
         "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/andrew-lan/ (6008fab)"
@@ -223,7 +222,7 @@
         "approved": false,
         "upscale": 1.72,
         "edgesFaded": "bottom 23%, left 13%, top 6%",
-        "notes": "His only public portrait is 190x213, enlarged 1.7x, so this is one of the two soft tiles until a better original arrives. The photo stops at his hairline, and his is the only top edge the cut-out fades."
+        "notes": "His only public portrait is 190x213, enlarged 1.7x, so this is one of the two soft tiles until a better original arrives. The photo stops at his hairline, and his is the only top edge the cut-out fades. Too tight for THE REACH in tools/cutout-headshots.py: grounding him within its limits would stretch his chin, so the tile is left as it was."
       },
       "bioSource": {
         "from": "tracker",
@@ -335,9 +334,9 @@
         "from": "tracker",
         "ref": "Website Bio tracking sheet, Headshots column",
         "approved": false,
-        "upscale": 0.55,
-        "edgesFaded": "left 10%, bottom 9%, right 4%",
-        "notes": "Her form upload is 200x200, smaller than this."
+        "upscale": 0.63,
+        "edgesExtended": "left 4%, bottom 1%",
+        "notes": "Her form upload is 200x200, smaller than this. Cut short at the bottom and both sides; enlarged 1.15x, then stretched to the tile's edges (THE REACH in tools/cutout-headshots.py)."
       },
       "bioSource": {
         "from": "tracker",
@@ -354,9 +353,7 @@
         "detail": "200×200; the site has an 800×800"
       },
       "notes": null,
-      "actions": [
-        "[joan] Optional: a looser photo; the current one fades slightly at the bottom."
-      ],
+      "actions": [],
       "history": [
         "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/blair-lehman/ (6008fab)"
       ]
@@ -419,10 +416,9 @@
         "from": "form",
         "ref": "https://drive.google.com/open?id=1YiNdNmFZxQ9-jfg8NZ6RlXXOFtzmeOFm",
         "approved": false,
-        "upscale": 0.41,
-        "edgesFaded": "bottom 8%",
-        "edgesExtended": "left 1%, right 1%",
-        "notes": "The form upload as submitted (22 Sep)."
+        "upscale": 0.42,
+        "edgesExtended": "bottom 5%",
+        "notes": "The form upload as submitted (22 Sep). It stops 8% above the bottom of the tile; enlarged 1.03x with his eye line 1% lower, then stretched to the edge (THE REACH in tools/cutout-headshots.py)."
       },
       "form": {
         "submitted": "2026-09-22 17:23:34",
@@ -435,9 +431,7 @@
         "detail": "1210×1210"
       },
       "notes": null,
-      "actions": [
-        "[joan] Optional: a looser photo; the current one fades slightly at the bottom."
-      ],
+      "actions": [],
       "history": [
         "2026-09-24 status: — → on_site (32a0c09)",
         "2026-09-25 title: — → Data Scientist (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
@@ -460,9 +454,10 @@
         "from": "form",
         "ref": "https://drive.google.com/open?id=1MiZwORsglGY-d42vXSG4xD0Ry9GLrpdr",
         "approved": false,
-        "upscale": 0.79,
-        "edgesFaded": "left 18%, bottom 18%, right 18%",
-        "notes": "The form upload as submitted (28 Jul)."
+        "upscale": 0.96,
+        "edgesFaded": "left 11%, right 11%",
+        "edgesExtended": "bottom 3%",
+        "notes": "The form upload as submitted (28 Jul). A passport-style photo, cut across the chest and 18% in from both shoulders. The framing enlarges it 1.22x with his eye line 5% lower, so it reaches the bottom of the tile (THE REACH in tools/cutout-headshots.py); reaching the sides would take more than its limit, so they still fade."
       },
       "form": {
         "submitted": "2026-07-28 23:08:32",
@@ -476,7 +471,7 @@
       },
       "notes": null,
       "actions": [
-        "[joan] Send a larger or looser photo; the current one stops inside the tile and fades where it ends."
+        "[joan] Optional: a looser photo; his shoulders are cut in the original, so the sides of his tile still fade."
       ],
       "history": [
         "2026-09-24 status: — → on_site (32a0c09)",
@@ -631,9 +626,9 @@
         "from": "form",
         "ref": "https://drive.google.com/open?id=1dZjNORv0Bzllr9Y_pZ-MUJXuQp2Ljngn",
         "approved": false,
-        "upscale": 0.32,
-        "edgesFaded": "right 11%, left 8%",
-        "notes": "Sent through the website info form by Joan Lee on 25 September 2026, as received: 1280x1600."
+        "upscale": 0.39,
+        "edgesExtended": "right 3%",
+        "notes": "Sent through the website info form by Joan Lee on 25 September 2026, as received: 1280x1600. Cut 11% and 8% in from the sides; enlarged 1.21x, then stretched to the tile's right edge (THE REACH in tools/cutout-headshots.py)."
       },
       "form": {
         "submitted": "2026-09-25 14:12:49",
@@ -990,9 +985,9 @@
         "from": "form",
         "ref": "https://drive.google.com/open?id=12U_lMmQ_p0m4rHfJegW8ZX6qn9yDwOtM",
         "approved": false,
-        "upscale": 0.45,
-        "edgesFaded": "bottom 15%",
-        "notes": "The form upload as submitted (30 Jul)."
+        "upscale": 0.52,
+        "edgesExtended": "bottom 4%",
+        "notes": "The form upload as submitted (30 Jul). It ends across her chest, 15% above the bottom of the tile; the framing enlarges it 1.16x with her eye line 4% lower, and stretches the last 4% of her top to the tile's edge (THE REACH in tools/cutout-headshots.py)."
       },
       "form": {
         "submitted": "2026-07-30 14:49:29",
@@ -1005,9 +1000,7 @@
         "detail": "1063×1063"
       },
       "notes": null,
-      "actions": [
-        "[joan] Send a larger or looser photo; the current one stops inside the tile and fades where it ends."
-      ],
+      "actions": [],
       "history": [
         "2026-09-24 status: — → on_site (32a0c09)",
         "2026-09-25 title: — → Program Manager (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
@@ -1157,7 +1150,7 @@
         "approved": false,
         "upscale": 0.38,
         "edgesFaded": "left 6%",
-        "notes": "1273x1636, as received through the form on 24 September 2026."
+        "notes": "1273x1636, as received through the form on 24 September 2026. Her photo's left edge carries the shoulder and hair of whoever stood beside her, which the matte keeps joined to her, so that edge keeps its fade rather than being stretched (tools/cutout-headshots.py); a crop without them would be cleaner."
       },
       "form": {
         "submitted": "2026-09-24 17:10:06",
