@@ -9,8 +9,9 @@ way, writing the masters tools/encode-images.mjs reads for the Who We Are tiles:
   python3 tools/cutout-headshots.py --only=abby-petre  one person, e.g. someone new
 
 Who is pictured is read off index.html (every assets/team/<slug>.webp it references),
-so a person is added by giving them a card first. The output carries no colour
-treatment: it is the person, lifted off their background, at a shared scale and
+whose tiles tools/build-team.mjs writes from the roster, source-material/team/people.json:
+a person is added there, with a group and a photo, and their card follows. The output
+carries no colour treatment: it is the person, lifted off their background, at a shared scale and
 position, and the duotone is applied by the encoder. That split is deliberate. This
 step needs a 973 MB model and ~40 s an image; the look needs neither, and should be
 changeable in a minute without anyone re-running a neural network.

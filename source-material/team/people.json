@@ -38,7 +38,8 @@
         "from": "direct",
         "ref": "head-and-shoulders frame Sherry chose on 2026-09-22",
         "approved": false,
-        "upscale": 0.47
+        "upscale": 0.47,
+        "notes": "She had two headshots taken: a 3000x4500 studio portrait framed from the waist up, shipped from 15 September, and this 1365x2048 head-and-shoulders frame on green, which she asked for on the 22nd because the square tile cut the portrait mid-torso. The portrait is `git show d651d4b:source-material/image-sources/team/sherry-lachman.jpg`."
       },
       "bioSource": {
         "from": "tracker",
@@ -99,7 +100,8 @@
         "ref": "Website Bio tracking sheet, Headshots column",
         "approved": false,
         "upscale": 0.48,
-        "edgesFaded": "left 10%, right 7%, bottom 7%"
+        "edgesFaded": "left 10%, right 7%, bottom 7%",
+        "notes": "Her form upload is this file, byte for byte."
       },
       "bioSource": {
         "from": "tracker",
@@ -139,7 +141,8 @@
         "from": "form",
         "ref": "https://drive.google.com/open?id=1nfVNOa1p4OHRGuz392GrJ__XdosjoGM_",
         "approved": false,
-        "upscale": 0.19
+        "upscale": 0.19,
+        "notes": "The form upload as submitted (7 Aug); a placeholder until then."
       },
       "bioSource": {
         "from": "tracker",
@@ -181,7 +184,8 @@
         "ref": "cics.umass.edu /files/2022-10/lan.jpg (203×203)",
         "approved": false,
         "upscale": 2,
-        "edgesFaded": "bottom 18%, left 10%"
+        "edgesFaded": "bottom 18%, left 10%",
+        "notes": "His only public portrait is 203x203, enlarged 2.0x to put his face at everyone else's height, so this is one of the two soft tiles until a better original arrives. cics.umass.edu serves it at 800x800 through an image style, and that is what the tracker has, but it is an upscale of this file with no extra detail: do not cut out from it."
       },
       "bioSource": {
         "from": "tracker",
@@ -214,7 +218,8 @@
         "ref": "Website Bio tracking sheet, Headshots column",
         "approved": false,
         "upscale": 1.72,
-        "edgesFaded": "bottom 23%, left 13%, top 6%"
+        "edgesFaded": "bottom 23%, left 13%, top 6%",
+        "notes": "His only public portrait is 190x213, enlarged 1.7x, so this is one of the two soft tiles until a better original arrives. The photo stops at his hairline, and his is the only top edge the cut-out fades."
       },
       "bioSource": {
         "from": "tracker",
@@ -246,7 +251,8 @@
         "from": "institution",
         "ref": "her own page (1000×1407)",
         "approved": false,
-        "upscale": 0.73
+        "upscale": 0.73,
+        "notes": "Her form upload is the same photograph cropped to 888x1088, and the tracker's copy a 680x600 Drupal derivative, so the 1000x1407 from her own page stays."
       },
       "bioSource": {
         "from": "tracker",
@@ -285,7 +291,8 @@
         "from": "institution",
         "ref": "University of Minnesota page (1200×1800)",
         "approved": false,
-        "upscale": 0.51
+        "upscale": 0.51,
+        "notes": "The tracker's copy is 300x450 and her form upload 21.5 KB; the university's 1200x1800 is the master."
       },
       "bioSource": {
         "from": "tracker",
@@ -325,7 +332,8 @@
         "ref": "Website Bio tracking sheet, Headshots column",
         "approved": false,
         "upscale": 0.55,
-        "edgesFaded": "left 10%, bottom 9%, right 4%"
+        "edgesFaded": "left 10%, bottom 9%, right 4%",
+        "notes": "Her form upload is 200x200, smaller than this."
       },
       "bioSource": {
         "from": "tracker",
@@ -366,7 +374,8 @@
         "from": "form",
         "ref": "https://drive.google.com/open?id=1se8GtLpMVWgWvLNpgg7FpMLaEiL80nEk",
         "approved": false,
-        "upscale": 0.5
+        "upscale": 0.5,
+        "notes": "The form upload as submitted (2 Aug); a placeholder until then."
       },
       "bioSource": {
         "from": "tracker",
@@ -408,7 +417,8 @@
         "approved": false,
         "upscale": 0.41,
         "edgesFaded": "bottom 8%",
-        "edgesExtended": "left 1%, right 1%"
+        "edgesExtended": "left 1%, right 1%",
+        "notes": "The form upload as submitted (22 Sep)."
       },
       "form": {
         "submitted": "2026-09-22 17:23:34",
@@ -447,7 +457,8 @@
         "ref": "https://drive.google.com/open?id=1MiZwORsglGY-d42vXSG4xD0Ry9GLrpdr",
         "approved": false,
         "upscale": 0.79,
-        "edgesFaded": "left 18%, bottom 18%, right 18%"
+        "edgesFaded": "left 18%, bottom 18%, right 18%",
+        "notes": "The form upload as submitted (28 Jul)."
       },
       "form": {
         "submitted": "2026-07-28 23:08:32",
@@ -485,7 +496,8 @@
         "from": "form",
         "ref": "https://drive.google.com/open?id=14HLBQWxh0Xhya6qrV7wi3UOo5bDjG7K_",
         "approved": false,
-        "upscale": 0.14
+        "upscale": 0.14,
+        "notes": "A 7.8 MB, 3648x5472 studio portrait on grey, the largest master. The Drive connector's session died on it every time, so it was fetched through a shared link on 25 September; it is the file as submitted, byte for byte. Downsampled 0.14x, with no fade or clamp."
       },
       "form": {
         "submitted": "2026-07-31 10:18:56",
@@ -646,7 +658,8 @@
         "from": "institution",
         "ref": "crosstownhigh.org/leadership",
         "approved": false,
-        "upscale": 0.23
+        "upscale": 0.23,
+        "notes": "One of the four Crosstown fellows replaced together in September 2026 from a single shoot on the school's staff page (crosstownhigh.org/leadership, through its Squarespace CDN at ?format=2500w), so the group reads as one set. A resolution rescue too: the tracker's copy was 380px effective."
       },
       "bioSource": {
         "from": "tracker",
@@ -678,7 +691,8 @@
         "from": "institution",
         "ref": "crosstownhigh.org/leadership",
         "approved": false,
-        "upscale": 0.28
+        "upscale": 0.28,
+        "notes": "One of the four Crosstown fellows replaced together in September 2026 from a single shoot on the school's staff page (crosstownhigh.org/leadership, ?format=2500w). A resolution rescue too: the tracker's copy was 400px effective."
       },
       "bioSource": {
         "from": "tracker",
@@ -712,7 +726,8 @@
         "from": "institution",
         "ref": "crosstownhigh.org/leadership",
         "approved": false,
-        "upscale": 0.65
+        "upscale": 0.65,
+        "notes": "One of the four Crosstown fellows replaced together in September 2026 from a single shoot on the school's staff page (crosstownhigh.org/leadership, ?format=2500w). His tracker copy was already adequate at 800x800; replaced for the set."
       },
       "bioSource": {
         "from": "tracker",
@@ -744,7 +759,8 @@
         "from": "institution",
         "ref": "crosstownhigh.org/leadership",
         "approved": false,
-        "upscale": 0.26
+        "upscale": 0.26,
+        "notes": "One of the four Crosstown fellows replaced together in September 2026 from a single shoot on the school's staff page (crosstownhigh.org/leadership, ?format=2500w). A resolution rescue too: the tracker's copy was 450px effective."
       },
       "bioSource": {
         "from": "tracker",
@@ -777,7 +793,8 @@
         "ref": "her own site (2617×2500)",
         "approved": false,
         "upscale": 0.21,
-        "edgesExtended": "bottom 1%"
+        "edgesExtended": "bottom 1%",
+        "notes": "The tracker's copy was a 1024x978 re-export of this 2617x2500."
       },
       "bioSource": {
         "from": "tracker",
@@ -807,7 +824,8 @@
         "from": "tracker",
         "ref": "Website Bio tracking sheet, Headshots column",
         "approved": false,
-        "upscale": 0.5
+        "upscale": 0.5,
+        "notes": "Her form upload is this file, byte for byte."
       },
       "bioSource": {
         "from": "tracker",
@@ -846,7 +864,8 @@
         "from": "tracker",
         "ref": "Website Bio tracking sheet, Headshots column",
         "approved": false,
-        "upscale": 1.24
+        "upscale": 1.24,
+        "notes": "Enlarged 1.24x, which does not show at tile size."
       },
       "bioSource": {
         "from": "tracker",
@@ -876,7 +895,8 @@
         "from": "tracker",
         "ref": "Website Bio tracking sheet, Headshots column",
         "approved": false,
-        "upscale": 0.3
+        "upscale": 0.3,
+        "notes": "Her form upload is this file, byte for byte."
       },
       "form": {
         "submitted": "2026-07-28 18:10:46",
@@ -936,7 +956,8 @@
         "ref": "https://drive.google.com/open?id=12U_lMmQ_p0m4rHfJegW8ZX6qn9yDwOtM",
         "approved": false,
         "upscale": 0.45,
-        "edgesFaded": "bottom 15%"
+        "edgesFaded": "bottom 15%",
+        "notes": "The form upload as submitted (30 Jul)."
       },
       "form": {
         "submitted": "2026-07-30 14:49:29",
@@ -975,7 +996,8 @@
         "ref": "https://drive.google.com/open?id=18R9aAGOMMPYU-39JyqxP_42BXjgSPPxN",
         "approved": false,
         "upscale": 1.31,
-        "edgesExtended": "right 1%"
+        "edgesExtended": "right 1%",
+        "notes": "The form upload as submitted (filed by the form as \"csaba petre\"). Enlarged 1.31x, which does not show at tile size."
       },
       "bioSource": {
         "from": "direct",
@@ -1189,7 +1211,7 @@
       "photo": {
         "from": "tracker",
         "ref": "Website Bio tracking sheet",
-        "notes": "Still encoded (colour, top-anchored) and published, referenced by nothing; kept in case the roster moves again."
+        "notes": "Predates the cut-outs. Her encodes stayed published for a week after she left the page, until 8db345c removed them."
       },
       "form": null,
       "notes": "Removed on purpose per Joan; still listed in the tracker.",
@@ -1221,7 +1243,7 @@
       "photo": {
         "from": "tracker",
         "ref": "Website Bio tracking sheet",
-        "notes": "Still encoded (colour, top-anchored) and published, referenced by nothing; kept in case the roster moves again."
+        "notes": "Predates the cut-outs. Her encodes stayed published for a week after she left the page, until 8db345c removed them."
       },
       "form": null,
       "notes": "Removed on purpose per Joan; still listed in the tracker.",

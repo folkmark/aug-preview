@@ -3,6 +3,7 @@
 // a repo dependency and CI never runs this — the encoded files are committed:
 //
 //   npm i --no-save sharp && node tools/encode-images.mjs
+//   node tools/encode-images.mjs --only=<slug>[,<slug>]   just those people's headshots
 //
 // The originals were dropped in as received: PNGs of soft-shaded 3D renders, 24-bit for
 // the photography, 48-bit for the three illustration plates and 32-bit for the four cycle
@@ -17,6 +18,7 @@
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { readRoster, surfacedWithPhoto } from './lib/team.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 // Every source this reads is committed under source-material/image-sources — see that
@@ -45,6 +47,12 @@ const sharp = await import('sharp').then((m) => m.default).catch(() => {
 const DUOTONE = { ink: '#0b1a2d', paper: '#ffffff', background: '#e9eef4' };
 
 // width: the target in real pixels. The comment on each is the box it renders into.
+// One headshot job per person on the page with a photograph — see THE HEADSHOTS below.
+const roster = readRoster(root);
+const onPage = surfacedWithPhoto(roster).map((p) => p.slug);
+const HEADSHOTS = onPage.map((slug) =>
+  ({ in: `team-cutout/${slug}.webp`, out: `team/${slug}.webp`, width: 512, square: true, duotone: DUOTONE }));
+
 const JOBS = [
   // Full-width photography in a 3/2 box, sized for ~640 CSS px on desktop.
   //
@@ -324,103 +332,31 @@ const JOBS = [
   // a crop or a framing the other lacks.
   //
   // The photographs in team/ are still the masters, and a better original is now the one
-  // thing that improves a tile. Where they came from:
+  // thing that improves a tile. Which photograph each person has, where it came from and
+  // anything done to it is recorded against them in the roster — photo.from, .ref and .notes
+  // in source-material/team/people.json — and not here. This list used to carry it as prose,
+  // a paragraph per batch of people, and the prose drifted from the page: two people who had
+  // left stayed described (and encoded) here for a week.
   //
-  // Nine are from the "Website Bio tracking" sheet, where each person's photo is embedded
-  // in a Headshots column. Sherry's came from her directly and seven came through the
-  // website info form, both further down. The other eight are from the subject's own
-  // institution, under one rule: where the institution still publishes the file the
-  // sheet's copy was resized from, the institution wins. Angela is 1000x1407 on her own page against a 680x600 Drupal
-  // derivative in the sheet, Laura 1200x1800 against 300x450, Sarah 2617x2500 against a
-  // 1024x978 re-export, and the four Crosstown fellows below are 2048-2500 against 400-800.
-  // Check both before adding anyone new — a photo that has been pasted through a
-  // spreadsheet has usually lost a generation, and the fellows' entries in that sheet were
-  // mostly LinkedIn renditions, which top out around 400-450px square.
-  { in: 'team-cutout/joan-lee.webp',           out: 'team/joan-lee.webp',           width: 512, square: true, duotone: DUOTONE },
-  { in: 'team-cutout/angela-stewart.webp',     out: 'team/angela-stewart.webp',     width: 512, square: true, duotone: DUOTONE },
-  { in: 'team-cutout/laura-allen.webp',        out: 'team/laura-allen.webp',        width: 512, square: true, duotone: DUOTONE },
-  { in: 'team-cutout/blair-lehman.webp',       out: 'team/blair-lehman.webp',       width: 512, square: true, duotone: DUOTONE },
-  { in: 'team-cutout/sarah-zaner.webp',        out: 'team/sarah-zaner.webp',        width: 512, square: true, duotone: DUOTONE },
-  { in: 'team-cutout/lisa-peterson.webp',      out: 'team/lisa-peterson.webp',      width: 512, square: true, duotone: DUOTONE },
-  { in: 'team-cutout/neil-sharma.webp',        out: 'team/neil-sharma.webp',        width: 512, square: true, duotone: DUOTONE },
-  { in: 'team-cutout/christopher-hanks.webp',  out: 'team/christopher-hanks.webp',  width: 512, square: true, duotone: DUOTONE },
-  { in: 'team-cutout/ben-hoff.webp',           out: 'team/ben-hoff.webp',           width: 512, square: true, duotone: DUOTONE },
-
-  // The four Crosstown High fellows, all four from one shoot on the school's own staff
-  // page (crosstownhigh.org/leadership, served through its Squarespace CDN at
-  // ?format=2500w). They were replaced together in September 2026 so that the group would
-  // read as a set — one photographer, one background, one lighting setup — which is the
-  // argument the duotone above now makes for everyone. Three were also genuine resolution
-  // rescues: Nikki Wallace 380px effective, Danie Cowden 400, Mohammed Al Harthy 450, all
-  // now 2048-2500. Joshua Sloan was already adequate at 800x800 and is here for the set.
-  { in: 'team-cutout/nikki-wallace.webp',      out: 'team/nikki-wallace.webp',      width: 512, square: true, duotone: DUOTONE },
-  { in: 'team-cutout/danie-cowden.webp',       out: 'team/danie-cowden.webp',       width: 512, square: true, duotone: DUOTONE },
-  { in: 'team-cutout/joshua-sloan.webp',       out: 'team/joshua-sloan.webp',       width: 512, square: true, duotone: DUOTONE },
-  { in: 'team-cutout/mohammed-al-harthy.webp', out: 'team/mohammed-al-harthy.webp', width: 512, square: true, duotone: DUOTONE },
-
-  // Under-resolution at source. Andrew Lan and Ryan Baker are research partners whose only
-  // public portrait is small — 203x203 and 190x213 — and the shared framing enlarges them
-  // 2.0x and 1.7x to put their faces at everyone else's height. That is the price of one
-  // scale for everybody, and it is paid here rather than by shrinking their faces: these
-  // are the two soft tiles, and stay so until someone supplies better originals. (Abby's
-  // and Neil's are enlarged too, 1.31x and 1.24x, which does not show at tile size.) Ryan's
-  // photo also stops at his hairline, and it is the only one whose top edge the cut-out
-  // tool has to fade.
+  // The rule for choosing between sources stays here, because it applies to whoever comes
+  // next. Where the subject's own institution still publishes the file the tracker sheet's
+  // copy was resized from, the institution wins: a photo pasted through a spreadsheet has
+  // usually lost a generation. Angela was 1000x1407 on her own page against a 680x600 Drupal
+  // derivative in the sheet, Laura 1200x1800 against 300x450, and the fellows' entries were
+  // mostly LinkedIn renditions, which top out around 400-450px square. Check both before
+  // adding anyone new.
   //
-  // Andrew is the trap worth naming. cics.umass.edu serves his portrait through a 1_1_2xl
-  // image style at 800x800, and that derivative is what got pasted into the sheet, but the
-  // file behind it — /files/2022-10/lan.jpg — is 203x203. The big one is a 4x upscale
-  // carrying no detail the small one lacks, at 48 KB against 17 KB. Cutting out from it
-  // would ship a mushy tile that merely claims to be sharp, so the 203 is the master.
-  { in: 'team-cutout/andrew-lan.webp',         out: 'team/andrew-lan.webp',         width: 512, square: true, duotone: DUOTONE },
-  { in: 'team-cutout/ryan-baker.webp',         out: 'team/ryan-baker.webp',         width: 512, square: true, duotone: DUOTONE },
-  // Danielle Ragavanis and Alondra Ramos came off the page when the Fellowship roster
-  // changed on 18 September 2026. Their photos were kept encoded here in case it moved
-  // again, which meant two people no longer on the site stayed published at
-  // /assets/team/, linked from nowhere, and the handoff's "the 25 people on the page" was
-  // wrong about the folder. Removed on 25 September. Both masters are in history —
-  // `git show 3087ca5:source-material/image-sources/team/alondra-ramos.jpg` — and they
-  // predate the cut-outs, so whoever brings one back gives them a card, runs
-  // tools/cutout-headshots.py --only on them, and adds a job in the form above.
-
-  // The three Leadership portraits, the same ~197px tile as everyone else; their long bios
-  // are on their own pages at /team/<slug>/.
+  // And check the FILE, not the rendition. cics.umass.edu serves Andrew Lan's portrait at
+  // 800x800 through a 1_1_2xl image style, and that derivative is what got pasted into the
+  // sheet, but the file behind it is 203x203. The big one is a 4x upscale carrying no detail
+  // the small one lacks; cutting out from it would ship a mushy tile that merely claims to be
+  // sharp.
   //
-  // Sherry had two headshots taken: a 3000x4500 studio portrait framed from the waist up,
-  // and a 1365x2048 head-and-shoulders frame on a green backdrop. The portrait shipped from
-  // September 15th, and she asked for the other on the 22nd because the square tile cut it
-  // mid-torso. The shared framing would now make either work, but the one she chose is the
-  // master. The portrait is the version of this file at efa77ea..d651d4b, and `git show
-  // d651d4b:source-material/image-sources/team/sherry-lachman.jpg` brings it back.
-  { in: 'team-cutout/sherry-lachman.webp',     out: 'team/sherry-lachman.webp',     width: 512, square: true, duotone: DUOTONE },
-  { in: 'team-cutout/caitlin-mills.webp',      out: 'team/caitlin-mills.webp',      width: 512, square: true, duotone: DUOTONE },
-  { in: 'team-cutout/raquel-romano.webp',      out: 'team/raquel-romano.webp',      width: 512, square: true, duotone: DUOTONE },
-
-  // From the "AugmentED Website Info" form, whose uploads land in a "Headshot (File
-  // responses)" Drive folder: Jenny (Leadership, 7 Aug) and Isa (Research, 2 Aug), who
-  // were placeholders until then, and four people new to the page: Aarav (22 Sep) and
-  // Byungyeon (28 Jul) in Research, Sonia (30 Jul) and Abby (30 Jul, filed by the form as
-  // "csaba petre") in Technology and Design. Each master is the upload exactly as submitted.
-  //
-  // The form was checked against every master already here, byte for byte, before any of
-  // it was used. Joan's, Lisa's and Raquel's uploads are the files above. Angela's is the
-  // same photograph as hers, cropped to 888x1088, so the 1000x1407 stays. Blair's is
-  // 200x200 and Laura's 21.5 KB, both smaller than what the page already has.
-  //
-  // Stephen Hutt (Research, 31 Jul) came last and by a different road. His upload is a
-  // 7.8 MB, 3648x5472 studio portrait on grey — the largest master here — and the Drive
-  // connector's session died on it every time, so it was fetched through a shared link on
-  // 25 September instead. It is the file as submitted, byte for byte; the cut-out tool
-  // downsamples it 0.14x and it needed no fade or clamp. Tom Keefe, Katie Butler and
-  // Allison Rapoport have also sent photos through the form but are not on the page yet;
-  // Tom's is a 237x222 screenshot.
-  { in: 'team-cutout/jenny-bradbury.webp',     out: 'team/jenny-bradbury.webp',     width: 512, square: true, duotone: DUOTONE },
-  { in: 'team-cutout/isa-peczuh.webp',         out: 'team/isa-peczuh.webp',         width: 512, square: true, duotone: DUOTONE },
-  { in: 'team-cutout/aarav-kalkar.webp',       out: 'team/aarav-kalkar.webp',       width: 512, square: true, duotone: DUOTONE },
-  { in: 'team-cutout/byungyeon-yun.webp',      out: 'team/byungyeon-yun.webp',      width: 512, square: true, duotone: DUOTONE },
-  { in: 'team-cutout/stephen-hutt.webp',       out: 'team/stephen-hutt.webp',       width: 512, square: true, duotone: DUOTONE },
-  { in: 'team-cutout/sonia-prusaitis.webp',    out: 'team/sonia-prusaitis.webp',    width: 512, square: true, duotone: DUOTONE },
-  { in: 'team-cutout/abby-petre.webp',         out: 'team/abby-petre.webp',         width: 512, square: true, duotone: DUOTONE },
+  // THE JOBS ARE THE ROSTER'S: HEADSHOTS above, one per person on the page with a
+  // photograph, so putting someone on the page or taking them off is a roster edit and
+  // nothing here. The end of this file deletes the headshots of anyone no longer on the
+  // page, which is the step 8db345c once had to take by hand for two fellows who had left.
+  ...HEADSHOTS,
 
   // The three illustrations in the outputs row on the home page. These ship as rendered:
   // the full 1200x1200 plate, scaled down and nothing else.
@@ -537,9 +473,23 @@ for (const j of JOBS) {
   if (!seen) byMaster.set(j.in, { key, out: j.out, crop: j.crop, grade: j.grade });
 }
 
+// --only=<slug,…> encodes just those people's headshots and their colour twins. Everything
+// else here re-encodes byte for byte on an unchanged toolchain, but a sharp or libwebp
+// update moves every file by a few bytes, and one new photograph should not carry the whole
+// site's assets into its commit.
+const only = (process.argv.find((a) => a.startsWith('--only=')) || '').slice('--only='.length).split(',').filter(Boolean);
+for (const slug of only) {
+  if (!onPage.includes(slug)) {
+    console.error(`--only: ${slug} is not on the page with a photograph in the roster (source-material/team/people.json)`);
+    process.exit(1);
+  }
+}
+const slugOf = (j) => j.out.match(/^team\/(?:colour\/)?([a-z0-9-]+)\.webp$/)?.[1];
+const wanted = JOBS.filter((j) => !only.length || only.includes(slugOf(j)));
+
 // A job whose source is missing is skipped, not fatal — see the note on SRC above.
-const runnable = JOBS.filter((j) => fs.existsSync(path.join(SRC, j.in)));
-const skipped = JOBS.filter((j) => !runnable.includes(j));
+const runnable = wanted.filter((j) => fs.existsSync(path.join(SRC, j.in)));
+const skipped = wanted.filter((j) => !runnable.includes(j));
 if (!runnable.length) {
   console.error(`No source images found.
 
@@ -653,6 +603,22 @@ console.log(`\n${(before / 1048576).toFixed(2)} MB -> ${(after / 1024).toFixed(0
 if (skipped.length) {
   console.log(`\nskipped ${skipped.length} job(s) whose source is not present:`);
   for (const j of skipped) console.log(`  ${path.relative(root, path.join(SRC, j.in))}`);
+}
+
+// Headshots of anyone no longer on the page. assets/ is published wholesale, so an encode
+// left behind is a photograph of someone who has left, served at a guessable URL and linked
+// from nowhere. That happened: two fellows who came off the page on 18 September stayed
+// published for a week, until 8db345c removed them by hand. Archiving someone in the roster
+// and running this is now the whole of taking their photograph down; build-site fails if it
+// was skipped. Runs with --only too, since it touches only files the roster has disowned.
+for (const dir of ['team', 'team/colour']) {
+  for (const f of fs.readdirSync(path.join(OUT, dir)).filter((f) => f.endsWith('.webp'))) {
+    const slug = f.slice(0, -'.webp'.length);
+    if (onPage.includes(slug)) continue;
+    fs.unlinkSync(path.join(OUT, dir, f));
+    const p = roster.people.find((x) => x.slug === slug);
+    console.log(`removed assets/${dir}/${f}: ${p ? `${slug} is not on the page with a photograph` : `nobody in the roster is ${slug}`}`);
+  }
 }
 
 // Print the band THE GRADE above holds the photography to, measured off the files just

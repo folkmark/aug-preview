@@ -242,31 +242,32 @@ into Yoast by the import.
 
 ## 7. Adding a person
 
-1. Add their card to their group's grid in `index.html`. If they have a bio, give the
-   card `class="bio-tile"` and `id="<slug>"`.
-2. Add their photograph to `source-material/image-sources/team/<slug>.jpg` — the largest
-   original that exists; see the headshot notes in `tools/encode-images.mjs` for where to
-   look. Run `python3 tools/cutout-headshots.py --only=<slug>`, which needs the card from
-   step 1 (it reads who is pictured from `index.html`) and a model its header says how to
-   fetch, and read its report: a warning means the photo is cropped too tight for the
-   shared framing and wants a looser one. Then add a job to `tools/encode-images.mjs` in
-   the others' form — `in: 'team-cutout/<slug>.webp'`, `width: 512, square: true,
-   duotone: DUOTONE` — and run it. Their colour twin comes with it; there is nothing to add.
-3. If they have a bio, write `source-material/bios/<slug>.md`, with the role line from their
-   card. Their affiliation, location and links are read off the card, not repeated here.
-4. Add the `Read bio` link to their card, copying another card's `.bio-cta` paragraph,
-   with the slug in the href and the name in the hidden span.
-5. Bump the counts in `tools/export-content.mjs` — `team.length`, the headshot count and
-   the number of people without a title (`roleless.length`) are hard-coded on purpose, as
-   tripwires.
-6. Re-export, regenerate the plugin (`node tools/build-wp-plugin.mjs`), and on aerdf.org
+The team is a roster, `source-material/team/people.json`, and the tiles are written from it
+(`source-material/team/README.md` has the fields). A person is on the page when they have a
+group and are not tagged `Archived`.
+
+1. Add them to the roster, or give an existing entry its `group` and an `order`. Their name,
+   role, a Fellow's school and city, and their links go there, and nowhere else.
+2. Add their photograph as `source-material/image-sources/team/<slug>.<ext>`: the largest
+   original that exists. The rule for choosing between the tracker, the form and the
+   subject's institution is in the headshot comment in `tools/encode-images.mjs`. Record it
+   as their `photo` in the roster, with where it came from.
+3. If they have a bio, write `source-material/bios/<slug>.md`, headed with their roster name
+   and role. That is what gives their tile the "Read bio" link.
+4. `node tools/build-team.mjs` writes the tiles and prints what else to run: for a photograph,
+   `tools/cutout-headshots.py --only=<slug>` (read its report; a warning means the photo is
+   cropped too tight for the shared framing and wants a looser one), then
+   `node tools/encode-images.mjs --only=<slug>`, which writes the duotone and its colour twin.
+5. Re-export (`tools/export-static.mjs`, then `tools/export-content.mjs`, whose counts follow
+   the roster), regenerate the plugin (`node tools/build-wp-plugin.mjs`), and on aerdf.org
    re-run the import. It creates the new person and changes nothing else. Or add them in
    WordPress directly: a team post in their AugmentED group, with the "AugmentED card"
    filled in. A person added that way shows their featured image, without the colour
    bloom, unless a bundled headshot is chosen.
 
-Step 3 can land before step 4: the bio is skipped with a warning until the link exists,
-so nothing is published early.
+Taking someone off is the `Archived` tag, never a deletion: the encoder then removes their
+published photographs, their bio stops being built, and the WordPress import marks their
+post Archived.
 
 ### Verification
 
