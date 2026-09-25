@@ -87,7 +87,30 @@ const team = heads.map((m, k) => {
   // href inside the tag. The relational count below is what catches a shape this misses.
   const bioUrl = card.match(/<a\b[^>]*?\shref="([^"]*\/team\/[a-z0-9-]+\/)"[^>]*>\s*Read bio/)?.[1] ?? null;
 
+  // THE SLUG, which is the key everything downstream joins on: the bio page's URL, the
+  // headshot's filename, and — in the WordPress plugin — the team post it is imported as
+  // (tools/build-wp-plugin.mjs upserts by it, so it must never be derived two ways). A bio
+  // tile states it outright as its id; the bio link and the photo filename state it again.
+  // Where none of them exists — a person with no bio and no photograph yet — it comes from
+  // the name, the way the tile ids were made: accents folded, the parenthetical dropped
+  // ("Abby (Csaba) Petre" is abby-petre). Every source present has to agree, because a
+  // disagreement means a renamed file or a hand-edited id, and the import would quietly
+  // create a second post for the same person.
+  const fromName = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\([^)]*\)/g, '')
+    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  const said = {
+    id: before.match(/<div class="bio-tile"[^>]*\sid="([a-z0-9-]+)"(?:(?!<h3)[\s\S])*$/)?.[1],
+    bio: bioUrl?.match(/\/team\/([a-z0-9-]+)\/$/)?.[1],
+    photo: photo?.match(/assets\/team\/([a-z0-9-]+)\.webp$/)?.[1],
+  };
+  const slug = said.id ?? said.bio ?? said.photo ?? fromName;
+  for (const [src, v] of Object.entries(said)) {
+    expect(v === undefined || v === slug, `team: ${name}'s ${src} says "${v}" but the slug is "${slug}"`);
+  }
+  expect(/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug), `team: ${name} has an unusable slug "${slug}"`);
+
   return {
+    slug,
     name,
     group: groupAt(m.index),
     role: role ? decode(role) : null,
@@ -99,6 +122,7 @@ const team = heads.map((m, k) => {
   };
 });
 expect(team.length === 29, `team: expected 29 people, parsed ${team.length}`);
+expect(new Set(team.map((p) => p.slug)).size === team.length, 'team: two people share a slug');
 
 // A role line is no longer on every card. In September five people were added from the
 // website info form before anyone had given their titles, and the client chose to show
