@@ -16,10 +16,10 @@
 //                       functions — what the plugin's bio.php runs.
 //
 // The interface is deliberately tiny: text, attr, asset, when/unless on a key, one
-// comparison, each over a list and a join. Anything that needs more than that belongs in
-// the data rather than in the template. The page CHROME — head, header, footer — is not
-// here: the preview site's bio page has its own, and in WordPress the chrome is AERDF's
-// theme and the plugin's program bar.
+// comparison, each over a list, a join, and the bio's paragraphs. Anything that needs
+// more than that belongs in the data rather than in the template. The page CHROME —
+// head, header, footer — is not here: the preview site's bio page has its own, and in
+// WordPress the chrome is AERDF's theme and the plugin's program bar.
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -77,6 +77,7 @@ export function staticHelper(data, assetBase = 'assets/') {
     is: (k, value, yes, no) => (get(k) === value ? yes : no),
     each: (k, fn, sep = '') => get(k).map((item) => fn(staticHelper(item, assetBase))).join(sep),
     join: (k, sep) => get(k).map(esc).join(sep),
+    paragraphs: (k, sep) => get(k).map((t) => `<p>${esc(t)}</p>`).join(sep),
   };
 }
 
@@ -103,11 +104,16 @@ export function phpHelper(v, depth = 0) {
       return `${head}${lead}${fn(phpHelper(item, depth + 1))}<?php endforeach; ?>`;
     },
     join: (k, sep) => `<?php echo implode( '${sep}', array_map( 'esc_html', ${get(k)} ) ); ?>`,
+    // A bio in WordPress is the post's content, which an editor may have given a link or an
+    // emphasis, so it is printed as the HTML it is — already run through wpautop() and
+    // wp_kses_post() by the runtime that builds $bio — rather than escaped into literal tags.
+    paragraphs: (k) => `<?php echo ${get(k)}; // phpcs:ignore WordPress.Security.EscapeOutput -- kses'd in augmented_ed_bio_data(). ?>`,
   };
 }
 
 // The profile. Fields: back (href), photo (src, optional), name, role (optional), meta
-// (list of lines, optional), paras (list), links (list of { url, label }).
+// (list of lines, optional), paras (list of plain-text paragraphs here; the post's
+// sanitised HTML in PHP), links (list of { url, label }).
 //
 // The portrait is optional on purpose: a bio can land before a usable headshot does, and
 // the page should still be worth reading. Without one the page is a single column of text
@@ -135,7 +141,7 @@ export function bioBody(h) {
         ${h.when('role', `<p class="bio-role">${h.text('role')}</p>`)}
         ${h.when('meta', `<p class="bio-meta">${h.join('meta', '<br>')}</p>`)}
         <div class="bio-body">
-          ${h.each('paras', (p) => `<p>${p.text('.')}</p>`, '\n          ')}
+          ${h.paragraphs('paras', '\n          ')}
         </div>
         ${h.when('links', `<ul class="bio-links">\n          ${h.each('links', linkItem, '\n          ')}\n        </ul>`)}
       </div>

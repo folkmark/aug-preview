@@ -1,10 +1,10 @@
-// Exports the site's structured content as data files, for the WordPress rebuild.
+// Exports the site's structured content as data files, for the WordPress plugin.
 //
 // The prototype has no CMS: the team grids, the research cards, the cycle steps and
-// the per-page metadata all live as markup. The WordPress developer models them as
-// post types and fields (JetEngine / CPT UI on the target install), and the honest
-// source for that is data, not HTML — scraping 29 team cards by hand is an hour of
-// transcription errors waiting to be found in production.
+// the per-page metadata all live as markup. In WordPress the team becomes posts of
+// aerdf.org's own team type, imported by the plugin, and the honest source for that is
+// data, not HTML — scraping 29 team cards by hand is an hour of transcription errors
+// waiting to be found in production. tools/build-wp-plugin.mjs reads what this writes.
 //
 // This reads the rendered pages in wordpress-handoff/pages/ — the same files the
 // templates are built from, so the two cannot disagree — and writes JSON and CSV
