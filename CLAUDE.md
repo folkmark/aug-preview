@@ -107,6 +107,21 @@ Measure claims about smoothness rather than asserting them. Instrumenting `paint
 to count ticks where the wanted frame was not resident is a better answer to "is the
 budget big enough" than any amount of reasoning about it.
 
+## The team is a roster, not markup
+
+`source-material/team/people.json` holds everyone: the people on Who We Are, the people
+held back without a group, and the people tagged `Archived`. A person appears on the page
+if and only if they have a group and are not Archived. `tools/build-team.mjs` writes the
+tiles in `index.html` from it (between marker comments in each `.team-grid-3`), and
+`build-site` fails when they differ, so **never edit a team tile by hand**. Edit the roster,
+run `node tools/build-team.mjs`, and it prints what else to run.
+
+What is published follows the roster too. The headshot encodes exist only for people on the
+page, and `tools/encode-images.mjs` deletes any others. Bios of people off the page are kept
+in `source-material/bios/` and never built. Held people's photographs are not committed
+(this repository is public); the roster records their Drive file ID instead.
+`source-material/team/README.md` has the fields.
+
 ## House style
 
 The comments in `assets/*.js`, `assets/*.css` and `tools/*.mjs` explain *why a thing

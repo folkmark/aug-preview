@@ -18,6 +18,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { unserved, readManifest, heroFrames, approachFrames, fallingFrames } from './lib/sequences.mjs';
 import { readBios as readBioFiles, lede as bioLede, staticHelper, bioBody, BIO_PROFILE_CSS, BIO_PROFILE_DESKTOP_CSS } from './lib/bio-page.mjs';
+import { readRoster, checkTeam, statusOf } from './lib/team.mjs';
 
 const root = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
 const outDir = path.resolve(root, process.argv[2] || '_site');
@@ -226,6 +227,19 @@ function markupShape(html) {
 const shape = markupShape(home);
 if (shape.length) {
   for (const e of shape) console.error(`::error::${e}`);
+  process.exit(1);
+}
+
+// The Who We Are tiles are written from the roster, source-material/team/people.json, by
+// tools/build-team.mjs, and this is where CI holds them to it: the tiles match the roster,
+// every photograph and bio belongs to someone in it, and what gets published from a
+// photograph exists exactly for the people on the page. tools/lib/team.mjs has the rules.
+// Before the build rather than among the reference checks below, because a hand-edited
+// tile or a stray encode is a source problem, not a broken link.
+const roster = readRoster(root);
+const teamProblems = checkTeam(root, home, roster);
+if (teamProblems.length) {
+  for (const e of teamProblems) console.error(`::error::${e}`);
   process.exit(1);
 }
 
@@ -529,15 +543,20 @@ ${bioBody(staticHelper({
 // page would have shipped linked from nowhere while the docs said it did not exist.
 // Caught in review before it merged. The link is the real coupling, so it is the test.
 //
-// Skipping rather than building is the safe default for the other reason too. Writing a
-// bio before the card is a reasonable order to work in, but on a public site an unlinked
-// page is still a published page: a bio for someone not yet announced would go live the
-// moment it was committed. It is a warning, not a failure, so that order still works.
+// Skipping rather than building is the safe default for the other reason too: on a public
+// site an unlinked page is still a published page. Since the roster, a bio with no link is
+// never an accident — the tiles are written from the roster, so every person on the page
+// with a bio has one — it is the bio of someone held back or archived, kept on purpose so
+// they can return with everything. checkTeam() has already failed the build on a bio with
+// no roster entry, so what is left here is one line saying who is kept.
+const kept = [];
 const bios = readBios().filter((b) => {
   if (home.includes(`href="team/${b.slug}/"`)) return true;
-  console.log(`::warning::source-material/bios/${b.slug}.md is not built — no "Read bio" link on the team page points at team/${b.slug}/`);
+  const p = roster.people.find((x) => x.slug === b.slug);
+  kept.push(`${b.slug} (${p ? statusOf(p) : 'not in the roster'})`);
   return false;
 });
+if (kept.length) console.log(`  bios kept, not built: ${kept.join(', ')}`);
 for (const b of bios) {
   const dir = path.join(outDir, 'team', b.slug);
   fs.mkdirSync(dir, { recursive: true });
