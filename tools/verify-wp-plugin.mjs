@@ -481,11 +481,12 @@ export async function checks() {
     await p.goto(BASE + '/augmented/challenge/', { waitUntil: 'load' });
     await p.waitForTimeout(300);
     await p.click('[data-aug-menu-toggle]');
-    const open = await p.evaluate(() => { const m = document.getElementById('aug-site-menu'), bar = document.querySelector('[data-aug-bar]'); return { hidden: m.hidden, display: getComputedStyle(m).display, expanded: document.querySelector('[data-aug-menu-toggle]').getAttribute('aria-expanded'), lock: document.body.style.overflow, top: Math.round(m.getBoundingClientRect().top), barBottom: Math.round(bar.getBoundingClientRect().bottom) }; });
+    await p.waitForTimeout(400); // the bars' 300ms turn into an X
+    const open = await p.evaluate(() => { const m = document.getElementById('aug-site-menu'), bar = document.querySelector('[data-aug-bar]'); return { hidden: m.hidden, display: getComputedStyle(m).display, expanded: document.querySelector('[data-aug-menu-toggle]').getAttribute('aria-expanded'), lock: document.body.style.overflow, top: Math.round(m.getBoundingClientRect().top), barBottom: Math.round(bar.getBoundingClientRect().bottom), x: [...document.querySelectorAll('[data-aug-bar-line]')].map((l) => Math.round(Math.atan2(new DOMMatrix(getComputedStyle(l).transform).b, new DOMMatrix(getComputedStyle(l).transform).a) * 180 / Math.PI)).join(',') }; });
     await p.screenshot({ path: path.join(REPORT, 'menu-390-open.png') });
     await p.keyboard.press('Escape');
     const closed = await p.evaluate(() => ({ hidden: document.getElementById('aug-site-menu').hidden, focus: document.activeElement?.hasAttribute('data-aug-menu-toggle'), lock: document.body.style.overflow }));
-    check('menu opens under the bar, locks the page', !open.hidden && open.display !== 'none' && open.expanded === 'true' && open.lock === 'hidden' && open.top === open.barBottom, JSON.stringify(open));
+    check('menu opens under the bar, locks the page, and its bars cross', !open.hidden && open.display !== 'none' && open.expanded === 'true' && open.lock === 'hidden' && open.top === open.barBottom && open.x === '45,-45', JSON.stringify(open));
     check('menu closes on Escape and returns focus', closed.hidden && closed.focus && closed.lock === '', JSON.stringify(closed));
     await p.screenshot({ path: path.join(REPORT, 'challenge-390-top.png') });
     await c.close();
