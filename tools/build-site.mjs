@@ -12,9 +12,12 @@
 // so cannot use relative paths. It defaults to "/".
 
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { unserved, readManifest, heroFrames, approachFrames, fallingFrames } from './lib/sequences.mjs';
+import { readBios as readBioFiles, lede as bioLede, staticHelper, bioBody, BIO_PROFILE_CSS, BIO_PROFILE_DESKTOP_CSS } from './lib/bio-page.mjs';
 
 const root = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
 const outDir = path.resolve(root, process.argv[2] || '_site');
@@ -235,12 +238,7 @@ const problems = [];
 fs.writeFileSync(path.join(outDir, 'index.html'), share(absolutise(home)));
 
 // See copyDir() for why each of these stays out of the build.
-const approachMounted = /<approach-scrub\b/.test(home.replace(/<!--[\s\S]*?-->/g, ''));
-const UNSERVED = [
-  /^_ds\/[^/]+\/(_adherence\.oxlintrc\.json|_ds_manifest\.json|readme\.md)$/,
-  /^_ds\/.*\.otf$/,
-  ...(approachMounted ? [] : [/^assets\/approach\.(js|css)$/, /^assets\/approach\/(ap\d{4}m?\.webp|manifest\.json)$/]),
-];
+const UNSERVED = unserved(home);
 for (const file of COPY_FILES) fs.copyFileSync(path.join(root, file), path.join(outDir, file));
 for (const dir of COPY_DIRS) copyDir(path.join(root, dir), path.join(outDir, dir));
 
@@ -307,7 +305,8 @@ for (const [from, to] of MOVED) {
 // and the runtime has booted; in a sandbox without that network, every route renders
 // unstyled. These link the same stylesheets directly from <head>, so a bio page is
 // correct with no JavaScript at all. That is also what makes it portable: in WordPress
-// this is one custom post type with one template, not a route in someone's router.
+// each person is a post of AERDF's existing team type with one template, not a route in
+// someone's router — tools/build-wp-plugin.mjs renders the same profile as that template.
 //
 // There is no Markdown parser. A bio is a name, a role and paragraphs — see the
 // directory's README. Anything else ships as literal characters, which is the honest
@@ -315,30 +314,13 @@ for (const [from, to] of MOVED) {
 const BIO_DIR = path.join(root, 'source-material/bios');
 const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
+// The parsing lives in tools/lib/bio-page.mjs, which the WordPress plugin's generator
+// reads the same files through.
 function readBios() {
-  if (!fs.existsSync(BIO_DIR)) return [];
-  return fs.readdirSync(BIO_DIR)
-    .filter((f) => f.endsWith('.md') && f !== 'README.md')
-    .sort()
-    .map((f) => {
-      const slug = f.replace(/\.md$/, '');
-      const lines = fs.readFileSync(path.join(BIO_DIR, f), 'utf8').split('\n');
-      const name = (lines.find((l) => l.startsWith('# ')) || '').slice(2).trim();
-      const role = (lines.find((l) => l.startsWith('## ')) || '').slice(3).trim();
-      const paras = lines
-        .filter((l) => !l.startsWith('#'))
-        .join('\n')
-        .split(/\n\s*\n/)
-        .map((x) => x.trim().replace(/\s+/g, ' '))
-        .filter(Boolean);
-      return { slug, name, role, paras };
-    })
-    .filter((b) => {
-      if (b.name && b.paras.length) return true;
-      console.error(`::error::source-material/bios/${b.slug}.md has no name or no paragraphs`);
-      problems.push(`bios/${b.slug}.md is malformed`);
-      return false;
-    });
+  return readBioFiles(BIO_DIR, (slug) => {
+    console.error(`::error::source-material/bios/${slug}.md has no name or no paragraphs`);
+    problems.push(`bios/${slug}.md is malformed`);
+  });
 }
 
 // The person's LinkedIn and website, read off their own tile on the team page, so the
@@ -366,19 +348,12 @@ function tileFacts(slug) {
 const unesc = (t) => t.replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
 
 function bioPage(b) {
-  // The portrait is optional on purpose: a bio can land before a usable headshot does,
-  // and the page should still be worth reading. Without one the page is a single column
-  // of text rather than a grey placeholder square. The team tile keeps its square
-  // because it sits in a grid with other people; a page about one person that leads
-  // with an empty box reads as broken.
+  // The profile itself — portrait, name, role, paragraphs, links — is written once in
+  // tools/lib/bio-page.mjs and rendered here with the static helper; the plugin renders the
+  // same template as PHP. This function keeps what is only this site's: the head, the
+  // chrome and the structured data.
   const hasPhoto = fs.existsSync(path.join(root, `assets/team/${b.slug}.webp`));
-  const photo = hasPhoto
-    ? `<img class="bio-portrait" src="assets/team/${b.slug}.webp" alt="${esc(b.name)}" width="512" height="512" decoding="async">`
-    : '';
-  // One sentence of the bio, for search results and share cards. Cut at the first
-  // sentence end rather than a character count, so it never stops mid-word.
-  const firstStop = b.paras[0].search(/\.\s/);
-  const lede = firstStop > 0 ? b.paras[0].slice(0, firstStop + 1) : b.paras[0];
+  const lede = bioLede(b.paras);
   const desc = esc(lede);
   const links = tileLinks(b.slug);
   const facts = tileFacts(b.slug);
@@ -418,16 +393,6 @@ function bioPage(b) {
         : { memberOf: org, ...(facts.muted[0] && { affiliation: { '@type': 'Organization', name: unesc(facts.muted[0]) } }) }),
       url,
     },
-  };
-
-  const linkItem = (l) => {
-    // The same marks the tiles use: Simple Icons' LinkedIn as an <img>, and the
-    // design system's "language" glyph for a website. The design system puts brand
-    // marks "under team bios", and names them here rather than leaving an icon alone.
-    const mark = l.label === 'LinkedIn'
-      ? '<img src="assets/icons/linkedin.svg" alt="" width="24" height="24" decoding="async">'
-      : '<span class="ds-icon" aria-hidden="true">language</span>';
-    return `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${mark}${l.label}<span class="visually-hidden"> (opens in a new tab)</span></a></li>`;
   };
 
   return `<!doctype html>
@@ -496,37 +461,7 @@ ${ld ? `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\
   .bio-menu-panel { position: fixed; inset: var(--header-h) 0 0 0; z-index: 800; overflow-y: auto; overscroll-behavior: contain; background: var(--surface-page); padding: var(--space-12) var(--page-gutter); display: flex; flex-direction: column; gap: var(--space-8); }
   .bio-menu-panel a { font-size: var(--text-h4); font-weight: var(--font-weight-bold); letter-spacing: var(--heading-letter-spacing); }
 
-  /* THE PROFILE. Aligned to the same --container-xxl edge as the logo and every SPA
-     section. On a desktop the portrait takes a column of its own at up to 18rem (288px),
-     which is larger than the 197px tile the reader clicked to get here. Before, it
-     was 180px, smaller than the tile, above a 560px column with the right 60% of the
-     page empty. The text column stops at 38rem, about 65 characters of body text, in
-     the 50-75 range line-length research settles on.
-
-     The back link's chevron is chevron_right mirrored. The design system's icon font
-     is subset to five glyphs and chevron_left is not one of them, and the system says
-     not to hand-draw SVG paths. Mirroring costs nothing; a sixth glyph means
-     regenerating the subset. It goes to /team/ rather than /team/#<slug>: the SPA
-     renders after the browser has already tried to jump to a fragment, so the fragment
-     lands at the top anyway (measured: scrollY 0). */
-  .bio { padding: clamp(var(--space-8), 4vw, var(--space-12)) var(--page-gutter) clamp(var(--section-pad-y), 7vw, var(--section-pad-y-lg)); }
-  .bio-wrap { margin-inline: auto; max-width: var(--container-xxl); }
-  .bio-back { margin: 0 0 clamp(var(--space-8), 4vw, var(--space-12)); font-size: var(--text-small); }
-  .bio-back a { display: inline-flex; align-items: center; gap: var(--space-1); min-height: 24px; }
-  .bio-back .ds-icon { transform: scaleX(-1); }
-  .bio-layout { display: grid; gap: var(--space-8); }
-  .bio-portrait { width: 12rem; aspect-ratio: 1 / 1; object-fit: cover; border-radius: var(--radius-image); display: block; }
-  .bio-text { max-width: 38rem; }
-  .bio h1 { font-size: var(--text-h2); line-height: var(--text-h2-line-height); letter-spacing: var(--heading-letter-spacing); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-2); text-wrap: pretty; }
-  .bio-role { font-weight: var(--font-weight-semibold); font-size: var(--text-regular); margin: 0 0 var(--space-10); }
-  /* A Fellow's school and city, muted like the same two lines on their tile. */
-  .bio-role:has(+ .bio-meta) { margin-bottom: var(--space-2); }
-  .bio-meta { color: var(--text-muted); font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0 0 var(--space-10); }
-  .bio-body { display: flex; flex-direction: column; gap: var(--space-6); }
-  .bio-body p { font-size: var(--text-regular); line-height: var(--text-body-line-height); margin: 0; text-wrap: pretty; }
-  .bio-links { list-style: none; margin: var(--space-10) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-8); }
-  .bio-links a { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; font-size: var(--text-small); font-weight: var(--font-weight-semibold); }
-  .bio-links img, .bio-links .ds-icon { width: var(--icon-size); height: var(--icon-size); font-size: var(--icon-size); display: block; }
+${BIO_PROFILE_CSS}
   /* The SPA's touch-target rule, for the links this page has. Below the desktop
      breakpoint every link gets 44px of height from padding, not a bigger glyph. The
      logo, not every header link: the menu panel sits inside this page's <header>, but
@@ -536,11 +471,7 @@ ${ld ? `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\
     footer a { display: inline-flex; align-items: center; min-height: 2.75rem; }
     .bio-logo, .bio-back a { min-height: 2.75rem; }
   }
-  @media (min-width: 992px) {
-    .bio-layout { grid-template-columns: minmax(0, 18rem) minmax(0, 38rem); column-gap: clamp(var(--space-12), 5vw, var(--space-20)); align-items: start; }
-    .bio-layout.is-text-only { grid-template-columns: minmax(0, 38rem); }
-    .bio-portrait { width: 100%; }
-  }
+${BIO_PROFILE_DESKTOP_CSS}
 </style>
 </head>
 <body class="scheme-1">
@@ -562,21 +493,15 @@ ${ld ? `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\
 </header>
 
 <main class="bio">
-  <div class="bio-wrap">
-    <p class="bio-back"><a href="${basePath}team/"><span class="ds-icon" aria-hidden="true">chevron_right</span>Who We Are</a></p>
-    <div class="bio-layout${hasPhoto ? '' : ' is-text-only'}">
-      ${photo}
-      <div class="bio-text">
-        <h1>${esc(b.name)}</h1>
-        ${b.role ? `<p class="bio-role">${esc(b.role)}</p>` : ''}
-        ${facts.muted.length ? `<p class="bio-meta">${facts.muted.join('<br>')}</p>` : ''}
-        <div class="bio-body">
-          ${b.paras.map((t) => `<p>${esc(t)}</p>`).join('\n          ')}
-        </div>
-        ${links.length ? `<ul class="bio-links">\n          ${links.map(linkItem).join('\n          ')}\n        </ul>` : ''}
-      </div>
-    </div>
-  </div>
+${bioBody(staticHelper({
+  back: `${basePath}team/`,
+  photo: hasPhoto ? `assets/team/${b.slug}.webp` : '',
+  name: b.name,
+  role: b.role,
+  meta: facts.muted.map(unesc),
+  paras: b.paras,
+  links,
+}))}
 </main>
 
 <footer style="padding:clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg)) var(--page-gutter) var(--space-12)">
@@ -641,47 +566,11 @@ fs.writeFileSync(path.join(outDir, '.nojekyll'), '');
 // page against it and expands the cross product. Three ways to fail, all of them at
 // build time rather than in someone's browser: the manifest is missing, the page and
 // the manifest disagree, or a frame the pair of them promise is not on disk.
-const fallManifest = (() => {
-  const p = path.join(root, 'assets/falling-blocks/manifest.json');
-  if (!fs.existsSync(p)) {
-    problems.push('assets/falling-blocks/manifest.json is missing — run tools/encode-falling-blocks.mjs');
-    return null;
-  }
-  try {
-    return JSON.parse(fs.readFileSync(p, 'utf8'));
-  } catch {
-    problems.push('assets/falling-blocks/manifest.json is not readable JSON');
-    return null;
-  }
-})();
+const fallManifest = readManifest(root, 'assets/falling-blocks/manifest.json', 'tools/encode-falling-blocks.mjs', problems);
 
-const archManifest = (() => {
-  const p = path.join(root, "assets/approach/manifest.json");
-  if (!fs.existsSync(p)) {
-    problems.push("assets/approach/manifest.json is missing — run tools/encode-approach.mjs");
-    return null;
-  }
-  try {
-    return JSON.parse(fs.readFileSync(p, "utf8"));
-  } catch {
-    problems.push("assets/approach/manifest.json is not readable JSON");
-    return null;
-  }
-})();
+const archManifest = readManifest(root, 'assets/approach/manifest.json', 'tools/encode-approach.mjs', problems);
 
-const heroManifest = (() => {
-  const p = path.join(root, "assets/hero-bridge/manifest.json");
-  if (!fs.existsSync(p)) {
-    problems.push("assets/hero-bridge/manifest.json is missing — run tools/encode-hero-bridge.mjs");
-    return null;
-  }
-  try {
-    return JSON.parse(fs.readFileSync(p, "utf8"));
-  } catch {
-    problems.push("assets/hero-bridge/manifest.json is not readable JSON");
-    return null;
-  }
-})();
+const heroManifest = readManifest(root, 'assets/hero-bridge/manifest.json', 'tools/encode-hero-bridge.mjs', problems);
 
 // The headshots' colour twins are the same kind of reference. assets/team-colour.js
 // builds each one's URL from its duotone's (assets/team/<slug>.webp becomes
@@ -714,13 +603,10 @@ function refsIn(html) {
   // any of them. Same cross product for the same reason: shipping one cut without the
   // other is the failure a phone hits and a desktop does not.
   //
-  // What is different here is from/to. The page plays a span of the manifest rather than
-  // all of it — only part of this sequence carries the ground shadow, see the hero comment
-  // in index.html — so the span is what gets checked, and the span itself is checked
-  // against the manifest first. A from or to naming a frame the encoder never produced is
-  // the mistake this is really here to catch: it costs nothing at runtime, because the
-  // element simply filters it away and scrubs a shorter sequence, and it would ship a hero
-  // quietly missing its opening or its closing frames with nothing 404-ing to say so.
+  // The frame lists themselves — and why the hero's from/to span is checked against its
+  // manifest before anything else — are in tools/lib/sequences.mjs, which the WordPress
+  // plugin's packager reads too, so the plugin ships exactly the frames this checks.
+  //
   // Comments stripped first, and that is not fussiness: this scans raw HTML, so an
   // authoring comment that merely NAMES the element in prose matched ahead of the element
   // itself and failed the build with "hero-bridge has no base attribute" — which is true
@@ -730,32 +616,7 @@ function refsIn(html) {
   if (hero && !heroManifest) {
     problems.push("the hero-bridge element is on the page but its manifest is unreadable");
   } else if (hero) {
-    const attr = (k) => (hero[1].match(new RegExp(k + '="([^"]*)"')) || [, ""])[1];
-    const base = attr("base");
-    const m = heroManifest;
-    if (!base) {
-      problems.push("hero-bridge has no base attribute");
-    } else {
-      // Absent bounds mean the whole manifest, which is what the element does with them.
-      const from = attr("from") === "" ? -Infinity : Number(attr("from"));
-      const to = attr("to") === "" ? Infinity : Number(attr("to"));
-      for (const edge of ["from", "to"]) {
-        const v = Number(attr(edge));
-        if (attr(edge) !== "" && !m.frames.includes(v)) {
-          problems.push(`hero-bridge ${edge}="${attr(edge)}" is not a frame the manifest encoded`);
-        }
-      }
-      const played = m.frames.filter((n) => n >= from && n <= to);
-      if (played.length < 2) {
-        problems.push(`hero-bridge plays ${played.length} of the manifest's ${m.frames.length} frames — that is a still, not a sequence`);
-      }
-      for (const n of played) {
-        for (const v of Object.keys(m.cuts)) {
-          out.add(base + m.stem + String(n).padStart(m.pad, "0") + v + "." + m.ext);
-        }
-      }
-      out.add(base + "manifest.json");
-    }
+    for (const r of heroFrames(hero[1], heroManifest, problems)) out.add(r);
   }
   // The approach frames are addressed by string concatenation inside
   // assets/approach.js, from a base the page carries as an attribute and a frame list
@@ -775,18 +636,7 @@ function refsIn(html) {
   if (arch && !archManifest) {
     problems.push("the approach-scrub element is on the page but its manifest is unreadable");
   } else if (arch) {
-    const base = (arch[1].match(/base="([^"]*)"/) || [, ""])[1];
-    const m = archManifest;
-    if (!base) {
-      problems.push("approach-scrub has no base attribute");
-    } else {
-      for (const n of m.frames) {
-        for (const v of Object.keys(m.cuts)) {
-          out.add(base + m.stem + String(n).padStart(m.pad, "0") + v + "." + m.ext);
-        }
-      }
-      out.add(base + "manifest.json");
-    }
+    for (const r of approachFrames(arch[1], archManifest, problems)) out.add(r);
   }
   // The base is captured off the page rather than assumed, because absolutise() has
   // rewritten it to whatever base this build was given. This is also why the base has to
@@ -799,27 +649,7 @@ function refsIn(html) {
   } else if (!fall || !fallManifest) {
     problems.push('the falling-blocks element is no longer readable — check this scan');
   } else {
-    const attr = (k) => (fall[1].match(new RegExp(k + '="([^"]*)"')) || [, ''])[1];
-    const base = attr('base');
-    const frames = Number(attr('frames'));
-    const layers = attr('layers').split(',').map((s) => s.trim()).filter(Boolean).sort();
-    const width = Number(attr('width'));
-    const m = fallManifest;
-    if (frames !== m.frames) {
-      problems.push(`falling-blocks asks for ${frames} frames but the manifest encoded ${m.frames}`);
-    }
-    if (layers.join() !== [...m.layers].sort().join()) {
-      problems.push(`falling-blocks asks for layers ${layers.join()} but the manifest encoded ${m.layers.join()}`);
-    }
-    if (!m.widths.some((t) => t.w === width)) {
-      problems.push(`falling-blocks asks for width ${width}, which the manifest did not encode`);
-    } else {
-      for (const layer of m.layers) {
-        for (let i = m.first; i < m.first + m.frames; i++) {
-          out.add(`${base}w${width}/${layer}/${m.stem}${String(i).padStart(m.pad, '0')}.${m.ext}`);
-        }
-      }
-    }
+    for (const r of fallingFrames(fall[1], fallManifest, problems)) out.add(r);
   }
   return [...out].filter(
     (r) =>
@@ -868,10 +698,20 @@ for (const p of built) console.log(`  ${p}`);
 // against the commits that have touched index.html since. A warning, never a
 // failure: the export is not part of what ships, and CI clones can be too
 // shallow for rev-list to answer at all — silence in that case, not a red build.
+//
+// The stamp now carries a hash of index.html as well, and that answers the question
+// exactly, with no history needed: if the hash still matches, the export is current
+// whatever rev-list would say. The commit count is the fallback for older stamps.
 try {
-  const stamped = fs.readFileSync(path.join(root, 'wordpress-handoff/pages/home.html'), 'utf8')
-    .match(/<!-- exported from ([0-9a-f]{40})/);
-  if (!stamped) {
+  const exported = fs.readFileSync(path.join(root, 'wordpress-handoff/pages/home.html'), 'utf8');
+  const stamped = exported.match(/<!-- exported from ([0-9a-f]{40})/);
+  const hashed = exported.match(/index\.html sha256 ([0-9a-f]{16})/);
+  const current = crypto.createHash('sha256').update(home).digest('hex').slice(0, 16);
+  if (hashed) {
+    if (hashed[1] !== current) {
+      console.warn('::warning::wordpress-handoff/pages/ was exported from a different index.html — regenerate with tools/export-static.mjs (and then tools/build-wp-plugin.mjs)');
+    }
+  } else if (!stamped) {
     console.warn('::warning::wordpress-handoff/pages/ carries no export stamp — regenerate with tools/export-static.mjs');
   } else {
     const behind = execFileSync('git', ['rev-list', '--count', `${stamped[1]}..HEAD`, '--', 'index.html'],
