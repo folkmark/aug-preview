@@ -5,7 +5,7 @@ way, writing the masters tools/encode-images.mjs reads for the Who We Are tiles:
   source-material/image-sources/team/<slug>.*         the photo as received   (read)
   source-material/image-sources/team-cutout/<slug>.webp  768px RGBA, framed    (written)
 
-  python3 tools/cutout-headshots.py                    all 24
+  python3 tools/cutout-headshots.py                    everyone pictured
   python3 tools/cutout-headshots.py --only=abby-petre  one person, e.g. someone new
 
 Who is pictured is read off index.html (every assets/team/<slug>.webp it references),
@@ -36,7 +36,7 @@ it once:
     https://huggingface.co/onnx-community/BiRefNet-portrait-ONNX/resolve/dd7167f6a8b54ff7efc29a4c988938d79866464f/onnx/model.onnx
 
 or point BIREFNET_ONNX at a copy. Its sha256 is checked below. It was chosen against
-MODNet on these 24 photographs, both rendered and compared at 2x tile size: MODNet
+MODNet on the 24 photographs then on the page, both rendered and compared at 2x tile size: MODNet
 is a sixth of the size and a trimap-free portrait matte too, but it left background
 in Nikki's and Mohammed's hair and cut into Sarah's shoulder, and BiRefNet did not.
 
@@ -66,7 +66,7 @@ The shoulders then run straight off the bottom and sides of the tile, the way a
 photographed headshot's do. There is no fade on the figure except one, and it is not
 chosen per person.
 
-THE EDGE FADE is one rule applied to all 24: wherever a photograph's own edge cuts
+THE EDGE FADE is one rule applied to everyone: wherever a photograph's own edge cuts
 through the person, the figure fades to nothing over EDGE_FADE as it approaches that
 cut. It only does anything where a source is cropped tighter than the framing, and seven
 are, noticeably: Ryan's photo ends across his chest at 77% of the tile, 23% above its
@@ -198,7 +198,7 @@ def detect(rgb, alpha):
     fx, fy, fw, fh = max(faces, key=lambda f: f[2] * f[3])
     # Eyes: one either side of the box's centre line, in its upper half, level with each
     # other. The plain cascade, not the glasses-tolerant one, although fourteen of the 24
-    # wear glasses: measured on all 24, the plain one pairs 23 and the other 22, with the
+    # then pictured wear glasses: measured on them, the plain one pairs 23 and the other 22, with the
     # same spread where both succeed.
     eye = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
     roi = g[fy:fy + fh * 3 // 5, fx:fx + fw]

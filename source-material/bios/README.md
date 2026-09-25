@@ -6,7 +6,8 @@ links to them from each person's card.
 
 Anyone can have one, in any group. Until September 2026 only Leadership did; the rest
 of the team's bios came from the same "Website Bio tracking" sheet and were added then,
-word for word, for everyone the sheet had one for. People the sheet has no bio for have
+word for word, for everyone the sheet had one for. Abby (Csaba) Petre's came from her
+directly on 25 September, with her title, and is as she sent it. People with no bio have
 no file and no link, and their card is unchanged.
 
 The format is three parts and nothing else:

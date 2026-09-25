@@ -406,13 +406,20 @@ const JOBS = [
   // The form was checked against every master already here, byte for byte, before any of
   // it was used. Joan's, Lisa's and Raquel's uploads are the files above. Angela's is the
   // same photograph as hers, cropped to 888x1088, so the 1000x1407 stays. Blair's is
-  // 200x200 and Laura's 21.5 KB, both smaller than what the page already has. Stephen
-  // Hutt's is 7.7 MB and could not be fetched through the Drive connector at all, and
-  // Tom Keefe's is a 237x222 screenshot; neither is here.
+  // 200x200 and Laura's 21.5 KB, both smaller than what the page already has.
+  //
+  // Stephen Hutt (Research, 31 Jul) came last and by a different road. His upload is a
+  // 7.8 MB, 3648x5472 studio portrait on grey — the largest master here — and the Drive
+  // connector's session died on it every time, so it was fetched through a shared link on
+  // 25 September instead. It is the file as submitted, byte for byte; the cut-out tool
+  // downsamples it 0.14x and it needed no fade or clamp. Tom Keefe, Katie Butler and
+  // Allison Rapoport have also sent photos through the form but are not on the page yet;
+  // Tom's is a 237x222 screenshot.
   { in: 'team-cutout/jenny-bradbury.webp',     out: 'team/jenny-bradbury.webp',     width: 512, square: true, duotone: DUOTONE },
   { in: 'team-cutout/isa-peczuh.webp',         out: 'team/isa-peczuh.webp',         width: 512, square: true, duotone: DUOTONE },
   { in: 'team-cutout/aarav-kalkar.webp',       out: 'team/aarav-kalkar.webp',       width: 512, square: true, duotone: DUOTONE },
   { in: 'team-cutout/byungyeon-yun.webp',      out: 'team/byungyeon-yun.webp',      width: 512, square: true, duotone: DUOTONE },
+  { in: 'team-cutout/stephen-hutt.webp',       out: 'team/stephen-hutt.webp',       width: 512, square: true, duotone: DUOTONE },
   { in: 'team-cutout/sonia-prusaitis.webp',    out: 'team/sonia-prusaitis.webp',    width: 512, square: true, duotone: DUOTONE },
   { in: 'team-cutout/abby-petre.webp',         out: 'team/abby-petre.webp',         width: 512, square: true, duotone: DUOTONE },
 

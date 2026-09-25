@@ -101,18 +101,19 @@ const team = heads.map((m, k) => {
 expect(team.length === 29, `team: expected 29 people, parsed ${team.length}`);
 
 // A role line is no longer on every card. In September five people were added from the
-// website info form (Aarav Kalkar, Byungyeon Yun, Stephen Hutt, Sonia Prusaitis, Abby
-// Petre) before anyone had given their titles, and the client chose to show them without.
-// Their records carry `role: null` until the titles arrive.
+// website info form before anyone had given their titles, and the client chose to show
+// them without. Abby (Csaba) Petre's arrived on the 25th (Head of Engineering); Aarav
+// Kalkar, Byungyeon Yun, Stephen Hutt and Sonia Prusaitis still carry `role: null` until
+// theirs do.
 //
 // Not simply dropped, though: every card used to be asserted to have one, and that check is
 // what would catch the role <p> changing shape and every role in the export silently going
 // to null. So the number without one is pinned, the same way the people and headshot counts
-// are, and filling in a title means changing this 5 on purpose.
+// are, and filling in a title means changing this 4 on purpose.
 const roleless = team.filter((p) => !p.role).map((p) => p.name);
 expect(
-  roleless.length === 5,
-  `team: expected 5 people without a role line, parsed ${roleless.length} (${roleless.join(', ')}) — ` +
+  roleless.length === 4,
+  `team: expected 4 people without a role line, parsed ${roleless.length} (${roleless.join(', ')}) — ` +
     'has the role <p> changed shape?'
 );
 expect(new Set(team.map((p) => p.group)).size >= 4, 'team: expected at least 4 groups');
@@ -135,8 +136,8 @@ expect(
 // `<img class="..." src="...">` in index.html takes every headshot to null with a green
 // build and hands the rebuild a photo-less team. This is the cheapest possible guard.
 expect(
-  team.filter((p) => p.photo).length === 24,
-  `team: expected 24 headshots, parsed ${team.filter((p) => p.photo).length} — ` +
+  team.filter((p) => p.photo).length === 25,
+  `team: expected 25 headshots, parsed ${team.filter((p) => p.photo).length} — ` +
     'has src stopped being the first attribute on a team <img>?'
 );
 

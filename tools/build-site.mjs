@@ -355,7 +355,10 @@ function bioPage(b) {
   const links = tileLinks(b.slug);
   const facts = tileFacts(b.slug);
   const url = ORIGIN && `${ORIGIN}${basePath}team/${b.slug}/`;
-  const [first, ...rest] = b.name.split(' ');
+  // og:profile wants a given name and a family name. A name shown with another in
+  // brackets — "Abby (Csaba) Petre" — keeps the brackets on the page and in the JSON-LD,
+  // but the bracketed part is neither, so it is left out of this split.
+  const [first, ...rest] = b.name.replace(/\s*\([^)]*\)/g, '').split(' ');
   const nav = [['challenge', 'The Challenge'], ['approach', 'Our Approach'], ['team', 'Who We Are']];
 
   // ProfilePage structured data. Google's documentation lists "an employee page on a

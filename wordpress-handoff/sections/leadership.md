@@ -1,7 +1,7 @@
 # The team bio pages — build spec
 
-Twenty pages, one for each person on the team who has a bio, at `/team/<slug>/`: the four
-leaders, and since late September 2026 sixteen of the partners and fellows. They are the
+Twenty-one pages, one for each person on the team who has a bio, at `/team/<slug>/`: the
+four leaders, and since late September 2026 seventeen of the partners and fellows. They are the
 only pages on this site that are **not** the single-page app, and porting them is the
 easiest job in this package: in WordPress they are one custom post type with one template.
 (This file is still called leadership.md because Leadership had the only pages when it
@@ -46,7 +46,7 @@ Second paragraph.
 no Markdown parser — bold, links and lists are not rendered, they ship as literal
 characters. Keep bios to prose, or add a parser; it is about ten lines in `readBios()`.
 
-Anyone in any group can have one; nine people currently do not, because the tracking
+Anyone in any group can have one; eight people currently do not, because the tracking
 sheet has no bio for them, and their cards have no link. `source-material/bios/unused/`,
 when it exists, holds bios kept but not published; the build does not read it.
 
@@ -114,7 +114,7 @@ behind them. A person without a photo gets an empty square in the same `#e9eef4`
 empty tile and a photographed one sit on one colour.
 
 Do not re-crop them — no Media Library "crop to square", no theme `object-position`. The
-framing is what makes 24 photographs from 24 photographers read as one team, and it is
+framing is what makes 25 photographs from 25 photographers read as one team, and it is
 already done. They are 5–25 KB each. Seven of the photographs stop short of where the
 framing wants them, and those fade out where the photo ends (clearly for Ryan Baker,
 Andrew Lan, Byungyeon Yun and Sonia Prusaitis); that is baked into the file, not an
@@ -152,8 +152,8 @@ handed on is wrong.
 **1. `src` must be the first attribute on a team `<img>`.** `export-content.mjs` anchors
 its headshot regex on the literal `<img src="`. React preserves author attribute order for
 everything except `style`, so writing `<img class="shot" src="…">` in `index.html` takes
-all 24 headshots to `null` — with a green build. There is an assertion for this
-(`expected 24 headshots, parsed 0`), so it fails loudly now; before it existed it did not.
+all 25 headshots to `null` — with a green build. There is an assertion for this
+(`expected 25 headshots, parsed 0`), so it fails loudly now; before it existed it did not.
 
 **2. The link text starts with exactly "Read bio".** The exporter finds each bio page by
 the `href` of the `<a>` whose text starts `Read bio`, and asserts that the number of

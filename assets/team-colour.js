@@ -16,7 +16,7 @@
      booted against the first copy of the grid would be holding a detached one.
    - A colour <img> in the markup would be downloaded by every phone, which has no
      hover to show it with. Here the layers are only created once a mouse crosses a
-     team grid, so a touch device never fetches the colour set (382 KB for 24).
+     team grid, so a touch device never fetches the colour set (453 KB for 25).
    - tools/export-content.mjs reads each person's photo as the first team <img> in the
      card, and the handoff pages are a snapshot of the DOM. Nothing here exists until a
      pointer moves, and tools/export-static.mjs removes it if it ever does.

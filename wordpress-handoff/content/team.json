@@ -191,7 +191,7 @@
     "role": null,
     "affiliation": null,
     "location": null,
-    "photo": null,
+    "photo": "assets/team/stephen-hutt.webp",
     "bioUrl": null,
     "links": [
       {
@@ -293,7 +293,7 @@
   {
     "name": "Danie Cowden",
     "group": "Education Fellows",
-    "role": "Photography, Digital Art & Design Teacher, CTE Coordinator",
+    "role": "STEM, Design, and Media Teacher",
     "affiliation": "Crosstown High School",
     "location": "Memphis, TN",
     "photo": "assets/team/danie-cowden.webp",
@@ -421,13 +421,13 @@
     ]
   },
   {
-    "name": "Abby Petre",
+    "name": "Abby (Csaba) Petre",
     "group": "Technology and Design Partners",
-    "role": null,
+    "role": "Head of Engineering",
     "affiliation": null,
     "location": null,
     "photo": "assets/team/abby-petre.webp",
-    "bioUrl": null,
+    "bioUrl": "/team/abby-petre/",
     "links": [
       {
         "label": "LinkedIn",
