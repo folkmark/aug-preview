@@ -55,9 +55,12 @@ AugmentED says if one is missing or doubled.
 Tools → **AugmentED team** → **Dry run**. Expect:
 
 - 5 categories to create: "AugmentED Team" and one child per Who We Are group;
-- **27 people to create** and **2 to attach** — Sherry Lachman and Caitlin Mills, who are
+- **30 people to create** and **2 to attach** — Sherry Lachman and Caitlin Mills, who are
   already AERDF team members. Attaching adds the AugmentED categories and card fields only:
-  their titles, bios and photos on AERDF's pages are not touched.
+  their titles, bios and photos on AERDF's pages are not touched;
+- **6 absent**: people AugmentED has archived (off its Who We Are page on purpose). They are
+  never created. If one ever exists as an AugmentED team post, the import marks it
+  Archived instead of deleting it.
 
 If the dry run names any other person as "already exists", stop and check it is the same
 person before listing them under **Attach**. Then **Import**. Running it again changes only
@@ -67,6 +70,11 @@ what changed; it never deletes anything and never overwrites edits made in WordP
 Each person is an ordinary team post you can edit. The **AugmentED card** box on the edit
 screen holds what the Who We Are grid shows (role, a Fellow's school and city, links, the
 position in the group, the bundled headshot); the post's content is the bio.
+
+To take someone off Who We Are without losing them, tick **Archived** at the top of their
+AugmentED card: their tile goes, their page redirects to Who We Are and leaves the sitemap,
+and nothing is deleted. Untick it to bring them back. The import leaves an Archived box an
+editor has ticked alone.
 
 ### 4. Connect the Follow form
 
@@ -126,6 +134,8 @@ Logged out and logged in, and with the AccessiBe widget on:
 - [ ] Who We Are shows 30 headshots and 2 placeholders in four groups; with a mouse, a
       headshot blooms into colour; each "Read bio" opens that person's page.
 - [ ] A member without a bio (e.g. `/team/tom-peterson/`) goes to Who We Are.
+- [ ] Ticking **Archived** on a member's AugmentED card takes their tile off Who We Are and
+      sends their page to Who We Are; unticking it brings them back.
 - [ ] Sherry Lachman's and Caitlin Mills's AERDF pages are unchanged.
 - [ ] The Follow form's test submission reaches HubSpot, and a real one from the page does.
 - [ ] AERDF's header, footer and every other page look exactly as before.

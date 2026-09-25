@@ -561,5 +561,31 @@
       "photo": "allison-rapoport",
       "bio": null
     }
+  ],
+  "archived": [
+    {
+      "slug": "adam-bachman",
+      "name": "Adam Bachman"
+    },
+    {
+      "slug": "suzanna-smith",
+      "name": "Suzanna Smith"
+    },
+    {
+      "slug": "danielle-ragavanis",
+      "name": "Danielle Ragavanis"
+    },
+    {
+      "slug": "alondra-ramos",
+      "name": "Alondra Ramos"
+    },
+    {
+      "slug": "philip-baker",
+      "name": "Philip Baker"
+    },
+    {
+      "slug": "ted-cuevas",
+      "name": "Ted Cuevas"
+    }
   ]
 }

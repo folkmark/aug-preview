@@ -89,6 +89,19 @@ working default.
 - The people without a bio (eleven today) have no page of their own: theirs redirects to Who We Are and is
   left out of the sitemap.
 
+### Archived members — AugmentED, with AERDF
+
+- AugmentED's roster marks people who have left the page as **Archived**, instead of deleting
+  them. Six are archived today (four Education Fellows who left in September, two Technology
+  Partners who left in August); none was ever on aerdf.org, so the import only reports them
+  as absent.
+- **Default:** an archived team post stays published, off the Who We Are grid, with its page
+  redirected to Who We Are and left out of the sitemap. It still appears wherever AERDF
+  lists every team post (the `/team/` archive, search). To take one out of those too, set it
+  to Draft; the plugin never changes a post's status itself.
+- The tick box is plain post meta, not a WordPress tag or category, so there is no public
+  page listing who has been archived.
+
 ### Who edits the team after launch — AugmentED
 
 - **Default:** WordPress. Edits there are kept: the import skips any card edited since.

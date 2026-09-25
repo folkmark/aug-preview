@@ -155,8 +155,15 @@ function augmented_ed_status_panel() {
 	if ( ! $groups ) {
 		$rows[] = array( 'warning', __( 'Team', 'augmented-ed' ), __( 'Not imported yet (Tools → AugmentED team).', 'augmented-ed' ) );
 	} else {
-		foreach ( $groups as $t ) {
-			$rows[] = array( 'ok', $t->name, sprintf( _n( '%d person', '%d people', $t->count, 'augmented-ed' ), $t->count ) );
+		$counts = augmented_ed_group_counts();
+		foreach ( $groups as $slug => $t ) {
+			$n      = $counts[ $slug ] ?? array( 'shown' => 0, 'archived' => 0 );
+			$rows[] = array(
+				'ok',
+				$t->name,
+				sprintf( _n( '%d person on the page', '%d people on the page', $n['shown'], 'augmented-ed' ), $n['shown'] )
+				. ( $n['archived'] ? ' ' . sprintf( __( '(%d archived)', 'augmented-ed' ), $n['archived'] ) : '' ),
+			);
 		}
 	}
 	$s        = augmented_ed_settings();
@@ -241,7 +248,15 @@ function augmented_ed_tools_page() {
 	submit_button( __( 'Create the pages as drafts', 'augmented-ed' ), 'secondary', 'submit', false );
 	echo '</form>';
 
-	echo '<h2>' . esc_html__( '2. The team', 'augmented-ed' ) . '</h2><p>' . esc_html__( 'Imports the 29 people as team posts in an "AugmentED Team" category, one child category per Who We Are group. Sherry Lachman and Caitlin Mills already exist and are only attached: their titles, content and photos are left alone. Run a dry run first; running it again later changes only what changed.', 'augmented-ed' ) . '</p>';
+	$team = augmented_ed_data( 'team' );
+	echo '<h2>' . esc_html__( '2. The team', 'augmented-ed' ) . '</h2><p>' . esc_html(
+		sprintf(
+			/* translators: %1$d: people on the page, %2$d: archived people. */
+			__( 'Imports the %1$d people on the Who We Are page as team posts in an "AugmentED Team" category, one child category per group. Sherry Lachman and Caitlin Mills already exist and are only attached: their titles, content and photos are left alone. The %2$d people the site has archived are never created; if a post of ours exists for one, it is marked Archived, never deleted. Run a dry run first; running it again later changes only what changed.', 'augmented-ed' ),
+			count( $team['people'] ?? array() ),
+			count( $team['archived'] ?? array() )
+		)
+	) . '</p>';
 	if ( $last ) {
 		echo '<p>' . esc_html( sprintf( __( 'Last import: %1$s ago — %2$s.', 'augmented-ed' ), human_time_diff( $last['time'] ), implode( ', ', array_map( function ( $k, $v ) { return "$v $k"; }, array_keys( $last['counts'] ), $last['counts'] ) ) ) ) . '</p>';
 	}

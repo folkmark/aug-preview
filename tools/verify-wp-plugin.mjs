@@ -55,6 +55,13 @@ const DOWNLOADS = {
   'wp-cli.phar': 'https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar',
 };
 
+// What the import should do, read from the data the plugin ships rather than restated here,
+// so a roster change moves the expectations with it.
+const TEAM = JSON.parse(fs.readFileSync(path.join(root, 'wordpress-handoff/plugin/augmented-ed/generated/data/team.json'), 'utf8'));
+const E = { people: TEAM.people.length, attach: TEAM.existing.length, create: TEAM.people.length - TEAM.existing.length, archived: TEAM.archived.length };
+// The import's closing line ("Success: Dry run: 2 attach, 30 create, 6 absent") as a map.
+const countsOf = (out) => Object.fromEntries([...(out.trim().split('\n').pop() || '').matchAll(/(\d+) ([a-z]+)/g)].map((m) => [m[2], +m[1]]));
+const sameCounts = (a, b) => JSON.stringify(Object.entries(a).sort()) === JSON.stringify(Object.entries(b).filter(([, v]) => v).sort());
 const sh = (cmd, a, opts = {}) => execFileSync(cmd, a, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], ...opts });
 const wp = (...a) => sh('php', ['-d', 'memory_limit=512M', path.join(CACHE, 'wp-cli.phar'), '--allow-root', `--path=${WP}`, ...a]).trim();
 
@@ -140,7 +147,18 @@ require __DIR__ . '/index.php';
   const dry = wp('augmented-ed', 'team', 'import', '--dry-run');
   const imported = wp('augmented-ed', 'team', 'import');
   const again = wp('augmented-ed', 'team', 'import');
-  return { dry, imported, again };
+
+  // Someone the roster has archived who IS on this site, as an import by an earlier release
+  // would have left them: a published team post in an AugmentED group, with a bio, a card and
+  // the import's fingerprint. The next import must mark them Archived and touch nothing else.
+  const was = TEAM.archived[0];
+  const wasId = wp('post', 'create', '--post_type=team', '--post_status=publish', `--post_title=${was.name}`, `--post_name=${was.slug}`, '--post_content=<p>A bio from before they left the page.</p>', '--porcelain');
+  wp('post', 'term', 'set', wasId, 'category', TEAM.parent.slug, TEAM.groups[0].slug);
+  wp('post', 'meta', 'update', wasId, 'augmented_ed_sort', '3');
+  wp('eval', `update_post_meta( ${wasId}, '_augmented_ed_import_hash', augmented_ed_meta_hash( ${wasId} ) );`);
+  const archive = wp('augmented-ed', 'team', 'import');
+  const archiveAgain = wp('augmented-ed', 'team', 'import');
+  return { dry, imported, again, archive, archiveAgain };
 }
 
 // Every stylesheet aerdf.org's home page links, in order, downloaded once. Its fonts and
@@ -523,7 +541,7 @@ export async function checks() {
     const refTiles = await q.evaluate(norm);
     const attrsSorted = (h) => h.replace(/<([a-z0-9]+)((?:\s+[a-z-]+(?:="[^"]*")?)*)\s*>/g, (m, t, a) => `<${t} ${(a.match(/[a-z-]+(?:="[^"]*")?/g) || []).sort().join(' ')}>`).replace(/>\s+</g, '><').trim();
     const diff = refTiles.map((r, i) => attrsSorted(r) === attrsSorted(gotTiles[i] || '') ? null : i).filter((x) => x !== null);
-    check('team: the 29 tiles WordPress draws from team posts match the export', refTiles.length === 29 && gotTiles.length === 29 && !diff.length, `${gotTiles.length} tiles; differing: ${diff.slice(0, 5).join(',')}`);
+    check(`team: the ${E.people} tiles WordPress draws from team posts match the export`, refTiles.length === E.people && gotTiles.length === E.people && !diff.length, `${gotTiles.length} tiles; differing: ${diff.slice(0, 5).join(',')}`);
     if (diff.length) fs.writeFileSync(path.join(REPORT, 'tile-diff.txt'), `${attrsSorted(refTiles[diff[0]])}\n\n${attrsSorted(gotTiles[diff[0]] || '')}\n`);
     await t.close();
   }
@@ -605,8 +623,41 @@ export async function checks() {
     check('bio: a member without a bio redirects (302) to Who We Are', r.status() === 302 && /\/augmented\/team\/$/.test(r.headers().location || ''), `${r.status()} ${r.headers().location}`);
     await p.goto(BASE + '/team/aamer-alam/', { waitUntil: 'load' });
     check('bio: another programme\'s member is untouched', await p.locator('[data-aerdf-stub="team-single"]').count() === 1);
+    const gone = await p.request.get(BASE + `/team/${TEAM.archived[0].slug}/`, { maxRedirects: 0 });
+    check('archived: an archived member\'s page redirects (302) to Who We Are, bio and all', gone.status() === 302 && /\/augmented\/team\/$/.test(gone.headers().location || ''), `${gone.status()} ${gone.headers().location}`);
     const sm = await (await p.request.get(BASE + '/team-sitemap.xml')).text();
     check('sitemap: the members without a bio are left out', sm.includes('/team/andrew-lan/') && !sm.includes('/team/tom-peterson/'), sm.length ? '' : 'no sitemap');
+    check('sitemap: archived members are left out', !sm.includes(`/team/${TEAM.archived[0].slug}/`));
+    await c.close();
+  }
+
+  // 10. Archiving from WordPress: the Archived box in the AugmentED card, ticked and unticked
+  // by hand, as an AERDF editor would. Andrew Lan, because he has a bio, so the redirect is
+  // a real change and not the one every member without a bio already gets.
+  {
+    const c = await newCtx();
+    const p = await c.newPage();
+    await p.goto(BASE + '/wp-login.php');
+    await p.fill('#user_login', 'admin'); await p.fill('#user_pass', 'admin'); await p.click('#wp-submit');
+    await p.waitForLoadState('load');
+    const id = wp('post', 'list', '--post_type=team', '--name=andrew-lan', '--field=ID');
+    const tileCount = async () => { await p.goto(BASE + '/augmented/team/', { waitUntil: 'load' }); return p.evaluate(() => document.querySelectorAll('.team-grid-3 > div').length); };
+    const setArchived = async (on) => {
+      await p.goto(`${BASE}/wp-admin/post.php?post=${id}&action=edit`, { waitUntil: 'load' });
+      await p.locator('#augmented_ed_archived')[on ? 'check' : 'uncheck']();
+      await Promise.all([p.waitForNavigation({ waitUntil: 'load' }), p.click('#publish')]);
+    };
+    await setArchived(true);
+    const offTiles = await tileCount();
+    const offBio = await p.request.get(BASE + '/team/andrew-lan/', { maxRedirects: 0 });
+    const offDry = wp('augmented-ed', 'team', 'import', '--dry-run');
+    check('archived in WordPress: ticking Archived takes the tile off Who We Are', offTiles === E.people - 1, `${offTiles} tiles`);
+    check('archived in WordPress: their bio page redirects (302) to Who We Are', offBio.status() === 302, `${offBio.status()}`);
+    check('archived in WordPress: the import leaves an editor\'s Archived alone', /andrew-lan\s+skipped/.test(offDry), offDry.split('\n').find((l) => l.includes('andrew-lan')) || '');
+    await setArchived(false);
+    const onTiles = await tileCount();
+    const onDry = countsOf(wp('augmented-ed', 'team', 'import', '--dry-run'));
+    check('archived in WordPress: unticking brings them back, and the import sees nothing to change', onTiles === E.people && onDry.unchanged === E.people, `${onTiles} tiles; ${JSON.stringify(onDry)}`);
     await c.close();
   }
 
@@ -640,7 +691,11 @@ export async function matrix() {
     for (let i = 0; i < 60 && !m.php; i++) {
       try { m = JSON.parse((await get('/matrix.json')).body); } catch { await new Promise((r) => setTimeout(r, 1000)); }
     }
-    check(`PHP ${m.php} / WordPress ${m.wp}: import creates 27 and attaches 2, then changes nothing`, m.dry?.create === 27 && m.real?.attach === 2 && m.again?.unchanged === 29 && !(m.errors || []).length, JSON.stringify(m));
+    check(`PHP ${m.php} / WordPress ${m.wp}: import creates ${E.create} and attaches ${E.attach}, then changes nothing`,
+      sameCounts(m.dry || {}, { create: E.create, attach: E.attach, absent: E.archived }) && sameCounts(m.again || {}, { unchanged: E.people, absent: E.archived }) && !(m.errors || []).length, JSON.stringify({ dry: m.dry, again: m.again, errors: m.errors }));
+    check(`PHP ${m.php} / WordPress ${m.wp}: an archived person's existing post is marked Archived, then left alone`,
+      sameCounts(m.arch || {}, { unchanged: E.people, archive: 1, absent: E.archived - 1 }) && sameCounts(m.arch2 || {}, { unchanged: E.people, archived: 1, absent: E.archived - 1 }) && (await get(`/team/${m.archived_slug}/`)).status === 302,
+      JSON.stringify({ arch: m.arch, arch2: m.arch2 }));
     const pages = {};
     for (const [u, want] of [['/augmented/', 'home'], ['/augmented/challenge/', 'challenge'], ['/augmented/approach/', 'approach'], ['/augmented/team/', 'team'], ['/augmented/follow/', 'follow'], ['/team/andrew-lan/', 'bio']]) {
       const r = await get(u);
@@ -663,9 +718,12 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   } else {
     if (!args.includes('--no-setup')) {
       const r = setup();
-      check('import dry run: 27 to create, 2 to attach', /2 attach, 27 create/.test(r.dry), r.dry.split('\n').pop());
-      check('import: 27 created, 2 attached', /2 attach, 27 create/.test(r.imported), r.imported.split('\n').pop());
-      check('import again: nothing changes', /29 unchanged/.test(r.again), r.again.split('\n').pop());
+      const last = (o) => o.trim().split('\n').pop();
+      check(`import dry run: ${E.create} to create, ${E.attach} to attach, ${E.archived} archived and absent`, sameCounts(countsOf(r.dry), { create: E.create, attach: E.attach, absent: E.archived }), last(r.dry));
+      check(`import: ${E.create} created, ${E.attach} attached, the archived never created`, sameCounts(countsOf(r.imported), { create: E.create, attach: E.attach, absent: E.archived }), last(r.imported));
+      check('import again: nothing changes', sameCounts(countsOf(r.again), { unchanged: E.people, absent: E.archived }), last(r.again));
+      check('import: an archived person\'s existing post is marked Archived, not deleted', sameCounts(countsOf(r.archive), { unchanged: E.people, archive: 1, absent: E.archived - 1 }), last(r.archive));
+      check('import again: the archived post stays archived and nothing else changes', sameCounts(countsOf(r.archiveAgain), { unchanged: E.people, archived: 1, absent: E.archived - 1 }), last(r.archiveAgain));
     }
     const servers = startServers();
     mockRef = servers.mock;

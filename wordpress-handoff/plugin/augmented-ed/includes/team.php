@@ -4,7 +4,7 @@
  *
  * aerdf.org already has a `team` post type — 199 people, a single page each at
  * /team/<slug>/, grouped by programme with the ordinary category taxonomy — and two of
- * AugmentED's 29 (Sherry Lachman and Caitlin Mills) are already in it. So AugmentED's team
+ * AugmentED's team (Sherry Lachman and Caitlin Mills) are already in it. So AugmentED's team
  * are team posts too, in an "AugmentED Team" category with one child per Who We Are group.
  * Nothing new is registered, and AERDF's other 199 people are not touched.
  *
@@ -28,6 +28,7 @@ function augmented_ed_post_type() {
 
 /** The card's fields, stored as post meta. */
 const AUGMENTED_ED_META = array(
+	'augmented_ed_archived'    => 'Archived',
 	'augmented_ed_role'        => 'Role',
 	'augmented_ed_affiliation' => 'Affiliation (a Fellow\'s school)',
 	'augmented_ed_location'    => 'Location (a Fellow\'s city)',
@@ -106,6 +107,21 @@ function augmented_ed_has_bio( $post ) {
 }
 
 /**
+ * Whether a member is archived: off the Who We Are page, and kept, with everything else.
+ *
+ * Post meta, '1' or absent, set by the Archived box in the AugmentED card, or by the import
+ * for people the site's roster tags Archived. Not a WordPress tag or a category, on purpose:
+ * `post_tag` is shared with AERDF's blog and every tag gets a public archive page, and a
+ * child category would be read as a group by augmented_ed_group_terms(). Either would publish
+ * a list of exactly the people meant to be hidden. Archived members keep their group, so
+ * un-archiving is unticking the box.
+ */
+function augmented_ed_is_archived( $post ) {
+	$post = get_post( $post );
+	return $post && '1' === (string) get_post_meta( $post->ID, 'augmented_ed_archived', true );
+}
+
+/**
  * Whether this member's single page is drawn by the plugin's bio template.
  *
  * 'augmented' always, 'site' never, and 'auto' — the default — when AugmentED is their
@@ -124,7 +140,7 @@ function augmented_ed_bio_mode( $post ) {
 }
 
 function augmented_ed_serves_bio( $post ) {
-	return augmented_ed_is_member( $post ) && augmented_ed_has_bio( $post ) && 'augmented' === augmented_ed_bio_mode( $post );
+	return augmented_ed_is_member( $post ) && augmented_ed_has_bio( $post ) && ! augmented_ed_is_archived( $post ) && 'augmented' === augmented_ed_bio_mode( $post );
 }
 
 /** The bundled headshot for a member, as a URL into the plugin, or ''. */
@@ -183,6 +199,33 @@ function augmented_ed_tile_data( $post ) {
 	);
 }
 
+/**
+ * Published members per group: array( slug => array( 'shown' => n, 'archived' => n ) ).
+ *
+ * For the status screens. A term's own count is no use here: archived members keep their
+ * group, so it counts them as if they were on the page.
+ */
+function augmented_ed_group_counts() {
+	$out = array();
+	foreach ( augmented_ed_group_terms() as $slug => $term ) {
+		$ids = get_posts(
+			array(
+				'post_type'   => augmented_ed_post_type(),
+				'post_status' => 'publish',
+				'numberposts' => -1,
+				'category'    => $term->term_id,
+				'fields'      => 'ids',
+			)
+		);
+		$archived     = count( array_filter( $ids, 'augmented_ed_is_archived' ) );
+		$out[ $slug ] = array(
+			'shown'    => count( $ids ) - $archived,
+			'archived' => $archived,
+		);
+	}
+	return $out;
+}
+
 /** Draws one group's tiles, in their sort order. Called from the generated team template. */
 function augmented_ed_render_team_group( $term_slug ) {
 	$term = get_term_by( 'slug', $term_slug, 'category' );
@@ -197,6 +240,16 @@ function augmented_ed_render_team_group( $term_slug ) {
 			'category'    => $term->term_id,
 			'orderby'     => 'title',
 			'order'       => 'ASC',
+		)
+	);
+	// Archived members keep their group, so the category still finds them; they are left out
+	// here, where the page is drawn.
+	$posts = array_values(
+		array_filter(
+			$posts,
+			function ( $p ) {
+				return ! augmented_ed_is_archived( $p );
+			}
 		)
 	);
 	// Sorted here, not by a meta query: ordering by meta_value_num silently drops every post
@@ -247,12 +300,14 @@ function augmented_ed_bio_data( $post ) {
 }
 
 /**
- * The eight without a bio: their team post exists to fill a grid, not to be a page.
+ * Members without a bio, and archived members: neither has a page worth landing on.
  *
- * Their single page would be a name and nothing else, so it redirects to Who We Are — 302,
- * not 301, because a bio can arrive later and a permanent redirect would be cached against
- * it — and it is kept out of Yoast's sitemap. Members AERDF also shows elsewhere (bio mode
- * 'site') are left entirely alone.
+ * A member without a bio has a team post to fill a grid, and their single page would be a
+ * name and nothing else; an archived member is off the grid altogether. Both redirect to Who
+ * We Are — 302, not 301, because a bio can arrive or a member come back, and a permanent
+ * redirect would be cached against them — and both are kept out of Yoast's sitemap. Members
+ * AERDF also shows elsewhere (bio mode 'site') are left entirely alone: their page is
+ * AERDF's.
  */
 add_action(
 	'template_redirect',
@@ -261,14 +316,14 @@ add_action(
 			return;
 		}
 		$post = get_queried_object();
-		if ( $post instanceof WP_Post && augmented_ed_is_member( $post ) && ! augmented_ed_has_bio( $post ) && 'augmented' === augmented_ed_bio_mode( $post ) ) {
+		if ( $post instanceof WP_Post && augmented_ed_is_member( $post ) && ( ! augmented_ed_has_bio( $post ) || augmented_ed_is_archived( $post ) ) && 'augmented' === augmented_ed_bio_mode( $post ) ) {
 			wp_safe_redirect( augmented_ed_url( 'team' ), 302 );
 			exit;
 		}
 	}
 );
 
-function augmented_ed_bioless_ids() {
+function augmented_ed_unlisted_ids() {
 	$parent = get_term_by( 'slug', AUGMENTED_ED_PARENT_TERM, 'category' );
 	if ( ! $parent ) {
 		return array();
@@ -287,7 +342,7 @@ function augmented_ed_bioless_ids() {
 			$ids,
 			function ( $id ) {
 				$p = get_post( $id );
-				return ! augmented_ed_has_bio( $p ) && 'augmented' === augmented_ed_bio_mode( $p );
+				return ( ! augmented_ed_has_bio( $p ) || augmented_ed_is_archived( $p ) ) && 'augmented' === augmented_ed_bio_mode( $p );
 			}
 		)
 	);
@@ -296,7 +351,7 @@ function augmented_ed_bioless_ids() {
 add_filter(
 	'wpseo_exclude_from_sitemap_by_post_ids',
 	function ( $ids ) {
-		return array_merge( (array) $ids, augmented_ed_bioless_ids() );
+		return array_merge( (array) $ids, augmented_ed_unlisted_ids() );
 	}
 );
 
@@ -423,7 +478,9 @@ function augmented_ed_card_box( $post ) {
 	foreach ( AUGMENTED_ED_META as $key => $label ) {
 		$value = get_post_meta( $post->ID, $key, true );
 		echo '<tr><th scope="row"><label for="' . esc_attr( $key ) . '">' . esc_html( $label ) . '</label></th><td>';
-		if ( 'augmented_ed_photo' === $key ) {
+		if ( 'augmented_ed_archived' === $key ) {
+			echo '<label><input type="checkbox" id="' . esc_attr( $key ) . '" name="' . esc_attr( $key ) . '" value="1"' . checked( '1', (string) $value, false ) . '> ' . esc_html__( 'Off the Who We Are page. Their page redirects there and leaves the sitemap; nothing is deleted, and unticking brings them back.', 'augmented-ed' ) . '</label>';
+		} elseif ( 'augmented_ed_photo' === $key ) {
 			echo '<select id="' . esc_attr( $key ) . '" name="' . esc_attr( $key ) . '"><option value="">' . esc_html__( '(none — use the featured image)', 'augmented-ed' ) . '</option>';
 			foreach ( augmented_ed_bundled_photos() as $slug ) {
 				echo '<option value="' . esc_attr( $slug ) . '"' . selected( $value, $slug, false ) . '>' . esc_html( $slug ) . '</option>';
@@ -458,6 +515,16 @@ add_action(
 			return;
 		}
 		foreach ( array_keys( AUGMENTED_ED_META ) as $key ) {
+			// A checkbox that is not ticked is not posted at all, so for Archived "missing" means
+			// "no" — skipping it, as for the other fields, would make it impossible to untick.
+			if ( 'augmented_ed_archived' === $key ) {
+				if ( isset( $_POST[ $key ] ) ) {
+					update_post_meta( $post_id, $key, '1' );
+				} else {
+					delete_post_meta( $post_id, $key );
+				}
+				continue;
+			}
 			if ( ! isset( $_POST[ $key ] ) ) {
 				continue;
 			}

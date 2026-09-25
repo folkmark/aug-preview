@@ -12,6 +12,9 @@ Five page templates (Home, The Challenge, Our Approach, Who We Are, Follow Our W
 AugmentED team as posts of the site's existing `team` type with AugmentED-styled bio pages,
 and a Follow form that submits to HubSpot through the server.
 
+A member can be taken off the Who We Are page without being deleted: tick Archived in their
+AugmentED card. The import does the same for people AugmentED has archived.
+
 Everything the pages use ships inside the plugin: fonts, images, the animation frames and
 their scripts. Nothing is uploaded to the media library.
 

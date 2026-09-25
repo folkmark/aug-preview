@@ -75,9 +75,8 @@ const attr = (s) => text(s).replace(/"/g, '&quot;');
 const IN = '          ';
 const TILE_OPEN = 'style="opacity:0;transition:opacity var(--transition-fade)"';
 const IMG_STYLE = 'aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block';
-// The grey square a person without a usable photograph gets. tools/build-wp-plugin.mjs
-// reads it from here too, so its PHP tile template no longer depends on at least one
-// placeholder being left on the page.
+// The grey square a person without a usable photograph gets. tools/build-wp-plugin.mjs pins
+// the exported form of it, for the day nobody on the page is waiting for a photograph.
 export const PLACEHOLDER = '<div style="aspect-ratio:1/1;width:100%;background:var(--color-st-tropaz-lightest);border-radius:var(--radius-image);margin-bottom:var(--space-6)"></div>';
 const H3_STYLE = 'font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)';
 const ROLE_STYLE = 'font-weight:var(--font-weight-semibold);font-size:var(--text-small);margin:0';

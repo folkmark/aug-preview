@@ -90,8 +90,8 @@ class Augmented_ED_Team_Command {
 		foreach ( augmented_ed_template_pages( true ) as $key => $ids ) {
 			WP_CLI::log( sprintf( '%-10s %s', $key, $ids ? implode( ', ', array_map( 'get_permalink', $ids ) ) : '(no published page)' ) );
 		}
-		foreach ( augmented_ed_group_terms() as $slug => $term ) {
-			WP_CLI::log( sprintf( '%-45s %d', $slug, $term->count ) );
+		foreach ( augmented_ed_group_counts() as $slug => $n ) {
+			WP_CLI::log( sprintf( '%-45s %d shown, %d archived', $slug, $n['shown'], $n['archived'] ) );
 		}
 	}
 }

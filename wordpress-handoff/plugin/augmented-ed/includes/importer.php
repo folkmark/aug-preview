@@ -17,6 +17,10 @@
  *   A different person who happens to share a name must never be merged into ours.
  * - A post whose card fields an editor has changed since the last import is skipped,
  *   unless --force. The import never undoes work done in WordPress.
+ * - People the site's roster tags Archived are never created. An existing post of ours for
+ *   one of them is marked Archived (off the Who We Are page, its page redirected), with
+ *   the same "edited in WordPress" rule; anything else with their slug is left alone. A
+ *   person brought back in the roster is un-archived by the next import.
  * - It never deletes anything, and a second run with nothing changed changes nothing.
  *
  * @package AugmentED
@@ -34,13 +38,27 @@ function augmented_ed_import_meta( $p ) {
 		'augmented_ed_website'     => (string) $p['website'],
 		'augmented_ed_sort'        => (string) $p['sort'],
 		'augmented_ed_photo'       => (string) $p['photo'],
+		// On the page, so not archived: this is what un-archives someone the roster brought back.
+		'augmented_ed_archived'    => '',
 	);
 }
 
+/**
+ * A fingerprint of the card fields, stored at import, so a later import can tell whether an
+ * editor has changed them since.
+ *
+ * The Archived flag counts only when it is set. The hash was first taken over the seven
+ * other fields alone, and a flag that entered as an empty value would change every stored
+ * fingerprint at once: the first import after the upgrade would report every member as
+ * edited in WordPress and skip them all.
+ */
 function augmented_ed_meta_hash( $post_id ) {
 	$now = array();
-	foreach ( array_keys( augmented_ed_import_meta( array_fill_keys( array( 'role', 'affiliation', 'location', 'linkedin', 'website', 'sort', 'photo' ), '' ) ) ) as $key ) {
+	foreach ( array( 'augmented_ed_role', 'augmented_ed_affiliation', 'augmented_ed_location', 'augmented_ed_linkedin', 'augmented_ed_website', 'augmented_ed_sort', 'augmented_ed_photo' ) as $key ) {
 		$now[ $key ] = (string) get_post_meta( $post_id, $key, true );
+	}
+	if ( augmented_ed_is_archived( $post_id ) ) {
+		$now['augmented_ed_archived'] = '1';
 	}
 	return md5( (string) wp_json_encode( $now ) );
 }
@@ -261,6 +279,42 @@ function augmented_ed_import_team( $args = array() ) {
 			}
 		}
 		$report['people'][ $p['slug'] ] = array( $action, $note );
+	}
+
+	// The archived: never created, only marked. See the header for the rules.
+	foreach ( (array) ( $data['archived'] ?? array() ) as $a ) {
+		$existing = get_posts(
+			array(
+				'post_type'        => $type,
+				'name'             => $a['slug'],
+				'post_status'      => 'any',
+				'numberposts'      => 1,
+				'suppress_filters' => true,
+			)
+		);
+		if ( ! $existing ) {
+			$report['people'][ $a['slug'] ] = array( 'absent', 'archived in the roster; not on this site, so nothing to do' );
+			continue;
+		}
+		$post   = $existing[0];
+		$stored = (string) get_post_meta( $post->ID, '_augmented_ed_import_hash', true );
+		if ( '' === $stored && ! in_array( $a['slug'], $data['existing'], true ) ) {
+			$report['people'][ $a['slug'] ] = array( 'skipped', 'archived in the roster, but this team post is not AugmentED\'s; left alone' );
+			continue;
+		}
+		if ( augmented_ed_is_archived( $post ) ) {
+			$report['people'][ $a['slug'] ] = array( 'archived', '' );
+			continue;
+		}
+		if ( '' !== $stored && augmented_ed_meta_hash( $post->ID ) !== $stored && ! $args['force'] ) {
+			$report['people'][ $a['slug'] ] = array( 'skipped', 'archived in the roster, but its card was edited in WordPress since the last import (use Force to archive it anyway)' );
+			continue;
+		}
+		if ( ! $args['dry_run'] ) {
+			update_post_meta( $post->ID, 'augmented_ed_archived', '1' );
+			update_post_meta( $post->ID, '_augmented_ed_import_hash', augmented_ed_meta_hash( $post->ID ) );
+		}
+		$report['people'][ $a['slug'] ] = array( 'archive', 'off the Who We Are page; nothing deleted' );
 	}
 
 	foreach ( $report['people'] as $row ) {

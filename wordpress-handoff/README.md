@@ -651,8 +651,13 @@ No CMS sits behind the prototype; its copy is in `index.html`. In WordPress:
     `augmented-leadership`, `augmented-research-partners`, `augmented-education-fellows`,
     `augmented-technology-and-design-partners`, ordered by term meta.
   - The card is the plugin's post meta, edited in the "AugmentED card" box:
-    `augmented_ed_role`, `_affiliation`, `_location`, `_linkedin`, `_website`, `_sort`,
-    `_photo` (a bundled headshot's slug), and `_template` (the bio page style).
+    `augmented_ed_archived` (the Archived tick box), `_role`, `_affiliation`, `_location`,
+    `_linkedin`, `_website`, `_sort`, `_photo` (a bundled headshot's slug), and `_template`
+    (the bio page style).
+  - **Archived** members keep their group but are left off the grid; their page redirects to
+    Who We Are and leaves the sitemap. The site's roster archives people instead of
+    deleting them, and the import follows it: it never creates an archived person, and marks
+    an existing post of ours Archived rather than deleting it.
   - The bio is the post's content. A post with no content has no bio page.
   - Sherry Lachman and Caitlin Mills already exist on aerdf.org and are attached, not
     recreated. Their AERDF titles, bios and photos are untouched.

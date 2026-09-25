@@ -43,6 +43,7 @@ import { parseHTML } from 'linkedom';
 import { scopeCss, assertScoped } from './lib/css-scope.mjs';
 import { readBios, lede, staticHelper, phpHelper, bioBody, BIO_PROFILE_CSS, BIO_PROFILE_DESKTOP_CSS } from './lib/bio-page.mjs';
 import { unserved, readManifest, heroFrames, fallingFrames } from './lib/sequences.mjs';
+import { ROSTER, readRoster, isArchived } from './lib/team.mjs';
 
 const root = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
 const PAGES_DIR = path.join(root, 'wordpress-handoff/pages');
@@ -420,12 +421,21 @@ function tileParts(document) {
       } else fail(`team tile: ${who} has an unexpected <${tag}>`);
     }
   }
+  // The grey square is pinned here for the day nobody on the page is waiting for a
+  // photograph: it cannot be read off an export with no placeholder in it, and the last two
+  // photographs arriving should not stop the plugin building. While one is on the page it is
+  // still read, and must match, so the pin cannot drift from what the page draws. It is the
+  // export's form, not index.html's: the browser rewrites the style (`1/1` becomes `1 / 1`,
+  // every declaration spaced and closed with `;`).
+  if (parts.placeholder === undefined) parts.placeholder = PLACEHOLDER_EXPORTED;
+  else if (parts.placeholder !== PLACEHOLDER_EXPORTED) fail(`team tile: the exported placeholder is now ${parts.placeholder} — update PLACEHOLDER_EXPORTED in tools/build-wp-plugin.mjs`);
   for (const k of ['tileStyle', 'photo', 'placeholder', 'nameOpen', 'roleOpen', 'muted1Open', 'muted2Open', 'linksOpen', 'linkLinkedIn', 'linkWebsite', 'bioCta']) {
     if (parts[k] === undefined) fail(`team tile: no ${k} found in the export`);
   }
   return parts;
 }
 const escText = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const PLACEHOLDER_EXPORTED = '<div style="aspect-ratio: 1 / 1; width: 100%; background: var(--color-st-tropaz-lightest); border-radius: var(--radius-image); margin-bottom: var(--space-6);"></div>';
 
 // Built against the helper interface of tools/lib/bio-page.mjs, so the same template
 // renders static HTML (for the golden test) and PHP (the partial). The icon inside the
@@ -715,6 +725,9 @@ const people = team.map((p) => {
     bio: b ? { paragraphs: b.paras, description: lede(b.paras) } : null,
   };
 });
+const roster = readRoster(root);
+const archived = roster.people.filter(isArchived);
+for (const p of archived) if (people.some((x) => x.slug === p.slug)) fail(`team: ${p.slug} is archived in the roster but on the page`);
 files.set('data/team.json', JSON.stringify({
   parent: { slug: 'augmented-team', name: 'AugmentED Team' },
   groups: GROUPS,
@@ -723,6 +736,11 @@ files.set('data/team.json', JSON.stringify({
   // exists unless told to (see includes/importer.php).
   existing: ['sherry-lachman', 'caitlin-mills'],
   people,
+  // The people the roster tags Archived. The importer never creates them; if a post of
+  // ours already exists for one, it marks it Archived rather than deleting it. People
+  // waiting for a group are not here at all: WordPress only hears about people who have
+  // been on the page.
+  archived: archived.map((p) => ({ slug: p.slug, name: p.name })),
 }, null, 2) + '\n');
 if (!formSpec) fail('follow: the form was not built');
 else files.set('data/form.json', JSON.stringify(formSpec, null, 2) + '\n');
@@ -763,7 +781,7 @@ files.set('ship.json', JSON.stringify(shipList, null, 1) + '\n');
 
 // Inputs, hashed, so --check can say which input moved when generated/ is stale.
 const inputs = ['index.html', ...PAGES.map((p) => `wordpress-handoff/pages/${p.file}`), 'wordpress-handoff/pages/states.json',
-  'wordpress-handoff/content/team.json', 'wordpress-handoff/content/pages.json', ...dsTokens, ...componentSheets,
+  'wordpress-handoff/content/team.json', 'wordpress-handoff/content/pages.json', ROSTER, ...dsTokens, ...componentSheets,
   // Only the bios the page links. The roster keeps the bios of people off the page in the
   // same folder, and hashing those would call generated/ stale over a file it never reads.
   ...team.filter((p) => p.bioUrl).map((p) => p.slug).sort().map((s) => `source-material/bios/${s}.md`)];
