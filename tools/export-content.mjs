@@ -169,7 +169,7 @@ expect(
 expect(new Set(team.map((p) => p.group)).size >= 4, 'team: expected at least 4 groups');
 
 // Bio links asserted RELATIONALLY, not against a hard-coded count. How many people have
-// a bio is not a fixed fact about this site the way 29 people or 4 redirects are — it went
+// a bio is not a fixed fact about this site the way the four redirects are — it went
 // from 4 to 21 in a day, and a new bio should be a markup change, not a build break. Counting the "Read bio" links in
 // the raw markup and matching still fails loudly on the case that matters: a link that is
 // on the page and did not survive the parse, which is what a changed href shape does.

@@ -49,9 +49,9 @@ Second paragraph.
 no Markdown parser — bold, links and lists are not rendered, they ship as literal
 characters. Keep bios to prose, or add a parser; it is about ten lines in `readBios()`.
 
-Anyone in any group can have one; eight people currently do not, because the tracking
-sheet has no bio for them, and their cards have no link. `source-material/bios/unused/`,
-when it exists, holds bios kept but not published; the build does not read it.
+Anyone in any group can have one; eleven people on the page currently do not, because the
+tracking sheet has no bio for them, and their cards have no link. The bios of people off the
+page (archived, or waiting for a group) are kept in the same folder and not built.
 
 ## 3. The card contract
 
@@ -117,10 +117,10 @@ behind them. A person without a photo gets an empty square in the same `#e9eef4`
 empty tile and a photographed one sit on one colour.
 
 Do not re-crop them — no Media Library "crop to square", no theme `object-position`. The
-framing is what makes 25 photographs from 25 photographers read as one team, and it is
-already done. They are 5–34 KB each. Seven of the photographs stop short of where the
+framing is what makes photographs by thirty different photographers read as one team, and
+it is already done. They are 5–33 KB each. Nine of the photographs stop short of where the
 framing wants them, and those fade out where the photo ends (clearly for Ryan Baker,
-Andrew Lan, Byungyeon Yun and Sonia Prusaitis); that is baked into the file, not an
+Andrew Lan, Byungyeon Yun, Sonia Prusaitis and Tom Peterson); that is baked into the file, not an
 effect to reproduce, and it goes away when a looser original replaces one.
 
 They are made in two steps, and the split is on purpose. `tools/cutout-headshots.py`
@@ -130,7 +130,7 @@ writes 768px cut-outs to `source-material/image-sources/team-cutout/`, with no c
 the file, in seconds. Change the colours there; change the framing in the cut-out tool.
 
 **Each has a colour twin**, `assets/team/colour/<slug>.webp`: the same cut-out in its own
-colour on the same `#e9eef4`, 6–37 KB. On hover, the colour pours back into the duotone
+colour on the same `#e9eef4`, 6–36 KB. On hover, the colour pours back into the duotone
 from wherever the pointer came in — a radial mask, 900 ms in, draining out where the
 pointer leaves in 450 ms — and a keyboard focus on "Read bio" blooms it from the face.
 That is `assets/team-colour.js` and `.css`, enqueued like the other components; porting it
@@ -155,8 +155,9 @@ handed on is wrong.
 **1. `src` must be the first attribute on a team `<img>`.** `export-content.mjs` anchors
 its headshot regex on the literal `<img src="`. React preserves author attribute order for
 everything except `style`, so writing `<img class="shot" src="…">` in `index.html` takes
-all 25 headshots to `null` — with a green build. There is an assertion for this
-(`expected 25 headshots, parsed 0`), so it fails loudly now; before it existed it did not.
+every headshot to `null` — with a green build. There is an assertion for this (`the roster
+has 30 headshots on the page, parsed 0`), so it fails loudly now; before it existed it did
+not. The tiles are written by `tools/build-team.mjs`, which always puts `src` first.
 
 **2. The link text starts with exactly "Read bio".** The exporter finds each bio page by
 the `href` of the `<a>` whose text starts `Read bio`, and asserts that the number of

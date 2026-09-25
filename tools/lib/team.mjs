@@ -31,7 +31,7 @@
 // THE MARKUP IS TODAY'S, BYTE FOR BYTE. Downstream code reads it with regexes, not a DOM:
 //   - <img src=...> keeps src as its FIRST attribute. tools/export-content.mjs anchors on
 //     `<img src="` and React keeps author attribute order for everything except style, so
-//     reordering takes every headshot to null (sections/leadership.md, "the 25 headshots").
+//     reordering takes every headshot to null (sections/leadership.md, "Two invariants").
 //   - No boolean attributes. React drops required="" and its kind (an empty string is a
 //     false prop), so nothing here writes one.
 //   - The marker text must not contain `assets/team/`, `team/<slug>/` or `<h3`:

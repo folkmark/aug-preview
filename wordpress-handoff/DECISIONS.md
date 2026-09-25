@@ -86,7 +86,7 @@ working default.
   sitemap — like every other programme's members, and in a new category archive at
   `/category/augmented-team/`. AERDF's own team listings (Our Team) filter by their own
   categories and are unaffected.
-- The eight without a bio have no page of their own: theirs redirects to Who We Are and is
+- The people without a bio (eleven today) have no page of their own: theirs redirects to Who We Are and is
   left out of the sitemap.
 
 ### Who edits the team after launch — AugmentED

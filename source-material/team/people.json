@@ -521,7 +521,7 @@
     {
       "id": 14,
       "slug": "alexandra-wiggins",
-      "name": "Alexandra Wiggins",
+      "name": "Alexandra (Lexi) Wiggins",
       "group": "education-fellows",
       "order": 1,
       "tags": [],
@@ -530,19 +530,33 @@
       "location": "San Diego, CA",
       "linkedin": null,
       "website": "https://www.hightechhigh.org/staff/alexandra-wiggins/",
-      "photo": null,
+      "photo": {
+        "master": "alexandra-wiggins.png",
+        "from": "form",
+        "ref": "https://drive.google.com/open?id=1emfjjCW4d7qdFN14aRHBPPLs_XqzJA8o",
+        "approved": false,
+        "notes": "Sent through the website info form by Joan Lee on 24 September 2026, as received: a 576x576 PNG (\"unnamed (1)\"). Small, so the shared framing enlarges it; a larger original would sharpen the tile. Her High Tech High staff page may have one, but it refused this session's requests (403)."
+      },
       "bioSource": {
         "from": "tracker",
         "trackerApproved": null
       },
-      "form": null,
-      "notes": null,
+      "form": {
+        "submitted": "2026-09-24 21:42:33",
+        "name": "Alexandra (Lexi) Wiggins",
+        "linkedin": "https://www.hightechhigh.org/staff/alexandra-wiggins/",
+        "headshot": "1emfjjCW4d7qdFN14aRHBPPLs_XqzJA8o",
+        "outcome": "used",
+        "detail": "576x576 PNG, submitted by Joan Lee; shown as \"Alexandra (Lexi) Wiggins\" as the form gives it (decided 2026-09-25)"
+      },
+      "notes": "The form gives her name as \"Alexandra (Lexi) Wiggins\" and the site shows it that way (decided 2026-09-25); her bio calls her Lexi.",
       "actions": [
-        "[client] Send a headshot (client is chasing it).",
         "[joan] Sign off the published bio (the tracker's fellows tab has no Approved column)."
       ],
       "history": [
-        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/alexandra-wiggins/ (6008fab)"
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/alexandra-wiggins/ (6008fab)",
+        "2026-09-25 full_name: Alexandra Wiggins → Alexandra (Lexi) Wiggins",
+        "2026-09-25 headshot: placeholder → form upload"
       ]
     },
     {
@@ -608,13 +622,26 @@
       "location": "Grand Rapids, MI",
       "linkedin": "https://www.linkedin.com/in/tom-peterson-25776477/",
       "website": null,
-      "photo": null,
-      "form": null,
-      "notes": null,
-      "actions": [
-        "[client] Send a headshot (client is chasing it)."
-      ],
-      "history": []
+      "photo": {
+        "master": "tom-peterson.jpg",
+        "from": "form",
+        "ref": "https://drive.google.com/open?id=1dZjNORv0Bzllr9Y_pZ-MUJXuQp2Ljngn",
+        "approved": false,
+        "notes": "Sent through the website info form by Joan Lee on 25 September 2026, as received: 1280x1600."
+      },
+      "form": {
+        "submitted": "2026-09-25 14:12:49",
+        "name": "Tom Peterson",
+        "linkedin": "N/A",
+        "headshot": "1dZjNORv0Bzllr9Y_pZ-MUJXuQp2Ljngn",
+        "outcome": "used",
+        "detail": "1280x1600, submitted by Joan Lee"
+      },
+      "notes": "The form (filled in by Joan Lee) gives LinkedIn as \"N/A\"; the LinkedIn from her Bio tracking sheet stays on his tile (decided 2026-09-25).",
+      "actions": [],
+      "history": [
+        "2026-09-25 headshot: placeholder → form upload"
+      ]
     },
     {
       "id": 18,
@@ -1028,8 +1055,8 @@
       "id": 30,
       "slug": "katie-butler",
       "name": "Katie Butler",
-      "group": null,
-      "order": null,
+      "group": "research-partners",
+      "order": 10,
       "tags": [],
       "role": null,
       "affiliation": null,
@@ -1037,10 +1064,10 @@
       "linkedin": "https://www.linkedin.com/in/katie-quinton-butler-1a9187125/",
       "website": null,
       "photo": {
-        "drive": "10FCxGPA87YEhKgufQ0oINaAE3kOr6neA",
+        "master": "katie-butler.jpg",
         "from": "form",
         "ref": "https://drive.google.com/open?id=10FCxGPA87YEhKgufQ0oINaAE3kOr6neA",
-        "notes": "927x1800, usable. Not committed until she has a group: this repository is public."
+        "notes": "927x1800, as received through the form on 24 September 2026."
       },
       "form": {
         "submitted": "2026-09-24 11:46:23",
@@ -1049,21 +1076,23 @@
         "other": null,
         "headshot": "10FCxGPA87YEhKgufQ0oINaAE3kOr6neA",
         "group": null,
-        "outcome": "held",
+        "outcome": "used",
         "detail": "927×1800, usable; person held until group and title are confirmed"
       },
-      "notes": "Submitted the website info form; group and title not yet confirmed.",
+      "notes": "Submitted the website info form. Group confirmed by Brendan on 25 September 2026; no title yet, so the tile shows none.",
       "actions": [
-        "[joan] Confirm group and title, then add to the page (photo is in the form)."
+        "[joan] Send a title and organisation."
       ],
-      "history": []
+      "history": [
+        "2026-09-25 group: — → research-partners (confirmed by Brendan); on the page"
+      ]
     },
     {
       "id": 31,
       "slug": "tom-keefe",
       "name": "Tom Keefe",
-      "group": null,
-      "order": null,
+      "group": "technology-and-design-partners",
+      "order": 8,
       "tags": [],
       "role": null,
       "affiliation": null,
@@ -1071,10 +1100,10 @@
       "linkedin": "https://www.linkedin.com/in/tom-keefe/",
       "website": null,
       "photo": {
-        "drive": "1liA-Hru9egI0JxDTDy6dHpYWADLNg1OP",
+        "master": "tom-keefe.jpg",
         "from": "form",
         "ref": "https://drive.google.com/open?id=1liA-Hru9egI0JxDTDy6dHpYWADLNg1OP",
-        "notes": "Replaced by Joan Lee on 25 September 2026 with a 1187x1240 head-and-shoulders photo on a plain wall, usable. The 237x222 kayaking screenshot he first sent (1lWFQOIo4Wib_MLC97PXRwscpBe6V-T7F) is superseded. Not committed until he has a group: this repository is public."
+        "notes": "1187x1240, the photo Joan Lee put in the form on 25 September 2026 in place of his first upload, a 237x222 screenshot of a kayaking photo (1lWFQOIo4Wib_MLC97PXRwscpBe6V-T7F)."
       },
       "form": {
         "submitted": "2026-09-24 13:44:15",
@@ -1083,23 +1112,24 @@
         "other": null,
         "headshot": "1liA-Hru9egI0JxDTDy6dHpYWADLNg1OP",
         "group": null,
-        "outcome": "held",
+        "outcome": "used",
         "detail": "Headshot replaced by Joan Lee on 2026-09-25 (1187x1240, usable); the first upload was a 237x222 screenshot"
       },
-      "notes": "Submitted the website info form; group and title not yet confirmed.",
+      "notes": "Submitted the website info form. Group confirmed by Brendan on 25 September 2026; no title yet, so the tile shows none.",
       "actions": [
-        "[joan] Confirm group and title, then add to the page (photo is in the form)."
+        "[joan] Send a title and organisation."
       ],
       "history": [
-        "2026-09-25 headshot: 237x222 screenshot -> 1187x1240 photo, replaced in the form by Joan Lee"
+        "2026-09-25 headshot: 237x222 screenshot -> 1187x1240 photo, replaced in the form by Joan Lee",
+        "2026-09-25 group: — → technology-and-design-partners (confirmed by Brendan); on the page"
       ]
     },
     {
       "id": 32,
       "slug": "allison-rapoport",
       "name": "Allison Rapoport",
-      "group": null,
-      "order": null,
+      "group": "technology-and-design-partners",
+      "order": 9,
       "tags": [],
       "role": null,
       "affiliation": null,
@@ -1107,10 +1137,10 @@
       "linkedin": "https://www.linkedin.com/in/allison-rapoport",
       "website": null,
       "photo": {
-        "drive": "16kOPcBQcItb99LDwUHyYYaJo_HDvRTwN",
+        "master": "allison-rapoport.jpeg",
         "from": "form",
         "ref": "https://drive.google.com/open?id=16kOPcBQcItb99LDwUHyYYaJo_HDvRTwN",
-        "notes": "1273x1636, reviewed 25 September 2026, usable. Not committed until she has a group: this repository is public."
+        "notes": "1273x1636, as received through the form on 24 September 2026."
       },
       "form": {
         "submitted": "2026-09-24 17:10:06",
@@ -1119,14 +1149,16 @@
         "other": null,
         "headshot": "16kOPcBQcItb99LDwUHyYYaJo_HDvRTwN",
         "group": null,
-        "outcome": "held",
+        "outcome": "used",
         "detail": "not reviewed; person held until group and title are confirmed"
       },
-      "notes": "Submitted the website info form; group and title not yet confirmed.",
+      "notes": "Submitted the website info form. Group confirmed by Brendan on 25 September 2026; no title yet, so the tile shows none.",
       "actions": [
-        "[joan] Confirm group and title, then add to the page (photo is in the form)."
+        "[joan] Send a title and organisation."
       ],
-      "history": []
+      "history": [
+        "2026-09-25 group: — → technology-and-design-partners (confirmed by Brendan); on the page"
+      ]
     },
     {
       "id": 33,

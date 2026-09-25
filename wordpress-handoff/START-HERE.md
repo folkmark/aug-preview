@@ -123,7 +123,7 @@ Logged out and logged in, and with the AccessiBe widget on:
       AERDF's header, at 360, 768, 1440 and 1920 px wide.
 - [ ] The home page's hero plays when scrolled, and its copy is whole when the hero first
       reaches the bar; the closing blocks fall; clicking a step of the cycle wheel travels to it.
-- [ ] Who We Are shows 25 headshots and 4 placeholders in four groups; with a mouse, a
+- [ ] Who We Are shows 30 headshots and 2 placeholders in four groups; with a mouse, a
       headshot blooms into colour; each "Read bio" opens that person's page.
 - [ ] A member without a bio (e.g. `/team/tom-peterson/`) goes to Who We Are.
 - [ ] Sherry Lachman's and Caitlin Mills's AERDF pages are unchanged.

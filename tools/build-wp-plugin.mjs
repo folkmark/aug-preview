@@ -22,7 +22,7 @@
 //     pages/states.json;
 //   - the Follow form becomes a real form with real inputs that posts to the plugin;
 //   - the team grid becomes a loop over AERDF's team posts, through one tile template
-//     derived from the 29 exported tiles and proven against them;
+//     derived from the exported tiles and proven against every one of them;
 //   - every stylesheet is scoped to #augmented-ed (tools/lib/css-scope.mjs).
 //
 // Usage:
@@ -390,7 +390,7 @@ const groupSlug = Object.fromEntries(GROUPS.map((g) => [g.name, g.slug]));
 if (GROUPS.length !== 4) fail(`team: ${GROUPS.length} groups, expected 4`);
 
 // The tile template, taken apart from the exported tiles. Every part must use ONE style
-// string across all 29 people — if one tile differs, a template cannot reproduce it, and the
+// string across everyone on the page — if one tile differs, a template cannot reproduce it, and the
 // build names the person rather than silently normalising them.
 function tileParts(document) {
   const tiles = [...document.querySelectorAll('.team-grid-3 > div')];
@@ -537,7 +537,7 @@ files.set('templates/partials/program-bar.php', `${templateHeader('AugmentED —
 ${programBarHtml || ''}
 `);
 
-// The tile partial, and its proof: all 29 exported tiles rebuilt from their data through
+// The tile partial, and its proof: every exported tile rebuilt from its data through
 // the same template must match the export, element for element.
 if (tileP) {
   const tile = tileTemplate(tileP);

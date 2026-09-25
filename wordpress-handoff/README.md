@@ -16,7 +16,7 @@ destination decisions are theirs, and anything about how the site is built is mi
   inside aerdf.org's own theme, under AERDF's header and footer, with AugmentED's navigation
   as a program bar beneath them — as Assessment for Good's pages do.
 - **The team goes into AERDF's existing `team` post type**, in an "AugmentED Team" category,
-  not a new type. Two of the 29 (Sherry Lachman, Caitlin Mills) are already there and are
+  not a new type. Two of them (Sherry Lachman, Caitlin Mills) are already there and are
   only attached.
 - **The Follow form submits to AERDF's HubSpot** through the plugin, on the server.
 - **Its page-shaped half is generated from the site itself** (`tools/build-wp-plugin.mjs`), so
@@ -136,7 +136,7 @@ index.html ──tools/export-static.mjs──▶ pages/ (+ states.json)
   - The team grids become a loop over team posts.
 - `bio.php`, rendered from the same template as the site's bio pages
   (`tools/lib/bio-page.mjs`).
-- The program bar partial, and the team tile partial, proven against all 29 exported tiles
+- The program bar partial, and the team tile partial, proven against every exported tile
   through PHP itself.
 - `css/augmented-ed.css`: the design system, the page's own rules, the components' rules and
   the hover and checked states (from `pages/states.json`), all scoped to `#augmented-ed` by
@@ -264,7 +264,7 @@ components' JavaScript and CSS are hand-written.
 | `assets/team-colour.js` / `.css` | The headshots' colour bloom on Who We Are. Not an element: it finds the team cards from the document and lays each photo's colour twin over it on hover. | Mouse and trackpad only; phones never fetch the twins. See [Headshots](sections/leadership.md#headshots) for what it needs of the markup. |
 | `assets/approach.js` / `.css` | The `<approach-scrub>` component. | **Parked, not published.** Do not deploy unless mounted again. See [The Approach scrub](#the-approach-scrub-approach-scrub). |
 | `assets/images/`, `assets/icons/`, `assets/logo/` | Photography, marks. | Plain images. The seven portrait photos ship in two widths picked by `srcset`. |
-| `assets/team/`, `assets/team/colour/` | Headshots, 512 × 512, finished: each person cut out, framed identically (same face height, same eye line) and composited in a navy duotone onto `#e9eef4`. The folder holds exactly the 25 people pictured, and `colour/` holds the same 25 in their own colour, which the hover reveals. | Use as-is — no CSS filter, no `object-position`, nothing behind them. **They ship as the plugin's own files, never through the media library**: the bloom recognises a headshot by `assets/team/` in its `src` and builds the colour URL from it by string replacement, so a renamed or WP-Stateless URL silently turns the hover off. A team post's "Bundled headshot" names one; a person added in WordPress without one shows their featured image, without the bloom. A person without a photo gets an empty square in the same `#e9eef4` (`--color-st-tropaz-lightest`). See [Headshots](sections/leadership.md#headshots). |
+| `assets/team/`, `assets/team/colour/` | Headshots, 512 × 512, finished: each person cut out, framed identically (same face height, same eye line) and composited in a navy duotone onto `#e9eef4`. The folder holds exactly the people pictured on the page (the build fails otherwise), and `colour/` holds the same people in their own colour, which the hover reveals. | Use as-is — no CSS filter, no `object-position`, nothing behind them. **They ship as the plugin's own files, never through the media library**: the bloom recognises a headshot by `assets/team/` in its `src` and builds the colour URL from it by string replacement, so a renamed or WP-Stateless URL silently turns the hover off. A team post's "Bundled headshot" names one; a person added in WordPress without one shows their featured image, without the bloom. A person without a photo gets an empty square in the same `#e9eef4` (`--color-st-tropaz-lightest`). See [Headshots](sections/leadership.md#headshots). |
 | `assets/illustrations/{brain,blocks,laptop}.webp` | The three home-page illustrations, 810 × 810 with alpha. | See the note below. |
 
 **The illustrations are framed plates; do not crop them.** Each carries its own
@@ -785,14 +785,14 @@ active.
 
 **Who We Are and the bio pages** (full criteria in [`sections/leadership.md`](sections/leadership.md)):
 
-- [ ] 25 headshots and 4 placeholder squares in `#e9eef4`, in the four groups and the
-      order of `content/team.json`; the 4 people without a title show no empty line.
+- [ ] 30 headshots and 2 placeholder squares in `#e9eef4`, in the four groups and the
+      order of `content/team.json`; the people without a title show no empty line.
 - [ ] With a mouse, a headshot's colour blooms in from the pointer and drains on
       leaving; on a phone or tablet nothing blooms and no `assets/team/colour/` file is
       requested.
 - [ ] The 21 "Read bio" tiles each open `/team/<slug>/`: an AugmentED bio page for the
       19 who are only in AugmentED, AERDF's own page for Sherry Lachman and Caitlin Mills.
-- [ ] The 8 without a bio redirect to Who We Are.
+- [ ] The 11 without a bio redirect to Who We Are.
 
 **Site-wide:**
 

@@ -65,7 +65,7 @@ jobs:
   # committed export by tools/build-wp-plugin.mjs, and committed; --check regenerates them in
   # memory and fails if the committed files differ, so a change to index.html that was
   # re-exported but not regenerated cannot merge unnoticed. It also runs php -l over the
-  # plugin and renders all 29 team tiles through PHP against the export.
+  # plugin and renders every team tile through PHP against the export.
   #
   # The assembled plugin — the runtime plus exactly the assets the pages use, about 22 MB —
   # is uploaded as this run's artifact. Download it from the run's summary page: the zip
