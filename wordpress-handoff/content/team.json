@@ -8,7 +8,12 @@
     "location": null,
     "photo": "assets/team/sherry-lachman.webp",
     "bioUrl": "/team/sherry-lachman/",
-    "links": []
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/sherry-lachman-1920494/"
+      }
+    ]
   },
   {
     "slug": "caitlin-mills",
@@ -19,7 +24,12 @@
     "location": null,
     "photo": "assets/team/caitlin-mills.webp",
     "bioUrl": "/team/caitlin-mills/",
-    "links": []
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/caitlin-mills-60107a350/"
+      }
+    ]
   },
   {
     "slug": "raquel-romano",
@@ -50,6 +60,26 @@
       {
         "label": "LinkedIn",
         "url": "https://www.linkedin.com/in/jennysbradbury/"
+      }
+    ]
+  },
+  {
+    "slug": "abby-petre",
+    "name": "Abby (Csaba) Petre",
+    "group": "Leadership",
+    "role": "Head of Engineering",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/abby-petre.webp",
+    "bioUrl": "/team/abby-petre/",
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/csaba-abby-petre-3618708a/"
+      },
+      {
+        "label": "Website",
+        "url": "https://asingularity.github.io/"
       }
     ]
   },
@@ -169,7 +199,7 @@
     "slug": "aarav-kalkar",
     "name": "Aarav Kalkar",
     "group": "Research Partners",
-    "role": null,
+    "role": "Data Scientist",
     "affiliation": null,
     "location": null,
     "photo": "assets/team/aarav-kalkar.webp",
@@ -185,7 +215,7 @@
     "slug": "byungyeon-yun",
     "name": "Byungyeon Yun",
     "group": "Research Partners",
-    "role": null,
+    "role": "Graduate Student, University of Minnesota",
     "affiliation": null,
     "location": null,
     "photo": "assets/team/byungyeon-yun.webp",
@@ -201,7 +231,7 @@
     "slug": "stephen-hutt",
     "name": "Stephen Hutt",
     "group": "Research Partners",
-    "role": null,
+    "role": "Assistant Professor, University of Minnesota",
     "affiliation": null,
     "location": null,
     "photo": "assets/team/stephen-hutt.webp",
@@ -214,13 +244,29 @@
     ]
   },
   {
+    "slug": "katie-butler",
+    "name": "Katie Butler",
+    "group": "Research Partners",
+    "role": null,
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/katie-butler.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/katie-quinton-butler-1a9187125/"
+      }
+    ]
+  },
+  {
     "slug": "alexandra-wiggins",
-    "name": "Alexandra Wiggins",
+    "name": "Alexandra (Lexi) Wiggins",
     "group": "Education Fellows",
     "role": "Humanities Teacher, 504 Coordinator",
     "affiliation": "High Tech High Mesa",
     "location": "San Diego, CA",
-    "photo": null,
+    "photo": "assets/team/alexandra-wiggins.webp",
     "bioUrl": "/team/alexandra-wiggins/",
     "links": [
       {
@@ -268,7 +314,7 @@
     "role": "Social Studies Teacher",
     "affiliation": "Grand Rapids Public Museum High School",
     "location": "Grand Rapids, MI",
-    "photo": null,
+    "photo": "assets/team/tom-peterson.webp",
     "bioUrl": null,
     "links": [
       {
@@ -409,7 +455,7 @@
     "slug": "joan-lee",
     "name": "Joan Lee",
     "group": "Technology and Design Partners",
-    "role": "Project Manager",
+    "role": "Project Consultant & Manager",
     "affiliation": null,
     "location": null,
     "photo": "assets/team/joan-lee.webp",
@@ -436,7 +482,7 @@
     "slug": "sonia-prusaitis",
     "name": "Sonia Prusaitis",
     "group": "Technology and Design Partners",
-    "role": null,
+    "role": "Program Manager",
     "affiliation": null,
     "location": null,
     "photo": "assets/team/sonia-prusaitis.webp",
@@ -449,22 +495,34 @@
     ]
   },
   {
-    "slug": "abby-petre",
-    "name": "Abby (Csaba) Petre",
+    "slug": "tom-keefe",
+    "name": "Tom Keefe",
     "group": "Technology and Design Partners",
-    "role": "Head of Engineering",
+    "role": null,
     "affiliation": null,
     "location": null,
-    "photo": "assets/team/abby-petre.webp",
-    "bioUrl": "/team/abby-petre/",
+    "photo": "assets/team/tom-keefe.webp",
+    "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/csaba-abby-petre-3618708a/"
-      },
+        "url": "https://www.linkedin.com/in/tom-keefe/"
+      }
+    ]
+  },
+  {
+    "slug": "allison-rapoport",
+    "name": "Allison Rapoport",
+    "group": "Technology and Design Partners",
+    "role": null,
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/allison-rapoport.webp",
+    "bioUrl": null,
+    "links": [
       {
-        "label": "Website",
-        "url": "https://asingularity.github.io/"
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/allison-rapoport"
       }
     ]
   }

@@ -1320,6 +1320,14 @@
   "repo": "assets/team/abby-petre.webp"
  },
  {
+  "plugin": "assets/team/alexandra-wiggins.webp",
+  "repo": "assets/team/alexandra-wiggins.webp"
+ },
+ {
+  "plugin": "assets/team/allison-rapoport.webp",
+  "repo": "assets/team/allison-rapoport.webp"
+ },
+ {
   "plugin": "assets/team/andrew-lan.webp",
   "repo": "assets/team/andrew-lan.webp"
  },
@@ -1354,6 +1362,14 @@
  {
   "plugin": "assets/team/colour/abby-petre.webp",
   "repo": "assets/team/colour/abby-petre.webp"
+ },
+ {
+  "plugin": "assets/team/colour/alexandra-wiggins.webp",
+  "repo": "assets/team/colour/alexandra-wiggins.webp"
+ },
+ {
+  "plugin": "assets/team/colour/allison-rapoport.webp",
+  "repo": "assets/team/colour/allison-rapoport.webp"
  },
  {
   "plugin": "assets/team/colour/andrew-lan.webp",
@@ -1404,6 +1420,10 @@
   "repo": "assets/team/colour/joshua-sloan.webp"
  },
  {
+  "plugin": "assets/team/colour/katie-butler.webp",
+  "repo": "assets/team/colour/katie-butler.webp"
+ },
+ {
   "plugin": "assets/team/colour/laura-allen.webp",
   "repo": "assets/team/colour/laura-allen.webp"
  },
@@ -1448,6 +1468,14 @@
   "repo": "assets/team/colour/stephen-hutt.webp"
  },
  {
+  "plugin": "assets/team/colour/tom-keefe.webp",
+  "repo": "assets/team/colour/tom-keefe.webp"
+ },
+ {
+  "plugin": "assets/team/colour/tom-peterson.webp",
+  "repo": "assets/team/colour/tom-peterson.webp"
+ },
+ {
   "plugin": "assets/team/danie-cowden.webp",
   "repo": "assets/team/danie-cowden.webp"
  },
@@ -1466,6 +1494,10 @@
  {
   "plugin": "assets/team/joshua-sloan.webp",
   "repo": "assets/team/joshua-sloan.webp"
+ },
+ {
+  "plugin": "assets/team/katie-butler.webp",
+  "repo": "assets/team/katie-butler.webp"
  },
  {
   "plugin": "assets/team/laura-allen.webp",
@@ -1510,5 +1542,13 @@
  {
   "plugin": "assets/team/stephen-hutt.webp",
   "repo": "assets/team/stephen-hutt.webp"
+ },
+ {
+  "plugin": "assets/team/tom-keefe.webp",
+  "repo": "assets/team/tom-keefe.webp"
+ },
+ {
+  "plugin": "assets/team/tom-peterson.webp",
+  "repo": "assets/team/tom-peterson.webp"
  }
 ]

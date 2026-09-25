@@ -38,7 +38,7 @@
       "role": "Founder & Executive Director",
       "affiliation": "",
       "location": "",
-      "linkedin": "",
+      "linkedin": "https://www.linkedin.com/in/sherry-lachman-1920494/",
       "website": "",
       "photo": "sherry-lachman",
       "bio": {
@@ -58,7 +58,7 @@
       "role": "Co-Founder & Chief of Research and Impact",
       "affiliation": "",
       "location": "",
-      "linkedin": "",
+      "linkedin": "https://www.linkedin.com/in/caitlin-mills-60107a350/",
       "website": "",
       "photo": "caitlin-mills",
       "bio": {
@@ -106,6 +106,26 @@
           "Jenny has also held leadership positions at Discovery Education and the Network for Teaching Entrepreneurship, and began her career as a high school English and Humanities teacher."
         ],
         "description": "Jenny leads educator recruitment and training for AugmentED’s R&D efforts, builds and manages cross-disciplinary teams, and establishes networks organized around common education goals."
+      }
+    },
+    {
+      "slug": "abby-petre",
+      "name": "Abby (Csaba) Petre",
+      "group": "augmented-leadership",
+      "sort": 5,
+      "role": "Head of Engineering",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/csaba-abby-petre-3618708a/",
+      "website": "https://asingularity.github.io/",
+      "photo": "abby-petre",
+      "bio": {
+        "paragraphs": [
+          "Abby is a software developer and technical lead, specializing in taking projects from research prototypes to deployed products in startup environments.",
+          "Previously, she has led teams as an early employee and as a co-founder at several early-stage startups, specializing in backend architecture and cloud infrastructure for robotics, IoT, and scientific AI applications.",
+          "She earned her M.S. in ECE from Georgia Tech and B.S. in EE from UCLA."
+        ],
+        "description": "Abby is a software developer and technical lead, specializing in taking projects from research prototypes to deployed products in startup environments."
       }
     },
     {
@@ -221,7 +241,7 @@
       "name": "Aarav Kalkar",
       "group": "augmented-research-partners",
       "sort": 7,
-      "role": "",
+      "role": "Data Scientist",
       "affiliation": "",
       "location": "",
       "linkedin": "https://www.linkedin.com/in/aaravkalkar/",
@@ -234,7 +254,7 @@
       "name": "Byungyeon Yun",
       "group": "augmented-research-partners",
       "sort": 8,
-      "role": "",
+      "role": "Graduate Student, University of Minnesota",
       "affiliation": "",
       "location": "",
       "linkedin": "https://www.linkedin.com/in/byungyeon-yun-a6671b425/",
@@ -247,7 +267,7 @@
       "name": "Stephen Hutt",
       "group": "augmented-research-partners",
       "sort": 9,
-      "role": "",
+      "role": "Assistant Professor, University of Minnesota",
       "affiliation": "",
       "location": "",
       "linkedin": "https://www.linkedin.com/in/stephen-j-hutt/",
@@ -256,8 +276,21 @@
       "bio": null
     },
     {
+      "slug": "katie-butler",
+      "name": "Katie Butler",
+      "group": "augmented-research-partners",
+      "sort": 10,
+      "role": "",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/katie-quinton-butler-1a9187125/",
+      "website": "",
+      "photo": "katie-butler",
+      "bio": null
+    },
+    {
       "slug": "alexandra-wiggins",
-      "name": "Alexandra Wiggins",
+      "name": "Alexandra (Lexi) Wiggins",
       "group": "augmented-education-fellows",
       "sort": 1,
       "role": "Humanities Teacher, 504 Coordinator",
@@ -265,7 +298,7 @@
       "location": "San Diego, CA",
       "linkedin": "",
       "website": "https://www.hightechhigh.org/staff/alexandra-wiggins/",
-      "photo": "",
+      "photo": "alexandra-wiggins",
       "bio": {
         "paragraphs": [
           "Lexi has been teaching with High Tech High for eight years and is passionate about developing students into informed, engaged global citizens. She is especially committed to supporting diverse learners and helping students build the literacy and critical thinking skills they need to thoughtfully navigate the world."
@@ -314,7 +347,7 @@
       "location": "Grand Rapids, MI",
       "linkedin": "https://www.linkedin.com/in/tom-peterson-25776477/",
       "website": "",
-      "photo": "",
+      "photo": "tom-peterson",
       "bio": null
     },
     {
@@ -461,7 +494,7 @@
       "name": "Joan Lee",
       "group": "augmented-technology-and-design-partners",
       "sort": 4,
-      "role": "Project Manager",
+      "role": "Project Consultant & Manager",
       "affiliation": "",
       "location": "",
       "linkedin": "https://www.linkedin.com/in/about-joan-lee/",
@@ -494,7 +527,7 @@
       "name": "Sonia Prusaitis",
       "group": "augmented-technology-and-design-partners",
       "sort": 6,
-      "role": "",
+      "role": "Program Manager",
       "affiliation": "",
       "location": "",
       "linkedin": "https://www.linkedin.com/in/soniaprusaitis/",
@@ -503,24 +536,30 @@
       "bio": null
     },
     {
-      "slug": "abby-petre",
-      "name": "Abby (Csaba) Petre",
+      "slug": "tom-keefe",
+      "name": "Tom Keefe",
       "group": "augmented-technology-and-design-partners",
       "sort": 7,
-      "role": "Head of Engineering",
+      "role": "",
       "affiliation": "",
       "location": "",
-      "linkedin": "https://www.linkedin.com/in/csaba-abby-petre-3618708a/",
-      "website": "https://asingularity.github.io/",
-      "photo": "abby-petre",
-      "bio": {
-        "paragraphs": [
-          "Abby is a software developer and technical lead, specializing in taking projects from research prototypes to deployed products in startup environments.",
-          "Previously, she has led teams as an early employee and as a co-founder at several early-stage startups, specializing in backend architecture and cloud infrastructure for robotics, IoT, and scientific AI applications.",
-          "She earned her M.S. in ECE from Georgia Tech and B.S. in EE from UCLA."
-        ],
-        "description": "Abby is a software developer and technical lead, specializing in taking projects from research prototypes to deployed products in startup environments."
-      }
+      "linkedin": "https://www.linkedin.com/in/tom-keefe/",
+      "website": "",
+      "photo": "tom-keefe",
+      "bio": null
+    },
+    {
+      "slug": "allison-rapoport",
+      "name": "Allison Rapoport",
+      "group": "augmented-technology-and-design-partners",
+      "sort": 8,
+      "role": "",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/allison-rapoport",
+      "website": "",
+      "photo": "allison-rapoport",
+      "bio": null
     }
   ]
 }
