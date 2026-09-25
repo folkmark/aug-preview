@@ -283,7 +283,7 @@ produce everything (see [Regenerating the artifacts](#regenerating-the-artifacts
 | `assets/team-colour.js` / `.css` | The headshots' colour bloom on Who We Are. Not an element: it finds the team cards from the document and lays each photo's colour twin over it on hover. | Mouse and trackpad only; phones never fetch the twins. See [Headshots](sections/leadership.md#headshots) for what it needs of the markup. |
 | `assets/approach.js` / `.css` | The `<approach-scrub>` component. | See [The Approach scrub](#the-approach-scrub-approach-scrub). |
 | `assets/images/`, `assets/icons/`, `assets/logo/` | Photography, marks. | Plain images. The seven portrait photos ship in two widths picked by `srcset`. |
-| `assets/team/`, `assets/team/colour/` | Headshots, 512 × 512, finished: each person cut out, framed identically (same face height, same eye line) and composited in a navy duotone onto `#e9eef4`. `colour/` holds the same 24 in their own colour, which the hover reveals. | Use as-is — no CSS filter, no `object-position`, nothing behind them. A person without a photo gets an empty square in the same `#e9eef4` (`--color-st-tropaz-lightest`). See [Headshots](sections/leadership.md#headshots). |
+| `assets/team/`, `assets/team/colour/` | Headshots, 512 × 512, finished: each person cut out, framed identically (same face height, same eye line) and composited in a navy duotone onto `#e9eef4`. `colour/` holds the same 25 in their own colour, which the hover reveals. | Use as-is — no CSS filter, no `object-position`, nothing behind them. A person without a photo gets an empty square in the same `#e9eef4` (`--color-st-tropaz-lightest`). See [Headshots](sections/leadership.md#headshots). |
 | `assets/illustrations/{brain,blocks,laptop}.webp` | The three home-page illustrations, 810 × 810 with alpha. | See the note below. |
 
 **The illustrations are framed plates; do not crop them.** Each carries its own
@@ -681,9 +681,9 @@ with the tools already on your install (JetEngine, CPT UI).
 - **Team members** (`content/team.json`): 29 people across four grids —
   Leadership, Research Partners, Education Fellows, Technology and Design Partners.
   Fields:
-  headshot (optional — 5 of 29 currently render a placeholder square in the headshots'
+  headshot (optional — 4 of 29 currently render a placeholder square in the headshots'
   own `#e9eef4`), name, role (optional —
-  5 people are on the page before their titles), bio page URL (20 of 29 have one; the
+  4 people are on the page before their titles), bio page URL (21 of 29 have one; the
   prose is in `source-material/bios/`), optional affiliation and location, optional
   LinkedIn and website links. The obvious custom post type.
 - **Research items** (`content/research.json`): title, description, link.

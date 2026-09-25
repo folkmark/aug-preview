@@ -349,7 +349,7 @@ that has never been in the history at all, so re-encoding that sequence needs th
 from me.
 
 The headshots have one step before the encoder. `tools/cutout-headshots.py` cuts each
-person out of their photograph with a matting model and frames all 24 by one rule — the
+person out of their photograph with a matting model and frames all 25 by one rule — the
 same face height, the same eye line — and writes 768px cut-outs to
 `source-material/image-sources/team-cutout/`, which are committed. `encode-images.mjs`
 reads those and writes each person twice — the navy duotone the page shows, and a colour
