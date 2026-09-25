@@ -9,8 +9,9 @@ way, writing the masters tools/encode-images.mjs reads for the Who We Are tiles:
   python3 tools/cutout-headshots.py --only=abby-petre  one person, e.g. someone new
 
 Who is pictured is read off index.html (every assets/team/<slug>.webp it references),
-so a person is added by giving them a card first. The output carries no colour
-treatment: it is the person, lifted off their background, at a shared scale and
+whose tiles tools/build-team.mjs writes from the roster, source-material/team/people.json:
+a person is added there, with a group and a photo, and their card follows. The output
+carries no colour treatment: it is the person, lifted off their background, at a shared scale and
 position, and the duotone is applied by the encoder. That split is deliberate. This
 step needs a 973 MB model and ~40 s an image; the look needs neither, and should be
 changeable in a minute without anyone re-running a neural network.
@@ -68,17 +69,18 @@ chosen per person.
 
 THE EDGE FADE is one rule applied to everyone: wherever a photograph's own edge cuts
 through the person, the figure fades to nothing over EDGE_FADE as it approaches that
-cut. It only does anything where a source is cropped tighter than the framing, and seven
+cut. It only does anything where a source is cropped tighter than the framing, and nine
 are, noticeably: Ryan's photo ends across his chest at 77% of the tile, 23% above its
 bottom edge, and stops at his hairline at the top; Andrew's and Byungyeon's end at 82%, and
 Byungyeon's shoulders are cut 18% in from both sides; Sonia's photo ends 15% above the
-bottom, and Raquel's, Blair's and Aarav's up to 10% in. Abby, Ben and Sarah are cut by 1-3%,
-where the fade is barely there. The
+bottom; Tom Peterson's is cut 11% and 8% in from the sides; and Raquel's, Blair's,
+Aarav's and Allison Rapoport's up to 10% in. Abby, Ben, Sarah and Katie Butler are cut by
+1-3%, where the fade is barely there. The
 fade is measured from the cut itself — the stretch of the border the matte actually
 touches — not from the whole edge, so a photo cut at the shoulder does not also fade
 the cheek above it.
 
-So the seven do look different from the other eighteen at the bottom of the tile, and
+So those nine do look different from the others at the bottom of the tile, and
 that is the one inequality left. Two shared fades were tried to hide it and both went:
 - A single vignette tuned so every one of those cuts fell where it had already faded
   out. Ryan's chest and Byungyeon's shoulders force it to finish just below everybody's

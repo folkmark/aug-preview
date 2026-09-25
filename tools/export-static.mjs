@@ -18,6 +18,7 @@
 // up, so the folder sits beside assets/ and _ds/ and the pages open straight from disk.
 
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import http from 'node:http';
 import { execFileSync } from 'node:child_process';
@@ -37,6 +38,12 @@ const PORT = 8731;
 // it. "+dirty" means the working tree differed from the stamped commit, so the
 // stamp names the nearest commit rather than the exact input.
 let STAMP = 'unknown';
+// And a hash of index.html itself, beside the commit. The commit says where the export
+// came from; the hash says whether index.html is still that file, and it can say so
+// without any git history at all — CI clones are shallow, and the WordPress plugin's
+// generator (tools/build-wp-plugin.mjs) has to know the export is current before it
+// builds templates out of it.
+const SOURCE_HASH = crypto.createHash('sha256').update(fs.readFileSync(path.join(root, 'index.html'))).digest('hex').slice(0, 16);
 try {
   STAMP = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root }).toString().trim();
   if (execFileSync('git', ['status', '--porcelain', '--', 'index.html', 'support.js'], { cwd: root }).toString().trim()) {
@@ -109,6 +116,7 @@ const browser = await chromium.launch({ executablePath: findChromium() });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 fs.mkdirSync(OUT, { recursive: true });
 
+const states = { button: {}, radio: null, checkbox: null };
 for (const p of PAGES) {
   await page.goto(`http://localhost:${PORT}/${p.slug}`, { waitUntil: 'load' });
   // Boot is asynchronous and the shell exists before the content does, so wait on the
@@ -140,8 +148,59 @@ for (const p of PAGES) {
   ).then(() => 0).catch(() => page.evaluate(() => document.querySelectorAll('.sc-placeholder').length));
   if (stuck) console.error(`  ! ${p.slug}: ${stuck} component(s) never hydrated, exported as placeholders`);
 
-  const html = await page.evaluate(() => {
+  // THE MOBILE MENU IS NOT IN THE PAGE UNTIL SOMEONE OPENS IT. It sits behind an <sc-if>
+  // on navOpen, so a snapshot of a closed page has a hamburger whose aria-controls points
+  // at nothing — and a porter has no way to know the overlay exists, let alone what is in
+  // it. Open it, take its markup, close it again, and put it back into the export hidden,
+  // straight after the header, which is where it renders. click() on the element rather
+  // than a pointer click: the toggle is display:none at this 1440px viewport, and React's
+  // handler does not care whether the button was visible when it fired.
+  const menu = await page.evaluate(async () => {
+    const toggle = document.querySelector('header button[aria-controls="site-menu"]');
+    if (!toggle) return null;
+    toggle.click();
+    for (let i = 0; i < 50 && !document.getElementById('site-menu'); i++) await new Promise((r) => setTimeout(r, 20));
+    const el = document.getElementById('site-menu');
+    const out = el ? el.outerHTML : null;
+    toggle.click();
+    for (let i = 0; i < 50 && document.getElementById('site-menu'); i++) await new Promise((r) => setTimeout(r, 20));
+    return out;
+  });
+  if (!menu) throw new Error(`${p.slug || 'home'}: the mobile menu never rendered — the toggle or its <sc-if> has changed`);
+
+  const html = await page.evaluate((menu) => {
     const doc = document.documentElement.cloneNode(true);
+    // Put the captured menu back, hidden, where the runtime renders it — the attribute
+    // rather than a closed-state style, because it reads as what it is: present, and shut.
+    // The attribute alone does not shut it, though. The browser's own [hidden] rule is
+    // display:none at user-agent strength, and the overlay's inline display:flex outranks
+    // anything short of !important — so the first export of this opened on a phone with
+    // the menu covering the page. The one-line rule after it is what every reset
+    // (Bootstrap's included) carries for exactly this, and a theme building from these
+    // pages needs it too.
+    const header = doc.querySelector('header');
+    if (header) {
+      const t = document.createElement('template');
+      t.innerHTML = menu;
+      const m = t.content.firstElementChild;
+      m.setAttribute('hidden', '');
+      header.after(m);
+      const rule = document.createElement('style');
+      rule.textContent = '[hidden] { display: none !important; }';
+      doc.querySelector('head').appendChild(rule);
+    }
+    // THE RUNTIME'S OWN WRAPPERS, which are not the page. support.js mounts the app in a
+    // <div class="sc-host"> and wraps every <x-import> it expands in a
+    // <div class="sc-host-x" style="display:contents"> (support.js:725-730) — 107 of them
+    // on these five pages. display:contents means they draw nothing, but they are not
+    // nothing to anyone reading the markup or parsing it: a <div> is not allowed inside a
+    // <p>, so the 21 bio links that sit in <p class="bio-cta"> serialised as
+    // <p><div class="sc-host-x"><a>…, and a standards parser — a browser opening the file,
+    // or any tool that reads it — closes the <p> at the <div> and moves the link out of
+    // it. Opening an export did not even reproduce the page it was taken from. Unwrap
+    // them here, children kept in place, before anything serialises.
+    doc.querySelectorAll('.sc-host-x, .sc-host').forEach((w) => w.replaceWith(...w.childNodes));
+    if (doc.querySelector('.sc-host-x, .sc-host')) throw new Error('runtime wrappers survived the unwrap');
     // The template source, the runtime, and the CDN mirror are all scaffolding for a
     // page that no longer needs to be built at runtime.
     doc.querySelectorAll('x-dc, script[src*="support.js"], script[src*="/vendor/"], script[type="text/x-dc"], script[src*="_ds_bundle"]')
@@ -224,7 +283,67 @@ for (const p of PAGES) {
     const body = doc.querySelector('body');
     if (rootEl && body) { while (rootEl.firstChild) body.appendChild(rootEl.firstChild); rootEl.remove(); }
     return '<!doctype html>\n' + doc.outerHTML;
+  }, menu);
+
+  // THE STATES THE SNAPSHOT CANNOT SEE. The design system's Button, RadioGroupItem and
+  // Checkbox are styled entirely inline, and their hover and checked looks are React state
+  // (useState in _ds_bundle.js), so a serialised page only ever holds the resting look —
+  // hover the pill and nothing happens. Drive each one here, in the browser that renders
+  // them, and record what its inline style becomes: the WordPress plugin's generator
+  // turns the differences into :hover and :checked rules. Recorded from the real
+  // components rather than read out of the bundle's source, so a design-system update that
+  // changes a hover changes this file, and nothing has to be re-derived by hand. Taken
+  // AFTER the snapshot, because clicking a radio changes the page.
+  const pageStates = await page.evaluate(() => {
+    const decl = (el) => {
+      const o = {};
+      for (let i = 0; i < el.style.length; i++) { const k = el.style[i]; o[k] = el.style.getPropertyValue(k); }
+      return o;
+    };
+    const diff = (a, b) => {
+      const o = {};
+      for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) if (a[k] !== b[k]) o[k] = b[k] === undefined ? '' : b[k];
+      return o;
+    };
+    const fire = (el, type) => el.dispatchEvent(new MouseEvent(type, { bubbles: true, relatedTarget: document.body }));
+    const tick = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    return (async () => {
+      const out = { button: {}, radio: null, checkbox: null };
+      const seen = new Set();
+      for (const b of document.querySelectorAll('[data-slot="button"][data-variant]')) {
+        const v = b.dataset.variant;
+        if (seen.has(v)) continue;
+        seen.add(v);
+        const rest = decl(b);
+        // React listens for mouseover/mouseout at the root and synthesises enter and leave
+        // from them; a bare mouseenter event never reaches it.
+        fire(b, 'mouseover'); await tick();
+        const hover = decl(b);
+        fire(b, 'mouseout'); await tick();
+        out.button[v] = { hover: diff(rest, hover) };
+      }
+      const part = async (sel, key) => {
+        const el = [...document.querySelectorAll(sel)].find((e) => e.getAttribute('aria-checked') === 'false');
+        if (!el) return null;
+        const rest = decl(el);
+        fire(el, 'mouseover'); await tick();
+        const hover = diff(rest, decl(el));
+        fire(el, 'mouseout'); await tick();
+        el.click(); await tick();
+        const now = document.getElementById(el.id) || el;
+        const on = [...document.querySelectorAll(sel)].find((e) => e.getAttribute('aria-checked') === 'true') || now;
+        const checked = diff(rest, decl(on));
+        const mark = on.firstElementChild ? { tag: on.firstElementChild.tagName.toLowerCase(), style: decl(on.firstElementChild), text: on.firstElementChild.textContent.trim(), className: on.firstElementChild.getAttribute('class') || '' } : null;
+        return { rest, hover, checked, mark };
+      };
+      out.radio = await part('[data-slot="radio-group-item"]');
+      out.checkbox = await part('[data-slot="checkbox"]');
+      return out;
+    })();
   });
+  for (const [v, st] of Object.entries(pageStates.button)) states.button[v] ||= st;
+  if (pageStates.radio) states.radio = pageStates.radio;
+  if (pageStates.checkbox) states.checkbox = pageStates.checkbox;
 
   // The build serves these pages with absolute asset paths — see absolutise() in
   // build-site.mjs — so what comes off the page is /assets/..., not assets/.... These
@@ -243,11 +362,17 @@ for (const p of PAGES) {
     .replace(/(["'\s,(])\/assets\//g, '$1../../assets/')
     .replace(/(["'\s,(])\/_ds\//g, '$1../../_ds/')
     .replace(/(["'])\/support\.js\1/g, '$1../../support.js$1')
-    .replace(/^<!doctype html>\n/, `<!doctype html>\n<!-- exported from ${STAMP} by tools/export-static.mjs -->\n`);
+    .replace(/^<!doctype html>\n/, `<!doctype html>\n<!-- exported from ${STAMP} by tools/export-static.mjs; index.html sha256 ${SOURCE_HASH} -->\n`);
 
   fs.writeFileSync(path.join(OUT, p.file), out);
   console.log(`${p.file.padEnd(22)} ${(out.length / 1024).toFixed(0)} KB  ${p.name}`);
 }
+
+if (!states.radio || !states.checkbox || !states.button.default) {
+  throw new Error('interaction states incomplete: ' + JSON.stringify(Object.keys(states.button)) + ` radio=${!!states.radio} checkbox=${!!states.checkbox}`);
+}
+fs.writeFileSync(path.join(OUT, 'states.json'), JSON.stringify({ exported: `${STAMP}; index.html sha256 ${SOURCE_HASH}`, ...states }, null, 2) + '\n');
+console.log(`states.json            button variants: ${Object.keys(states.button).join(', ')}; radio, checkbox`);
 
 await browser.close();
 server.close();

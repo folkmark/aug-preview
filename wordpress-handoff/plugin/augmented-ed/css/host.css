@@ -1,0 +1,60 @@
+/* What the AugmentED pages need to know about the site they sit in.
+
+   generated/css/augmented-ed.css is the site's own CSS, scoped to #augmented-ed so it cannot
+   touch AERDF's header or footer (measured: zero changed properties on either). The ID also
+   outranks every host rule that sets a property our CSS sets. What that cannot stop is a
+   host rule setting something OUR CSS NEVER SETS — the element then takes the host's value.
+   This file reverts exactly those, and only those, each one found by loading the pages
+   inside live aerdf.org pages and comparing every element's computed style with the site's
+   (tools/verify-wp-plugin.mjs --live, which fails on any leak not listed here).
+
+   Each rule is :where() inside the ID, so it weighs (1,0,0): enough to beat the host's
+   element and class rules, and never enough to beat our own (1,0,1)+ rules or an inline
+   style. Property by property, and NEVER `all: revert` — that also discards presentational
+   hints, so every <img>'s width and height attributes (and the aspect ratio they reserve)
+   and every SVG's fill would go with it. */
+
+/* aerdf.org's Elementor kit: `.elementor-kit-1734 a, … h1–h6 { font-family: "avenir" }`, and
+   AERDF's avenir files return 404, so every link without an inline font — the program bar's
+   nav, 31 links on Who We Are — fell back to the system sans-serif. It also colours h1. */
+#augmented-ed :where(a) { font-family: revert; }
+#augmented-ed :where(h1, h2, h3, h4, h5, h6) { font-family: revert; color: revert; }
+
+/* Bootstrap 5.0.2's reboot (the theme's og-css2.css). */
+#augmented-ed :where(img, svg, video, canvas) { vertical-align: revert; }
+#augmented-ed :where(button, input, select, textarea, optgroup) { font-family: revert; font-size: revert; line-height: revert; margin: revert; text-transform: revert; }
+#augmented-ed :where(label) { display: revert; }
+#augmented-ed :where(ul, ol) { padding-left: revert; margin-top: revert; margin-bottom: revert; }
+
+/* Bootstrap also turns on smooth scrolling for the whole document, and the cycle wheel's
+   click-to-step travels there in many small programmatic scrolls (cycle-wheel.js:160-170):
+   each one would restart a smooth scroll and the wheel would crawl. On AugmentED pages only. */
+html:has(#augmented-ed) { scroll-behavior: auto; }
+
+/* Anchors land below the sticky bar, not under it. */
+#augmented-ed [id] { scroll-margin-top: var(--header-h); }
+
+/* The reveal (js/augmented-ed.js). Hidden only once the head has said script is running,
+   and shown regardless after four seconds unless the script has started — so a blocked or
+   failed script leaves a readable page, never a blank one. */
+html.aug-js #augmented-ed [data-reveal]:not([data-aug-shown]) { opacity: 0; animation: aug-reveal-failsafe 0s linear 4s forwards; }
+html.aug-js #augmented-ed.aug-reveal-ready [data-reveal]:not([data-aug-shown]) { animation: none; }
+@keyframes aug-reveal-failsafe { to { opacity: 1; } }
+#augmented-ed [data-reveal][data-aug-shown] { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  html.aug-js #augmented-ed [data-reveal]:not([data-aug-shown]) { opacity: 1; animation: none; }
+}
+
+/* The program bar's menu: the bars cross into an X while it is open, as on the site. */
+#augmented-ed [data-aug-menu-toggle] [data-aug-bar-line] { transition: transform 300ms ease-in-out; }
+#augmented-ed [data-aug-menu-toggle][aria-expanded="true"] [data-aug-bar-line="1"] { transform: translateY(4px) rotate(45deg) !important; }
+#augmented-ed [data-aug-menu-toggle][aria-expanded="true"] [data-aug-bar-line="2"] { transform: translateY(-4px) rotate(-45deg) !important; }
+
+/* Settings → AugmentED → "Program bar on phones" off: it scrolls away with AERDF's header,
+   as Assessment for Good's does, and the components pin at the very top instead. */
+@media (max-width: 991px) {
+  #augmented-ed.aug-bar-static-mobile [data-aug-bar] { position: relative !important; }
+}
+
+/* The Follow form's invalid fields, marked by js/follow-form.js from the relay's answer. */
+#augmented-ed [data-aug-follow] [aria-invalid="true"] { border-bottom-color: var(--color-error, #b3261e) !important; }

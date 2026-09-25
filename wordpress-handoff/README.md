@@ -1,29 +1,31 @@
 # AugmentED WordPress handoff
 
-I designed and built the AugmentED marketing site, and this package is everything
-you need to rebuild it in WordPress: the rendered markup of every page, the design
-system, the production assets, four portable animation components, and a build
-specification for each of them.
+I designed and built the AugmentED marketing site. This package puts it on aerdf.org as a
+**WordPress plugin**: the developer installs it rather than rebuilding the pages. **Start with
+[START-HERE.md](START-HERE.md)** — one page, the install in six steps. This document is the
+reference behind it: how the plugin is built, what it does on aerdf.org and why, and the
+full specification of every component in it.
 
-**Audience.** You — the WordPress developer rebuilding this site, most likely
-inside aerdf.org's existing custom theme. I assume you know WordPress theme
-development (enqueueing, page templates, custom post types) and modern CSS. I
-don't assume you've seen this codebase before; each section states what you need
-and where it lives. Where this document says **us**, it means the AugmentED team
-and me together — content and destination decisions are theirs, and anything
-about how the site is built is mine to answer.
+**Audience.** The WordPress developer at AERDF, and whoever maintains the plugin after. Where
+this document says **us**, it means the AugmentED team and me together — content and
+destination decisions are theirs, and anything about how the site is built is mine to answer.
 
 **Key points:**
 
-- The design system, the assets, and the page markup transfer as they are.
-- All four scroll behaviors — the hero, the closing CTA, the cycle wheel, and
-  the parked Approach scrub — are dependency-free custom elements. To port one,
-  copy its files, enqueue them, and emit its markup. Do not rewrite them.
-- The few page behaviors written against the prototype's runtime must be
-  rebuilt, and every one of them is small. See
-  [Behaviors to rebuild](#behaviors-to-rebuild).
-- Two decisions need an owner before work starts: where the site lives, and where
-  the Follow page's form submits. See [Decisions to make first](#decisions-to-make-first).
+- **Install, don't rebuild.** `plugin/augmented-ed/` is a plugin that draws the five pages
+  inside aerdf.org's own theme, under AERDF's header and footer, with AugmentED's navigation
+  as a program bar beneath them — as Assessment for Good's pages do.
+- **The team goes into AERDF's existing `team` post type**, in an "AugmentED Team" category,
+  not a new type. Two of them (Sherry Lachman, Caitlin Mills) are already there and are
+  only attached.
+- **The Follow form submits to AERDF's HubSpot** through the plugin, on the server.
+- **Its page-shaped half is generated from the site itself** (`tools/build-wp-plugin.mjs`), so
+  it cannot drift from the site; CI fails if it does.
+- **It has been verified against aerdf.org**: installed into WordPress with a stand-in AERDF
+  theme wearing AERDF's real stylesheets, and rendered inside live aerdf.org pages with
+  AERDF's own CSS and JavaScript running.
+- Decisions only AERDF or AugmentED can make are in [DECISIONS.md](DECISIONS.md), each with a
+  working default and an owner.
 
 **Reference site.** The finished site runs at
 [augmented2.folkmark.com](https://augmented2.folkmark.com). It rebuilds from `main`
@@ -35,16 +37,19 @@ bug, and I would like to hear about it.
 
 | Path | What it contains |
 |---|---|
-| [`pages/`](pages/) | Each route as rendered HTML. Build templates from these files, not from `index.html`. |
-| [`content/`](content/) | The structured content as data: team, research, cycle steps, page metadata, redirects. See [its README](content/README.md). |
-| [`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php) | A drop-in for your theme that enqueues the design system and the components correctly. |
+| [`START-HERE.md`](START-HERE.md) | The install, step by step, and the acceptance list. |
+| [`DECISIONS.md`](DECISIONS.md) | Every open decision: options, the plugin's default, and who decides. |
+| [`plugin/augmented-ed/`](plugin/augmented-ed/) | The plugin. `generated/` is written by `tools/build-wp-plugin.mjs`; the rest is its hand-written runtime. The installable zip (with `assets/`) is built by CI — see [How the plugin is built](#how-the-plugin-is-built). |
+| [`pages/`](pages/) | Each route as rendered HTML, plus `states.json` (the components' hover and checked styles). The generator's input. |
+| [`content/`](content/) | The structured content as data: team, research, cycle steps, page metadata. See [its README](content/README.md). |
 | [`sections/hero-bridge.md`](sections/hero-bridge.md) | Build specification for the hero bridge. |
 | [`sections/falling-blocks.md`](sections/falling-blocks.md) | Build specification for the falling-blocks CTA. |
 | [`sections/cycle.md`](sections/cycle.md) | Build specification for the cycle wheel. |
 | [`sections/approach.md`](sections/approach.md) | Build specification for the Approach scrub. Parked and out of date: refresh it before the scrub is mounted again. |
-| [`sections/leadership.md`](sections/leadership.md) | Build specification for the leadership bio pages — the only pages here that are not the single-page app — and the invariants the team export depends on. |
+| [`sections/leadership.md`](sections/leadership.md) | The team grid and the bio pages, and the invariants the team export depends on. |
 | `../_ds/augmented-design-system-*/` | The design system: tokens, stylesheet, fonts. |
 | `../assets/` | Production images, animation frames, and the four components. |
+| `../tools/build-wp-plugin.mjs`, `../tools/verify-wp-plugin.mjs` | The plugin's generator, and the harness that installs it into WordPress and verifies it. |
 | `../docs/approach-render-map.md`, `../docs/hero-bridge-render.md` | Render notes. The authority for frame numbers and for what a re-render needs. |
 
 ## Key terms
@@ -63,156 +68,127 @@ bug, and I would like to hear about it.
 
 ---
 
-## Decisions to make first
+## Decisions
 
-Settle these with us before development starts. Each one changes work
-downstream of it.
-
-1. **Where the site lives.** Three options, with precedent for the first two on
-   aerdf.org today:
-   - *Pages inside aerdf.org's theme* (the existing AugmentED page's precedent).
-     Add page templates and page-scoped assets to the custom theme. Recommended
-     if you maintain that theme.
-   - *A separate WordPress install on its own domain* (the EF+Math precedent).
-     Cleanest isolation for a bespoke build, but it creates a second
-     hosting and maintenance owner. Name that owner as part of the decision.
-   - *An Elementor rebuild.* **Not recommended** for the animated pages:
-     Elementor's global CSS and generated wrappers conflict with the components'
-     sticky stages, `isolation`, and blend modes, and builder editing inside
-     component markup breaks contracts the elements depend on.
-2. **The final URL, and redirects.** Preview links to `augmented2.folkmark.com`
-   have circulated. Decide the production URL and plan redirects from the preview
-   domain and from the old long slugs (see [Redirects](#redirects)).
-3. **Where the form submits.** The Follow page's form currently discards
-   submissions. See [The Follow page form](#the-follow-page-form).
-4. **Who confirms the Avenir license.** See [Fonts](#fonts).
-
-## Suggested build order
-
-The package supports any order, but this sequence means each step verifies the
-one before it:
-
-1. Skim this document once, then open
-   [the reference site](https://augmented2.folkmark.com) beside
-   `pages/home.html` so you know what "done" looks like.
-2. Settle the four decisions above with us.
-3. Copy the two asset directories into the theme and wire up
-   [`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php); its header
-   comment is the procedure. Verify with an empty page template: the design
-   system and the component scripts load, versioned and deferred, on an
-   AugmentED page and nowhere else.
-4. Build the static pages first — The Challenge, Who We Are, Follow Our Work,
-   Our Approach — as page templates from `pages/*.html`, rebuilding the small
-   behaviors as you go ([Behaviors to rebuild](#behaviors-to-rebuild)) and
-   modeling the team and research content from [`content/`](content/README.md).
-5. Build the home page last: the hero, the cycle wheel, and the falling-blocks
-   CTA all install per their sections below.
-6. Wire the form to its decided destination
-   ([The Follow page form](#the-follow-page-form)).
-7. Configure the environment: metadata from `content/pages.json`, redirects
-   from `content/redirects.csv`, and the exclusions in
-   [Protect the components from optimization plugins](#protect-the-components-from-optimization-plugins).
-8. Run the [Acceptance checklist](#acceptance-checklist) top to bottom.
+[DECISIONS.md](DECISIONS.md). Three block launch — the address (and what happens to the
+existing AugmentED page), the HubSpot form, and the Avenir licence — and the rest have
+working defaults.
 
 ## The target environment: aerdf.org
 
-The following was observed directly on 2026-08-24 from aerdf.org's HTML, response
-headers, REST index, and theme stylesheet. Verify anything you depend on; installs
-change.
+Checked directly on 2026-09-25 — aerdf.org's HTML, headers, REST index, stylesheets and
+scripts, and its pages loaded in Chromium. Verify anything you depend on; installs change.
 
-aerdf.org runs WordPress on **WP Engine** behind **Cloudflare**, on a custom theme
-(`sessionwise-starter-master`, "AERDF" by SessionWise) with pages authored in
-**Elementor 4.2.3 + Pro**. Plugins present include JetEngine, CPT UI, Gravity Forms
-with reCAPTCHA, Yoast, Redirection, Wordfence, and **WP-Stateless**. The site also
-loads Google Tag Manager, CookieYes, the AccessiBe widget, and HubSpot form embeds.
-Avenir is already self-hosted there through the Use Any Font plugin.
+- **Hosting:** WordPress on WP Engine, behind Cloudflare. No page optimiser, Rocket Loader,
+  lazy-load rewriter, smooth-scroll library or Content-Security-Policy is running.
+- **Theme:** a custom classic theme, `sessionwise-starter-master` ("AERDF" by SessionWise).
+  - Its header and footer are hard-coded. `header.php` opens `<main id="content"
+    class="site-content">` and `footer.php` closes it, on every template.
+  - The alert bar (46px, 62px on a phone) and the header (143px, 123px) are static and
+    scroll away. Only the header's mobile menu overlay is fixed (z-index 1000).
+  - Nothing above `main` breaks `position: sticky`.
+  - It loads Bootstrap 5.0.2's reboot (`og-css2.css`) site-wide, including
+    `scroll-behavior: smooth` on the root.
+- **Page builder:** Elementor 4.3.1 + Pro 4.3.0, Flexbox containers only.
+  - The kit sets `font-family: "avenir"` on every `a` and heading, and colours `h1`.
+  - Theme Builder single template 3899 draws every team member's page.
+- **Plugins:** JetEngine 3.8.13.1, CPT UI, ACF Pro 6.8.10, Gravity Forms 3.1.2
+  (installed, no form in use), Yoast 28.5, Redirection, Wordfence, WP-Stateless, Use Any
+  Font. GTM, GA4, CookieYes and AccessiBe load site-wide.
+- **Forms:** every live form is HubSpot (portal 20910033): the footer newsletter and the
+  contact page.
+- **The team:** a `team` post type, 199 people, single pages at `/team/<slug>/`, grouped with
+  the ordinary `category` taxonomy — one `<program>-team` parent per programme, with
+  children. The job title is a custom field whose key cannot be seen from outside. Sherry
+  Lachman (post 10333) and Caitlin Mills (10503) are AugmentED's two already there, in
+  `leadership`.
+- **Precedent:** Assessment for Good lives at `/programs/assessment-for-good/` under the
+  global header, with its own program bar (an Elementor template) that sticks at the top on
+  desktop and tablet.
+- **The existing AugmentED page** is `/opportunities/advanced-fellows/augmented/` (page
+  11371); `/augmented/` redirects there today.
+- **Fonts:** every Avenir file aerdf.org itself loads returns 404. The plugin serves its own
+  (family `Avenir®`, which cannot collide with AERDF's `avenir`).
+- **Scripts:** every aerdf.org page throws four JavaScript errors of its own; none is the
+  plugin's.
 
-Consequences for this rebuild:
+What that meant for the plugin is in [How the plugin fits aerdf.org](#how-the-plugin-fits-aerdforg).
 
-- **WP-Stateless moves media library uploads to a Google Cloud Storage bucket.**
-  On this install, a frame uploaded through the media library is not only renamed
-  and resized; it is served from `storage.googleapis.com` at a URL the components
-  can never construct. This is the strongest form of the rule in
-  [Rules that apply to every component](#rules-that-apply-to-every-component).
-- **WP Engine caches server-side and disallows page-cache plugins**, so the
-  delay-JS class of breakage (see
-  [Protect the components from optimization plugins](#protect-the-components-from-optimization-plugins))
-  is unlikely today. It becomes likely after any host move. Keep the exclusions
-  documented anyway.
-- **AccessiBe rewrites the DOM and can suppress animation.** Run every acceptance
-  test with the widget active, including its "stop animations" mode, and confirm
-  each component lands in its documented fallback rather than a broken
-  intermediate state.
-- **Wordfence hardening can block direct requests to non-PHP theme files.** After
-  any security configuration change, confirm the manifests still return HTTP 200.
-- **If script consent-gating is ever added** (CookieYes is live), classify the
-  component scripts as strictly necessary. A consent-blocked `hero-bridge.js` is a
-  hero that never moves.
-- **JetEngine and CPT UI are already installed**, so model the content types in
-  [Content](#content) with those tools rather than introducing new ones.
-
-## What the prototype is
-
-`index.html` is not a page. It is a single Claude Design (`<x-dc>`) template that
-holds all five pages and is compiled in the browser by `support.js`, which loads
-React and Babel from a CDN at runtime. Two consequences shape this handoff:
-
-- **The repository's `index.html` is not readable page markup.** It is a template
-  with `{{ bindings }}`. The rendered markup is in [`pages/`](pages/).
-- **With JavaScript disabled, the prototype renders nothing.** This is a
-  pre-existing property of the prototype, not a requirement. WordPress renders on
-  the server, so the rebuild fixes it for free.
-
-None of the runtime carries over. See [What to delete](#what-to-delete).
-
-## The rendered pages
-
-`pages/*.html` is each route as a visitor receives it: the template expanded, the
-design-system components resolved to real elements, and the runtime removed. Build
-your WordPress templates from these files.
-
-| File | Route | Source in `index.html` |
-|---|---|---|
-| `home.html` | `/` | `<main data-screen-label="Home">` |
-| `challenge.html` | `/challenge/` | `<main data-screen-label="The Challenge">` |
-| `approach.html` | `/approach/` | `<main data-screen-label="Our Approach">` |
-| `team.html` | `/team/` | `<main data-screen-label="Who We Are">` |
-| `follow.html` | `/follow/` | `<main data-screen-label="Get Involved">` |
-
-The files open directly from disk; their asset paths point up two levels at the
-repository's own `assets/` and `_ds/`.
-
-**The leadership bio pages are not in `pages/`**, because they are not part of the app
-and need no expanding: each is already final static HTML. Their template is the
-`bioPage()` function in `tools/build-site.mjs`, and
-[`sections/leadership.md`](sections/leadership.md) specifies them. To see one rendered,
-build and serve the site — `node tools/build-site.mjs _site && npx http-server _site -p 8000`
-— and open `http://localhost:8000/team/sherry-lachman/`. Serve it rather than opening the
-file: the build makes asset paths root-absolute, so from disk the page loads unstyled. In
-WordPress they are one custom post type with one single template.
-
-**Check the export stamp before you build from a page.** The second line of each
-file records the commit it was exported from
-(`<!-- exported from <commit> by tools/export-static.mjs -->`). The build warns
-when `index.html` has changed since that commit; if you see the warning, or
-`git log <stamped commit>..main -- index.html` lists anything, regenerate before
-building templates. (The stamp is never the head of `main` itself: the commit that
-re-exports comes after the commit it exports from.)
+## How the plugin is built
 
 ```
-npm i --no-save playwright && node tools/export-static.mjs && node tools/export-content.mjs
+index.html ──tools/export-static.mjs──▶ pages/ (+ states.json)
+            ──tools/export-content.mjs──▶ content/
+            ──tools/build-wp-plugin.mjs──▶ plugin/augmented-ed/generated/
+            ──tools/build-wp-plugin.mjs --assemble dist──▶ dist/augmented-ed/  (the zip)
+            ──tools/verify-wp-plugin.mjs [--live]──▶ .wp-verify/report/
 ```
 
-One property of the export to know about: design-system components such as
-`<x-import …Button>` are exported as real elements
-(`<button data-slot="button" …>`) with their computed styles inlined. Those
-inline styles are the design system's own values.
+**Generated** (`generated/`, committed, never edited):
 
-**About the inline styles.** The exported markup styles elements with `style=""`
-attributes that resolve design-system custom properties. That is faithful to the
-source and acceptable for fixed sections in a first port. Content that editors will
-maintain (see [Content](#content)) should be re-expressed as theme markup and
-classes during the port, not left as inline-styled HTML in a rich-text field.
+- The five page templates.
+  - The site's header becomes the program bar, and the footer goes.
+  - Links become `augmented_ed_url('<template>')`; asset paths become
+    `augmented_ed_asset(…)`.
+  - The design system's inline styles are kept exactly as exported: they are its only
+    styling.
+  - The Follow form gets real inputs and posts to the plugin.
+  - The team grids become a loop over team posts.
+- `bio.php`, rendered from the same template as the site's bio pages
+  (`tools/lib/bio-page.mjs`).
+- The program bar partial, and the team tile partial, proven against every exported tile
+  through PHP itself.
+- `css/augmented-ed.css`: the design system, the page's own rules, the components' rules and
+  the hover and checked states (from `pages/states.json`), all scoped to `#augmented-ed` by
+  `tools/lib/css-scope.mjs`.
+- `data/`: the team for the importer, the pages' titles, and the form's fields.
+- `ship.json`: every asset file the pages use. Only those ship.
+
+**Hand-written** (`augmented-ed.php`, `includes/`, `js/`, `css/host.css`): the runtime. See
+[What the plugin does](#what-the-plugin-does).
+
+**Assembled:** `node tools/build-wp-plugin.mjs --assemble dist [--zip]` copies the plugin and
+exactly the files in `ship.json` — about 22 MB, 378 files — into `dist/augmented-ed/`. The
+hero ships only frames 276–417, the ones it plays.
+
+**Checked:**
+
+- CI's `plugin` job (`.github/workflows/pages.yml`) runs `--check`: it regenerates in memory
+  and fails if `generated/` differs from what the export produces, then runs `php -l` and
+  the tile test.
+- The job then uploads the assembled plugin as the `augmented-ed-plugin` artifact. It never
+  blocks the site's own publish.
+- The zip is not a release, and it is never put on gh-pages or anywhere else. It packages the
+  licensed Avenir files. This repository is public, though, so anyone signed in to GitHub can
+  download a run's artifacts. That adds nothing to what the repository and the preview site
+  already serve, since the same font files are committed under `_ds/`. See
+  [DECISIONS.md](DECISIONS.md#delivering-the-zip--brendan).
+
+## How the plugin fits aerdf.org
+
+- **AugmentED pages are chosen by page template, never by slug.** On aerdf.org `/team/` is the
+  team archive, and other programmes have pages called Team or Approach.
+- **The templates wrap the page in `<div id="augmented-ed">` inside the theme's own
+  `main#content`,** under the theme's `get_header()` and `get_footer()`. That keeps AERDF's
+  analytics, consent banner and newsletter footer.
+- **Scoped CSS.** Every rule is prefixed with `#augmented-ed`, and `:root`, `html` and `body`
+  become that element.
+  - Measured inside live aerdf.org pages, this changes zero properties on AERDF's header and
+    footer.
+  - It reproduces every page's layout and computed styles, except four things AERDF sets
+    that the site never does: the kit's link font and heading colour, and Bootstrap's image
+    `vertical-align` and button font. `css/host.css` reverts exactly those.
+- **Offsets are measured, not assumed.** AERDF's header scrolls away, so everything sticky
+  pins under the program bar alone, plus the admin bar when logged in. `js/augmented-ed.js`
+  writes `--aug-top`, `--header-h` and `--hero-lead` onto the wrapper.
+- **The hero under a host header.** The hero measures its entry from where it pins
+  (`hero-bridge.js` `settle()`), and its copy's fade starts at `--hero-lead`. So once
+  AERDF's header has scrolled away the first screen is the site's first screen. Both changes
+  are no-ops on the site itself.
+- **Root smooth scrolling is off on AugmentED pages.** Bootstrap's smooth scrolling turns the
+  cycle wheel's click-to-step into a crawl.
+- **The template swap runs at `template_include` priority 100.** That is after Elementor (11)
+  and Elementor Pro's Theme Builder (about 12), and before Elementor's safe mode (999).
 
 ## The design system
 
@@ -223,21 +199,14 @@ tokens into `theme.json`. Your theme is a classic theme, where enqueued token CS
 is the correct mechanism. If you also want the tokens surfaced in the editor UI,
 add a `theme.json` mapping on top — never instead.
 
-To install the design system:
+The plugin carries it as part of one generated stylesheet, `generated/css/augmented-ed.css`:
+the token files in their required order (fonts, colors, typography, layout, icons, schemes,
+base — `styles.css` is only `@import`s of those, so it is not shipped twice), scoped to
+`#augmented-ed`, and enqueued only on AugmentED pages with a `filemtime()` version so an
+edit busts the far-future caches WP Engine and Cloudflare apply.
 
-1. Copy the design-system directory into the theme.
-2. Enqueue the eight stylesheets in this order:
-   `tokens/fonts.css`, `tokens/colors.css`, `tokens/typography.css`,
-   `tokens/layout.css`, `tokens/icons.css`, `tokens/schemes.css`,
-   `tokens/base.css`, `styles.css`.
-
-[`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php) implements this —
-the eight files dependency-chained so WordPress cannot reorder them, versioned
-with `filemtime()` so an edit busts the far-future caches WP Engine and
-Cloudflare apply — along with the component enqueues below. Its header comment
-is the install procedure.
-
-The files define roughly 150 custom properties on `:root`. Use the semantic
+The files define roughly 150 custom properties — on `:root` in the site, on `#augmented-ed`
+in the plugin, so none of them reaches the rest of aerdf.org. Use the semantic
 aliases, not the raw ramps behind them:
 
 - **Color:** `--brand-accent`, `--brand-accent-hover`, `--text-body`,
@@ -266,20 +235,22 @@ below, not only the three a glance at the headings suggests.
 - **Avenir is commercially licensed.** aerdf.org already self-hosts Avenir, so a
   license likely exists; before launch, confirm in writing that it covers the new
   pages or domain, and record who confirmed it.
-- **Deploy only the WOFF2 files.** The OTF files beside them are desktop originals
-  kept as encoder inputs. Do not copy them to a web root.
+- **Only the WOFF2 files ship.** The plugin serves them from its own `assets/fonts/`; the
+  OTF files beside them in the repository are desktop originals kept as encoder inputs.
 - The icon font is a five-glyph subset of Material Symbols (Apache 2.0). The
   regeneration URL sits beside the `@font-face` rule in `tokens/icons.css`. Adding
-  an icon name means refetching that subset.
+  an icon name means refetching that subset. The plugin renames its family to
+  "AugmentED Symbols", so it cannot collide with a full Material Symbols a host may load.
 
 ## The assets
 
-Copy `assets/` verbatim, except the parked Approach scrub's files, marked below.
-Every image and frame in it is produced by four encoder scripts
-(see [Regenerating the artifacts](#regenerating-the-artifacts)); the SVGs and the
-components' JavaScript and CSS are hand-written. Three images encode and ship but no
-page uses them: `images/classroom-morning.webp`, `images/student-notes.webp` and
-`logo/logo-light.png`. Leave them out of the theme.
+The plugin ships exactly the files the pages use — `generated/ship.json`, computed from the
+templates' references and the sequences' manifests — and nothing else: not the parked
+Approach scrub's files, not the three images that encode but that no page uses
+(`images/classroom-morning.webp`, `images/student-notes.webp`, `logo/logo-light.png`), and
+only the hero frames the page plays. Every image and frame is produced by four encoder
+scripts (see [Regenerating the artifacts](#regenerating-the-artifacts)); the SVGs and the
+components' JavaScript and CSS are hand-written.
 
 | Path | What it is | Notes |
 |---|---|---|
@@ -293,7 +264,7 @@ page uses them: `images/classroom-morning.webp`, `images/student-notes.webp` and
 | `assets/team-colour.js` / `.css` | The headshots' colour bloom on Who We Are. Not an element: it finds the team cards from the document and lays each photo's colour twin over it on hover. | Mouse and trackpad only; phones never fetch the twins. See [Headshots](sections/leadership.md#headshots) for what it needs of the markup. |
 | `assets/approach.js` / `.css` | The `<approach-scrub>` component. | **Parked, not published.** Do not deploy unless mounted again. See [The Approach scrub](#the-approach-scrub-approach-scrub). |
 | `assets/images/`, `assets/icons/`, `assets/logo/` | Photography, marks. | Plain images. The seven portrait photos ship in two widths picked by `srcset`. |
-| `assets/team/`, `assets/team/colour/` | Headshots, 512 × 512, finished: each person cut out, framed identically (same face height, same eye line) and composited in a navy duotone onto `#e9eef4`. The folder holds exactly the 25 people pictured, and `colour/` holds the same 25 in their own colour, which the hover reveals. | Use as-is — no CSS filter, no `object-position`, nothing behind them. **Deploy them as theme files, never through the media library**: the bloom recognises a headshot by `assets/team/` in its `src` and builds the colour URL from it by string replacement, so a renamed or WP-Stateless URL silently turns the hover off. A person without a photo gets an empty square in the same `#e9eef4` (`--color-st-tropaz-lightest`). See [Headshots](sections/leadership.md#headshots). |
+| `assets/team/`, `assets/team/colour/` | Headshots, 512 × 512, finished: each person cut out, framed identically (same face height, same eye line) and composited in a navy duotone onto `#e9eef4`. The folder holds exactly the people pictured on the page (the build fails otherwise), and `colour/` holds the same people in their own colour, which the hover reveals. | Use as-is — no CSS filter, no `object-position`, nothing behind them. **They ship as the plugin's own files, never through the media library**: the bloom recognises a headshot by `assets/team/` in its `src` and builds the colour URL from it by string replacement, so a renamed or WP-Stateless URL silently turns the hover off. A team post's "Bundled headshot" names one; a person added in WordPress without one shows their featured image, without the bloom. A person without a photo gets an empty square in the same `#e9eef4` (`--color-st-tropaz-lightest`). See [Headshots](sections/leadership.md#headshots). |
 | `assets/illustrations/{brain,blocks,laptop}.webp` | The three home-page illustrations, 810 × 810 with alpha. | See the note below. |
 
 **The illustrations are framed plates; do not crop them.** Each carries its own
@@ -320,6 +291,11 @@ each degrades safely when its script does not run: the canvas rigs to their
 still image, the cycle wheel to its reading column, which is real text either
 way.
 
+**The plugin installs all three mounted components**: it enqueues their scripts on the home
+page (and the bloom on Who We Are), points each `base` at its frames in the plugin, and
+supplies the host properties below from the measured offsets. The "To install it" steps in
+each section say what that involves, for anyone porting a component somewhere else.
+
 **Each component also has a full build specification in
 [`sections/`](sections/)** — the asset contract, the math, the design decisions,
 and a native-rebuild procedure — so the behavior survives even if a packaged
@@ -336,15 +312,15 @@ cannot run.
   those changes 404s frames silently: the still keeps showing and nothing looks
   broken. Deploy the frame directories as files in the theme, and serve each
   `manifest.json` from the same directory as its frames.
-- **Point `base` at the frame directory from PHP.** Emit it with
-  `esc_url(get_stylesheet_directory_uri() . '/…/')`. The value must end in `/`.
+- **Point `base` at the frame directory from PHP.** The plugin emits it with
+  `esc_url( augmented_ed_asset( 'hero-bridge/' ) )`. The value must end in `/`.
   Never derive an asset base from a script's own URL; optimization plugins
   relocate scripts. (In this repository the attribute must additionally stay a
   single quoted value beginning `assets/`, because the build verifier and the
   export's path rewriter scan for exactly that shape.)
 - **Enqueue with `filemtime()` versions and `'strategy' => 'defer'`.** The
   scripts are defer-safe and order-independent.
-  [`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php) does this for the three
+  The plugin's `includes/assets.php` does this for the three
   mounted components and the headshots' colour bloom, gates everything to the
   AugmentED pages and the team members' bio pages, and adds the
   optimizer opt-out attributes from
@@ -406,7 +382,7 @@ falls back to safe-but-wrong defaults, so do not strip them.
 
 | Property | This site sets | What it is |
 |---|---|---|
-| `--hb-pin` | `var(--header-h)`, which is `6rem` | The sticky header's height. The element reads it back off its stage's computed `top`, so CSS and JS cannot disagree, and an admin bar needs no code change. |
+| `--hb-pin` | `var(--header-h)`: `6rem` on the site; in the plugin, measured (the program bar, plus the admin bar when logged in) | The sticky header's height. The element reads it back off its stage's computed `top`, so CSS and JS cannot disagree, and an admin bar needs no code change. |
 | `--hb-entry-clear` | derived from `--hero-band` | How much room the host's copy needs under the header, as a length. **Budget it carefully:** the entry plate is solved from the room left under this line divided by 0.174, so one pixel of copy costs 5.75 px of picture. A theme with taller hero copy gets a visibly smaller plate; fix the copy, not the component. |
 | `--hb-entry-zoom` | `2` above 991 px, else `1` | How far past edge-to-edge the entry may grow. `1` is the safe default (artwork content spans the full plate width; more crops it). Two ceilings usually bind first: `--hb-entry-keep` on laptops, `--hb-max` on large screens. |
 | `--hb-arch-clear` | `--hero-gap + --hero-h1 + 30px` | Where the top of the *finished* bridge must land below the header. Needed the moment copy pins over the picture, because the arch tops out above the furniture (plate y 0.100). Default `0px` leaves the plate at rest. |
@@ -644,98 +620,75 @@ specification.
 
 ---
 
-## Behaviors to rebuild
+## What the plugin does
 
-The page behaviors below live in the prototype's component script inside
-`index.html`, written against a runtime (`DCLogic`, `renderVals()`,
-`{{ bindings }}`) that does not exist in WordPress. The markup they drive is in
-`pages/`; the behavior must be rewritten. The originals are heavily commented, and
-the comments explain *why* — read them before rewriting.
+The prototype's own runtime (the router, `support.js`, React from a CDN) is not in the plugin;
+nothing in it is needed. What the pages did at runtime, the plugin does:
 
-| Behavior | Markup hooks | What it does | Effort |
-|---|---|---|---|
-| Scroll reveal | `data-reveal` (64 uses) | Fades a block in when it enters the viewport. | Trivial: an IntersectionObserver that sets `opacity` to 1. |
-| Mobile menu | `navOpen` state | Header hamburger; locks body scroll; Escape closes. | Trivial. |
-
-Notes:
-
-- **`data-reveal` blocks start at inline `opacity: 0`.** If the reveal behavior is
-  not rebuilt, 64 blocks stay invisible. Either port it or strip the inline
-  opacity.
-- An earlier version of this document listed `data-lift`, `data-gloss`,
-  `data-term`, `data-kit`, `data-brick`, `data-on`, and `data-build` behaviors.
-  They no longer exist in the markup. The R&D cycle wheel also used to be on
-  this list; it is now the `<cycle-wheel>` component and needs no rebuild.
-
-## What to delete
-
-Nothing in this list should survive into WordPress:
-
-- **The client-side router** (`ROUTES`, `TITLES`, `readRoute`, `show`, `go`,
-  `href`, the `popstate` handler). WordPress has real URLs.
-- **`tools/build-site.mjs`.** Its jobs — emitting per-route copies and verifying
-  references — are WordPress's and your pipeline's. Reproduce its one important
-  check: the manifest-versus-disk frame verification (see
-  [`sections/approach.md`](sections/approach.md), trap 7.3).
-- **`support.js`** — the prototype runtime. 1,911 generated lines; nothing to
-  salvage.
-- **The CDN dependency.** React and Babel load from unpkg on every prototype page
-  view: a third-party single point of failure on the critical path, a duplicate of
-  the React WordPress already ships, and a per-pageview IP disclosure to a third
-  party (the class of issue in the German Google Fonts GDPR ruling). Nothing in
-  the rebuilt site needs either.
+| On | The plugin | Where |
+|---|---|---|
+| Every AugmentED page | Draws the page from its template, inside the theme's header and footer. | `includes/templates.php` |
+| | Links each page to the others by template. | `includes/links.php` |
+| | Loads the scoped stylesheet, `css/host.css`, and only the component scripts that page uses, deferred, `filemtime()`-versioned, with the optimiser opt-outs. | `includes/assets.php` |
+| | Measures the offsets: what is fixed above the program bar, the bar, the hero's lead. | `js/augmented-ed.js` |
+| | The reveal (the site's `data-reveal`, 64 blocks): the same 92% line; hidden only once script is known to be running, and shown after 4s regardless. | `js/augmented-ed.js`, `css/host.css` |
+| | The program bar's menu on a phone: toggle, scroll lock, Escape, placed under the bar wherever the bar is. | `js/augmented-ed.js` |
+| Who We Are | Draws each group's tiles from team posts, in their order. | `includes/team.php` |
+| A team member's page | The AugmentED bio page for members only in AugmentED; AERDF's own page for members also in another programme (Sherry, Caitlin), switchable per person. Members without a bio redirect (302) to Who We Are and are left out of the sitemap. With Yoast, the page is a ProfilePage about a Person. | `includes/team.php` |
+| Follow Our Work | Real inputs, the site's required fields, native validation; submits through the plugin to HubSpot, in place with script and by redirect without. | `includes/follow.php`, `js/follow-form.js` |
+| Admin | Settings → AugmentED (HubSpot, layout, AERDF's job-title field, a status panel, a test submission); Tools → AugmentED team (create the pages, import the team); `wp augmented-ed team import`. | `includes/admin.php`, `includes/cli.php` |
 
 ## Content
 
-No CMS sits behind the prototype; all copy is hardcoded. Decide early which of
-these become editable fields and which stay in templates, and model the types
-with the tools already on your install (JetEngine, CPT UI).
+No CMS sits behind the prototype; its copy is in `index.html`. In WordPress:
 
-**The structured content is exported as data in [`content/`](content/README.md)**
-— import from those files rather than transcribing from the pages.
-
-- **Team members** (`content/team.json`): 29 people across four grids —
-  Leadership, Research Partners, Education Fellows, Technology and Design Partners.
-  Fields:
-  headshot (optional — 4 of 29 currently render a placeholder square in the headshots'
-  own `#e9eef4`), name, role (optional —
-  4 people are on the page before their titles), bio page URL (21 of 29 have one; the
-  prose is in `source-material/bios/`), optional affiliation and location, optional
-  LinkedIn and website links. Model them as a custom post type named `team_member`
-  (the name [`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php) enqueues for),
-  but only as storage: they are not posts. Give the type no archive, no feed and no
-  dates on the front end. Only the 21 with a bio get a single page, at `/team/<slug>/`;
-  the rest exist to fill the Who We Are grids. The headshot is a file path into the
-  theme's `assets/team/`, not a media-library attachment (see
-  [The assets](#the-assets)).
-- **Research items** (`content/research.json`): title, description, link.
-- **Cycle wheel steps** (`content/cycle.json`): four steps, each a number, a
-  title, a body paragraph, and an icon. Editable copy, fixed count of four — the
-  geometry and the scroll choreography are not content. See
-  [`sections/cycle.md`](sections/cycle.md).
-- Everything else is page-level marketing copy.
+- **Page copy** stays in the generated templates. A copy change is made on the site,
+  re-exported, regenerated, and shipped as a plugin update.
+- **The team** is WordPress content, as posts of AERDF's `team` type
+  ([`content/team.json`](content/team.json) is the source the importer reads, through
+  `generated/data/team.json`):
+  - The groups are child categories of "AugmentED Team" (`augmented-team`):
+    `augmented-leadership`, `augmented-research-partners`, `augmented-education-fellows`,
+    `augmented-technology-and-design-partners`, ordered by term meta.
+  - The card is the plugin's post meta, edited in the "AugmentED card" box:
+    `augmented_ed_archived` (the Archived tick box), `_role`, `_affiliation`, `_location`,
+    `_linkedin`, `_website`, `_sort`, `_photo` (a bundled headshot's slug), and `_template`
+    (the bio page style).
+  - **Archived** members keep their group but are left off the grid; their page redirects to
+    Who We Are and leaves the sitemap. The site's roster archives people instead of
+    deleting them, and the import follows it: it never creates an archived person, and marks
+    an existing post of ours Archived rather than deleting it.
+  - The bio is the post's content. A post with no content has no bio page.
+  - Sherry Lachman and Caitlin Mills already exist on aerdf.org and are attached, not
+    recreated. Their AERDF titles, bios and photos are untouched.
+  - The importer's rules — what it creates, attaches, refuses and skips — are at the top of
+    `includes/importer.php`.
+- **Research items** and **cycle-wheel steps** stay in the home template, as fixed copy.
 
 ### The Follow page form
 
-The prototype's form renders a required email field, a nine-option "which are you"
-radio group (educator, researcher, engineer, administrator, non-profit
-professional, company executive, funder, journalist, other), an optional message,
-and a **Subscribe** button — and its submit handler discards everything. It has
-never collected a submission.
+The site's form never submitted anywhere. The plugin's does:
 
-The rebuild needs a real destination, which is a product decision, not a porting
-task. aerdf.org already runs Gravity Forms (with reCAPTCHA) and embeds HubSpot
-forms; either reproduces this form in under an hour once we have decided:
-
-1. Which system receives submissions, and into what list or pipeline.
-2. What consent language the form carries (CookieYes is live on the target site).
-3. Who owns the resulting list. "Subscribe" implies an email program — a
-   commitment beyond the form itself.
+- **Fields:** first name, last name, email, contact number, "which best describes you" (nine
+  options, Educator preselected), message, and consent.
+  - Required, as the site's source intends: first name, last name, email, message and
+    consent. The live site requires nothing, because its framework drops the attribute.
+- **Destination:** a HubSpot form in AERDF's account (portal and form ID in Settings), through
+  `admin-post.php` on the server. The browser never calls HubSpot.
+  - With script, it posts by `fetch` and answers in place; without, it posts and redirects
+    back with a message.
+  - Spam defences: a honeypot, a minimum time on the form (three seconds, measured by the
+    visitor's browser, so a wrong device clock cannot drop a sign-up), and a rate limit per
+    address. There is no nonce, because WP Engine's page cache would make it stale.
+- **What AERDF's HubSpot form needs:** exactly these fields and CAPTCHA off.
+  [START-HERE step 4](START-HERE.md#4-connect-the-follow-form) lists them.
+- **2027:** HubSpot ends support for its v1–v3 APIs in September 2027. The submission call is
+  one class, `Augmented_ED_HubSpot`, which already accepts a private-app token.
 
 ### Page metadata
 
-Titles and descriptions for search and social, ready for Yoast fields (also
-exported as `content/pages.json`):
+Titles and descriptions for search and social, written into Yoast's fields when "Create the
+pages as drafts" makes the pages (only where empty; also exported as `content/pages.json`):
 
 | Route | Title | Description |
 |---|---|---|
@@ -745,20 +698,18 @@ exported as `content/pages.json`):
 | `/team/` | Who We Are \| AugmentED | AugmentED brings together people from classrooms, research labs, and engineering teams who share a conviction that AI should augment human teaching, not replace it. |
 | `/follow/` | Follow Our Work \| AugmentED | Get updates on AugmentED's work and research findings. |
 
+Each bio page's description is its bio's first sentence, the same cut the site's bio pages
+use, written into Yoast by the import (only where empty).
+
 ### Redirects
 
-The slugs were shortened after preview links had been shared. If the production
-site keeps these paths, recreate the redirects — `content/redirects.csv` is this
-table in the Redirection plugin's CSV import format:
-
-| From | To |
-|---|---|
-| `/the-challenge/` | `/challenge/` |
-| `/our-approach/` | `/approach/` |
-| `/who-we-are/` | `/team/` |
-| `/follow-our-work/` | `/follow/` |
-
-Also plan redirects from `augmented2.folkmark.com` once the production URL exists.
+- **On aerdf.org, the site's old preview slugs** (`/the-challenge/` and the rest, in
+  `content/redirects.csv`) **never existed** and need no rules.
+- **What aerdf.org may need:** a rule from the existing AugmentED page
+  (`/opportunities/advanced-fellows/augmented/`) to the new home, if AERDF retires it. See
+  [DECISIONS.md](DECISIONS.md).
+- **The preview domain,** `augmented2.folkmark.com`, should point at the production address
+  once there is one. That is a DNS or GitHub Pages change, not a WordPress one.
 
 ## Protect the components from optimization plugins
 
@@ -791,18 +742,23 @@ scroll budgets are made of.
   are the no-JS fallback — a plugin that rewrites their `src` to a
   `data-lazy-src` breaks both. The components' own `loading="lazy"` attributes
   are correct and stay.
-- Add the belt-and-braces attributes via the `script_loader_tag` filter:
-  `nowprocket`, `data-no-defer="1"`, `data-jetpack-boost="ignore"`.
-  [`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php) already does this
-  for the component handles.
+- The plugin adds the belt-and-braces attributes to its script tags through the
+  `script_loader_tag` filter: `nowprocket` (WP Rocket), `data-no-defer="1"` (LiteSpeed),
+  `data-jetpack-boost="ignore"`, `data-cfasync="false"` (Cloudflare Rocket Loader) and
+  `data-nitro-exclude` (NitroPack, which WP Engine's Page Speed Boost is built on). None of
+  these optimisers runs on aerdf.org today (checked 2026-09-25).
+- Exclude the plugin's folder, `wp-content/plugins/augmented-ed/assets/`, from every image
+  optimiser; that is where the frames are.
 - Do not add a smooth-scroll plugin to pages with these components. Anything that
   virtualizes the scroll position desynchronizes code that reads native scroll.
 
 ## Acceptance checklist
 
-The rebuild is done when every item passes. Test logged out *and* logged in (the
-admin bar shifts the viewport for logged-in users), and on aerdf.org test with the
-AccessiBe widget active.
+[START-HERE.md](START-HERE.md#acceptance) has the short list for the install. The detail
+below is the full one. `tools/verify-wp-plugin.mjs` checks most of it automatically on a
+local install, and `--live` checks it inside aerdf.org's own pages. Test logged out *and*
+logged in (the admin bar moves the offsets), and on aerdf.org with the AccessiBe widget
+active.
 
 **Per page, against [the reference site](https://augmented2.folkmark.com):**
 
@@ -834,22 +790,23 @@ AccessiBe widget active.
 
 **Who We Are and the bio pages** (full criteria in [`sections/leadership.md`](sections/leadership.md)):
 
-- [ ] 25 headshots and 4 placeholder squares in `#e9eef4`, in the four groups and the
-      order of `content/team.json`; the 4 people without a title show no empty line.
+- [ ] 30 headshots and 2 placeholder squares in `#e9eef4`, in the four groups and the
+      order of `content/team.json`; the people without a title show no empty line.
 - [ ] With a mouse, a headshot's colour blooms in from the pointer and drains on
       leaving; on a phone or tablet nothing blooms and no `assets/team/colour/` file is
       requested.
-- [ ] The 21 "Read bio" tiles each open `/team/<slug>/`, rendered with the site's
-      header, fonts and styles (the design system is enqueued on the single template),
-      with the right title, description and canonical.
+- [ ] The 21 "Read bio" tiles each open `/team/<slug>/`: an AugmentED bio page for the
+      19 who are only in AugmentED, AERDF's own page for Sherry Lachman and Caitlin Mills.
+- [ ] The 11 without a bio redirect to Who We Are.
 
 **Site-wide:**
 
 - [ ] All 64 reveal blocks become visible; none is stranded at `opacity: 0`.
-- [ ] The form submits to its decided destination and the submission arrives.
+- [ ] "Send test submission" (Settings → AugmentED) is accepted, and a submission from the
+      page arrives in HubSpot.
 - [ ] Fonts self-hosted, WOFF2 only; Avenir license confirmation on file.
-- [ ] Frame directories excluded from image optimization; manifests return 200.
-- [ ] Redirects from the old slugs and the preview domain are live.
+- [ ] The plugin's `assets/` excluded from image optimisation; the hero's manifest returns 200.
+- [ ] AERDF's header, footer and every other page are exactly as before.
 
 ## Regenerating the artifacts
 
@@ -868,4 +825,6 @@ repository and print the restore path they need if you run them without it.
 | `python3 tools/cutout-headshots.py [--only=<slug>]` | Cuts a headshot out of its photo and frames it; writes `source-material/image-sources/team-cutout/`. Needs a 973 MB model that is not committed — the script's header says where to get it. Only for a new or replaced photo. |
 | `node tools/encode-images.mjs` | Re-encodes photography and headshots from committed sources, including the headshots' duotone and their colour twins. |
 | `node tools/encode-fonts.mjs` | Converts the design system's Avenir OTFs to the committed WOFF2. Needs `npm i --no-save wawoff2`. Only if the font files change. |
+| `node tools/build-wp-plugin.mjs` | Regenerates the plugin's `generated/` from `pages/`, `content/` and the bios. Run it after every export, and commit the result; CI fails if you do not. Needs `npm i --no-save linkedom postcss postcss-selector-parser` (versions in its header). `--assemble dist [--zip]` builds the installable plugin. |
+| `node tools/verify-wp-plugin.mjs [--live]` | Installs the assembled plugin into a fresh local WordPress (PHP 8, SQLite, a stand-in AERDF theme) and checks it end to end; `--live` also renders it inside real aerdf.org pages. Reports to `.wp-verify/report/`. |
 | `node tools/build-site.mjs _site` | Builds the static site for comparison while rebuilding. It is exactly what the reference site serves: leaving out the design system's dev files and `.otf` sources, and the parked Approach scrub. |

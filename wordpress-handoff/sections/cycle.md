@@ -288,13 +288,15 @@ The wheel installs like the other components:
 
 1. Copy `assets/cycle-wheel.js`, `assets/cycle-wheel.css`, and the four icon
    files (`assets/approach/cyc0*.webp`) into the theme.
-2. Enqueue the script and stylesheet per the shared rules —
-   [`wp/augmented-ed-assets.php`](../wp/augmented-ed-assets.php) already does.
+2. Enqueue the script and stylesheet per the shared rules — the WordPress plugin's
+   `includes/assets.php` already does, and its pin comes from the measured `--header-h`.
 3. Emit the markup contract in section 2. Copy it from `pages/home.html`, and
    render both arms from one content source (`content/cycle.json` holds the four
    steps) so they cannot drift. Keep `pathLength="100"` on the arc paths and the
    two state attributes on each root.
-4. If the theme's sticky header is not 4.5 rem tall, set the pin once:
+4. Set the pin to whatever is stuck at the top of the screen — the site's page CSS does
+   `cycle-wheel { --cw-pin: var(--header-h); }`, which is 6rem on the site and, in the
+   WordPress plugin, the measured height of the program bar (plus the admin bar):
 
    ```css
    cycle-wheel { --cw-pin: 6rem; }   /* 0 if nothing is sticky */

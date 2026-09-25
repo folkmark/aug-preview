@@ -1,0 +1,1554 @@
+[
+ {
+  "plugin": "assets/approach/cyc01_role_0001.webp",
+  "repo": "assets/approach/cyc01_role_0001.webp"
+ },
+ {
+  "plugin": "assets/approach/cyc02_capabilities_0001.webp",
+  "repo": "assets/approach/cyc02_capabilities_0001.webp"
+ },
+ {
+  "plugin": "assets/approach/cyc03_applications_0002.webp",
+  "repo": "assets/approach/cyc03_applications_0002.webp"
+ },
+ {
+  "plugin": "assets/approach/cyc04_test_0001.webp",
+  "repo": "assets/approach/cyc04_test_0001.webp"
+ },
+ {
+  "plugin": "assets/cycle-wheel.js",
+  "repo": "assets/cycle-wheel.js"
+ },
+ {
+  "plugin": "assets/falling-blocks.js",
+  "repo": "assets/falling-blocks.js"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0001.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0001.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0002.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0002.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0003.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0003.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0004.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0004.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0005.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0005.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0006.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0006.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0007.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0007.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0008.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0008.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0009.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0009.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0010.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0010.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0011.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0011.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0012.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0012.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0013.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0013.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0014.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0014.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0015.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0015.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0016.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0016.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0017.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0017.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0018.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0018.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0019.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0019.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0020.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0020.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0021.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0021.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0022.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0022.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0023.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0023.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0024.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0024.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0025.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0025.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0026.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0026.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0027.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0027.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0028.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0028.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0029.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0029.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0030.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0030.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0031.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0031.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0032.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0032.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0033.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0033.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0034.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0034.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0035.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0035.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0036.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0036.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0037.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0037.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0038.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0038.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0039.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0039.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0040.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0040.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0041.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0041.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0042.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0042.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0043.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0043.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0044.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0044.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0045.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0045.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0046.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0046.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0047.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0047.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/bottom/fb0048.webp",
+  "repo": "assets/falling-blocks/w1440/bottom/fb0048.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0001.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0001.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0002.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0002.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0003.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0003.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0004.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0004.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0005.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0005.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0006.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0006.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0007.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0007.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0008.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0008.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0009.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0009.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0010.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0010.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0011.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0011.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0012.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0012.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0013.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0013.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0014.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0014.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0015.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0015.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0016.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0016.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0017.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0017.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0018.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0018.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0019.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0019.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0020.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0020.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0021.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0021.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0022.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0022.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0023.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0023.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0024.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0024.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0025.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0025.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0026.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0026.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0027.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0027.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0028.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0028.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0029.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0029.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0030.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0030.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0031.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0031.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0032.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0032.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0033.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0033.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0034.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0034.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0035.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0035.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0036.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0036.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0037.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0037.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0038.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0038.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0039.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0039.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0040.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0040.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0041.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0041.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0042.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0042.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0043.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0043.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0044.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0044.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0045.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0045.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0046.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0046.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0047.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0047.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w1440/top/fb0048.webp",
+  "repo": "assets/falling-blocks/w1440/top/fb0048.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0001.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0001.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0002.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0002.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0003.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0003.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0004.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0004.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0005.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0005.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0006.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0006.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0007.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0007.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0008.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0008.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0009.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0009.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0010.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0010.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0011.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0011.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0012.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0012.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0013.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0013.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0014.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0014.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0015.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0015.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0016.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0016.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0017.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0017.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0018.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0018.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0019.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0019.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0020.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0020.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0021.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0021.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0022.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0022.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0023.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0023.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0024.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0024.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0025.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0025.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0026.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0026.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0027.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0027.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0028.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0028.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0029.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0029.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0030.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0030.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0031.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0031.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0032.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0032.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0033.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0033.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0034.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0034.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0035.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0035.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0036.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0036.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0037.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0037.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0038.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0038.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0039.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0039.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0040.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0040.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0041.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0041.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0042.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0042.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0043.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0043.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0044.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0044.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0045.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0045.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0046.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0046.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0047.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0047.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/bottom/fb0048.webp",
+  "repo": "assets/falling-blocks/w720/bottom/fb0048.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0001.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0001.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0002.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0002.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0003.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0003.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0004.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0004.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0005.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0005.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0006.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0006.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0007.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0007.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0008.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0008.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0009.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0009.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0010.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0010.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0011.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0011.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0012.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0012.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0013.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0013.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0014.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0014.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0015.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0015.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0016.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0016.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0017.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0017.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0018.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0018.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0019.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0019.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0020.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0020.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0021.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0021.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0022.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0022.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0023.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0023.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0024.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0024.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0025.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0025.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0026.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0026.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0027.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0027.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0028.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0028.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0029.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0029.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0030.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0030.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0031.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0031.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0032.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0032.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0033.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0033.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0034.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0034.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0035.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0035.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0036.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0036.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0037.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0037.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0038.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0038.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0039.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0039.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0040.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0040.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0041.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0041.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0042.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0042.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0043.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0043.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0044.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0044.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0045.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0045.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0046.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0046.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0047.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0047.webp"
+ },
+ {
+  "plugin": "assets/falling-blocks/w720/top/fb0048.webp",
+  "repo": "assets/falling-blocks/w720/top/fb0048.webp"
+ },
+ {
+  "plugin": "assets/fonts/AvenirLTPro-Black.woff2",
+  "repo": "_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/assets/fonts/AvenirLTPro-Black.woff2"
+ },
+ {
+  "plugin": "assets/fonts/AvenirLTPro-Book.woff2",
+  "repo": "_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/assets/fonts/AvenirLTPro-Book.woff2"
+ },
+ {
+  "plugin": "assets/fonts/AvenirLTPro-Heavy.woff2",
+  "repo": "_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/assets/fonts/AvenirLTPro-Heavy.woff2"
+ },
+ {
+  "plugin": "assets/fonts/AvenirLTPro-Light.woff2",
+  "repo": "_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/assets/fonts/AvenirLTPro-Light.woff2"
+ },
+ {
+  "plugin": "assets/fonts/AvenirLTPro-Medium.woff2",
+  "repo": "_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/assets/fonts/AvenirLTPro-Medium.woff2"
+ },
+ {
+  "plugin": "assets/fonts/AvenirLTPro-Roman.woff2",
+  "repo": "_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/assets/fonts/AvenirLTPro-Roman.woff2"
+ },
+ {
+  "plugin": "assets/fonts/material-symbols-rounded-subset.woff2",
+  "repo": "_ds/augmented-design-system-191b99a9-bdab-4065-b076-e3e4ea403a3a/assets/fonts/material-symbols-rounded-subset.woff2"
+ },
+ {
+  "plugin": "assets/hero-bridge.js",
+  "repo": "assets/hero-bridge.js"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0276.webp",
+  "repo": "assets/hero-bridge/hb0276.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0276m.webp",
+  "repo": "assets/hero-bridge/hb0276m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0279.webp",
+  "repo": "assets/hero-bridge/hb0279.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0279m.webp",
+  "repo": "assets/hero-bridge/hb0279m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0282.webp",
+  "repo": "assets/hero-bridge/hb0282.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0282m.webp",
+  "repo": "assets/hero-bridge/hb0282m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0285.webp",
+  "repo": "assets/hero-bridge/hb0285.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0285m.webp",
+  "repo": "assets/hero-bridge/hb0285m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0288.webp",
+  "repo": "assets/hero-bridge/hb0288.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0288m.webp",
+  "repo": "assets/hero-bridge/hb0288m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0291.webp",
+  "repo": "assets/hero-bridge/hb0291.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0291m.webp",
+  "repo": "assets/hero-bridge/hb0291m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0294.webp",
+  "repo": "assets/hero-bridge/hb0294.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0294m.webp",
+  "repo": "assets/hero-bridge/hb0294m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0297.webp",
+  "repo": "assets/hero-bridge/hb0297.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0297m.webp",
+  "repo": "assets/hero-bridge/hb0297m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0300.webp",
+  "repo": "assets/hero-bridge/hb0300.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0300m.webp",
+  "repo": "assets/hero-bridge/hb0300m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0303.webp",
+  "repo": "assets/hero-bridge/hb0303.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0303m.webp",
+  "repo": "assets/hero-bridge/hb0303m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0306.webp",
+  "repo": "assets/hero-bridge/hb0306.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0306m.webp",
+  "repo": "assets/hero-bridge/hb0306m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0309.webp",
+  "repo": "assets/hero-bridge/hb0309.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0309m.webp",
+  "repo": "assets/hero-bridge/hb0309m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0312.webp",
+  "repo": "assets/hero-bridge/hb0312.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0312m.webp",
+  "repo": "assets/hero-bridge/hb0312m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0315.webp",
+  "repo": "assets/hero-bridge/hb0315.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0315m.webp",
+  "repo": "assets/hero-bridge/hb0315m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0318.webp",
+  "repo": "assets/hero-bridge/hb0318.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0318m.webp",
+  "repo": "assets/hero-bridge/hb0318m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0321.webp",
+  "repo": "assets/hero-bridge/hb0321.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0321m.webp",
+  "repo": "assets/hero-bridge/hb0321m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0324.webp",
+  "repo": "assets/hero-bridge/hb0324.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0324m.webp",
+  "repo": "assets/hero-bridge/hb0324m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0327.webp",
+  "repo": "assets/hero-bridge/hb0327.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0327m.webp",
+  "repo": "assets/hero-bridge/hb0327m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0330.webp",
+  "repo": "assets/hero-bridge/hb0330.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0330m.webp",
+  "repo": "assets/hero-bridge/hb0330m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0333.webp",
+  "repo": "assets/hero-bridge/hb0333.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0333m.webp",
+  "repo": "assets/hero-bridge/hb0333m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0336.webp",
+  "repo": "assets/hero-bridge/hb0336.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0336m.webp",
+  "repo": "assets/hero-bridge/hb0336m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0339.webp",
+  "repo": "assets/hero-bridge/hb0339.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0339m.webp",
+  "repo": "assets/hero-bridge/hb0339m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0342.webp",
+  "repo": "assets/hero-bridge/hb0342.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0342m.webp",
+  "repo": "assets/hero-bridge/hb0342m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0345.webp",
+  "repo": "assets/hero-bridge/hb0345.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0345m.webp",
+  "repo": "assets/hero-bridge/hb0345m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0348.webp",
+  "repo": "assets/hero-bridge/hb0348.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0348m.webp",
+  "repo": "assets/hero-bridge/hb0348m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0351.webp",
+  "repo": "assets/hero-bridge/hb0351.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0351m.webp",
+  "repo": "assets/hero-bridge/hb0351m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0354.webp",
+  "repo": "assets/hero-bridge/hb0354.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0354m.webp",
+  "repo": "assets/hero-bridge/hb0354m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0357.webp",
+  "repo": "assets/hero-bridge/hb0357.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0357m.webp",
+  "repo": "assets/hero-bridge/hb0357m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0360.webp",
+  "repo": "assets/hero-bridge/hb0360.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0360m.webp",
+  "repo": "assets/hero-bridge/hb0360m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0363.webp",
+  "repo": "assets/hero-bridge/hb0363.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0363m.webp",
+  "repo": "assets/hero-bridge/hb0363m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0366.webp",
+  "repo": "assets/hero-bridge/hb0366.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0366m.webp",
+  "repo": "assets/hero-bridge/hb0366m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0369.webp",
+  "repo": "assets/hero-bridge/hb0369.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0369m.webp",
+  "repo": "assets/hero-bridge/hb0369m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0372.webp",
+  "repo": "assets/hero-bridge/hb0372.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0372m.webp",
+  "repo": "assets/hero-bridge/hb0372m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0375.webp",
+  "repo": "assets/hero-bridge/hb0375.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0375m.webp",
+  "repo": "assets/hero-bridge/hb0375m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0378.webp",
+  "repo": "assets/hero-bridge/hb0378.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0378m.webp",
+  "repo": "assets/hero-bridge/hb0378m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0381.webp",
+  "repo": "assets/hero-bridge/hb0381.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0381m.webp",
+  "repo": "assets/hero-bridge/hb0381m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0384.webp",
+  "repo": "assets/hero-bridge/hb0384.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0384m.webp",
+  "repo": "assets/hero-bridge/hb0384m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0387.webp",
+  "repo": "assets/hero-bridge/hb0387.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0387m.webp",
+  "repo": "assets/hero-bridge/hb0387m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0390.webp",
+  "repo": "assets/hero-bridge/hb0390.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0390m.webp",
+  "repo": "assets/hero-bridge/hb0390m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0393.webp",
+  "repo": "assets/hero-bridge/hb0393.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0393m.webp",
+  "repo": "assets/hero-bridge/hb0393m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0396.webp",
+  "repo": "assets/hero-bridge/hb0396.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0396m.webp",
+  "repo": "assets/hero-bridge/hb0396m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0399.webp",
+  "repo": "assets/hero-bridge/hb0399.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0399m.webp",
+  "repo": "assets/hero-bridge/hb0399m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0402.webp",
+  "repo": "assets/hero-bridge/hb0402.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0402m.webp",
+  "repo": "assets/hero-bridge/hb0402m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0405.webp",
+  "repo": "assets/hero-bridge/hb0405.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0405m.webp",
+  "repo": "assets/hero-bridge/hb0405m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0408.webp",
+  "repo": "assets/hero-bridge/hb0408.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0408m.webp",
+  "repo": "assets/hero-bridge/hb0408m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0411.webp",
+  "repo": "assets/hero-bridge/hb0411.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0411m.webp",
+  "repo": "assets/hero-bridge/hb0411m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0414.webp",
+  "repo": "assets/hero-bridge/hb0414.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0414m.webp",
+  "repo": "assets/hero-bridge/hb0414m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0417.webp",
+  "repo": "assets/hero-bridge/hb0417.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/hb0417m.webp",
+  "repo": "assets/hero-bridge/hb0417m.webp"
+ },
+ {
+  "plugin": "assets/hero-bridge/manifest.json",
+  "repo": "assets/hero-bridge/manifest.json"
+ },
+ {
+  "plugin": "assets/icons/linkedin.svg",
+  "repo": "assets/icons/linkedin.svg"
+ },
+ {
+  "plugin": "assets/illustrations/blocks.webp",
+  "repo": "assets/illustrations/blocks.webp"
+ },
+ {
+  "plugin": "assets/illustrations/brain.webp",
+  "repo": "assets/illustrations/brain.webp"
+ },
+ {
+  "plugin": "assets/illustrations/laptop.webp",
+  "repo": "assets/illustrations/laptop.webp"
+ },
+ {
+  "plugin": "assets/images/build-capabilities-m.webp",
+  "repo": "assets/images/build-capabilities-m.webp"
+ },
+ {
+  "plugin": "assets/images/build-capabilities.webp",
+  "repo": "assets/images/build-capabilities.webp"
+ },
+ {
+  "plugin": "assets/images/codesign-tools-m.webp",
+  "repo": "assets/images/codesign-tools-m.webp"
+ },
+ {
+  "plugin": "assets/images/codesign-tools.webp",
+  "repo": "assets/images/codesign-tools.webp"
+ },
+ {
+  "plugin": "assets/images/crosstown-workshop.webp",
+  "repo": "assets/images/crosstown-workshop.webp"
+ },
+ {
+  "plugin": "assets/images/define-the-role-m.webp",
+  "repo": "assets/images/define-the-role-m.webp"
+ },
+ {
+  "plugin": "assets/images/define-the-role.webp",
+  "repo": "assets/images/define-the-role.webp"
+ },
+ {
+  "plugin": "assets/images/engineers-screens-m.webp",
+  "repo": "assets/images/engineers-screens-m.webp"
+ },
+ {
+  "plugin": "assets/images/engineers-screens.webp",
+  "repo": "assets/images/engineers-screens.webp"
+ },
+ {
+  "plugin": "assets/images/hero-bridge-m.webp",
+  "repo": "assets/images/hero-bridge-m.webp"
+ },
+ {
+  "plugin": "assets/images/hero-bridge.webp",
+  "repo": "assets/images/hero-bridge.webp"
+ },
+ {
+  "plugin": "assets/images/high-tech-high-workshop.webp",
+  "repo": "assets/images/high-tech-high-workshop.webp"
+ },
+ {
+  "plugin": "assets/images/museum-high-workshop.webp",
+  "repo": "assets/images/museum-high-workshop.webp"
+ },
+ {
+  "plugin": "assets/images/student-notebook-m.webp",
+  "repo": "assets/images/student-notebook-m.webp"
+ },
+ {
+  "plugin": "assets/images/student-notebook.webp",
+  "repo": "assets/images/student-notebook.webp"
+ },
+ {
+  "plugin": "assets/images/teacher-two-students-m.webp",
+  "repo": "assets/images/teacher-two-students-m.webp"
+ },
+ {
+  "plugin": "assets/images/teacher-two-students.webp",
+  "repo": "assets/images/teacher-two-students.webp"
+ },
+ {
+  "plugin": "assets/images/test-in-classrooms-m.webp",
+  "repo": "assets/images/test-in-classrooms-m.webp"
+ },
+ {
+  "plugin": "assets/images/test-in-classrooms.webp",
+  "repo": "assets/images/test-in-classrooms.webp"
+ },
+ {
+  "plugin": "assets/logo/logo-horiz.svg",
+  "repo": "assets/logo/logo-horiz.svg"
+ },
+ {
+  "plugin": "assets/team-colour.js",
+  "repo": "assets/team-colour.js"
+ },
+ {
+  "plugin": "assets/team/aarav-kalkar.webp",
+  "repo": "assets/team/aarav-kalkar.webp"
+ },
+ {
+  "plugin": "assets/team/abby-petre.webp",
+  "repo": "assets/team/abby-petre.webp"
+ },
+ {
+  "plugin": "assets/team/alexandra-wiggins.webp",
+  "repo": "assets/team/alexandra-wiggins.webp"
+ },
+ {
+  "plugin": "assets/team/allison-rapoport.webp",
+  "repo": "assets/team/allison-rapoport.webp"
+ },
+ {
+  "plugin": "assets/team/andrew-lan.webp",
+  "repo": "assets/team/andrew-lan.webp"
+ },
+ {
+  "plugin": "assets/team/angela-stewart.webp",
+  "repo": "assets/team/angela-stewart.webp"
+ },
+ {
+  "plugin": "assets/team/ben-hoff.webp",
+  "repo": "assets/team/ben-hoff.webp"
+ },
+ {
+  "plugin": "assets/team/blair-lehman.webp",
+  "repo": "assets/team/blair-lehman.webp"
+ },
+ {
+  "plugin": "assets/team/byungyeon-yun.webp",
+  "repo": "assets/team/byungyeon-yun.webp"
+ },
+ {
+  "plugin": "assets/team/caitlin-mills.webp",
+  "repo": "assets/team/caitlin-mills.webp"
+ },
+ {
+  "plugin": "assets/team/christopher-hanks.webp",
+  "repo": "assets/team/christopher-hanks.webp"
+ },
+ {
+  "plugin": "assets/team/colour/aarav-kalkar.webp",
+  "repo": "assets/team/colour/aarav-kalkar.webp"
+ },
+ {
+  "plugin": "assets/team/colour/abby-petre.webp",
+  "repo": "assets/team/colour/abby-petre.webp"
+ },
+ {
+  "plugin": "assets/team/colour/alexandra-wiggins.webp",
+  "repo": "assets/team/colour/alexandra-wiggins.webp"
+ },
+ {
+  "plugin": "assets/team/colour/allison-rapoport.webp",
+  "repo": "assets/team/colour/allison-rapoport.webp"
+ },
+ {
+  "plugin": "assets/team/colour/andrew-lan.webp",
+  "repo": "assets/team/colour/andrew-lan.webp"
+ },
+ {
+  "plugin": "assets/team/colour/angela-stewart.webp",
+  "repo": "assets/team/colour/angela-stewart.webp"
+ },
+ {
+  "plugin": "assets/team/colour/ben-hoff.webp",
+  "repo": "assets/team/colour/ben-hoff.webp"
+ },
+ {
+  "plugin": "assets/team/colour/blair-lehman.webp",
+  "repo": "assets/team/colour/blair-lehman.webp"
+ },
+ {
+  "plugin": "assets/team/colour/byungyeon-yun.webp",
+  "repo": "assets/team/colour/byungyeon-yun.webp"
+ },
+ {
+  "plugin": "assets/team/colour/caitlin-mills.webp",
+  "repo": "assets/team/colour/caitlin-mills.webp"
+ },
+ {
+  "plugin": "assets/team/colour/christopher-hanks.webp",
+  "repo": "assets/team/colour/christopher-hanks.webp"
+ },
+ {
+  "plugin": "assets/team/colour/danie-cowden.webp",
+  "repo": "assets/team/colour/danie-cowden.webp"
+ },
+ {
+  "plugin": "assets/team/colour/isa-peczuh.webp",
+  "repo": "assets/team/colour/isa-peczuh.webp"
+ },
+ {
+  "plugin": "assets/team/colour/jenny-bradbury.webp",
+  "repo": "assets/team/colour/jenny-bradbury.webp"
+ },
+ {
+  "plugin": "assets/team/colour/joan-lee.webp",
+  "repo": "assets/team/colour/joan-lee.webp"
+ },
+ {
+  "plugin": "assets/team/colour/joshua-sloan.webp",
+  "repo": "assets/team/colour/joshua-sloan.webp"
+ },
+ {
+  "plugin": "assets/team/colour/katie-butler.webp",
+  "repo": "assets/team/colour/katie-butler.webp"
+ },
+ {
+  "plugin": "assets/team/colour/laura-allen.webp",
+  "repo": "assets/team/colour/laura-allen.webp"
+ },
+ {
+  "plugin": "assets/team/colour/lisa-peterson.webp",
+  "repo": "assets/team/colour/lisa-peterson.webp"
+ },
+ {
+  "plugin": "assets/team/colour/mohammed-al-harthy.webp",
+  "repo": "assets/team/colour/mohammed-al-harthy.webp"
+ },
+ {
+  "plugin": "assets/team/colour/neil-sharma.webp",
+  "repo": "assets/team/colour/neil-sharma.webp"
+ },
+ {
+  "plugin": "assets/team/colour/nikki-wallace.webp",
+  "repo": "assets/team/colour/nikki-wallace.webp"
+ },
+ {
+  "plugin": "assets/team/colour/raquel-romano.webp",
+  "repo": "assets/team/colour/raquel-romano.webp"
+ },
+ {
+  "plugin": "assets/team/colour/ryan-baker.webp",
+  "repo": "assets/team/colour/ryan-baker.webp"
+ },
+ {
+  "plugin": "assets/team/colour/sarah-zaner.webp",
+  "repo": "assets/team/colour/sarah-zaner.webp"
+ },
+ {
+  "plugin": "assets/team/colour/sherry-lachman.webp",
+  "repo": "assets/team/colour/sherry-lachman.webp"
+ },
+ {
+  "plugin": "assets/team/colour/sonia-prusaitis.webp",
+  "repo": "assets/team/colour/sonia-prusaitis.webp"
+ },
+ {
+  "plugin": "assets/team/colour/stephen-hutt.webp",
+  "repo": "assets/team/colour/stephen-hutt.webp"
+ },
+ {
+  "plugin": "assets/team/colour/tom-keefe.webp",
+  "repo": "assets/team/colour/tom-keefe.webp"
+ },
+ {
+  "plugin": "assets/team/colour/tom-peterson.webp",
+  "repo": "assets/team/colour/tom-peterson.webp"
+ },
+ {
+  "plugin": "assets/team/danie-cowden.webp",
+  "repo": "assets/team/danie-cowden.webp"
+ },
+ {
+  "plugin": "assets/team/isa-peczuh.webp",
+  "repo": "assets/team/isa-peczuh.webp"
+ },
+ {
+  "plugin": "assets/team/jenny-bradbury.webp",
+  "repo": "assets/team/jenny-bradbury.webp"
+ },
+ {
+  "plugin": "assets/team/joan-lee.webp",
+  "repo": "assets/team/joan-lee.webp"
+ },
+ {
+  "plugin": "assets/team/joshua-sloan.webp",
+  "repo": "assets/team/joshua-sloan.webp"
+ },
+ {
+  "plugin": "assets/team/katie-butler.webp",
+  "repo": "assets/team/katie-butler.webp"
+ },
+ {
+  "plugin": "assets/team/laura-allen.webp",
+  "repo": "assets/team/laura-allen.webp"
+ },
+ {
+  "plugin": "assets/team/lisa-peterson.webp",
+  "repo": "assets/team/lisa-peterson.webp"
+ },
+ {
+  "plugin": "assets/team/mohammed-al-harthy.webp",
+  "repo": "assets/team/mohammed-al-harthy.webp"
+ },
+ {
+  "plugin": "assets/team/neil-sharma.webp",
+  "repo": "assets/team/neil-sharma.webp"
+ },
+ {
+  "plugin": "assets/team/nikki-wallace.webp",
+  "repo": "assets/team/nikki-wallace.webp"
+ },
+ {
+  "plugin": "assets/team/raquel-romano.webp",
+  "repo": "assets/team/raquel-romano.webp"
+ },
+ {
+  "plugin": "assets/team/ryan-baker.webp",
+  "repo": "assets/team/ryan-baker.webp"
+ },
+ {
+  "plugin": "assets/team/sarah-zaner.webp",
+  "repo": "assets/team/sarah-zaner.webp"
+ },
+ {
+  "plugin": "assets/team/sherry-lachman.webp",
+  "repo": "assets/team/sherry-lachman.webp"
+ },
+ {
+  "plugin": "assets/team/sonia-prusaitis.webp",
+  "repo": "assets/team/sonia-prusaitis.webp"
+ },
+ {
+  "plugin": "assets/team/stephen-hutt.webp",
+  "repo": "assets/team/stephen-hutt.webp"
+ },
+ {
+  "plugin": "assets/team/tom-keefe.webp",
+  "repo": "assets/team/tom-keefe.webp"
+ },
+ {
+  "plugin": "assets/team/tom-peterson.webp",
+  "repo": "assets/team/tom-peterson.webp"
+ }
+]

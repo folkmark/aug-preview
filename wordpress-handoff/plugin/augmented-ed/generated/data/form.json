@@ -1,0 +1,78 @@
+{
+  "fields": [
+    {
+      "name": "firstname",
+      "label": "First name",
+      "required": true
+    },
+    {
+      "name": "lastname",
+      "label": "Last name",
+      "required": true
+    },
+    {
+      "name": "email",
+      "label": "Email",
+      "required": true
+    },
+    {
+      "name": "phone",
+      "label": "Contact number",
+      "required": false
+    },
+    {
+      "name": "message",
+      "label": "Tell us more",
+      "required": true
+    },
+    {
+      "name": "persona",
+      "label": "Which best describes you?",
+      "required": false,
+      "options": [
+        {
+          "value": "educator",
+          "label": "Educator"
+        },
+        {
+          "value": "researcher",
+          "label": "Researcher"
+        },
+        {
+          "value": "engineer",
+          "label": "Engineer"
+        },
+        {
+          "value": "administrator",
+          "label": "Administrator"
+        },
+        {
+          "value": "nonprofit",
+          "label": "Non-profit professional"
+        },
+        {
+          "value": "executive",
+          "label": "Company executive"
+        },
+        {
+          "value": "funder",
+          "label": "Funder"
+        },
+        {
+          "value": "journalist",
+          "label": "Journalist"
+        },
+        {
+          "value": "other",
+          "label": "Other"
+        }
+      ]
+    },
+    {
+      "name": "consent",
+      "label": "Consent",
+      "required": true
+    }
+  ],
+  "default_persona": "educator"
+}

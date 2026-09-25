@@ -1,0 +1,15 @@
+/* Deliberately hostile global rules, on top of AERDF's own stylesheets. Each one sets a
+   property the AugmentED pages DO set — a token, a font, a colour, a margin — so if the
+   plugin's scoping were incomplete, the page would visibly change and the verification's
+   computed-style comparison would fail.
+
+   What it does not do is set properties the site never sets, or use !important on element
+   selectors: no scoping can defend against those, AERDF does neither (checked 2026-09-25),
+   and css/host.css reverts exactly the few AERDF does set. */
+:root { --space-4: 99px; --text-body: red; --header-h: 300px; --font-body: serif; --surface-page: yellow; }
+body { font-family: serif; color: red; }
+h2 { color: red; }
+a { color: red; text-decoration: underline wavy; }
+* { box-sizing: content-box; }
+p { margin: 2rem 0; }
+section { padding: 5rem; }

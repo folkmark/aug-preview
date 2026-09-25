@@ -7,6 +7,10 @@ name: Publish site to gh-pages
 # served (the design system's dev files and .otf sources, the parked Approach scrub)
 # is left out there, in copyDir(), because this job publishes whatever _site holds.
 #
+# A second job, `plugin`, checks and packages the WordPress plugin
+# (wordpress-handoff/plugin/augmented-ed/). It runs beside the site build, never before
+# it, so a stale plugin fails its own check and cannot stop the site from publishing.
+#
 # gh-pages holds build output and nothing else, so each publish replaces it with a
 # single orphan commit rather than adding to it. Left to accumulate it would carry
 # every superseded copy of every re-encoded frame forever, which is how the branch
@@ -56,3 +60,40 @@ jobs:
           git push -q --force \
             "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" \
             HEAD:gh-pages
+
+  # The WordPress plugin. Its page templates, stylesheet and data are generated from the
+  # committed export by tools/build-wp-plugin.mjs, and committed; --check regenerates them in
+  # memory and fails if the committed files differ, so a change to index.html that was
+  # re-exported but not regenerated cannot merge unnoticed. It also runs php -l over the
+  # plugin and renders every team tile through PHP against the export.
+  #
+  # The assembled plugin — the runtime plus exactly the assets the pages use, about 22 MB —
+  # is uploaded as this run's artifact. Download it from the run's summary page: the zip
+  # GitHub gives you has augmented-ed/ at its root, which is what WordPress's Upload Plugin
+  # expects. It packages the licensed Avenir files, so it is never put on gh-pages or a
+  # release. This repository is public, so any signed-in GitHub user can download a run's
+  # artifacts. That exposes nothing new, since the same fonts are committed under _ds/.
+  plugin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install the generator's dependencies
+        run: npm i --no-save linkedom@0.18.13 postcss@8.5.28 postcss-selector-parser@7.1.6
+
+      - name: Check the plugin matches the export
+        run: node tools/build-wp-plugin.mjs --check
+
+      - name: Assemble the plugin
+        run: node tools/build-wp-plugin.mjs --assemble dist
+
+      - name: Upload the plugin
+        uses: actions/upload-artifact@v4
+        with:
+          name: augmented-ed-plugin
+          path: dist/
+          retention-days: ${{ github.ref == 'refs/heads/main' && 90 || 14 }}

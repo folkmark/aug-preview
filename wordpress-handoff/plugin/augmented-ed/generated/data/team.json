@@ -1,0 +1,591 @@
+{
+  "parent": {
+    "slug": "augmented-team",
+    "name": "AugmentED Team"
+  },
+  "groups": [
+    {
+      "slug": "augmented-leadership",
+      "name": "Leadership",
+      "order": 1
+    },
+    {
+      "slug": "augmented-research-partners",
+      "name": "Research Partners",
+      "order": 2
+    },
+    {
+      "slug": "augmented-education-fellows",
+      "name": "Education Fellows",
+      "order": 3
+    },
+    {
+      "slug": "augmented-technology-and-design-partners",
+      "name": "Technology and Design Partners",
+      "order": 4
+    }
+  ],
+  "existing": [
+    "sherry-lachman",
+    "caitlin-mills"
+  ],
+  "people": [
+    {
+      "slug": "sherry-lachman",
+      "name": "Sherry Lachman",
+      "group": "augmented-leadership",
+      "sort": 1,
+      "role": "Founder & Executive Director",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/sherry-lachman-1920494/",
+      "website": "",
+      "photo": "sherry-lachman",
+      "bio": {
+        "paragraphs": [
+          "Sherry has dedicated her career to improving government systems for children and families as a senior policymaker in two presidential administrations, social entrepreneur, and public interest attorney.",
+          "Previously, she served as the head of social impact at OpenAI and led the division of the White House Office of Management and Budget charged with overseeing the development of education, labor, and social services policies and budgets. She founded and led Foster America, a nonprofit dedicated to reforming the U.S. child welfare system, and served as a domestic policy advisor to then-Vice President Biden in the Obama Administration.",
+          "Earlier in her career, she was a senior education counsel in the U.S. Senate and a children’s civil rights attorney at the Juvenile Law Center. Sherry holds a master’s in philosophy from the University of Cambridge, a master’s in public policy from Harvard, and a J.D. from Columbia."
+        ],
+        "description": "Sherry has dedicated her career to improving government systems for children and families as a senior policymaker in two presidential administrations, social entrepreneur, and public interest attorney."
+      }
+    },
+    {
+      "slug": "caitlin-mills",
+      "name": "Caitlin Mills",
+      "group": "augmented-leadership",
+      "sort": 2,
+      "role": "Co-Founder & Chief of Research and Impact",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/caitlin-mills-60107a350/",
+      "website": "",
+      "photo": "caitlin-mills",
+      "bio": {
+        "paragraphs": [
+          "Caitlin is an Associate Professor in the Educational Psychology Department at the University of Minnesota. She received her Ph.D. in Cognitive Psychology from the University of Notre Dame and completed postdoctoral training in Cognitive Neuroscience at the University of British Columbia.",
+          "Her research program centers on engagement, mind-wandering, and affect during complex learning and everyday life. She has published over 100 peer-reviewed papers and was recently awarded the Tom Trabasso Young Investigator Award from the Society for Text and Discourse. She serves on multiple editorial boards and has co-chaired several conferences including Educational Data Mining and Learning Analytics and Knowledge."
+        ],
+        "description": "Caitlin is an Associate Professor in the Educational Psychology Department at the University of Minnesota."
+      }
+    },
+    {
+      "slug": "raquel-romano",
+      "name": "Raquel Romano",
+      "group": "augmented-leadership",
+      "sort": 3,
+      "role": "Chief Technology Officer",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/romano/",
+      "website": "",
+      "photo": "raquel-romano",
+      "bio": {
+        "paragraphs": [
+          "Raquel is an engineering leader with experience ranging from startups to big tech to nonprofits to government. She has worked within the federal government to responsibly advance AI initiatives while minimizing risk and spent 9 years at Google as a software engineer on computer vision, accessibility, and social impact efforts.",
+          "Raquel holds a Ph.D. in Computer Science from MIT and a B.A. in Mathematics from Harvard. She is a founding member of Latinas in Computing and an advocate and mentor for people entering computing fields through nontraditional paths."
+        ],
+        "description": "Raquel is an engineering leader with experience ranging from startups to big tech to nonprofits to government."
+      }
+    },
+    {
+      "slug": "jenny-bradbury",
+      "name": "Jenny Bradbury",
+      "group": "augmented-leadership",
+      "sort": 4,
+      "role": "Vice President of Education Innovation and Partnerships",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/jennysbradbury/",
+      "website": "",
+      "photo": "jenny-bradbury",
+      "bio": {
+        "paragraphs": [
+          "Jenny leads educator recruitment and training for AugmentED’s R&D efforts, builds and manages cross-disciplinary teams, and establishes networks organized around common education goals.",
+          "Prior to joining AugmentED, she served as Senior Director of R&D for EdTech and Emerging Technologies at Digital Promise, where she brought together educators, technology developers, and researchers to co-design innovations with and for historically and systematically excluded learners. She helped develop and operationalize the Inclusive Innovation model, an R&D approach rooted in community that elevates the voices of those with greatest proximity to challenges and solutions.",
+          "Jenny has also held leadership positions at Discovery Education and the Network for Teaching Entrepreneurship, and began her career as a high school English and Humanities teacher."
+        ],
+        "description": "Jenny leads educator recruitment and training for AugmentED’s R&D efforts, builds and manages cross-disciplinary teams, and establishes networks organized around common education goals."
+      }
+    },
+    {
+      "slug": "abby-petre",
+      "name": "Abby (Csaba) Petre",
+      "group": "augmented-leadership",
+      "sort": 5,
+      "role": "Head of Engineering",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/csaba-abby-petre-3618708a/",
+      "website": "https://asingularity.github.io/",
+      "photo": "abby-petre",
+      "bio": {
+        "paragraphs": [
+          "Abby is a software developer and technical lead, specializing in taking projects from research prototypes to deployed products in startup environments.",
+          "Previously, she has led teams as an early employee and as a co-founder at several early-stage startups, specializing in backend architecture and cloud infrastructure for robotics, IoT, and scientific AI applications.",
+          "She earned her M.S. in ECE from Georgia Tech and B.S. in EE from UCLA."
+        ],
+        "description": "Abby is a software developer and technical lead, specializing in taking projects from research prototypes to deployed products in startup environments."
+      }
+    },
+    {
+      "slug": "andrew-lan",
+      "name": "Andrew Lan",
+      "group": "augmented-research-partners",
+      "sort": 1,
+      "role": "Associate Professor of Computer Science, University of Massachusetts Amherst",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "",
+      "website": "https://www.cics.umass.edu/about/directory/andrew-lan",
+      "photo": "andrew-lan",
+      "bio": {
+        "paragraphs": [
+          "Andrew Lan develops artificial intelligence (AI) and especially natural language processing (NLP) methods to enable scalable and effective personalized learning in education. His research covers areas such as learner modeling, personalization, content generation, and human-in-the-loop AI."
+        ],
+        "description": "Andrew Lan develops artificial intelligence (AI) and especially natural language processing (NLP) methods to enable scalable and effective personalized learning in education."
+      }
+    },
+    {
+      "slug": "ryan-baker",
+      "name": "Ryan Baker",
+      "group": "augmented-research-partners",
+      "sort": 2,
+      "role": "Professor of Artificial Intelligence and Education, Adelaide University",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "",
+      "website": "https://learninganalytics.upenn.edu/ryanbaker/",
+      "photo": "ryan-baker",
+      "bio": {
+        "paragraphs": [
+          "Ryan uses Educational Data Mining/Learning Analytics to understand how students interact with and learn from digital learning platforms. He develops automated detectors that assess constructs such as student engagement and behavior in real time. Ryan is also an Adjunct Professor at University of Pennsylvania’s Graduate School of Education and directs the Penn Center for Learning Analytics."
+        ],
+        "description": "Ryan uses Educational Data Mining/Learning Analytics to understand how students interact with and learn from digital learning platforms."
+      }
+    },
+    {
+      "slug": "angela-stewart",
+      "name": "Angela E.B. Stewart",
+      "group": "augmented-research-partners",
+      "sort": 3,
+      "role": "Assistant Professor, University of Pittsburgh",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/angelastewart1/",
+      "website": "https://www.angelaebstewart.com/",
+      "photo": "angela-stewart",
+      "bio": {
+        "paragraphs": [
+          "Angela conducts research at the intersection of learning sciences, AI, and human-computer interaction. She uses multimodal data to understand students’ cognitive and social states in collaborative STEM learning, focusing on equitable educational technologies that support student and teacher agency."
+        ],
+        "description": "Angela conducts research at the intersection of learning sciences, AI, and human-computer interaction."
+      }
+    },
+    {
+      "slug": "laura-allen",
+      "name": "Laura Allen",
+      "group": "augmented-research-partners",
+      "sort": 4,
+      "role": "Associate Professor, University of Minnesota",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/laura-allen-37344528/",
+      "website": "https://edpsych.umn.edu/laura-allen",
+      "photo": "laura-allen",
+      "bio": {
+        "paragraphs": [
+          "Laura studies how people learn and communicate through text and discourse. She uses computational linguistics to analyze the detailed, nuanced processes of learning, and then applies these insights to design adaptive educational technologies."
+        ],
+        "description": "Laura studies how people learn and communicate through text and discourse."
+      }
+    },
+    {
+      "slug": "blair-lehman",
+      "name": "Blair Lehman",
+      "group": "augmented-research-partners",
+      "sort": 5,
+      "role": "Senior Scientist, Brighter Research",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/blair-lehman-bb043b11/",
+      "website": "https://sites.google.com/site/blairlehman/home",
+      "photo": "blair-lehman",
+      "bio": {
+        "paragraphs": [
+          "Blair studies student emotional and motivational states during learning and assessment. Her research focuses on developing personalized educational systems that are sensitive to students’ experience with the educational system, personal characteristics, and the contexts in which they live and learn to promote engagement and deeper learning."
+        ],
+        "description": "Blair studies student emotional and motivational states during learning and assessment."
+      }
+    },
+    {
+      "slug": "isa-peczuh",
+      "name": "Isa Peczuh",
+      "group": "augmented-research-partners",
+      "sort": 6,
+      "role": "PhD Candidate, University of Minnesota",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/isa-peczuh/",
+      "website": "https://marisapeczuh.wixsite.com/website",
+      "photo": "isa-peczuh",
+      "bio": {
+        "paragraphs": [
+          "Isa studies how young people construct and negotiate identity across relationships and contexts, over time, and within systemic inequities. She uses qualitative methods to explore identity processes in STEM and the ways that families shape STEM identity development."
+        ],
+        "description": "Isa studies how young people construct and negotiate identity across relationships and contexts, over time, and within systemic inequities."
+      }
+    },
+    {
+      "slug": "aarav-kalkar",
+      "name": "Aarav Kalkar",
+      "group": "augmented-research-partners",
+      "sort": 7,
+      "role": "Data Scientist",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/aaravkalkar/",
+      "website": "",
+      "photo": "aarav-kalkar",
+      "bio": null
+    },
+    {
+      "slug": "byungyeon-yun",
+      "name": "Byungyeon Yun",
+      "group": "augmented-research-partners",
+      "sort": 8,
+      "role": "Graduate Student, University of Minnesota",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/byungyeon-yun-a6671b425/",
+      "website": "",
+      "photo": "byungyeon-yun",
+      "bio": null
+    },
+    {
+      "slug": "stephen-hutt",
+      "name": "Stephen Hutt",
+      "group": "augmented-research-partners",
+      "sort": 9,
+      "role": "Assistant Professor, University of Minnesota",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/stephen-j-hutt/",
+      "website": "",
+      "photo": "stephen-hutt",
+      "bio": null
+    },
+    {
+      "slug": "katie-butler",
+      "name": "Katie Butler",
+      "group": "augmented-research-partners",
+      "sort": 10,
+      "role": "",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/katie-quinton-butler-1a9187125/",
+      "website": "",
+      "photo": "katie-butler",
+      "bio": null
+    },
+    {
+      "slug": "alexandra-wiggins",
+      "name": "Alexandra (Lexi) Wiggins",
+      "group": "augmented-education-fellows",
+      "sort": 1,
+      "role": "Humanities Teacher, 504 Coordinator",
+      "affiliation": "High Tech High Mesa",
+      "location": "San Diego, CA",
+      "linkedin": "",
+      "website": "https://www.hightechhigh.org/staff/alexandra-wiggins/",
+      "photo": "alexandra-wiggins",
+      "bio": {
+        "paragraphs": [
+          "Lexi has been teaching with High Tech High for eight years and is passionate about developing students into informed, engaged global citizens. She is especially committed to supporting diverse learners and helping students build the literacy and critical thinking skills they need to thoughtfully navigate the world."
+        ],
+        "description": "Lexi has been teaching with High Tech High for eight years and is passionate about developing students into informed, engaged global citizens."
+      }
+    },
+    {
+      "slug": "chris-mutter",
+      "name": "Chris Mutter",
+      "group": "augmented-education-fellows",
+      "sort": 2,
+      "role": "Multimedia Teacher",
+      "affiliation": "High Tech High International",
+      "location": "San Diego, CA",
+      "linkedin": "",
+      "website": "https://www.hightechhigh.org/staff/chris-mutter/",
+      "photo": "",
+      "bio": {
+        "paragraphs": [
+          "Chris Mutter has been teaching for over 20 years and joined High Tech High International in 2012, where he teaches 12th grade Digital Video Communications (CTE) through project-based learning. He is passionate about digital storytelling and helping students build the confidence to trust their ideas and express themselves in creative work they can be proud of."
+        ],
+        "description": "Chris Mutter has been teaching for over 20 years and joined High Tech High International in 2012, where he teaches 12th grade Digital Video Communications (CTE) through project-based learning."
+      }
+    },
+    {
+      "slug": "christopher-hanks",
+      "name": "Christopher Hanks",
+      "group": "augmented-education-fellows",
+      "sort": 3,
+      "role": "Principal on Special Assignment, Innovation Design",
+      "affiliation": "Grand Rapids Public Museum High School",
+      "location": "Grand Rapids, MI",
+      "linkedin": "https://www.linkedin.com/in/christopher-hanks-4a0ba92b9/",
+      "website": "",
+      "photo": "christopher-hanks",
+      "bio": null
+    },
+    {
+      "slug": "tom-peterson",
+      "name": "Tom Peterson",
+      "group": "augmented-education-fellows",
+      "sort": 4,
+      "role": "Social Studies Teacher",
+      "affiliation": "Grand Rapids Public Museum High School",
+      "location": "Grand Rapids, MI",
+      "linkedin": "https://www.linkedin.com/in/tom-peterson-25776477/",
+      "website": "",
+      "photo": "tom-peterson",
+      "bio": null
+    },
+    {
+      "slug": "ben-hoff",
+      "name": "Ben Hoff",
+      "group": "augmented-education-fellows",
+      "sort": 5,
+      "role": "Science & Computer Science Teacher",
+      "affiliation": "Grand Rapids Public Museum High School",
+      "location": "Grand Rapids, MI",
+      "linkedin": "https://www.linkedin.com/in/ben-hoff-240635272/",
+      "website": "",
+      "photo": "ben-hoff",
+      "bio": null
+    },
+    {
+      "slug": "nikki-wallace",
+      "name": "Nikki Wallace",
+      "group": "augmented-education-fellows",
+      "sort": 6,
+      "role": "Science Teacher, Director of Research & Innovation",
+      "affiliation": "Crosstown High School",
+      "location": "Memphis, TN",
+      "linkedin": "https://www.linkedin.com/in/nikki-wallace-hmw/",
+      "website": "",
+      "photo": "nikki-wallace",
+      "bio": {
+        "paragraphs": [
+          "Nikki Wallace is the Head of Research and Innovation and Lead Science Instructor at Crosstown High School in Memphis and a former scientific researcher, bringing 15 years of teaching experience to her work designing interdisciplinary STEM and project based learning experiences. She is passionate about empowering students to tackle real world community challenges through biotechnology, AI, and hands on innovation that expands access and opportunity for all learners."
+        ],
+        "description": "Nikki Wallace is the Head of Research and Innovation and Lead Science Instructor at Crosstown High School in Memphis and a former scientific researcher, bringing 15 years of teaching experience to her work designing interdisciplinary STEM and project based learning experiences."
+      }
+    },
+    {
+      "slug": "danie-cowden",
+      "name": "Danie Cowden",
+      "group": "augmented-education-fellows",
+      "sort": 7,
+      "role": "STEM, Design, and Media Teacher",
+      "affiliation": "Crosstown High School",
+      "location": "Memphis, TN",
+      "linkedin": "https://www.linkedin.com/in/danie-cowden/",
+      "website": "",
+      "photo": "danie-cowden",
+      "bio": {
+        "paragraphs": [
+          "Danie Cowden is a veteran educator with 12 years of classroom experience focused on design, technology, and STEM, and holds multiple professional certifications in technology and design. With more than 30 years as a professional photographer and designer, she brings a practitioner’s lens to education, bridging creative industry expertise with innovative instructional practice."
+        ],
+        "description": "Danie Cowden is a veteran educator with 12 years of classroom experience focused on design, technology, and STEM, and holds multiple professional certifications in technology and design."
+      }
+    },
+    {
+      "slug": "joshua-sloan",
+      "name": "Joshua Sloan",
+      "group": "augmented-education-fellows",
+      "sort": 8,
+      "role": "Math Teacher, Math Department Lead",
+      "affiliation": "Crosstown High School",
+      "location": "Memphis, TN",
+      "linkedin": "https://www.linkedin.com/in/joshua-sloan-746aa1226/",
+      "website": "",
+      "photo": "joshua-sloan",
+      "bio": {
+        "paragraphs": [
+          "Joshua Sloan is the Math Department Chair at Crosstown High School in Memphis, where he has spent 4 of his 10 years teaching. He is passionate about building positive math identity and character through project based learning in the math classroom."
+        ],
+        "description": "Joshua Sloan is the Math Department Chair at Crosstown High School in Memphis, where he has spent 4 of his 10 years teaching."
+      }
+    },
+    {
+      "slug": "mohammed-al-harthy",
+      "name": "Mohammed Al Harthy",
+      "group": "augmented-education-fellows",
+      "sort": 9,
+      "role": "Computer Science Teacher, 9th Grade Lead",
+      "affiliation": "Crosstown High School",
+      "location": "Memphis, TN",
+      "linkedin": "https://www.linkedin.com/in/mohammed-al-harthy/",
+      "website": "",
+      "photo": "mohammed-al-harthy",
+      "bio": {
+        "paragraphs": [
+          "Mohammed Al Harthy is the 9th Grade Team Lead and Computer Science Instructor at Crosstown High School in Memphis, where he has spent five years teaching. With a background in engineering and education, he is passionate about helping students find their passion in tech and game development, and start their computer science careers."
+        ],
+        "description": "Mohammed Al Harthy is the 9th Grade Team Lead and Computer Science Instructor at Crosstown High School in Memphis, where he has spent five years teaching."
+      }
+    },
+    {
+      "slug": "sarah-zaner",
+      "name": "Sarah Zaner",
+      "group": "augmented-technology-and-design-partners",
+      "sort": 1,
+      "role": "Co-founder, Bendable Labs",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "",
+      "website": "https://bendablelabs.com/who_we_are/sarah-zaner",
+      "photo": "sarah-zaner",
+      "bio": {
+        "paragraphs": [
+          "Sarah has spent over 25 years in edtech, learning sciences, and human-centered design. She previously led R&D teams at IDEO, SRI International, and Scholastic and has led design and development of award-winning learning tools, including Read 180 and Math 180."
+        ],
+        "description": "Sarah has spent over 25 years in edtech, learning sciences, and human-centered design."
+      }
+    },
+    {
+      "slug": "lisa-peterson",
+      "name": "Lisa Peterson",
+      "group": "augmented-technology-and-design-partners",
+      "sort": 2,
+      "role": "Product Design Consultant",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/lisa-peterson/",
+      "website": "",
+      "photo": "lisa-peterson",
+      "bio": {
+        "paragraphs": [
+          "Lisa is a product designer with more than 25 years of experience, including time at Google and eBay. She brings expertise in product strategy, user research, and designing complex digital products."
+        ],
+        "description": "Lisa is a product designer with more than 25 years of experience, including time at Google and eBay."
+      }
+    },
+    {
+      "slug": "neil-sharma",
+      "name": "Neil Sharma",
+      "group": "augmented-technology-and-design-partners",
+      "sort": 3,
+      "role": "Engineering Consultant",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/neilshar/",
+      "website": "",
+      "photo": "neil-sharma",
+      "bio": {
+        "paragraphs": [
+          "Neil is a startup founder, full stack engineer, and public servant who turns messy, ambiguous problems into software that meaningfully impacts people’s lives. He builds products across both Silicon Valley and the federal government."
+        ],
+        "description": "Neil is a startup founder, full stack engineer, and public servant who turns messy, ambiguous problems into software that meaningfully impacts people’s lives."
+      }
+    },
+    {
+      "slug": "joan-lee",
+      "name": "Joan Lee",
+      "group": "augmented-technology-and-design-partners",
+      "sort": 4,
+      "role": "Project Consultant & Manager",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/about-joan-lee/",
+      "website": "",
+      "photo": "joan-lee",
+      "bio": null
+    },
+    {
+      "slug": "brandon-bodnar",
+      "name": "Brandon Bodnar",
+      "group": "augmented-technology-and-design-partners",
+      "sort": 5,
+      "role": "Principal Engineer",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "",
+      "website": "",
+      "photo": "",
+      "bio": {
+        "paragraphs": [
+          "Brandon is a hands-on software engineer who turns complex technical challenges into production-ready AI/ML systems, data platforms, and secure cloud infrastructure across civic technology, enterprise, and startup environments.",
+          "Previously, he co-built a federal department’s first generative AI platform and led engineering teams delivering critical systems for immigration and humanitarian missions. He has also built feature stores and model serving pipelines to operationalize petabyte-scale data at John Deere and developed trust and safety tools to detect harmful content at Facebook.",
+          "Brandon holds a B.S. in Computer Science from Iowa State University and a J.D. from Cornell Law School. He is also a U.S. Air Force veteran who served as an Arabic linguist supporting counterterrorism operations."
+        ],
+        "description": "Brandon is a hands-on software engineer who turns complex technical challenges into production-ready AI/ML systems, data platforms, and secure cloud infrastructure across civic technology, enterprise, and startup environments."
+      }
+    },
+    {
+      "slug": "sonia-prusaitis",
+      "name": "Sonia Prusaitis",
+      "group": "augmented-technology-and-design-partners",
+      "sort": 6,
+      "role": "Program Manager",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/soniaprusaitis/",
+      "website": "",
+      "photo": "sonia-prusaitis",
+      "bio": null
+    },
+    {
+      "slug": "tom-keefe",
+      "name": "Tom Keefe",
+      "group": "augmented-technology-and-design-partners",
+      "sort": 7,
+      "role": "",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/tom-keefe/",
+      "website": "",
+      "photo": "tom-keefe",
+      "bio": null
+    },
+    {
+      "slug": "allison-rapoport",
+      "name": "Allison Rapoport",
+      "group": "augmented-technology-and-design-partners",
+      "sort": 8,
+      "role": "",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/allison-rapoport",
+      "website": "",
+      "photo": "allison-rapoport",
+      "bio": null
+    }
+  ],
+  "archived": [
+    {
+      "slug": "adam-bachman",
+      "name": "Adam Bachman"
+    },
+    {
+      "slug": "suzanna-smith",
+      "name": "Suzanna Smith"
+    },
+    {
+      "slug": "danielle-ragavanis",
+      "name": "Danielle Ragavanis"
+    },
+    {
+      "slug": "alondra-ramos",
+      "name": "Alondra Ramos"
+    },
+    {
+      "slug": "philip-baker",
+      "name": "Philip Baker"
+    },
+    {
+      "slug": "ted-cuevas",
+      "name": "Ted Cuevas"
+    }
+  ]
+}

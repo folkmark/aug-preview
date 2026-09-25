@@ -1,10 +1,10 @@
-// Exports the site's structured content as data files, for the WordPress rebuild.
+// Exports the site's structured content as data files, for the WordPress plugin.
 //
 // The prototype has no CMS: the team grids, the research cards, the cycle steps and
-// the per-page metadata all live as markup. The WordPress developer models them as
-// post types and fields (JetEngine / CPT UI on the target install), and the honest
-// source for that is data, not HTML — scraping 29 team cards by hand is an hour of
-// transcription errors waiting to be found in production.
+// the per-page metadata all live as markup. In WordPress the team becomes posts of
+// aerdf.org's own team type, imported by the plugin, and the honest source for that is
+// data, not HTML — scraping two dozen team cards by hand is an hour of transcription errors
+// waiting to be found in production. tools/build-wp-plugin.mjs reads what this writes.
 //
 // This reads the rendered pages in wordpress-handoff/pages/ — the same files the
 // templates are built from, so the two cannot disagree — and writes JSON and CSV
@@ -22,6 +22,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readRoster, surfaced, hasPhoto, hasBio } from './lib/team.mjs';
 
 const root = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
 const PAGES_DIR = path.join(root, 'wordpress-handoff/pages');
@@ -87,7 +88,30 @@ const team = heads.map((m, k) => {
   // href inside the tag. The relational count below is what catches a shape this misses.
   const bioUrl = card.match(/<a\b[^>]*?\shref="([^"]*\/team\/[a-z0-9-]+\/)"[^>]*>\s*Read bio/)?.[1] ?? null;
 
+  // THE SLUG, which is the key everything downstream joins on: the bio page's URL, the
+  // headshot's filename, and — in the WordPress plugin — the team post it is imported as
+  // (tools/build-wp-plugin.mjs upserts by it, so it must never be derived two ways). A bio
+  // tile states it outright as its id; the bio link and the photo filename state it again.
+  // Where none of them exists — a person with no bio and no photograph yet — it comes from
+  // the name, the way the tile ids were made: accents folded, the parenthetical dropped
+  // ("Abby (Csaba) Petre" is abby-petre). Every source present has to agree, because a
+  // disagreement means a renamed file or a hand-edited id, and the import would quietly
+  // create a second post for the same person.
+  const fromName = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\([^)]*\)/g, '')
+    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  const said = {
+    id: before.match(/<div class="bio-tile"[^>]*\sid="([a-z0-9-]+)"(?:(?!<h3)[\s\S])*$/)?.[1],
+    bio: bioUrl?.match(/\/team\/([a-z0-9-]+)\/$/)?.[1],
+    photo: photo?.match(/assets\/team\/([a-z0-9-]+)\.webp$/)?.[1],
+  };
+  const slug = said.id ?? said.bio ?? said.photo ?? fromName;
+  for (const [src, v] of Object.entries(said)) {
+    expect(v === undefined || v === slug, `team: ${name}'s ${src} says "${v}" but the slug is "${slug}"`);
+  }
+  expect(/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug), `team: ${name} has an unusable slug "${slug}"`);
+
   return {
+    slug,
     name,
     group: groupAt(m.index),
     role: role ? decode(role) : null,
@@ -98,7 +122,32 @@ const team = heads.map((m, k) => {
     links,
   };
 });
-expect(team.length === 29, `team: expected 29 people, parsed ${team.length}`);
+// What the page should show is what the roster says surfaces (tools/lib/team.mjs), so
+// every count below comes from there rather than being pinned by hand. They stay exact:
+// each is a tripwire for a parse that silently lost something, and a number that moves with
+// the roster still fails the moment the export and the roster disagree.
+const roster = readRoster(root);
+const onPage = surfaced(roster);
+expect(team.length === onPage.length, `team: the roster puts ${onPage.length} people on the page, parsed ${team.length}`);
+expect(new Set(team.map((p) => p.slug)).size === team.length, 'team: two people share a slug');
+
+// And person by person: the export is the page as rendered, the roster is what the page was
+// written from, so any difference is a regex that has drifted from the markup.
+const groupName = new Map(roster.groups.map((g) => [g.key, g.name]));
+onPage.forEach((r, i) => {
+  const t = team[i];
+  if (!t) return;
+  const want = {
+    slug: r.slug, name: r.name, group: groupName.get(r.group), role: r.role, affiliation: r.affiliation,
+    location: r.location, photo: hasPhoto(r) ? `assets/team/${r.slug}.webp` : null,
+    bio: hasBio(root, r.slug) ? r.slug : null,
+    links: [r.linkedin && { label: 'LinkedIn', url: r.linkedin }, r.website && { label: 'Website', url: r.website }].filter(Boolean),
+  };
+  const got = { ...t, bio: t.bioUrl?.match(/\/team\/([a-z0-9-]+)\/$/)?.[1] ?? null };
+  for (const [k, v] of Object.entries(want)) {
+    expect(JSON.stringify(got[k]) === JSON.stringify(v), `team: ${r.slug}'s ${k} exported as ${JSON.stringify(got[k])}, the roster says ${JSON.stringify(v)}`);
+  }
+});
 
 // A role line is no longer on every card. In September five people were added from the
 // website info form before anyone had given their titles, and the client chose to show
@@ -108,18 +157,19 @@ expect(team.length === 29, `team: expected 29 people, parsed ${team.length}`);
 //
 // Not simply dropped, though: every card used to be asserted to have one, and that check is
 // what would catch the role <p> changing shape and every role in the export silently going
-// to null. So the number without one is pinned, the same way the people and headshot counts
-// are, and filling in a title means changing this 4 on purpose.
+// to null. So the number without one is checked against the roster, the same way the people
+// and headshot counts are, and filling in a title is a roster edit.
 const roleless = team.filter((p) => !p.role).map((p) => p.name);
+const rolelessWant = onPage.filter((p) => !p.role).length;
 expect(
-  roleless.length === 4,
-  `team: expected 4 people without a role line, parsed ${roleless.length} (${roleless.join(', ')}) — ` +
+  roleless.length === rolelessWant,
+  `team: the roster has ${rolelessWant} people without a role, parsed ${roleless.length} (${roleless.join(', ')}) — ` +
     'has the role <p> changed shape?'
 );
 expect(new Set(team.map((p) => p.group)).size >= 4, 'team: expected at least 4 groups');
 
 // Bio links asserted RELATIONALLY, not against a hard-coded count. How many people have
-// a bio is not a fixed fact about this site the way 29 people or 4 redirects are — it went
+// a bio is not a fixed fact about this site the way the four redirects are — it went
 // from 4 to 21 in a day, and a new bio should be a markup change, not a build break. Counting the "Read bio" links in
 // the raw markup and matching still fails loudly on the case that matters: a link that is
 // on the page and did not survive the parse, which is what a changed href shape does.
@@ -135,9 +185,10 @@ expect(
 // React preserves author attribute order for everything but style, so writing
 // `<img class="..." src="...">` in index.html takes every headshot to null with a green
 // build and hands the rebuild a photo-less team. This is the cheapest possible guard.
+const photosWant = onPage.filter(hasPhoto).length;
 expect(
-  team.filter((p) => p.photo).length === 25,
-  `team: expected 25 headshots, parsed ${team.filter((p) => p.photo).length} — ` +
+  team.filter((p) => p.photo).length === photosWant,
+  `team: the roster has ${photosWant} headshots on the page, parsed ${team.filter((p) => p.photo).length} — ` +
     'has src stopped being the first attribute on a team <img>?'
 );
 

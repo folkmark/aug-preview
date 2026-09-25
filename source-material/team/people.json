@@ -1,0 +1,1387 @@
+{
+  "groups": [
+    {
+      "key": "leadership",
+      "name": "Leadership"
+    },
+    {
+      "key": "research-partners",
+      "name": "Research Partners"
+    },
+    {
+      "key": "education-fellows",
+      "name": "Education Fellows"
+    },
+    {
+      "key": "technology-and-design-partners",
+      "name": "Technology and Design Partners"
+    }
+  ],
+  "tags": {
+    "Archived": "Off the site on purpose. Keeps their group and everything else, so bringing them back is removing the tag."
+  },
+  "people": [
+    {
+      "id": 1,
+      "slug": "sherry-lachman",
+      "name": "Sherry Lachman",
+      "group": "leadership",
+      "order": 1,
+      "tags": [],
+      "role": "Founder & Executive Director",
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/sherry-lachman-1920494/",
+      "website": null,
+      "photo": {
+        "master": "sherry-lachman.jpg",
+        "from": "direct",
+        "ref": "head-and-shoulders frame Sherry chose on 2026-09-22",
+        "approved": false,
+        "upscale": 0.47,
+        "notes": "She had two headshots taken: a 3000x4500 studio portrait framed from the waist up, shipped from 15 September, and this 1365x2048 head-and-shoulders frame on green, which she asked for on the 22nd because the square tile cut the portrait mid-torso. The portrait is `git show d651d4b:source-material/image-sources/team/sherry-lachman.jpg`."
+      },
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": false
+      },
+      "form": null,
+      "notes": null,
+      "actions": [
+        "[joan] Mark the published bio Approved in the tracker."
+      ],
+      "history": [
+        "2026-09-25 linkedin: — → https://www.linkedin.com/in/sherry-lachman-1920494/ (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
+      ]
+    },
+    {
+      "id": 2,
+      "slug": "caitlin-mills",
+      "name": "Caitlin Mills",
+      "group": "leadership",
+      "order": 2,
+      "tags": [],
+      "role": "Co-Founder & Chief of Research and Impact",
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/caitlin-mills-60107a350/",
+      "website": null,
+      "photo": {
+        "master": "caitlin-mills.png",
+        "from": "tracker",
+        "ref": "Website Bio tracking sheet, Headshots column",
+        "approved": false,
+        "upscale": 0.31
+      },
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": false
+      },
+      "form": null,
+      "notes": null,
+      "actions": [
+        "[joan] Mark the published bio Approved in the tracker."
+      ],
+      "history": [
+        "2026-09-25 linkedin: — → https://www.linkedin.com/in/caitlin-mills-60107a350/ (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
+      ]
+    },
+    {
+      "id": 3,
+      "slug": "raquel-romano",
+      "name": "Raquel Romano",
+      "group": "leadership",
+      "order": 3,
+      "tags": [],
+      "role": "Chief Technology Officer",
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/romano/",
+      "website": null,
+      "photo": {
+        "master": "raquel-romano.png",
+        "from": "tracker",
+        "ref": "Website Bio tracking sheet, Headshots column",
+        "approved": false,
+        "upscale": 0.48,
+        "edgesFaded": "left 10%, right 7%, bottom 7%",
+        "notes": "Her form upload is this file, byte for byte."
+      },
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": false
+      },
+      "form": {
+        "submitted": "2026-07-30 16:06:09",
+        "name": "Raquel Romano",
+        "linkedin": "https://www.linkedin.com/in/romano",
+        "other": null,
+        "headshot": "1dRyNHA6ElIU4Nbi1AuVm6xyN0LZHFMtw",
+        "group": null,
+        "outcome": "same_file_as_site",
+        "detail": "byte-identical to the master already used"
+      },
+      "notes": null,
+      "actions": [
+        "[joan] Optional: a looser photo; the current one fades slightly at the bottom.",
+        "[joan] Mark the published bio Approved in the tracker."
+      ],
+      "history": []
+    },
+    {
+      "id": 4,
+      "slug": "jenny-bradbury",
+      "name": "Jenny Bradbury",
+      "group": "leadership",
+      "order": 4,
+      "tags": [],
+      "role": "Vice President of Education Innovation and Partnerships",
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/jennysbradbury/",
+      "website": null,
+      "photo": {
+        "master": "jenny-bradbury.jpg",
+        "from": "form",
+        "ref": "https://drive.google.com/open?id=1nfVNOa1p4OHRGuz392GrJ__XdosjoGM_",
+        "approved": false,
+        "upscale": 0.19,
+        "notes": "The form upload as submitted (7 Aug); a placeholder until then."
+      },
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": false
+      },
+      "form": {
+        "submitted": "2026-08-07 14:32:35",
+        "name": "Jenny Bradbury",
+        "linkedin": "www.linkedin.com/in/jennysbradbury",
+        "other": null,
+        "headshot": "1nfVNOa1p4OHRGuz392GrJ__XdosjoGM_",
+        "group": null,
+        "outcome": "used",
+        "detail": "3297×4121"
+      },
+      "notes": null,
+      "actions": [
+        "[joan] Mark the published bio Approved in the tracker."
+      ],
+      "history": [
+        "2026-09-24 headshot: placeholder → form upload (32a0c09)"
+      ]
+    },
+    {
+      "id": 5,
+      "slug": "andrew-lan",
+      "name": "Andrew Lan",
+      "group": "research-partners",
+      "order": 1,
+      "tags": [],
+      "role": "Associate Professor of Computer Science, University of Massachusetts Amherst",
+      "affiliation": null,
+      "location": null,
+      "linkedin": null,
+      "website": "https://www.cics.umass.edu/about/directory/andrew-lan",
+      "photo": {
+        "master": "andrew-lan.jpg",
+        "from": "institution",
+        "ref": "cics.umass.edu /files/2022-10/lan.jpg (203×203)",
+        "approved": false,
+        "upscale": 2,
+        "edgesFaded": "bottom 18%, left 10%",
+        "notes": "His only public portrait is 203x203, enlarged 2.0x to put his face at everyone else's height, so this is one of the two soft tiles until a better original arrives. cics.umass.edu serves it at 800x800 through an image style, and that is what the tracker has, but it is an upscale of this file with no extra detail: do not cut out from it."
+      },
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": true
+      },
+      "form": null,
+      "notes": null,
+      "actions": [
+        "[joan] Send a larger or looser photo; the current one stops inside the tile and fades where it ends."
+      ],
+      "history": [
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/andrew-lan/ (6008fab)"
+      ]
+    },
+    {
+      "id": 6,
+      "slug": "ryan-baker",
+      "name": "Ryan Baker",
+      "group": "research-partners",
+      "order": 2,
+      "tags": [],
+      "role": "Professor of Artificial Intelligence and Education, Adelaide University",
+      "affiliation": null,
+      "location": null,
+      "linkedin": null,
+      "website": "https://learninganalytics.upenn.edu/ryanbaker/",
+      "photo": {
+        "master": "ryan-baker.png",
+        "from": "tracker",
+        "ref": "Website Bio tracking sheet, Headshots column",
+        "approved": false,
+        "upscale": 1.72,
+        "edgesFaded": "bottom 23%, left 13%, top 6%",
+        "notes": "His only public portrait is 190x213, enlarged 1.7x, so this is one of the two soft tiles until a better original arrives. The photo stops at his hairline, and his is the only top edge the cut-out fades."
+      },
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": true
+      },
+      "form": null,
+      "notes": null,
+      "actions": [
+        "[joan] Send a larger or looser photo; the current one stops inside the tile and fades where it ends."
+      ],
+      "history": [
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/ryan-baker/ (6008fab)"
+      ]
+    },
+    {
+      "id": 7,
+      "slug": "angela-stewart",
+      "name": "Angela E.B. Stewart",
+      "group": "research-partners",
+      "order": 3,
+      "tags": [],
+      "role": "Assistant Professor, University of Pittsburgh",
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/angelastewart1/",
+      "website": "https://www.angelaebstewart.com/",
+      "photo": {
+        "master": "angela-stewart.jpg",
+        "from": "institution",
+        "ref": "her own page (1000×1407)",
+        "approved": false,
+        "upscale": 0.73,
+        "notes": "Her form upload is the same photograph cropped to 888x1088, and the tracker's copy a 680x600 Drupal derivative, so the 1000x1407 from her own page stays."
+      },
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": true
+      },
+      "form": {
+        "submitted": "2026-08-03 09:32:29",
+        "name": "Angela Stewart",
+        "linkedin": "https://www.linkedin.com/in/angelastewart1/",
+        "other": "https://www.angelaebstewart.com/",
+        "headshot": "1PCIqoKMp0TQLrTuX4WkV-RyDMR1JZlMa",
+        "group": "Research",
+        "outcome": "smaller_than_site",
+        "detail": "same photograph cropped to 888×1088; the 1000×1407 master stays"
+      },
+      "notes": "The form says \"Angela Stewart\"; the site keeps the tracker's \"Angela E.B. Stewart\" (decided 2026-09-24).",
+      "actions": [],
+      "history": [
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/angela-stewart/ (6008fab)"
+      ]
+    },
+    {
+      "id": 8,
+      "slug": "laura-allen",
+      "name": "Laura Allen",
+      "group": "research-partners",
+      "order": 4,
+      "tags": [],
+      "role": "Associate Professor, University of Minnesota",
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/laura-allen-37344528/",
+      "website": "https://edpsych.umn.edu/laura-allen",
+      "photo": {
+        "master": "laura-allen.jpeg",
+        "from": "institution",
+        "ref": "University of Minnesota page (1200×1800)",
+        "approved": false,
+        "upscale": 0.51,
+        "notes": "The tracker's copy is 300x450 and her form upload 21.5 KB; the university's 1200x1800 is the master."
+      },
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": true
+      },
+      "form": {
+        "submitted": "2026-07-29 16:30:21",
+        "name": "Laura Allen",
+        "linkedin": "https://www.linkedin.com/in/laura-allen-37344528/",
+        "other": "https://edpsych.umn.edu/laura-allen",
+        "headshot": "14e8LirkjL7qVp_s0NOxUJ5GsjXlNI9Di",
+        "group": "Research",
+        "outcome": "smaller_than_site",
+        "detail": "21.5 KB; the site has a 1200×1800 master"
+      },
+      "notes": null,
+      "actions": [],
+      "history": [
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/laura-allen/ (6008fab)"
+      ]
+    },
+    {
+      "id": 9,
+      "slug": "blair-lehman",
+      "name": "Blair Lehman",
+      "group": "research-partners",
+      "order": 5,
+      "tags": [],
+      "role": "Senior Scientist, Brighter Research",
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/blair-lehman-bb043b11/",
+      "website": "https://sites.google.com/site/blairlehman/home",
+      "photo": {
+        "master": "blair-lehman.jpeg",
+        "from": "tracker",
+        "ref": "Website Bio tracking sheet, Headshots column",
+        "approved": false,
+        "upscale": 0.55,
+        "edgesFaded": "left 10%, bottom 9%, right 4%",
+        "notes": "Her form upload is 200x200, smaller than this."
+      },
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": true
+      },
+      "form": {
+        "submitted": "2026-07-29 09:40:10",
+        "name": "Blair Lehman",
+        "linkedin": "www.linkedin.com/in/blair-lehman-bb043b11",
+        "other": "Previous Employer: https://www.ets.org/research/author-bio/Lehman-Blair.html ; Google scholar: https://scholar.google.com/citations?user=gYD-dMYAAAAJ&hl=en ; Personal site: https://sites.google.com/site/blairlehman/home",
+        "headshot": "1Fr9ACQr982h7n49rc3FYzAJw1bAV5H9l",
+        "group": "Research",
+        "outcome": "smaller_than_site",
+        "detail": "200×200; the site has an 800×800"
+      },
+      "notes": null,
+      "actions": [
+        "[joan] Optional: a looser photo; the current one fades slightly at the bottom."
+      ],
+      "history": [
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/blair-lehman/ (6008fab)"
+      ]
+    },
+    {
+      "id": 10,
+      "slug": "isa-peczuh",
+      "name": "Isa Peczuh",
+      "group": "research-partners",
+      "order": 6,
+      "tags": [],
+      "role": "PhD Candidate, University of Minnesota",
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/isa-peczuh/",
+      "website": "https://marisapeczuh.wixsite.com/website",
+      "photo": {
+        "master": "isa-peczuh.jpg",
+        "from": "form",
+        "ref": "https://drive.google.com/open?id=1se8GtLpMVWgWvLNpgg7FpMLaEiL80nEk",
+        "approved": false,
+        "upscale": 0.5,
+        "notes": "The form upload as submitted (2 Aug); a placeholder until then."
+      },
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": true
+      },
+      "form": {
+        "submitted": "2026-08-02 09:16:01",
+        "name": "Isa Peczuh",
+        "linkedin": "https://www.linkedin.com/in/isa-peczuh?utm_source=share_via&utm_content=profile&utm_medium=member_ios",
+        "other": "https://marisapeczuh.wixsite.com/website",
+        "headshot": "1se8GtLpMVWgWvLNpgg7FpMLaEiL80nEk",
+        "group": "Research",
+        "outcome": "used",
+        "detail": "1170×1489"
+      },
+      "notes": null,
+      "actions": [],
+      "history": [
+        "2026-09-24 headshot: placeholder → form upload (32a0c09)",
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/isa-peczuh/ (6008fab)"
+      ]
+    },
+    {
+      "id": 11,
+      "slug": "aarav-kalkar",
+      "name": "Aarav Kalkar",
+      "group": "research-partners",
+      "order": 7,
+      "tags": [],
+      "role": "Data Scientist",
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/aaravkalkar/",
+      "website": null,
+      "photo": {
+        "master": "aarav-kalkar.jpg",
+        "from": "form",
+        "ref": "https://drive.google.com/open?id=1YiNdNmFZxQ9-jfg8NZ6RlXXOFtzmeOFm",
+        "approved": false,
+        "upscale": 0.41,
+        "edgesFaded": "bottom 8%",
+        "edgesExtended": "left 1%, right 1%",
+        "notes": "The form upload as submitted (22 Sep)."
+      },
+      "form": {
+        "submitted": "2026-09-22 17:23:34",
+        "name": "Aarav Kalkar",
+        "linkedin": "https://www.linkedin.com/in/aaravkalkar/",
+        "other": null,
+        "headshot": "1YiNdNmFZxQ9-jfg8NZ6RlXXOFtzmeOFm",
+        "group": "Research",
+        "outcome": "used",
+        "detail": "1210×1210"
+      },
+      "notes": null,
+      "actions": [
+        "[joan] Optional: a looser photo; the current one fades slightly at the bottom."
+      ],
+      "history": [
+        "2026-09-24 status: — → on_site (32a0c09)",
+        "2026-09-25 title: — → Data Scientist (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
+      ]
+    },
+    {
+      "id": 12,
+      "slug": "byungyeon-yun",
+      "name": "Byungyeon Yun",
+      "group": "research-partners",
+      "order": 8,
+      "tags": [],
+      "role": "Graduate Student, University of Minnesota",
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/byungyeon-yun-a6671b425/",
+      "website": null,
+      "photo": {
+        "master": "byungyeon-yun.jpg",
+        "from": "form",
+        "ref": "https://drive.google.com/open?id=1MiZwORsglGY-d42vXSG4xD0Ry9GLrpdr",
+        "approved": false,
+        "upscale": 0.79,
+        "edgesFaded": "left 18%, bottom 18%, right 18%",
+        "notes": "The form upload as submitted (28 Jul)."
+      },
+      "form": {
+        "submitted": "2026-07-28 23:08:32",
+        "name": "Byungyeon Yun",
+        "linkedin": "www.linkedin.com/in/byungyeon-yun-a6671b425",
+        "other": null,
+        "headshot": "1MiZwORsglGY-d42vXSG4xD0Ry9GLrpdr",
+        "group": "Research",
+        "outcome": "used",
+        "detail": "413×531"
+      },
+      "notes": null,
+      "actions": [
+        "[joan] Send a larger or looser photo; the current one stops inside the tile and fades where it ends."
+      ],
+      "history": [
+        "2026-09-24 status: — → on_site (32a0c09)",
+        "2026-09-25 title: — → Graduate Student, University of Minnesota (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
+      ]
+    },
+    {
+      "id": 13,
+      "slug": "stephen-hutt",
+      "name": "Stephen Hutt",
+      "group": "research-partners",
+      "order": 9,
+      "tags": [],
+      "role": "Assistant Professor, University of Minnesota",
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/stephen-j-hutt/",
+      "website": null,
+      "photo": {
+        "master": "stephen-hutt.jpg",
+        "from": "form",
+        "ref": "https://drive.google.com/open?id=14HLBQWxh0Xhya6qrV7wi3UOo5bDjG7K_",
+        "approved": false,
+        "upscale": 0.14,
+        "notes": "A 7.8 MB, 3648x5472 studio portrait on grey, the largest master. The Drive connector's session died on it every time, so it was fetched through a shared link on 25 September; it is the file as submitted, byte for byte. Downsampled 0.14x, with no fade or clamp."
+      },
+      "form": {
+        "submitted": "2026-07-31 10:18:56",
+        "name": "Stephen Hutt",
+        "linkedin": "https://www.linkedin.com/in/stephen-j-hutt?",
+        "other": null,
+        "headshot": "14HLBQWxh0Xhya6qrV7wi3UOo5bDjG7K_",
+        "group": "Research",
+        "outcome": "used",
+        "detail": "3648×5472; the Drive connector could not carry it, fetched through a shared link on 2026-09-25"
+      },
+      "notes": null,
+      "actions": [],
+      "history": [
+        "2026-09-24 status: — → on_site (32a0c09)",
+        "2026-09-25 headshot: placeholder → form upload (44275f4)",
+        "2026-09-25 title: — → Assistant Professor, University of Minnesota (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
+      ]
+    },
+    {
+      "id": 14,
+      "slug": "alexandra-wiggins",
+      "name": "Alexandra (Lexi) Wiggins",
+      "group": "education-fellows",
+      "order": 1,
+      "tags": [],
+      "role": "Humanities Teacher, 504 Coordinator",
+      "affiliation": "High Tech High Mesa",
+      "location": "San Diego, CA",
+      "linkedin": null,
+      "website": "https://www.hightechhigh.org/staff/alexandra-wiggins/",
+      "photo": {
+        "master": "alexandra-wiggins.png",
+        "from": "form",
+        "ref": "https://drive.google.com/open?id=1emfjjCW4d7qdFN14aRHBPPLs_XqzJA8o",
+        "approved": false,
+        "upscale": 1.43,
+        "notes": "Sent through the website info form by Joan Lee on 24 September 2026, as received: a 576x576 PNG (\"unnamed (1)\"). Small, so the shared framing enlarges it; a larger original would sharpen the tile. Her High Tech High staff page may have one, but it refused this session's requests (403)."
+      },
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": null
+      },
+      "form": {
+        "submitted": "2026-09-24 21:42:33",
+        "name": "Alexandra (Lexi) Wiggins",
+        "linkedin": "https://www.hightechhigh.org/staff/alexandra-wiggins/",
+        "headshot": "1emfjjCW4d7qdFN14aRHBPPLs_XqzJA8o",
+        "outcome": "used",
+        "detail": "576x576 PNG, submitted by Joan Lee; shown as \"Alexandra (Lexi) Wiggins\" as the form gives it (decided 2026-09-25)"
+      },
+      "notes": "The form gives her name as \"Alexandra (Lexi) Wiggins\" and the site shows it that way (decided 2026-09-25); her bio calls her Lexi.",
+      "actions": [
+        "[joan] Sign off the published bio (the tracker's fellows tab has no Approved column)."
+      ],
+      "history": [
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/alexandra-wiggins/ (6008fab)",
+        "2026-09-25 full_name: Alexandra Wiggins → Alexandra (Lexi) Wiggins (daf7a21)",
+        "2026-09-25 headshot: placeholder → form upload (daf7a21)"
+      ]
+    },
+    {
+      "id": 15,
+      "slug": "chris-mutter",
+      "name": "Chris Mutter",
+      "group": "education-fellows",
+      "order": 2,
+      "tags": [],
+      "role": "Multimedia Teacher",
+      "affiliation": "High Tech High International",
+      "location": "San Diego, CA",
+      "linkedin": null,
+      "website": "https://www.hightechhigh.org/staff/chris-mutter/",
+      "photo": null,
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": null
+      },
+      "form": null,
+      "notes": null,
+      "actions": [
+        "[client] Send a headshot (client is chasing it).",
+        "[joan] Sign off the published bio (the tracker's fellows tab has no Approved column)."
+      ],
+      "history": [
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/chris-mutter/ (6008fab)"
+      ]
+    },
+    {
+      "id": 16,
+      "slug": "christopher-hanks",
+      "name": "Christopher Hanks",
+      "group": "education-fellows",
+      "order": 3,
+      "tags": [],
+      "role": "Principal on Special Assignment, Innovation Design",
+      "affiliation": "Grand Rapids Public Museum High School",
+      "location": "Grand Rapids, MI",
+      "linkedin": "https://www.linkedin.com/in/christopher-hanks-4a0ba92b9/",
+      "website": null,
+      "photo": {
+        "master": "christopher-hanks.jpg",
+        "from": "tracker",
+        "ref": "Website Bio tracking sheet, Headshots column",
+        "approved": false,
+        "upscale": 0.73
+      },
+      "form": null,
+      "notes": null,
+      "actions": [],
+      "history": []
+    },
+    {
+      "id": 17,
+      "slug": "tom-peterson",
+      "name": "Tom Peterson",
+      "group": "education-fellows",
+      "order": 4,
+      "tags": [],
+      "role": "Social Studies Teacher",
+      "affiliation": "Grand Rapids Public Museum High School",
+      "location": "Grand Rapids, MI",
+      "linkedin": "https://www.linkedin.com/in/tom-peterson-25776477/",
+      "website": null,
+      "photo": {
+        "master": "tom-peterson.jpg",
+        "from": "form",
+        "ref": "https://drive.google.com/open?id=1dZjNORv0Bzllr9Y_pZ-MUJXuQp2Ljngn",
+        "approved": false,
+        "upscale": 0.32,
+        "edgesFaded": "right 11%, left 8%",
+        "notes": "Sent through the website info form by Joan Lee on 25 September 2026, as received: 1280x1600."
+      },
+      "form": {
+        "submitted": "2026-09-25 14:12:49",
+        "name": "Tom Peterson",
+        "linkedin": "N/A",
+        "headshot": "1dZjNORv0Bzllr9Y_pZ-MUJXuQp2Ljngn",
+        "outcome": "used",
+        "detail": "1280x1600, submitted by Joan Lee"
+      },
+      "notes": "The form (filled in by Joan Lee) gives LinkedIn as \"N/A\"; the LinkedIn from her Bio tracking sheet stays on his tile (decided 2026-09-25).",
+      "actions": [],
+      "history": [
+        "2026-09-25 headshot: placeholder → form upload (daf7a21)"
+      ]
+    },
+    {
+      "id": 18,
+      "slug": "ben-hoff",
+      "name": "Ben Hoff",
+      "group": "education-fellows",
+      "order": 5,
+      "tags": [],
+      "role": "Science & Computer Science Teacher",
+      "affiliation": "Grand Rapids Public Museum High School",
+      "location": "Grand Rapids, MI",
+      "linkedin": "https://www.linkedin.com/in/ben-hoff-240635272/",
+      "website": null,
+      "photo": {
+        "master": "ben-hoff.jpg",
+        "from": "tracker",
+        "ref": "Website Bio tracking sheet, Headshots column",
+        "approved": false,
+        "upscale": 0.66,
+        "edgesExtended": "right 3%"
+      },
+      "form": null,
+      "notes": null,
+      "actions": [],
+      "history": []
+    },
+    {
+      "id": 19,
+      "slug": "nikki-wallace",
+      "name": "Nikki Wallace",
+      "group": "education-fellows",
+      "order": 6,
+      "tags": [],
+      "role": "Science Teacher, Director of Research & Innovation",
+      "affiliation": "Crosstown High School",
+      "location": "Memphis, TN",
+      "linkedin": "https://www.linkedin.com/in/nikki-wallace-hmw/",
+      "website": null,
+      "photo": {
+        "master": "nikki-wallace.jpg",
+        "from": "institution",
+        "ref": "crosstownhigh.org/leadership",
+        "approved": false,
+        "upscale": 0.23,
+        "notes": "One of the four Crosstown fellows replaced together in September 2026 from a single shoot on the school's staff page (crosstownhigh.org/leadership, through its Squarespace CDN at ?format=2500w), so the group reads as one set. A resolution rescue too: the tracker's copy was 380px effective."
+      },
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": null
+      },
+      "form": null,
+      "notes": null,
+      "actions": [
+        "[joan] Sign off the published bio (the tracker's fellows tab has no Approved column)."
+      ],
+      "history": [
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/nikki-wallace/ (6008fab)"
+      ]
+    },
+    {
+      "id": 20,
+      "slug": "danie-cowden",
+      "name": "Danie Cowden",
+      "group": "education-fellows",
+      "order": 7,
+      "tags": [],
+      "role": "STEM, Design, and Media Teacher",
+      "affiliation": "Crosstown High School",
+      "location": "Memphis, TN",
+      "linkedin": "https://www.linkedin.com/in/danie-cowden/",
+      "website": null,
+      "photo": {
+        "master": "danie-cowden.jpg",
+        "from": "institution",
+        "ref": "crosstownhigh.org/leadership",
+        "approved": false,
+        "upscale": 0.28,
+        "notes": "One of the four Crosstown fellows replaced together in September 2026 from a single shoot on the school's staff page (crosstownhigh.org/leadership, ?format=2500w). A resolution rescue too: the tracker's copy was 400px effective."
+      },
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": null
+      },
+      "form": null,
+      "notes": null,
+      "actions": [
+        "[joan] Sign off the published bio (the tracker's fellows tab has no Approved column).",
+        "[joan] Change her title in the tracker to \"STEM, Design, and Media Teacher\"."
+      ],
+      "history": [
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/danie-cowden/ (6008fab)",
+        "2026-09-25 title: Photography, Digital Art & Design Teacher, CTE Coordinator → STEM, Design, and Media Teacher (44275f4)"
+      ]
+    },
+    {
+      "id": 21,
+      "slug": "joshua-sloan",
+      "name": "Joshua Sloan",
+      "group": "education-fellows",
+      "order": 8,
+      "tags": [],
+      "role": "Math Teacher, Math Department Lead",
+      "affiliation": "Crosstown High School",
+      "location": "Memphis, TN",
+      "linkedin": "https://www.linkedin.com/in/joshua-sloan-746aa1226/",
+      "website": null,
+      "photo": {
+        "master": "joshua-sloan.jpg",
+        "from": "institution",
+        "ref": "crosstownhigh.org/leadership",
+        "approved": false,
+        "upscale": 0.65,
+        "notes": "One of the four Crosstown fellows replaced together in September 2026 from a single shoot on the school's staff page (crosstownhigh.org/leadership, ?format=2500w). His tracker copy was already adequate at 800x800; replaced for the set."
+      },
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": null
+      },
+      "form": null,
+      "notes": null,
+      "actions": [
+        "[joan] Sign off the published bio (the tracker's fellows tab has no Approved column)."
+      ],
+      "history": [
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/joshua-sloan/ (6008fab)"
+      ]
+    },
+    {
+      "id": 22,
+      "slug": "mohammed-al-harthy",
+      "name": "Mohammed Al Harthy",
+      "group": "education-fellows",
+      "order": 9,
+      "tags": [],
+      "role": "Computer Science Teacher, 9th Grade Lead",
+      "affiliation": "Crosstown High School",
+      "location": "Memphis, TN",
+      "linkedin": "https://www.linkedin.com/in/mohammed-al-harthy/",
+      "website": null,
+      "photo": {
+        "master": "mohammed-al-harthy.jpg",
+        "from": "institution",
+        "ref": "crosstownhigh.org/leadership",
+        "approved": false,
+        "upscale": 0.26,
+        "notes": "One of the four Crosstown fellows replaced together in September 2026 from a single shoot on the school's staff page (crosstownhigh.org/leadership, ?format=2500w). A resolution rescue too: the tracker's copy was 450px effective."
+      },
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": null
+      },
+      "form": null,
+      "notes": null,
+      "actions": [
+        "[joan] Sign off the published bio (the tracker's fellows tab has no Approved column)."
+      ],
+      "history": [
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/mohammed-al-harthy/ (6008fab)"
+      ]
+    },
+    {
+      "id": 23,
+      "slug": "sarah-zaner",
+      "name": "Sarah Zaner",
+      "group": "technology-and-design-partners",
+      "order": 1,
+      "tags": [],
+      "role": "Co-founder, Bendable Labs",
+      "affiliation": null,
+      "location": null,
+      "linkedin": null,
+      "website": "https://bendablelabs.com/who_we_are/sarah-zaner",
+      "photo": {
+        "master": "sarah-zaner.png",
+        "from": "institution",
+        "ref": "her own site (2617×2500)",
+        "approved": false,
+        "upscale": 0.21,
+        "edgesExtended": "bottom 1%",
+        "notes": "The tracker's copy was a 1024x978 re-export of this 2617x2500."
+      },
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": true
+      },
+      "form": null,
+      "notes": null,
+      "actions": [],
+      "history": [
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/sarah-zaner/ (6008fab)"
+      ]
+    },
+    {
+      "id": 24,
+      "slug": "lisa-peterson",
+      "name": "Lisa Peterson",
+      "group": "technology-and-design-partners",
+      "order": 2,
+      "tags": [],
+      "role": "Product Design Consultant",
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/lisa-peterson/",
+      "website": null,
+      "photo": {
+        "master": "lisa-peterson.png",
+        "from": "tracker",
+        "ref": "Website Bio tracking sheet, Headshots column",
+        "approved": false,
+        "upscale": 0.5,
+        "notes": "Her form upload is this file, byte for byte."
+      },
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": true
+      },
+      "form": {
+        "submitted": "2026-07-30 19:52:43",
+        "name": "Lisa Peterson",
+        "linkedin": "https://www.linkedin.com/in/lisa-peterson/",
+        "other": null,
+        "headshot": "1_tMmN4SMgI3fsNUZjSxeCHT-zbYTLe97",
+        "group": null,
+        "outcome": "same_file_as_site",
+        "detail": "byte-identical to the master already used"
+      },
+      "notes": null,
+      "actions": [],
+      "history": [
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/lisa-peterson/ (6008fab)"
+      ]
+    },
+    {
+      "id": 25,
+      "slug": "neil-sharma",
+      "name": "Neil Sharma",
+      "group": "technology-and-design-partners",
+      "order": 3,
+      "tags": [],
+      "role": "Engineering Consultant",
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/neilshar/",
+      "website": null,
+      "photo": {
+        "master": "neil-sharma.jpg",
+        "from": "tracker",
+        "ref": "Website Bio tracking sheet, Headshots column",
+        "approved": false,
+        "upscale": 1.24,
+        "notes": "Enlarged 1.24x, which does not show at tile size."
+      },
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": true
+      },
+      "form": null,
+      "notes": null,
+      "actions": [],
+      "history": [
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/neil-sharma/ (6008fab)"
+      ]
+    },
+    {
+      "id": 26,
+      "slug": "joan-lee",
+      "name": "Joan Lee",
+      "group": "technology-and-design-partners",
+      "order": 4,
+      "tags": [],
+      "role": "Project Consultant & Manager",
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/about-joan-lee/",
+      "website": null,
+      "photo": {
+        "master": "joan-lee.jpg",
+        "from": "tracker",
+        "ref": "Website Bio tracking sheet, Headshots column",
+        "approved": false,
+        "upscale": 0.3,
+        "notes": "Her form upload is this file, byte for byte."
+      },
+      "form": {
+        "submitted": "2026-07-28 18:10:46",
+        "name": "Joan Lee",
+        "linkedin": "www.linkedin.com/in/about-joan-lee",
+        "other": null,
+        "headshot": "1wJXb4CxecrJxw4s6ZZ9z_jPHK107s762",
+        "group": null,
+        "outcome": "same_file_as_site",
+        "detail": "byte-identical to the master already used"
+      },
+      "notes": null,
+      "actions": [],
+      "history": [
+        "2026-09-25 title: Project Manager → Project Consultant & Manager (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
+      ]
+    },
+    {
+      "id": 27,
+      "slug": "brandon-bodnar",
+      "name": "Brandon Bodnar",
+      "group": "technology-and-design-partners",
+      "order": 5,
+      "tags": [],
+      "role": "Principal Engineer",
+      "affiliation": null,
+      "location": null,
+      "linkedin": null,
+      "website": null,
+      "photo": null,
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": true
+      },
+      "form": null,
+      "notes": null,
+      "actions": [
+        "[client] Send a headshot."
+      ],
+      "history": [
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/brandon-bodnar/ (6008fab)"
+      ]
+    },
+    {
+      "id": 28,
+      "slug": "sonia-prusaitis",
+      "name": "Sonia Prusaitis",
+      "group": "technology-and-design-partners",
+      "order": 6,
+      "tags": [],
+      "role": "Program Manager",
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/soniaprusaitis/",
+      "website": null,
+      "photo": {
+        "master": "sonia-prusaitis.jpg",
+        "from": "form",
+        "ref": "https://drive.google.com/open?id=12U_lMmQ_p0m4rHfJegW8ZX6qn9yDwOtM",
+        "approved": false,
+        "upscale": 0.45,
+        "edgesFaded": "bottom 15%",
+        "notes": "The form upload as submitted (30 Jul)."
+      },
+      "form": {
+        "submitted": "2026-07-30 14:49:29",
+        "name": "Sonia Prusaitis",
+        "linkedin": "https://www.linkedin.com/in/soniaprusaitis/",
+        "other": null,
+        "headshot": "12U_lMmQ_p0m4rHfJegW8ZX6qn9yDwOtM",
+        "group": "Technology & Design",
+        "outcome": "used",
+        "detail": "1063×1063"
+      },
+      "notes": null,
+      "actions": [
+        "[joan] Send a larger or looser photo; the current one stops inside the tile and fades where it ends."
+      ],
+      "history": [
+        "2026-09-24 status: — → on_site (32a0c09)",
+        "2026-09-25 title: — → Program Manager (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
+      ]
+    },
+    {
+      "id": 29,
+      "slug": "abby-petre",
+      "name": "Abby (Csaba) Petre",
+      "group": "leadership",
+      "order": 5,
+      "tags": [],
+      "role": "Head of Engineering",
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/csaba-abby-petre-3618708a/",
+      "website": "https://asingularity.github.io/",
+      "photo": {
+        "master": "abby-petre.png",
+        "from": "form",
+        "ref": "https://drive.google.com/open?id=18R9aAGOMMPYU-39JyqxP_42BXjgSPPxN",
+        "approved": false,
+        "upscale": 1.31,
+        "edgesExtended": "right 1%",
+        "notes": "The form upload as submitted (filed by the form as \"csaba petre\"). Enlarged 1.31x, which does not show at tile size."
+      },
+      "bioSource": {
+        "from": "direct",
+        "trackerApproved": null
+      },
+      "form": {
+        "submitted": "2026-07-30 20:01:56",
+        "name": "Abby Petre",
+        "linkedin": "https://www.linkedin.com/in/csaba-abby-petre-3618708a/",
+        "other": "https://asingularity.github.io/",
+        "headshot": "18R9aAGOMMPYU-39JyqxP_42BXjgSPPxN",
+        "group": "Technology & Design",
+        "outcome": "used",
+        "detail": "421×505 screenshot"
+      },
+      "notes": "Filed by the form as \"Abby Petre\" / \"csaba petre\"; shown as \"Abby (Csaba) Petre\" at her request (2026-09-25).",
+      "actions": [
+        "[joan] Add her bio, title and display name to the tracker so it stays the source."
+      ],
+      "history": [
+        "2026-09-24 status: — → on_site (32a0c09)",
+        "2026-09-25 full_name: Abby Petre → Abby (Csaba) Petre (44275f4)",
+        "2026-09-25 title: — → Head of Engineering (44275f4)",
+        "2026-09-25 bio_page: — → https://augmented2.folkmark.com/team/abby-petre/ (44275f4)",
+        "2026-09-25 group: technology-and-design-partners → leadership (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
+      ]
+    },
+    {
+      "id": 30,
+      "slug": "katie-butler",
+      "name": "Katie Butler",
+      "group": "research-partners",
+      "order": 10,
+      "tags": [],
+      "role": null,
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/katie-quinton-butler-1a9187125/",
+      "website": null,
+      "photo": {
+        "master": "katie-butler.jpg",
+        "from": "form",
+        "ref": "https://drive.google.com/open?id=10FCxGPA87YEhKgufQ0oINaAE3kOr6neA",
+        "approved": false,
+        "upscale": 0.52,
+        "edgesExtended": "left 3%, right 2%",
+        "notes": "927x1800, as received through the form on 24 September 2026."
+      },
+      "form": {
+        "submitted": "2026-09-24 11:46:23",
+        "name": "Katie Butler",
+        "linkedin": "https://www.linkedin.com/in/katie-quinton-butler-1a9187125/",
+        "other": null,
+        "headshot": "10FCxGPA87YEhKgufQ0oINaAE3kOr6neA",
+        "group": null,
+        "outcome": "used",
+        "detail": "927×1800, usable; used since her group was confirmed on 2026-09-25"
+      },
+      "notes": "Submitted the website info form. Group confirmed by Brendan on 25 September 2026; no title yet, so the tile shows none.",
+      "actions": [
+        "[joan] Send a title and organisation."
+      ],
+      "history": [
+        "2026-09-25 status: held → on_site; group: — → research-partners, confirmed by Brendan (daf7a21)"
+      ]
+    },
+    {
+      "id": 31,
+      "slug": "tom-keefe",
+      "name": "Tom Keefe",
+      "group": "technology-and-design-partners",
+      "order": 8,
+      "tags": [],
+      "role": null,
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/tom-keefe/",
+      "website": null,
+      "photo": {
+        "master": "tom-keefe.jpg",
+        "from": "form",
+        "ref": "https://drive.google.com/open?id=1liA-Hru9egI0JxDTDy6dHpYWADLNg1OP",
+        "approved": false,
+        "upscale": 0.54,
+        "notes": "1187x1240, the photo Joan Lee put in the form on 25 September 2026 in place of his first upload, a 237x222 screenshot of a kayaking photo (1lWFQOIo4Wib_MLC97PXRwscpBe6V-T7F)."
+      },
+      "form": {
+        "submitted": "2026-09-24 13:44:15",
+        "name": "Tom Keefe",
+        "linkedin": "https://www.linkedin.com/in/tom-keefe/",
+        "other": null,
+        "headshot": "1liA-Hru9egI0JxDTDy6dHpYWADLNg1OP",
+        "group": null,
+        "outcome": "used",
+        "detail": "Headshot replaced by Joan Lee on 2026-09-25 (1187x1240, usable); the first upload was a 237x222 screenshot"
+      },
+      "notes": "Submitted the website info form. Group confirmed by Brendan on 25 September 2026; no title yet, so the tile shows none.",
+      "actions": [
+        "[joan] Send a title and organisation."
+      ],
+      "history": [
+        "2026-09-25 headshot: 237x222 screenshot → 1187x1240 photo, replaced in the form by Joan Lee",
+        "2026-09-25 status: held → on_site; group: — → technology-and-design-partners, confirmed by Brendan (daf7a21)"
+      ]
+    },
+    {
+      "id": 32,
+      "slug": "allison-rapoport",
+      "name": "Allison Rapoport",
+      "group": "technology-and-design-partners",
+      "order": 9,
+      "tags": [],
+      "role": null,
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/allison-rapoport",
+      "website": null,
+      "photo": {
+        "master": "allison-rapoport.jpeg",
+        "from": "form",
+        "ref": "https://drive.google.com/open?id=16kOPcBQcItb99LDwUHyYYaJo_HDvRTwN",
+        "approved": false,
+        "upscale": 0.38,
+        "edgesFaded": "left 6%",
+        "notes": "1273x1636, as received through the form on 24 September 2026."
+      },
+      "form": {
+        "submitted": "2026-09-24 17:10:06",
+        "name": "Allison Rapoport",
+        "linkedin": "https://www.linkedin.com/in/allison-rapoport",
+        "other": null,
+        "headshot": "16kOPcBQcItb99LDwUHyYYaJo_HDvRTwN",
+        "group": null,
+        "outcome": "used",
+        "detail": "1273×1636, usable; used since her group was confirmed on 2026-09-25"
+      },
+      "notes": "Submitted the website info form. Group confirmed by Brendan on 25 September 2026; no title yet, so the tile shows none.",
+      "actions": [
+        "[joan] Send a title and organisation."
+      ],
+      "history": [
+        "2026-09-25 status: held → on_site; group: — → technology-and-design-partners, confirmed by Brendan (daf7a21)"
+      ]
+    },
+    {
+      "id": 33,
+      "slug": "adam-bachman",
+      "name": "Adam Bachman",
+      "group": "technology-and-design-partners",
+      "order": null,
+      "tags": [
+        "Archived"
+      ],
+      "archived": {
+        "since": "2026-08-20",
+        "commit": "ddc7848"
+      },
+      "role": "Engineering Consultant",
+      "affiliation": null,
+      "location": null,
+      "linkedin": null,
+      "website": null,
+      "photo": {
+        "master": "adam-bachman.jpg",
+        "from": "tracker",
+        "ref": "Website Bio tracking sheet, Headshots column",
+        "notes": "Restored from history (ddc7848^) on 25 September 2026; identical to the tracker's copy, 500x500. Never cut out: he left the page before the cut-outs came in."
+      },
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": true
+      },
+      "form": null,
+      "notes": "Removed on purpose; still listed in the tracker.",
+      "actions": [
+        "[joan] Prune from the tracker, or confirm they should stay listed; removed from the site on purpose."
+      ],
+      "history": [
+        "2026-08-20 status: on_site → removed (ddc7848)",
+        "2026-09-25 status: removed → tagged Archived; the roster keeps everyone and the tag keeps them off the page (d4b4525)"
+      ]
+    },
+    {
+      "id": 34,
+      "slug": "suzanna-smith",
+      "name": "Suzanna Smith",
+      "group": "technology-and-design-partners",
+      "order": null,
+      "tags": [
+        "Archived"
+      ],
+      "archived": {
+        "since": "2026-08-20",
+        "commit": "ddc7848"
+      },
+      "role": "Product Design Consultant",
+      "affiliation": null,
+      "location": null,
+      "linkedin": null,
+      "website": null,
+      "photo": {
+        "master": "suzanna-smith.jpg",
+        "from": "tracker",
+        "ref": "Website Bio tracking sheet, Headshots column",
+        "notes": "Restored from history (ddc7848^) on 25 September 2026; identical to the tracker's copy, 800x800. Never cut out: she left the page before the cut-outs came in."
+      },
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": false
+      },
+      "form": null,
+      "notes": "Removed on purpose; still listed in the tracker.",
+      "actions": [
+        "[joan] Prune from the tracker, or confirm they should stay listed; removed from the site on purpose."
+      ],
+      "history": [
+        "2026-08-20 status: on_site → removed (ddc7848)",
+        "2026-09-25 status: removed → tagged Archived; the roster keeps everyone and the tag keeps them off the page (d4b4525)"
+      ]
+    },
+    {
+      "id": 35,
+      "slug": "danielle-ragavanis",
+      "name": "Danielle Ragavanis",
+      "group": "education-fellows",
+      "order": null,
+      "tags": [
+        "Archived"
+      ],
+      "archived": {
+        "since": "2026-09-18",
+        "commit": "50d516f"
+      },
+      "role": "Social Studies & Designing Thinking Teacher/R&D Department Lead",
+      "affiliation": "Thomas A. Edison Career and Technical Education High School",
+      "location": "Jamaica, NY",
+      "linkedin": "https://www.linkedin.com/in/danielle-ragavanis-passaretti-110b80b0/",
+      "website": null,
+      "photo": {
+        "master": "danielle-ragavanis.jpg",
+        "from": "tracker",
+        "ref": "Website Bio tracking sheet",
+        "notes": "Restored from history (3087ca5) on 25 September 2026; identical to the tracker's copy, 414x414. Predates the cut-outs. Her encodes stayed published for a week after she left the page, until 8db345c removed them."
+      },
+      "form": null,
+      "notes": "Removed on purpose per Joan; still listed in the tracker.",
+      "actions": [
+        "[joan] Prune from the tracker, or confirm they should stay listed; removed from the site on purpose."
+      ],
+      "history": [
+        "2026-09-18 status: on_site → removed (50d516f)",
+        "2026-09-25 status: removed → tagged Archived; the roster keeps everyone and the tag keeps them off the page (d4b4525)"
+      ]
+    },
+    {
+      "id": 36,
+      "slug": "alondra-ramos",
+      "name": "Alondra Ramos",
+      "group": "education-fellows",
+      "order": null,
+      "tags": [
+        "Archived"
+      ],
+      "archived": {
+        "since": "2026-09-18",
+        "commit": "50d516f"
+      },
+      "role": "Special Education Teacher",
+      "affiliation": "Thomas A. Edison Career and Technical Education High School",
+      "location": "Jamaica, NY",
+      "linkedin": "https://www.linkedin.com/in/alondra-ramos-31542958/",
+      "website": null,
+      "photo": {
+        "master": "alondra-ramos.jpg",
+        "from": "tracker",
+        "ref": "Website Bio tracking sheet",
+        "notes": "Restored from history (3087ca5) on 25 September 2026; identical to the tracker's copy, 450x450. Predates the cut-outs. Her encodes stayed published for a week after she left the page, until 8db345c removed them."
+      },
+      "form": null,
+      "notes": "Removed on purpose per Joan; still listed in the tracker.",
+      "actions": [
+        "[joan] Prune from the tracker, or confirm they should stay listed; removed from the site on purpose."
+      ],
+      "history": [
+        "2026-09-18 status: on_site → removed (50d516f)",
+        "2026-09-25 status: removed → tagged Archived; the roster keeps everyone and the tag keeps them off the page (d4b4525)"
+      ]
+    },
+    {
+      "id": 37,
+      "slug": "philip-baker",
+      "name": "Philip Baker",
+      "group": "education-fellows",
+      "order": null,
+      "tags": [
+        "Archived"
+      ],
+      "archived": {
+        "since": "2026-09-18",
+        "commit": "50d516f"
+      },
+      "role": "Social Studies & Designing Thinking Teacher/R&D Department Lead",
+      "affiliation": "Thomas A. Edison Career and Technical Education High School",
+      "location": "Jamaica, NY",
+      "linkedin": null,
+      "website": null,
+      "photo": null,
+      "form": null,
+      "notes": "Removed on purpose per Joan; still listed in the tracker.",
+      "actions": [
+        "[joan] Prune from the tracker, or confirm they should stay listed; removed from the site on purpose."
+      ],
+      "history": [
+        "2026-09-18 status: on_site → removed (50d516f)",
+        "2026-09-25 status: removed → tagged Archived; the roster keeps everyone and the tag keeps them off the page (d4b4525)"
+      ]
+    },
+    {
+      "id": 38,
+      "slug": "ted-cuevas",
+      "name": "Ted Cuevas",
+      "group": "education-fellows",
+      "order": null,
+      "tags": [
+        "Archived"
+      ],
+      "archived": {
+        "since": "2026-09-18",
+        "commit": "50d516f"
+      },
+      "role": "Physics Teacher",
+      "affiliation": "High Tech High Chula Vista",
+      "location": "Chula Vista, CA",
+      "linkedin": null,
+      "website": "https://www.hightechhigh.org/staff/ted-cuevas/",
+      "photo": null,
+      "bioSource": {
+        "from": "tracker",
+        "trackerApproved": null
+      },
+      "form": null,
+      "notes": "Removed on purpose per Joan; still listed in the tracker.",
+      "actions": [
+        "[joan] Prune from the tracker, or confirm they should stay listed; removed from the site on purpose."
+      ],
+      "history": [
+        "2026-09-18 status: on_site → removed (50d516f)",
+        "2026-09-25 status: removed → tagged Archived; the roster keeps everyone and the tag keeps them off the page (d4b4525)"
+      ]
+    }
+  ]
+}

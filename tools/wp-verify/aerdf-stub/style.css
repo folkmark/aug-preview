@@ -1,0 +1,5 @@
+/*
+Theme Name: AERDF stand-in (verification only)
+Description: Mimics what the AugmentED plugin meets on aerdf.org — the header, alert bar and footer hard-coded in the theme, main#content opened in header.php, the team post type with the category taxonomy, a Theme Builder single template for team posts, and AERDF's own stylesheets. Used by tools/verify-wp-plugin.mjs; never deployed anywhere.
+Version: 1.0
+*/

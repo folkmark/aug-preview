@@ -1,0 +1,149 @@
+{
+  "exported": "c40c8f8174ef3c4156c5e3ad6880a652519a2359; index.html sha256 79cc9f784c65c68c",
+  "button": {
+    "default": {
+      "hover": {
+        "background-color": "var(--color-st-tropaz-dark)"
+      }
+    },
+    "secondary": {
+      "hover": {
+        "background-color": "var(--color-neutral-darkest-15)"
+      }
+    },
+    "link": {
+      "hover": {
+        "opacity": "0.7"
+      }
+    }
+  },
+  "radio": {
+    "rest": {
+      "width": "1.125rem",
+      "height": "1.125rem",
+      "flex-shrink": "0",
+      "display": "inline-flex",
+      "align-items": "center",
+      "justify-content": "center",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-bottom-left-radius": "9999px",
+      "border-top-color": "",
+      "border-top-style": "",
+      "border-top-width": "",
+      "border-right-color": "",
+      "border-right-style": "",
+      "border-right-width": "",
+      "border-bottom-color": "",
+      "border-bottom-style": "",
+      "border-bottom-width": "",
+      "border-left-color": "",
+      "border-left-style": "",
+      "border-left-width": "",
+      "border-image-source": "",
+      "border-image-slice": "",
+      "border-image-width": "",
+      "border-image-outset": "",
+      "border-image-repeat": "",
+      "background-color": "transparent",
+      "color": "var(--color-white)",
+      "padding-top": "0px",
+      "padding-right": "0px",
+      "padding-bottom": "0px",
+      "padding-left": "0px",
+      "outline-color": "initial",
+      "outline-style": "none",
+      "outline-width": "initial",
+      "transition-property": "",
+      "transition-duration": "",
+      "transition-timing-function": "",
+      "transition-delay": "",
+      "transition-behavior": ""
+    },
+    "hover": {
+      "background-color": "var(--color-neutral-darkest-5)"
+    },
+    "checked": {
+      "background-color": "var(--color-neutral-darkest)"
+    },
+    "mark": {
+      "tag": "span",
+      "style": {
+        "width": "0.5rem",
+        "height": "0.5rem",
+        "border-top-left-radius": "9999px",
+        "border-top-right-radius": "9999px",
+        "border-bottom-right-radius": "9999px",
+        "border-bottom-left-radius": "9999px",
+        "background-color": "currentcolor"
+      },
+      "text": "",
+      "className": ""
+    }
+  },
+  "checkbox": {
+    "rest": {
+      "width": "1.125rem",
+      "height": "1.125rem",
+      "flex-shrink": "0",
+      "display": "inline-flex",
+      "align-items": "center",
+      "justify-content": "center",
+      "border-top-left-radius": "",
+      "border-top-right-radius": "",
+      "border-bottom-right-radius": "",
+      "border-bottom-left-radius": "",
+      "border-top-color": "",
+      "border-top-style": "",
+      "border-top-width": "",
+      "border-right-color": "",
+      "border-right-style": "",
+      "border-right-width": "",
+      "border-bottom-color": "",
+      "border-bottom-style": "",
+      "border-bottom-width": "",
+      "border-left-color": "",
+      "border-left-style": "",
+      "border-left-width": "",
+      "border-image-source": "",
+      "border-image-slice": "",
+      "border-image-width": "",
+      "border-image-outset": "",
+      "border-image-repeat": "",
+      "background-color": "transparent",
+      "color": "var(--color-white)",
+      "padding-top": "0px",
+      "padding-right": "0px",
+      "padding-bottom": "0px",
+      "padding-left": "0px",
+      "outline-color": "initial",
+      "outline-style": "none",
+      "outline-width": "initial",
+      "transition-property": "",
+      "transition-duration": "",
+      "transition-timing-function": "",
+      "transition-delay": "",
+      "transition-behavior": ""
+    },
+    "hover": {
+      "background-color": "var(--color-neutral-darkest-5)"
+    },
+    "checked": {
+      "background-color": "var(--color-neutral-darkest)"
+    },
+    "mark": {
+      "tag": "span",
+      "style": {
+        "font-size": "16px",
+        "width": "16px",
+        "height": "16px",
+        "color": "inherit",
+        "flex-shrink": "0",
+        "font-variation-settings": "\"FILL\" 0, \"wght\" 400, \"GRAD\" 0, \"opsz\" 16"
+      },
+      "text": "check",
+      "className": "ds-icon "
+    }
+  }
+}

@@ -2,11 +2,11 @@
 
 Twenty-one pages, one for each person on the team who has a bio, at `/team/<slug>/`: the
 four leaders, and since late September 2026 seventeen of the partners and fellows. They are the
-only pages on this site that are **not** the single-page app, and porting them is the
-easiest job in this package: in WordPress they are the single template of one custom post
-type, `team_member`, which the team members use only as storage — see Content in
-[the handoff README](../README.md#content). [`wp/augmented-ed-assets.php`](../wp/augmented-ed-assets.php)
-enqueues the design system on that template.
+only pages on this site that are **not** the single-page app. In WordPress each person is
+a post of aerdf.org's existing `team` post type, in an "AugmentED Team" category, and the
+plugin draws their page with `generated/templates/bio.php`, rendered from the same template
+as this site's bio pages (`tools/lib/bio-page.mjs`) — see Content in
+[the handoff README](../README.md#content).
 (This file is still called leadership.md because Leadership had the only pages when it
 was written, and other documents link to it by that name.)
 
@@ -49,9 +49,9 @@ Second paragraph.
 no Markdown parser — bold, links and lists are not rendered, they ship as literal
 characters. Keep bios to prose, or add a parser; it is about ten lines in `readBios()`.
 
-Anyone in any group can have one; eight people currently do not, because the tracking
-sheet has no bio for them, and their cards have no link. `source-material/bios/unused/`,
-when it exists, holds bios kept but not published; the build does not read it.
+Anyone in any group can have one; eleven people on the page currently do not, because the
+tracking sheet has no bio for them, and their cards have no link. The bios of people off the
+page (archived, or waiting for a group) are kept in the same folder and not built.
 
 ## 3. The card contract
 
@@ -117,10 +117,10 @@ behind them. A person without a photo gets an empty square in the same `#e9eef4`
 empty tile and a photographed one sit on one colour.
 
 Do not re-crop them — no Media Library "crop to square", no theme `object-position`. The
-framing is what makes 25 photographs from 25 photographers read as one team, and it is
-already done. They are 5–34 KB each. Seven of the photographs stop short of where the
+framing is what makes photographs by thirty different photographers read as one team, and
+it is already done. They are 5–33 KB each. Nine of the photographs stop short of where the
 framing wants them, and those fade out where the photo ends (clearly for Ryan Baker,
-Andrew Lan, Byungyeon Yun and Sonia Prusaitis); that is baked into the file, not an
+Andrew Lan, Byungyeon Yun, Sonia Prusaitis and Tom Peterson); that is baked into the file, not an
 effect to reproduce, and it goes away when a looser original replaces one.
 
 They are made in two steps, and the split is on purpose. `tools/cutout-headshots.py`
@@ -130,7 +130,7 @@ writes 768px cut-outs to `source-material/image-sources/team-cutout/`, with no c
 the file, in seconds. Change the colours there; change the framing in the cut-out tool.
 
 **Each has a colour twin**, `assets/team/colour/<slug>.webp`: the same cut-out in its own
-colour on the same `#e9eef4`, 6–37 KB. On hover, the colour pours back into the duotone
+colour on the same `#e9eef4`, 6–36 KB. On hover, the colour pours back into the duotone
 from wherever the pointer came in — a radial mask, 900 ms in, draining out where the
 pointer leaves in 450 ms — and a keyboard focus on "Read bio" blooms it from the face.
 That is `assets/team-colour.js` and `.css`, enqueued like the other components; porting it
@@ -155,8 +155,9 @@ handed on is wrong.
 **1. `src` must be the first attribute on a team `<img>`.** `export-content.mjs` anchors
 its headshot regex on the literal `<img src="`. React preserves author attribute order for
 everything except `style`, so writing `<img class="shot" src="…">` in `index.html` takes
-all 25 headshots to `null` — with a green build. There is an assertion for this
-(`expected 25 headshots, parsed 0`), so it fails loudly now; before it existed it did not.
+every headshot to `null` — with a green build. There is an assertion for this (`the roster
+has 30 headshots on the page, parsed 0`), so it fails loudly now; before it existed it did
+not. The tiles are written by `tools/build-team.mjs`, which always puts `src` first.
 
 **2. The link text starts with exactly "Read bio".** The exporter finds each bio page by
 the `href` of the `<a>` whose text starts `Read bio`, and asserts that the number of
@@ -175,8 +176,10 @@ drift out of step. Follow the URL.
 
 ## 6. The bio page template
 
-`bioPage()` in `tools/build-site.mjs`. It is static HTML with the design system's
-stylesheets in `<head>`, so it renders correctly with JavaScript disabled.
+`bioPage()` in `tools/build-site.mjs` for this site, around the profile in
+`tools/lib/bio-page.mjs`, which the WordPress plugin renders too (as
+`generated/templates/bio.php`). It is static HTML with the design system's stylesheets in
+`<head>`, so it renders correctly with JavaScript disabled.
 
 **The header and footer restate the app's.** The app writes its chrome as inline styles
 inside the runtime's template, so there is nothing to import; the template copies the
@@ -194,8 +197,9 @@ header, logo, pill, footer and the menu's link positions (144, 212, 280, 348 at 
 all match. What it cannot do without script is close on Escape or lock the page behind
 the overlay.
 
-In WordPress the page uses the theme's own header and footer, so none of this needs
-porting. It exists so the static build does not look like a different site.
+In WordPress the page uses the theme's own header and footer, under the plugin's program
+bar, so none of this is ported. It exists so the static build does not look like a
+different site.
 
 **The layout, measured at 1440:**
 
@@ -232,28 +236,39 @@ which puts brand marks under team bios.
 Without a `CNAME` the build leaves out the canonical, `og:url` and JSON-LD rather than
 filling them with paths, and warns.
 
+In WordPress, Yoast writes the title, canonical and Open Graph tags, and the plugin makes
+Yoast's page a `ProfilePage` whose `mainEntity` is the same `Person` (without Yoast, the
+plugin prints that JSON-LD itself). The meta description is the same first sentence, seeded
+into Yoast by the import.
+
 ## 7. Adding a person
 
-1. Add their card to their group's grid in `index.html`. If they have a bio, give the
-   card `class="bio-tile"` and `id="<slug>"`.
-2. Add their photograph to `source-material/image-sources/team/<slug>.jpg` — the largest
-   original that exists; see the headshot notes in `tools/encode-images.mjs` for where to
-   look. Run `python3 tools/cutout-headshots.py --only=<slug>`, which needs the card from
-   step 1 (it reads who is pictured from `index.html`) and a model its header says how to
-   fetch, and read its report: a warning means the photo is cropped too tight for the
-   shared framing and wants a looser one. Then add a job to `tools/encode-images.mjs` in
-   the others' form — `in: 'team-cutout/<slug>.webp'`, `width: 512, square: true,
-   duotone: DUOTONE` — and run it. Their colour twin comes with it; there is nothing to add.
-3. If they have a bio, write `source-material/bios/<slug>.md`, with the role line from their
-   card. Their affiliation, location and links are read off the card, not repeated here.
-4. Add the `Read bio` link to their card, copying another card's `.bio-cta` paragraph,
-   with the slug in the href and the name in the hidden span.
-5. Bump the counts in `tools/export-content.mjs` — `team.length`, the headshot count and
-   the number of people without a title (`roleless.length`) are hard-coded on purpose, as
-   tripwires.
+The team is a roster, `source-material/team/people.json`, and the tiles are written from it
+(`source-material/team/README.md` has the fields). A person is on the page when they have a
+group and are not tagged `Archived`.
 
-Step 3 can land before step 4: the bio is skipped with a warning until the link exists,
-so nothing is published early.
+1. Add them to the roster, or give an existing entry its `group` and an `order`. Their name,
+   role, a Fellow's school and city, and their links go there, and nowhere else.
+2. Add their photograph as `source-material/image-sources/team/<slug>.<ext>`: the largest
+   original that exists. The rule for choosing between the tracker, the form and the
+   subject's institution is in the headshot comment in `tools/encode-images.mjs`. Record it
+   as their `photo` in the roster, with where it came from.
+3. If they have a bio, write `source-material/bios/<slug>.md`, headed with their roster name
+   and role. That is what gives their tile the "Read bio" link.
+4. `node tools/build-team.mjs` writes the tiles and prints what else to run: for a photograph,
+   `tools/cutout-headshots.py --only=<slug>` (read its report; a warning means the photo is
+   cropped too tight for the shared framing and wants a looser one), then
+   `node tools/encode-images.mjs --only=<slug>`, which writes the duotone and its colour twin.
+5. Re-export (`tools/export-static.mjs`, then `tools/export-content.mjs`, whose counts follow
+   the roster), regenerate the plugin (`node tools/build-wp-plugin.mjs`), and on aerdf.org
+   re-run the import. It creates the new person and changes nothing else. Or add them in
+   WordPress directly: a team post in their AugmentED group, with the "AugmentED card"
+   filled in. A person added that way shows their featured image, without the colour
+   bloom, unless a bundled headshot is chosen.
+
+Taking someone off is the `Archived` tag, never a deletion: the encoder then removes their
+published photographs, their bio stops being built, and the WordPress import marks their
+post Archived.
 
 ### Verification
 

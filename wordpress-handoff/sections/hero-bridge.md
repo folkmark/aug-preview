@@ -194,7 +194,7 @@ The solve, per tick, with `e` the values read from the stylesheet:
 
 ```
 s     = smoothstep(scrolled / e.clear)         // arrived when s ≥ 1: clear the transform
-rest  = stageRect.top + box.offsetTop          // where the box RESTS (offsetTop is untransformed)
+rest  = pin + box.offsetTop                    // where the box RESTS once the stage pins (offsetTop is untransformed)
 room  = max(0, innerHeight − (pin + e.clear))
 h     = room / (e.keep − e.sky)                // plate height with keep above the fold, sky behind the copy
 if (pin + e.clear − e.sky × h < rest)          // the sky no longer fits above rest:
@@ -220,6 +220,14 @@ Why each clamp exists, because each was earned:
   landscape phone (667×375: 303 px under the header) is the case that finds it.
 - **`dy ≥ 0`** is what makes a below-the-fold mount safe: with the plate resting
   below the pin, an unclamped shift would haul it up over the content above.
+- **`rest` is measured from the pin, not from the stage's live top.** The entry
+  is drawn across `scrolled`, which is zero until the stage reaches the pin, so
+  the pose that matters is the one at the pin. Here the two are the same number,
+  because the hero is the first thing under the header. Under a host's own
+  header they are not: inside aerdf.org's theme the stage loads 189 px below the
+  pin at 1440×900, and solving from the live top sized the plate for that lower
+  room and raised the desk into the copy's buttons before anyone scrolled.
+  Measured from the pin, the entry is the same pose on every host.
 - **`--hb-max` caps the drawn width, not just the box.** 2880 px is 1.8× the
   1600 cut — the measured point past which the entry is visibly soft. Raising it
   without a wider cut only blurs the entry, and the sequence masters are not in
@@ -320,6 +328,16 @@ that point in CSS, so it is a declared number with its own wrap breakpoints.
 4. The whole arrangement sits inside `@supports (animation-timeline: scroll())`
    and `@media not (prefers-reduced-motion: reduce)`; the fallback is copy that
    simply scrolls away, and nothing is ever stranded at `opacity: 0`.
+
+**The lead.** The body's float and dissolve run on `scroll(root)`, the
+document's timeline, not the hero's. Their range therefore starts at
+`--hero-lead`, which is how far the page scrolls before the hero reaches the
+header: `animation-range: var(--hero-lead, 0px) calc(var(--hero-lead, 0px) +
+var(--hero-band))`. On this site it is 0. A host with its own header above the
+section sets it to that header's height. The WordPress plugin measures it as the
+wrapper's document top: 189 px at 1440, 185 px on a phone. Without the lead, the
+band is spent scrolling the host's header away, and the body has dissolved
+before the reader reaches it.
 
 ---
 

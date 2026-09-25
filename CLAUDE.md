@@ -107,6 +107,21 @@ Measure claims about smoothness rather than asserting them. Instrumenting `paint
 to count ticks where the wanted frame was not resident is a better answer to "is the
 budget big enough" than any amount of reasoning about it.
 
+## The team is a roster, not markup
+
+`source-material/team/people.json` holds everyone: the people on Who We Are, the people
+held back without a group, and the people tagged `Archived`. A person appears on the page
+if and only if they have a group and are not Archived. `tools/build-team.mjs` writes the
+tiles in `index.html` from it (between marker comments in each `.team-grid-3`), and
+`build-site` fails when they differ, so **never edit a team tile by hand**. Edit the roster,
+run `node tools/build-team.mjs`, and it prints what else to run.
+
+What is published follows the roster too. The headshot encodes exist only for people on the
+page, and `tools/encode-images.mjs` deletes any others. Bios of people off the page are kept
+in `source-material/bios/` and never built. Held people's photographs are not committed
+(this repository is public); the roster records their Drive file ID instead.
+`source-material/team/README.md` has the fields.
+
 ## House style
 
 The comments in `assets/*.js`, `assets/*.css` and `tools/*.mjs` explain *why a thing
@@ -114,3 +129,34 @@ is the way it is and what breaks if it changes*, often at length, and they cite
 measurements. Match that when editing them — a change that leaves a comment
 describing the old behaviour is worse than no comment. Several of those comments are
 load-bearing warnings; read them before simplifying the code they sit on.
+
+## The WordPress plugin is generated from the site
+
+`wordpress-handoff/plugin/augmented-ed/` is how the site reaches aerdf.org: a plugin AERDF's
+developer installs (`wordpress-handoff/START-HERE.md`). Half of it is generated from the site,
+and that half goes stale silently unless the chain is re-run:
+
+```sh
+npm i --no-save playwright@1.63.0 linkedom@0.18.13 postcss@8.5.28 postcss-selector-parser@7.1.6 pixelmatch@7.2.0 pngjs@7.0.0
+node tools/export-static.mjs && node tools/export-content.mjs   # after any index.html change
+node tools/build-wp-plugin.mjs                                   # writes plugin/augmented-ed/generated/
+node tools/build-wp-plugin.mjs --assemble dist && node tools/verify-wp-plugin.mjs [--live]
+```
+
+`npm i --no-save` prunes whatever it is not named in the same call, so name everything
+together.
+
+- **Never edit `generated/` by hand.** Commit it with the export it came from. CI's `plugin` job
+  fails when it does not match (`--check`), without blocking the site's publish.
+- **The hand-written half** is `augmented-ed.php`, `includes/`, `js/` and `css/host.css`.
+  `host.css` reverts only leaks measured on aerdf.org. Add to it only what `verify-wp-plugin.mjs
+  --live` reports, never speculatively, and never `all: revert`.
+- **Two site files carry plugin requirements.** `assets/hero-bridge.js` `settle()` measures from
+  the pin, and the hero copy's fade in `index.html` starts at `--hero-lead`. Both are no-ops
+  here and load-bearing under a host header.
+- **The zip is not a release.** It packages the licensed Avenir files, so never attach it to
+  a release or put it on gh-pages. It goes out as the `plugin` job's artifact, which on this
+  public repository any signed-in GitHub user can download (the same fonts are already
+  committed under `_ds/`). `dist/` and `.wp-verify/` are git-ignored.
+- **The team goes into AERDF's existing `team` post type**, in an "AugmentED Team" category.
+  There is no `team_member` type; that was an earlier, wrong plan.

@@ -1,5 +1,12 @@
 # The WordPress handoff — working notes
 
+> **Superseded (2026-09-25).** The handoff is now a WordPress plugin
+> (`wordpress-handoff/plugin/augmented-ed/`, installed per
+> `wordpress-handoff/START-HERE.md`), and aerdf.org was re-surveyed live: the team goes into
+> its existing `team` post type rather than a new one, the Follow form into its HubSpot, and
+> the theme drop-in `wp/augmented-ed-assets.php` these notes mention is gone. These notes
+> are kept for their history.
+
 > **Status (2026-08-24, later the same day).** I rewrote the handoff
 > documentation to the Google technical-writing guidelines, and that closed
 > most of what these notes rank: the stale notes and tables

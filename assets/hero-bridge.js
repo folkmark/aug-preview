@@ -769,6 +769,18 @@
     // interchangeable: the stage is the plate's own height, which on a desk screen is
     // taller than the viewport, so only the stage's own top is ever on screen.
     //
+    // And it is measured from the PIN, not from wherever the stage happens to be: this is
+    // where the box will rest at the moment the entry starts, because the entry is drawn
+    // across scrolled, and scrolled is zero until the stage reaches the pin. On this site
+    // the two are the same number — the hero is the first thing under the header, so the
+    // stage loads at the pin. They part company the moment a host puts anything above
+    // the section: under AERDF's own header in the WordPress plugin the stage loads 189px
+    // below the pin at 1440x900, and a live measurement solved the whole entry for a
+    // plate that low. The desk came out sized for the wrong room and rose into the copy's
+    // buttons before the reader had scrolled at all. Measured from the pin, the entry is
+    // the same pose on every host, and until the stage arrives it simply rides down the
+    // page with it.
+    //
     // offsetTop rather than a second getBoundingClientRect: it is untransformed, so it
     // reports where the box RESTS rather than where this method last moved it, and the
     // calculation cannot feed on its own output.
@@ -792,7 +804,7 @@
       var bh = box.offsetHeight;
       if (!bh) return;
 
-      var rest = this.stage.getBoundingClientRect().top + box.offsetTop;
+      var rest = this.pin() + box.offsetTop;
 
       // THE LARGEST THE PLATE CAN BE DRAWN WITH e.keep OF IT STILL ABOVE THE FOLD, and it
       // takes two solves rather than one because the plate is never lifted above rest —
@@ -829,13 +841,12 @@
       var top = clear - e.sky * h;
 
       // The entry only ever holds the plate LOWER than where it rests, never higher, and
-      // the clamp is what makes that true. top is a viewport position, which is the right
-      // frame of reference while the stage is pinned and the wrong one before it is: a
-      // host that mounts this below the fold — or the same host on a screen too short to
-      // lay copy over the plate, where the copy goes back into flow above it — has a rest
-      // position far below the pin, and an unclamped shift would haul the plate up out of
+      // the clamp is what makes that true. top and rest are both viewport positions for the
+      // stage at the pin (see rest above), so a plate whose box already starts below where
+      // the entry wants it — a screen too short to lay copy over the plate, where the copy
+      // takes the stage's top and pushes the box down — would otherwise be hauled up out of
       // its own box and over whatever is above it. Clamped, that case simply produces no
-      // transform and the plate scrolls in the way any other element would.
+      // shift, only the scale, and the plate scrolls in the way any other element would.
       var dy = Math.max(0, top - rest);
       box.style.transform = 'translateY(' + ((1 - s) * dy).toFixed(1) + 'px)' +
                             ' scale(' + (k + (1 - k) * s).toFixed(4) + ')';
