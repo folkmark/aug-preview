@@ -88,6 +88,12 @@
   /* Guarded: a touch device has no hover to leave, so an unguarded rule sticks the
      tapped link at 0.7 until something else is tapped. */
   @media (hover: hover) { a:hover { opacity: 0.7; } }
+  /* The navigation buttons are links, so the rule above reaches them — and a pill that dims
+     to 70% under the pointer reads as disabled, not as hovered. The design system gives
+     every pill variant its own hover (a fill change, written inline); only the link
+     variants dim, and they already do so at the same 0.7 — so they are left to the rule
+     above. Specificity, not order, is what makes this win: (0,3,1) against (0,1,1). */
+  @media (hover: hover) { a[data-slot="button"]:not([data-variant^="link"]):hover { opacity: 1; } }
   @media (max-width: 991px) { .at-desktop { display: none !important; } }
   @media (min-width: 992px) { .at-mobile { display: none !important; } }
   @media (min-width: 992px) {
@@ -654,7 +660,7 @@
         <a href="{{ hrefChallenge }}" onClick="{{ goChallenge }}">The Challenge</a>
         <a href="{{ hrefApproach }}" onClick="{{ goApproach }}">Our Approach</a>
         <a href="{{ hrefTeam }}" onClick="{{ goTeam }}">Who We Are</a>
-        <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" onClick="{{ goInvolved }}" size="sm" data-btn-size="sm">Follow our work</x-import>
+        <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" as="a" href="{{ hrefInvolved }}" onClick="{{ goInvolved }}" size="sm" data-btn-size="sm">Follow our work</x-import>
       </nav>
       <button class="at-mobile" onClick="{{ toggleNav }}" aria-label="{{ navLabel }}" aria-expanded="{{ navExpanded }}" aria-controls="site-menu" style="display:flex;flex-direction:column;justify-content:center;gap:6px;width:44px;height:44px;padding:0;border:0;background:transparent;cursor:pointer">
         <span style="{{ barTopStyle }}"></span>
@@ -719,8 +725,8 @@
         <div data-hero-body="">
           <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">AugmentED is a team of educators, researchers, and technologists working together to build the evidence base for what AI should (and shouldn’t) do in the classroom, and the technology to do it well.</p>
           <div data-hero-actions="" style="margin-top:var(--space-10);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--space-4)">
-            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" onClick="{{ goInvolved }}">Follow our work</x-import>
-            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary" onClick="{{ goApproach }}">Explore our approach</x-import>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" as="a" href="{{ hrefInvolved }}" onClick="{{ goInvolved }}">Follow our work</x-import>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary" as="a" href="{{ hrefApproach }}" onClick="{{ goApproach }}">Explore our approach</x-import>
           </div>
         </div>
       </div>
@@ -746,7 +752,7 @@
         <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0 0 var(--space-4)">The Challenge</p>
         <h2 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0;text-wrap:pretty">Ready or not, AI tools have arrived in the classroom. Many companies and schools are rushing in before we know what AI can do well, what teachers uniquely bring, or what would actually benefit students. Today’s tools rely on general-purpose AI that was never designed for education, and it shows. We need better evidence on the roles AI should (and shouldn’t) play in schools, and purpose-built technology that can bridge between AI and real classroom needs.</h2>
         <div style="margin-top:var(--space-8);display:flex;justify-content:center">
-          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" onClick="{{ goChallenge }}">Learn more<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import>
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" as="a" href="{{ hrefChallenge }}" onClick="{{ goChallenge }}">Learn more<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import>
         </div>
       </div>
     </section>
@@ -843,7 +849,7 @@
               </div>
             </div>
             <div style="margin-top:var(--space-6);display:flex">
-              <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" onClick="{{ goApproach }}">Learn more<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import>
+              <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" as="a" href="{{ hrefApproach }}" onClick="{{ goApproach }}">Learn more<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import>
             </div>
           </div>
         </div>
@@ -1039,8 +1045,8 @@
           <div data-fb-front="">
             <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">We co-design with educators, publish what we learn, and create infrastructure the whole field can build on. If that's the future of AI in education you want, come build it with us.</p>
             <div style="margin-top:var(--space-10);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--space-4)">
-              <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" onClick="{{ goTeam }}">Meet the team</x-import>
-              <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary" onClick="{{ goInvolved }}">Follow our work</x-import>
+              <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" as="a" href="{{ hrefTeam }}" onClick="{{ goTeam }}">Meet the team</x-import>
+              <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary" as="a" href="{{ hrefInvolved }}" onClick="{{ goInvolved }}">Follow our work</x-import>
             </div>
           </div>
         </div>
@@ -1108,8 +1114,8 @@
         <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">We're on a mission to bridge this gap.</h2>
         <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0;text-wrap:pretty">The gap exists because frontier AI and classroom learning operate on different timelines and constraints. Our work closes that gap by creating the infrastructure that lets them work together—safely, effectively, and in service of what students actually need to learn.</p>
         <div style="margin-top:var(--space-10);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--space-6)">
-          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary" onClick="{{ goInvolved }}">Follow our research</x-import>
-          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" onClick="{{ goApproach }}">Explore our approach<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import>
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary" as="a" href="{{ hrefInvolved }}" onClick="{{ goInvolved }}">Follow our research</x-import>
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" as="a" href="{{ hrefApproach }}" onClick="{{ goApproach }}">Explore our approach<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import>
         </div>
       </div>
     </section>
@@ -1127,7 +1133,7 @@
         <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0 0 var(--space-6);text-wrap:pretty">We believe better educational AI will emerge from discovering what classrooms actually need, building solutions with educators, testing them in real classrooms, and using what we learn to improve the technology. That's why every AugmentED project combines research and development in an iterative co-design cycle, carried out by teams of educators, researchers, and engineers.</p>
         <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);font-weight:var(--font-weight-light);margin:0;text-wrap:pretty">Education technology companies build the applications teachers and students use every day. The large AI labs build the underlying models. What's missing is the layer in between: the capabilities that let AI understand what a student knows, measure skills as complex as critical thinking, and adapt to what's happening in a real classroom. That's the layer we are building.</p>
         <div style="margin-top:var(--space-10);display:flex;justify-content:center">
-          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" onClick="{{ goInvolved }}">Follow our work</x-import>
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" as="a" href="{{ hrefInvolved }}" onClick="{{ goInvolved }}">Follow our work</x-import>
         </div>
       </div>
     </section>
@@ -1205,8 +1211,8 @@
         <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin:0 auto;max-width:var(--container-lg);text-align:center">
           <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">What we learn shapes what we build next.</h2>
           <div style="margin-top:var(--space-10);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--space-6)">
-            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary" onClick="{{ goInvolved }}">Follow our work</x-import>
-            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" onClick="{{ goTeam }}">Meet the team<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary" as="a" href="{{ hrefInvolved }}" onClick="{{ goInvolved }}">Follow our work</x-import>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" as="a" href="{{ hrefTeam }}" onClick="{{ goTeam }}">Meet the team<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import>
           </div>
         </div>
       </div>
@@ -1526,8 +1532,8 @@
         <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">Join us in building better foundations for AI in education.</h2>
         <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">We co-design with educators, publish what we learn, and create infrastructure for the whole field.</p>
         <div style="margin-top:var(--space-10);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--space-4)">
-          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" onClick="{{ goInvolved }}">Follow our work</x-import>
-          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary" onClick="{{ goApproach }}">Explore our approach</x-import>
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" as="a" href="{{ hrefInvolved }}" onClick="{{ goInvolved }}">Follow our work</x-import>
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="secondary" as="a" href="{{ hrefApproach }}" onClick="{{ goApproach }}">Explore our approach</x-import>
         </div>
       </div>
     </section>
@@ -1541,7 +1547,7 @@
     <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter) clamp(var(--space-20),9vw,8rem)">
       <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-inline:auto;max-width:var(--container-lg);text-align:center;margin-bottom:clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg))">
         <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0 0 var(--space-4)">Connect</p>
-        <h2 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">Stay in the loop</h2>
+        <h1 style="font-size:var(--text-h2);line-height:var(--text-h2-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-6);text-wrap:pretty">Stay in the loop</h1>
         <p style="font-size:var(--text-medium);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">Get updates on our work and research findings.</p>
       </div>
 
