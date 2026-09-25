@@ -3,7 +3,9 @@ name: Publish site to gh-pages
 # Builds the AugmentED site and publishes it to the gh-pages branch, which is what
 # GitHub Pages serves. tools/build-site.mjs assembles the artifact — a file per
 # page, the assets, .nojekyll, CNAME and a 404.html — and fails if the pages
-# reference anything the artifact does not contain.
+# reference anything the artifact does not contain. What is in the repository but not
+# served (the design system's dev files and .otf sources, the parked Approach scrub)
+# is left out there, in copyDir(), because this job publishes whatever _site holds.
 #
 # gh-pages holds build output and nothing else, so each publish replaces it with a
 # single orphan commit rather than adding to it. Left to accumulate it would carry
@@ -38,9 +40,12 @@ jobs:
         run: node tools/build-site.mjs _site
 
       # A pull request gets the build as a check and stops there: the verify step
-      # inside build-site.mjs is the point, not the publish.
+      # inside build-site.mjs is the point, not the publish. Only main publishes. A
+      # manual run is allowed from any branch, and without the ref test it would
+      # force-push that branch's build over the live site, in a concurrency group of
+      # its own, so not even queued behind a publish from main.
       - name: Publish to gh-pages
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         run: |
           cd _site
           git init -q
