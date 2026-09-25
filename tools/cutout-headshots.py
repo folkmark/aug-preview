@@ -78,7 +78,7 @@ fade is measured from the cut itself — the stretch of the border the matte act
 touches — not from the whole edge, so a photo cut at the shoulder does not also fade
 the cheek above it.
 
-So the seven do look different from the other seventeen at the bottom of the tile, and
+So the seven do look different from the other eighteen at the bottom of the tile, and
 that is the one inequality left. Two shared fades were tried to hide it and both went:
 - A single vignette tuned so every one of those cuts fell where it had already faded
   out. Ryan's chest and Byungyeon's shoulders force it to finish just below everybody's

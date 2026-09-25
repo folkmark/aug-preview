@@ -3,7 +3,7 @@
 // The prototype has no CMS: the team grids, the research cards, the cycle steps and
 // the per-page metadata all live as markup. The WordPress developer models them as
 // post types and fields (JetEngine / CPT UI on the target install), and the honest
-// source for that is data, not HTML — scraping 24 team cards by hand is an hour of
+// source for that is data, not HTML — scraping 29 team cards by hand is an hour of
 // transcription errors waiting to be found in production.
 //
 // This reads the rendered pages in wordpress-handoff/pages/ — the same files the
@@ -118,9 +118,9 @@ expect(
 );
 expect(new Set(team.map((p) => p.group)).size >= 4, 'team: expected at least 4 groups');
 
-// Bio links asserted RELATIONALLY, not against a hard-coded 4. How many leaders have a
-// bio is not a fixed fact about this site the way 24 people or 4 redirects are — a fifth
-// leader should be a markup change, not a build break. Counting the "Read bio" links in
+// Bio links asserted RELATIONALLY, not against a hard-coded count. How many people have
+// a bio is not a fixed fact about this site the way 29 people or 4 redirects are — it went
+// from 4 to 21 in a day, and a new bio should be a markup change, not a build break. Counting the "Read bio" links in
 // the raw markup and matching still fails loudly on the case that matters: a link that is
 // on the page and did not survive the parse, which is what a changed href shape does.
 const bioLinks = (teamHtml.match(/>\s*Read bio\s*</g) ?? []).length;
