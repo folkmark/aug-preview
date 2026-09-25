@@ -224,10 +224,12 @@ keyboard just made.
 Clicking node *i* or row *i* scrolls the page to that step's own beat:
 
 ```
-target = rigTopAbsolute − 72 + (i·0.25 + 0.125) × span
+target = rigTopAbsolute − pin + (i·0.25 + 0.125) × span
 ```
 
-Mid-beat (`+ 0.125`), where the stage is unambiguously the active one — not the
+`pin` is the measured header offset from section 3 (96 px on this site, from
+`--cw-pin: var(--header-h)`), never a constant: hard-code it and every click lands
+short or long by the difference. Mid-beat (`+ 0.125`), where the stage is unambiguously the active one — not the
 beat boundary, where two steps contest it. The travel eases with
 `smoothstep` over 520 ms via `requestAnimationFrame`; a new click cancels the
 previous travel; under reduced motion it jumps with `scrollTo` instead.

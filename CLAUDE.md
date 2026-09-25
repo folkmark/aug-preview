@@ -10,29 +10,28 @@ built; this file is about where work goes and what breaks quietly.
 | **`main`** | Everything. Source, the encoders, the render notes, the WordPress handoff package, and the site's own files. All work happens here. |
 | **`gh-pages`** | The built site, and only what serving it needs. Not a development branch. |
 
-`gh-pages` is the output of `node tools/build-site.mjs _site`, minus the design
-system's dev files — `_adherence.oxlintrc.json`, `_ds_manifest.json` and `readme.md`
-under `_ds/*/`, dropped deliberately in `6599b09`. The build still emits those three,
-so re-publishing by copying `_site` wholesale puts them back. Leave them out.
+**`gh-pages` is written by a machine, not by hand.** `.github/workflows/pages.yml`
+runs `node tools/build-site.mjs _site` on every push to `main` and force-pushes the
+result to `gh-pages` as a single orphan commit; GitHub's own Pages deployment then
+serves that branch. So a merge to `main` publishes, and anything committed to
+`gh-pages` directly is gone on the next push. Pull requests get the build as a check
+only, and nothing but `main` publishes.
 
-Nothing that is not needed to serve the site belongs on `gh-pages`: no `tools/`, no
-`docs/`, no `wordpress-handoff/`, no masters.
+It follows that **what must not be published has to be kept out of `_site` by the
+build**, in `copyDir()` in `tools/build-site.mjs`, not stripped from the branch
+afterwards. That is where the design system's dev files (`_adherence.oxlintrc.json`,
+`_ds_manifest.json`, `readme.md` under `_ds/*/`) and its `.otf` sources are left out,
+and the parked Approach scrub's code and frames while `<approach-scrub>` is off the
+page. `6599b09` once removed the dev files from `gh-pages` by hand; the first
+automated publish put them back.
 
-**A change to a shipped asset lands twice.** Make it on `main` — source, encoder,
-frames, docs — then rebuild and carry only the changed artifact files to `gh-pages`.
-The two are not merged into each other; `gh-pages` is regenerated, not rebased.
+Nothing else is at risk: the build copies only `assets/`, `_ds/`, `support.js` and
+`CNAME` beside the pages it writes, so `tools/`, `docs/`, `wordpress-handoff/` and the
+masters never reach `_site`. Build locally to see exactly what will go out:
 
 ```sh
-node tools/build-site.mjs _site        # then diff _site against the gh-pages tree
+node tools/build-site.mjs _site        # fails on any reference the artifact cannot satisfy
 ```
-
-The diff is usually small and worth reading before committing: a component change
-that does not touch page markup is three or four files, not the whole artifact.
-
-`.github/workflows/pages.yml` also builds on every push to `main` and deploys
-through the Actions path. Which of the two actually serves is a repository setting
-(Settings → Pages), not something visible in the tree — so update `gh-pages` when
-you change what ships, and do not assume a `main` merge alone has published it.
 
 ## The master renders are not gone, only untracked
 
@@ -55,6 +54,13 @@ Do not conclude that a render is unavailable until you have looked in the histor
 for it.
 
 ## The Approach section
+
+**Parked.** `<approach-scrub>` has not been on the page since `e0ae9d6` (2026-08-20),
+and while it is off the page the build leaves its code and frames out of `_site`, so
+none of it is published. It stays in the repository for the shortened sequence meant to
+replace it. `wordpress-handoff/sections/approach.md` predates that day's retune and says
+so at the top; refresh it before mounting the component again. Everything below applies
+the moment it returns.
 
 The frames are addressed by string concatenation, so no build tool can see them.
 `assets/approach/manifest.json` is the contract: the encoder writes it, the page

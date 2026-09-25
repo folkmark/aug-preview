@@ -41,7 +41,7 @@ bug, and I would like to hear about it.
 | [`sections/hero-bridge.md`](sections/hero-bridge.md) | Build specification for the hero bridge. |
 | [`sections/falling-blocks.md`](sections/falling-blocks.md) | Build specification for the falling-blocks CTA. |
 | [`sections/cycle.md`](sections/cycle.md) | Build specification for the cycle wheel. |
-| [`sections/approach.md`](sections/approach.md) | Build specification for the Approach scrub (not currently mounted). |
+| [`sections/approach.md`](sections/approach.md) | Build specification for the Approach scrub. Parked and out of date: refresh it before the scrub is mounted again. |
 | [`sections/leadership.md`](sections/leadership.md) | Build specification for the leadership bio pages — the only pages here that are not the single-page app — and the invariants the team export depends on. |
 | `../_ds/augmented-design-system-*/` | The design system: tokens, stylesheet, fonts. |
 | `../assets/` | Production images, animation frames, and the four components. |
@@ -194,8 +194,10 @@ WordPress they are one custom post type with one single template.
 **Check the export stamp before you build from a page.** The second line of each
 file records the commit it was exported from
 (`<!-- exported from <commit> by tools/export-static.mjs -->`). The build warns
-when `index.html` has moved past that commit; if you see the warning, or the
-stamped commit is not the head of `main`, regenerate before building templates:
+when `index.html` has changed since that commit; if you see the warning, or
+`git log <stamped commit>..main -- index.html` lists anything, regenerate before
+building templates. (The stamp is never the head of `main` itself: the commit that
+re-exports comes after the commit it exports from.)
 
 ```
 npm i --no-save playwright && node tools/export-static.mjs && node tools/export-content.mjs
@@ -253,9 +255,13 @@ aliases, not the raw ramps behind them:
 
 ### Fonts
 
-The site self-hosts **Avenir LT Pro** (WOFF2 in `_ds/…/assets/fonts/`) in three
-weights: Book 400, Medium 600, Heavy 700. `--font-heading` and `--font-body` both
-resolve to it.
+The site self-hosts **Avenir LT Pro** (WOFF2 in `_ds/…/assets/fonts/`).
+`tokens/fonts.css` declares six weights — Light 300, Book 400, Roman 500, Medium 600,
+Heavy 700 and Black 900 — and the pages use the first five: Light for large display
+copy, Book for body text, Roman in the design system's components, Medium and Heavy
+for headings and emphasis. Black is declared but unused. `--font-heading` and
+`--font-body` both resolve to the family. Name all five in the license confirmation
+below, not only the three a glance at the headings suggests.
 
 - **Avenir is commercially licensed.** aerdf.org already self-hosts Avenir, so a
   license likely exists; before launch, confirm in writing that it covers the new
@@ -268,8 +274,12 @@ resolve to it.
 
 ## The assets
 
-Copy `assets/` verbatim. Nothing in it is hand-placed; five encoder scripts
-produce everything (see [Regenerating the artifacts](#regenerating-the-artifacts)).
+Copy `assets/` verbatim, except the parked Approach scrub's files, marked below.
+Every image and frame in it is produced by four encoder scripts
+(see [Regenerating the artifacts](#regenerating-the-artifacts)); the SVGs and the
+components' JavaScript and CSS are hand-written. Three images encode and ship but no
+page uses them: `images/classroom-morning.webp`, `images/student-notes.webp` and
+`logo/logo-light.png`. Leave them out of the theme.
 
 | Path | What it is | Notes |
 |---|---|---|
@@ -277,13 +287,13 @@ produce everything (see [Regenerating the artifacts](#regenerating-the-artifacts
 | `assets/hero-bridge.js` / `.css` | The `<hero-bridge>` component. | See [The hero bridge](#the-hero-bridge-hero-bridge). |
 | `assets/falling-blocks/w1440/`, `w720/` + `manifest.json` | Closing CTA frames: 48 per layer × 2 layers × 2 tiers. w1440 = 3.4 MB, w720 = 1.5 MB. | The stylesheet picks the tier. Filenames are load-bearing. |
 | `assets/falling-blocks.js` / `.css` | The `<falling-blocks>` component. | See [The falling-blocks CTA](#the-falling-blocks-cta-falling-blocks). |
-| `assets/approach/ap*.webp` + `manifest.json` | Approach sequence: 122 frames × 2 cuts. 6.25 MB full, 4.05 MB crop. | Not currently mounted. Filenames are load-bearing. |
+| `assets/approach/ap*.webp` + `manifest.json` | Approach sequence: 122 frames × 2 cuts. | **Parked, not published.** Do not deploy unless the scrub is mounted again. See [The Approach scrub](#the-approach-scrub-approach-scrub). Filenames are load-bearing. |
 | `assets/approach/cyc0*.webp` | The four cycle-wheel node icons, 320 px square with alpha. | Used by the home page wheel. Not part of the sequence; the manifest does not track them. |
 | `assets/cycle-wheel.js` / `.css` | The `<cycle-wheel>` component. | See [The cycle wheel](#the-cycle-wheel-cycle-wheel). |
 | `assets/team-colour.js` / `.css` | The headshots' colour bloom on Who We Are. Not an element: it finds the team cards from the document and lays each photo's colour twin over it on hover. | Mouse and trackpad only; phones never fetch the twins. See [Headshots](sections/leadership.md#headshots) for what it needs of the markup. |
-| `assets/approach.js` / `.css` | The `<approach-scrub>` component. | See [The Approach scrub](#the-approach-scrub-approach-scrub). |
+| `assets/approach.js` / `.css` | The `<approach-scrub>` component. | **Parked, not published.** Do not deploy unless mounted again. See [The Approach scrub](#the-approach-scrub-approach-scrub). |
 | `assets/images/`, `assets/icons/`, `assets/logo/` | Photography, marks. | Plain images. The seven portrait photos ship in two widths picked by `srcset`. |
-| `assets/team/`, `assets/team/colour/` | Headshots, 512 × 512, finished: each person cut out, framed identically (same face height, same eye line) and composited in a navy duotone onto `#e9eef4`. `colour/` holds the same 25 in their own colour, which the hover reveals. | Use as-is — no CSS filter, no `object-position`, nothing behind them. A person without a photo gets an empty square in the same `#e9eef4` (`--color-st-tropaz-lightest`). See [Headshots](sections/leadership.md#headshots). |
+| `assets/team/`, `assets/team/colour/` | Headshots, 512 × 512, finished: each person cut out, framed identically (same face height, same eye line) and composited in a navy duotone onto `#e9eef4`. The folder holds exactly the 25 people pictured, and `colour/` holds the same 25 in their own colour, which the hover reveals. | Use as-is — no CSS filter, no `object-position`, nothing behind them. **Deploy them as theme files, never through the media library**: the bloom recognises a headshot by `assets/team/` in its `src` and builds the colour URL from it by string replacement, so a renamed or WP-Stateless URL silently turns the hover off. A person without a photo gets an empty square in the same `#e9eef4` (`--color-st-tropaz-lightest`). See [Headshots](sections/leadership.md#headshots). |
 | `assets/illustrations/{brain,blocks,laptop}.webp` | The three home-page illustrations, 810 × 810 with alpha. | See the note below. |
 
 **The illustrations are framed plates; do not crop them.** Each carries its own
@@ -334,8 +344,9 @@ cannot run.
   export's path rewriter scan for exactly that shape.)
 - **Enqueue with `filemtime()` versions and `'strategy' => 'defer'`.** The
   scripts are defer-safe and order-independent.
-  [`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php) does this for both
-  mounted components, gates everything to the AugmentED pages, and adds the
+  [`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php) does this for the three
+  mounted components and the headshots' colour bloom, gates everything to the
+  AugmentED pages and the team members' bio pages, and adds the
   optimizer opt-out attributes from
   [Protect the components from optimization plugins](#protect-the-components-from-optimization-plugins).
 - **Full-page caching is safe because the components make it safe.** Each records
@@ -388,13 +399,14 @@ every clamp's failure mode, the loading measurements, and a native-rebuild
 procedure with verification steps.
 
 **Host-supplied custom properties.** The first four size and place the plate; the
-last three pace it. All are registered with `@property`; if a build pipeline strips
-`@property` rules the element falls back to safe-but-wrong defaults, so do not
-strip them.
+last three pace it. Five of them (`--hb-entry-clear`, `--hb-entry-zoom` and the three
+pacing lengths) are registered with `@property`; `--hb-pin` and `--hb-arch-clear` are
+read back as plain values. If a build pipeline strips `@property` rules, the element
+falls back to safe-but-wrong defaults, so do not strip them.
 
 | Property | This site sets | What it is |
 |---|---|---|
-| `--hb-pin` | `4.5rem` | The sticky header's height. The element reads it back off its stage's computed `top`, so CSS and JS cannot disagree, and an admin bar needs no code change. |
+| `--hb-pin` | `var(--header-h)`, which is `6rem` | The sticky header's height. The element reads it back off its stage's computed `top`, so CSS and JS cannot disagree, and an admin bar needs no code change. |
 | `--hb-entry-clear` | derived from `--hero-band` | How much room the host's copy needs under the header, as a length. **Budget it carefully:** the entry plate is solved from the room left under this line divided by 0.174, so one pixel of copy costs 5.75 px of picture. A theme with taller hero copy gets a visibly smaller plate; fix the copy, not the component. |
 | `--hb-entry-zoom` | `2` above 991 px, else `1` | How far past edge-to-edge the entry may grow. `1` is the safe default (artwork content spans the full plate width; more crops it). Two ceilings usually bind first: `--hb-entry-keep` on laptops, `--hb-max` on large screens. |
 | `--hb-arch-clear` | `--hero-gap + --hero-h1 + 30px` | Where the top of the *finished* bridge must land below the header. Needed the moment copy pins over the picture, because the arch tops out above the furniture (plate y 0.100). Default `0px` leaves the plate at rest. |
@@ -517,8 +529,8 @@ To install it:
 
 ```css
 falling-blocks {
-  --fb-sticky-top: 4.5rem;                 /* the fixed header's height */
-  height: calc(240svh - 4.5rem);           /* 240 − 100 = 140svh of pin */
+  --fb-sticky-top: var(--header-h);        /* the fixed header's height: 6rem here */
+  height: calc(240svh - var(--header-h));  /* 240 − 100 = 140svh of pin */
 }
 ```
 
@@ -600,11 +612,16 @@ procedure, and a native-rebuild fallback.
 
 ### The Approach scrub (`<approach-scrub>`)
 
-> **Status: not currently mounted.** AugmentED found the long scrub hard going,
-> so the home page now runs the hero bridge and the cycle wheel instead. The
-> component, its frames, and its build spec are kept for the shortened sequence
-> that is planned to replace it. Do not port it as part of rebuilding the page as
-> it stands.
+> **Status: parked.** AugmentED found the long scrub hard going, so the home page
+> now runs the hero bridge and the cycle wheel instead. The component and its frames
+> are kept in the repository for the shortened sequence planned to replace it, but
+> the site build no longer publishes them, and nor should you. **Do not port or
+> deploy it** as part of rebuilding the site as it stands.
+>
+> Its [build specification](sections/approach.md) predates the component's last
+> retune, and says so at the top. The numbers below and in the spec (heights,
+> timing, sizes) are the old tuning. Treat the code as the source of truth and
+> refresh the spec before the scrub returns.
 
 A canvas sequence scrubbed through six beats, with copy and tick markers synced to
 it, a camera push-in, and a separate crop for phones. Same doctrine as the other
@@ -620,7 +637,7 @@ If and when it mounts, installation follows the shared pattern: copy
 `assets/approach.js`, `assets/approach.css`, and `assets/approach/`; enqueue;
 emit the markup contract from the top of `assets/approach.js` with `base` set;
 set `--arch-pin` to the theme header's height. The element's own height is the
-scroll budget (1000vh desktop, 600svh phone). Component-specific warnings —
+scroll budget (1250vh desktop, 1240svh phone, per `assets/approach.css`). Component-specific warnings —
 the manifest requirement, the top-edge anchor, the crop contract, the
 reduced-motion fallback's dependency on the reveal sweeper — are in the
 specification.
@@ -637,14 +654,13 @@ the comments explain *why* — read them before rewriting.
 
 | Behavior | Markup hooks | What it does | Effort |
 |---|---|---|---|
-| Scroll reveal | `data-reveal` (67 uses) | Fades a block in when it enters the viewport. | Trivial: an IntersectionObserver that sets `opacity` to 1. |
-| Body-offset sync | `data-approach-heading`, `data-approach-text` | Drops a two-column body to sit against the middle of its heading; becomes a gap when stacked. | Small: one measured `margin-top`, applied at ≥992 px. |
+| Scroll reveal | `data-reveal` (64 uses) | Fades a block in when it enters the viewport. | Trivial: an IntersectionObserver that sets `opacity` to 1. |
 | Mobile menu | `navOpen` state | Header hamburger; locks body scroll; Escape closes. | Trivial. |
 
 Notes:
 
 - **`data-reveal` blocks start at inline `opacity: 0`.** If the reveal behavior is
-  not rebuilt, 67 blocks stay invisible. Either port it or strip the inline
+  not rebuilt, 64 blocks stay invisible. Either port it or strip the inline
   opacity.
 - An earlier version of this document listed `data-lift`, `data-gloss`,
   `data-term`, `data-kit`, `data-brick`, `data-on`, and `data-build` behaviors.
@@ -685,7 +701,13 @@ with the tools already on your install (JetEngine, CPT UI).
   own `#e9eef4`), name, role (optional —
   4 people are on the page before their titles), bio page URL (21 of 29 have one; the
   prose is in `source-material/bios/`), optional affiliation and location, optional
-  LinkedIn and website links. The obvious custom post type.
+  LinkedIn and website links. Model them as a custom post type named `team_member`
+  (the name [`wp/augmented-ed-assets.php`](wp/augmented-ed-assets.php) enqueues for),
+  but only as storage: they are not posts. Give the type no archive, no feed and no
+  dates on the front end. Only the 21 with a bio get a single page, at `/team/<slug>/`;
+  the rest exist to fill the Who We Are grids. The headshot is a file path into the
+  theme's `assets/team/`, not a media-library attachment (see
+  [The assets](#the-assets)).
 - **Research items** (`content/research.json`): title, description, link.
 - **Cycle wheel steps** (`content/cycle.json`): four steps, each a number, a
   title, a body paragraph, and an icon. Editable copy, fixed count of four — the
@@ -717,7 +739,7 @@ exported as `content/pages.json`):
 
 | Route | Title | Description |
 |---|---|---|
-| `/` | AugmentED \| Bridging frontier AI and the classroom | AugmentED is a team of educators, researchers, and technologists working together to build the evidence base for what AI should (and shouldn’t) do in the classroom, and the technology to do it well. |
+| `/` | AugmentED \| Bridging AI and the classroom | AugmentED is a team of educators, researchers, and technologists working together to build the evidence base for what AI should (and shouldn’t) do in the classroom, and the technology to do it well. |
 | `/challenge/` | The Challenge \| AugmentED | AI is arriving in classrooms whether schools are ready or not. The danger is that some are rushing in without asking what AI can do well, what teachers uniquely bring, or what students actually need. |
 | `/approach/` | Our Approach \| AugmentED | We believe better educational AI will emerge from discovering what classrooms actually need, building solutions with real educators and students, and testing them in real classrooms. |
 | `/team/` | Who We Are \| AugmentED | AugmentED brings together people from classrooms, research labs, and engineering teams who share a conviction that AI should augment human teaching, not replace it. |
@@ -810,9 +832,20 @@ AccessiBe widget active.
 - [ ] Phones fetch only `w720` frames; desktops only `w1440`.
 - [ ] Reduced motion and Save-Data show the frame-1 stills at one screen.
 
+**Who We Are and the bio pages** (full criteria in [`sections/leadership.md`](sections/leadership.md)):
+
+- [ ] 25 headshots and 4 placeholder squares in `#e9eef4`, in the four groups and the
+      order of `content/team.json`; the 4 people without a title show no empty line.
+- [ ] With a mouse, a headshot's colour blooms in from the pointer and drains on
+      leaving; on a phone or tablet nothing blooms and no `assets/team/colour/` file is
+      requested.
+- [ ] The 21 "Read bio" tiles each open `/team/<slug>/`, rendered with the site's
+      header, fonts and styles (the design system is enqueued on the single template),
+      with the right title, description and canonical.
+
 **Site-wide:**
 
-- [ ] All 67 reveal blocks become visible; none is stranded at `opacity: 0`.
+- [ ] All 64 reveal blocks become visible; none is stranded at `opacity: 0`.
 - [ ] The form submits to its decided destination and the submission arrives.
 - [ ] Fonts self-hosted, WOFF2 only; Avenir license confirmation on file.
 - [ ] Frame directories excluded from image optimization; manifests return 200.
@@ -831,7 +864,8 @@ repository and print the restore path they need if you run them without it.
 | `node tools/export-content.mjs` | Re-parses `pages/` into the `content/` data files. Run it after every export. |
 | `node tools/encode-hero-bridge.mjs` | Re-encodes the hero frames and manifest. Widths: `FULL_W` / `CROP_W` in the script. |
 | `node tools/encode-falling-blocks.mjs` | Re-encodes the CTA frames and manifest. Tiers: `WIDTHS` in the script. |
-| `node tools/encode-approach.mjs` | Re-encodes the Approach frames and manifest. Sequence: `OPEN` / `BEATS` / `STRIDE` in the script. |
+| `node tools/encode-approach.mjs` | Re-encodes the parked Approach frames and manifest. Sequence: `OPEN` / `BEATS` / `STRIDE` in the script. |
 | `python3 tools/cutout-headshots.py [--only=<slug>]` | Cuts a headshot out of its photo and frames it; writes `source-material/image-sources/team-cutout/`. Needs a 973 MB model that is not committed — the script's header says where to get it. Only for a new or replaced photo. |
 | `node tools/encode-images.mjs` | Re-encodes photography and headshots from committed sources, including the headshots' duotone and their colour twins. |
-| `node tools/build-site.mjs _site` | Builds the static site for comparison while rebuilding. |
+| `node tools/encode-fonts.mjs` | Converts the design system's Avenir OTFs to the committed WOFF2. Needs `npm i --no-save wawoff2`. Only if the font files change. |
+| `node tools/build-site.mjs _site` | Builds the static site for comparison while rebuilding. It is exactly what the reference site serves: leaving out the design system's dev files and `.otf` sources, and the parked Approach scrub. |

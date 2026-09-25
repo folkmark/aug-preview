@@ -125,13 +125,34 @@ function share(html) {
   return html.replace(/(<meta (?:property="og:image"|name="twitter:image") content=")(\/[^/"][^"]*)"/g, `$1${ORIGIN}$2"`);
 }
 
+// assets/ and _ds/ are copied whole, and pages.yml force-pushes whatever lands in
+// _site straight to gh-pages on every push to main — so anything that is in those
+// directories but not part of the served site has to be left out here, or it is
+// published. A hand edit to gh-pages does not survive the next push.
+//
+// - The design system's dev files: its lint config, its component manifest and its
+//   readme. They were stripped from gh-pages by hand once (6599b09) and came back with
+//   the first automated publish, because nothing here knew to leave them out.
+// - Its .otf fonts, 538 KB. tokens/fonts.css loads only the .woff2 files; the .otf
+//   copies are the design system's source files, and nothing served names them.
+// - The Approach scrub, while it is parked. Its element left index.html in e0ae9d6;
+//   its code, stylesheet, manifest and 244 frames (10.8 MB) stayed in the repository
+//   for the shortened sequence meant to replace it, and kept being published with no
+//   page to load them. Keyed to the element rather than listed as dead, so mounting
+//   <approach-scrub> again ships its files again with no second edit here — and the
+//   reference check below then verifies every frame, as it did before. The four
+//   cyc0* thumbnails in assets/approach/ are the cycle wheel's, used on every page,
+//   and are not matched.
+//
+// The list itself (UNSERVED) is built next to the copy below, because whether the scrub
+// is mounted is read off index.html, which is not loaded yet at this point.
 function copyDir(from, to) {
   fs.mkdirSync(to, { recursive: true });
   for (const entry of fs.readdirSync(from, { withFileTypes: true })) {
     const src = path.join(from, entry.name);
     const dst = path.join(to, entry.name);
     if (entry.isDirectory()) copyDir(src, dst);
-    else fs.copyFileSync(src, dst);
+    else if (!UNSERVED.some((re) => re.test(path.relative(root, src).split(path.sep).join('/')))) fs.copyFileSync(src, dst);
   }
 }
 
@@ -213,6 +234,13 @@ const problems = [];
 // from: land here, click any nav item, and its relative paths follow you one level down.
 fs.writeFileSync(path.join(outDir, 'index.html'), share(absolutise(home)));
 
+// See copyDir() for why each of these stays out of the build.
+const approachMounted = /<approach-scrub\b/.test(home.replace(/<!--[\s\S]*?-->/g, ''));
+const UNSERVED = [
+  /^_ds\/[^/]+\/(_adherence\.oxlintrc\.json|_ds_manifest\.json|readme\.md)$/,
+  /^_ds\/.*\.otf$/,
+  ...(approachMounted ? [] : [/^assets\/approach\.(js|css)$/, /^assets\/approach\/(ap\d{4}m?\.webp|manifest\.json)$/]),
+];
 for (const file of COPY_FILES) fs.copyFileSync(path.join(root, file), path.join(outDir, file));
 for (const dir of COPY_DIRS) copyDir(path.join(root, dir), path.join(outDir, dir));
 
@@ -572,7 +600,7 @@ ${ld ? `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\
 
 // A page is built only if the team page LINKS to it. Not if a card with that id exists:
 // that was the first version of this check, and it built /team/brandon-bodnar/ — he
-// still has a card, in Technology and Design Partners, but no "Read bio" link, so the
+// had a card, in Technology and Design Partners, but no "Read bio" link then, so the
 // page would have shipped linked from nowhere while the docs said it did not exist.
 // Caught in review before it merged. The link is the real coupling, so it is the test.
 //

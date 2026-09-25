@@ -1,12 +1,24 @@
 # The Approach scrub — build spec
 
-> **Status: not currently on the page.** AugmentED found the long scrub hard
-> going, so the home page now runs the shorter hero-bridge sequence and the cycle
-> wheel. The component and its frames are kept for the shortened sequence planned
-> to replace it. Everything below still describes the shipped files accurately,
-> but no page currently mounts the element, so no live instance exists to
-> inspect — on the site or in `pages/`. The markup contract is documented at the
-> top of `assets/approach.js`.
+> **Status: parked, and out of date. Do not build from this document as it stands.**
+> AugmentED found the long scrub hard going, so the home page now runs the shorter
+> hero-bridge sequence and the cycle wheel. `<approach-scrub>` left the page in
+> `e0ae9d6` (2026-08-20), and since the component is not mounted, the site build no
+> longer publishes its code or frames. They stay in the repository for the shortened
+> sequence planned to replace it.
+>
+> The same commit retuned the component, and this specification was not updated with
+> it. Its numbers describe the earlier tuning. The section heights, the move and hold
+> weights, the travel, bounds and move fractions, the frame easing, the copy timing,
+> the frame list example and the memory figures are all superseded. `assets/approach.js`,
+> `assets/approach.css` and `assets/approach/manifest.json` are the source of truth
+> until it is refreshed. Their comments predate parts of the retune too.
+>
+> **Before mounting it again,** refresh this document against the code, and fix one
+> known fault first. With the current timing, the tick for step 02 lands while step
+> 01's copy is still showing, and the tick for step 04 while step 03's is. The copy
+> cues and the tick landings in `approach.js` no longer agree. The markup contract is
+> at the top of `assets/approach.js`.
 
 This is the complete description of the Approach section — enough to rebuild
 it in another stack without reading the original source. It covers the asset contract, the scroll and camera math, the responsive states, the

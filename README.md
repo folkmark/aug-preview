@@ -271,9 +271,13 @@ stages of the arch being built, and AugmentED found it hard going, so the home
 page now carries the hero sequence above and the R&D cycle wheel where the scrub
 used to be. The component — `assets/approach.js` and
 `assets/approach.css` — and its frames are kept for the shortened sequence that
-replaces it, and the build only checks the frames when the element is actually
-mounted. The full build spec is at
-[`wordpress-handoff/sections/approach.md`](wordpress-handoff/sections/approach.md).
+replaces it. While the element is off the page the build neither checks those files nor
+publishes them: `tools/build-site.mjs` leaves the component and its frames out of
+`_site`, and mounting `<approach-scrub>` again brings both back. The build spec at
+[`wordpress-handoff/sections/approach.md`](wordpress-handoff/sections/approach.md)
+predates the component's last retune and says so; refresh it before the scrub returns.
+
+The rest of this section describes the sequence as it stands in the repository.
 
 `assets/approach/` also holds the four co-design cycle node renders —
 `cyc0*.webp`, 320px square with alpha, the icons the home page's ring is built from.
@@ -305,7 +309,7 @@ and must stay in step with the `aspect-ratio` on `[data-arch-box]`. Which cut th
 page loads is read from a CSS custom property, so the breakpoint that sizes the band
 is also the one that picks the file — there is no second copy of it to drift.
 
-122 frames ship — the six beats plus every fifth frame between them, spanning 91 to
+122 frames are encoded — the six beats plus every fifth frame between them, spanning 91 to
 672 — so a move between beats is a real scrub. Beats and moves are encoded differently
 on purpose: the beats hold still under copy for a screenful of scrolling and stay at
 native size, while the moves are only seen in passing and go out a little smaller. That
@@ -488,7 +492,10 @@ phone.
 `.github/workflows/pages.yml` builds on every push to `main` and force-pushes the
 result to the **`gh-pages`** branch, which is what Pages serves. On a pull request
 it builds and stops — the verify step inside `tools/build-site.mjs` is the point,
-not the publish.
+not the publish — and a manual run publishes only from `main`. Whatever is in `_site`
+goes live, so the build is where files that are in the repository but not served get
+left out: the design system's dev files and `.otf` sources, and the parked Approach
+scrub (see `copyDir()`).
 
 The repository's Pages **Source** must be **Deploy from a branch → `gh-pages` /
 (root)** (Settings → Pages). Nothing else should be pushing to that branch: each

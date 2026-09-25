@@ -3,7 +3,10 @@
 Twenty-one pages, one for each person on the team who has a bio, at `/team/<slug>/`: the
 four leaders, and since late September 2026 seventeen of the partners and fellows. They are the
 only pages on this site that are **not** the single-page app, and porting them is the
-easiest job in this package: in WordPress they are one custom post type with one template.
+easiest job in this package: in WordPress they are the single template of one custom post
+type, `team_member`, which the team members use only as storage — see Content in
+[the handoff README](../README.md#content). [`wp/augmented-ed-assets.php`](../wp/augmented-ed-assets.php)
+enqueues the design system on that template.
 (This file is still called leadership.md because Leadership had the only pages when it
 was written, and other documents link to it by that name.)
 
@@ -115,7 +118,7 @@ empty tile and a photographed one sit on one colour.
 
 Do not re-crop them — no Media Library "crop to square", no theme `object-position`. The
 framing is what makes 25 photographs from 25 photographers read as one team, and it is
-already done. They are 5–25 KB each. Seven of the photographs stop short of where the
+already done. They are 5–34 KB each. Seven of the photographs stop short of where the
 framing wants them, and those fade out where the photo ends (clearly for Ryan Baker,
 Andrew Lan, Byungyeon Yun and Sonia Prusaitis); that is baked into the file, not an
 effect to reproduce, and it goes away when a looser original replaces one.
@@ -127,7 +130,7 @@ writes 768px cut-outs to `source-material/image-sources/team-cutout/`, with no c
 the file, in seconds. Change the colours there; change the framing in the cut-out tool.
 
 **Each has a colour twin**, `assets/team/colour/<slug>.webp`: the same cut-out in its own
-colour on the same `#e9eef4`, 6–30 KB. On hover, the colour pours back into the duotone
+colour on the same `#e9eef4`, 6–37 KB. On hover, the colour pours back into the duotone
 from wherever the pointer came in — a radial mask, 900 ms in, draining out where the
 pointer leaves in 450 ms — and a keyboard focus on "Read bio" blooms it from the face.
 That is `assets/team-colour.js` and `.css`, enqueued like the other components; porting it
@@ -245,8 +248,9 @@ filling them with paths, and warns.
    card. Their affiliation, location and links are read off the card, not repeated here.
 4. Add the `Read bio` link to their card, copying another card's `.bio-cta` paragraph,
    with the slug in the href and the name in the hidden span.
-5. Bump the counts in `tools/export-content.mjs` — `team.length` and the headshot count are
-   hard-coded on purpose, as tripwires.
+5. Bump the counts in `tools/export-content.mjs` — `team.length`, the headshot count and
+   the number of people without a title (`roleless.length`) are hard-coded on purpose, as
+   tripwires.
 
 Step 3 can land before step 4: the bio is skipped with a warning until the link exists,
 so nothing is published early.

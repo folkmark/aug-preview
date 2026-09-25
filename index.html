@@ -101,9 +101,9 @@
   .team-grid-3 img, .team-grid-3 > div > div:first-child { margin-bottom: var(--space-4) !important; }
   .team-grid-3 a[aria-label] { width: var(--icon-size); height: var(--icon-size); align-items: center; justify-content: center; flex: 0 0 auto; }
   .team-grid-3 a[aria-label] > * { width: var(--icon-size) !important; height: var(--icon-size) !important; min-width: var(--icon-size) !important; min-height: var(--icon-size) !important; font-size: var(--icon-size) !important; line-height: var(--icon-size) !important; display: block !important; margin: 0 !important; }
-  /* THE BIO TILES. The four Leadership cards each link to a page of their own at
-     /team/<slug>/, and the whole tile is that link: photo, name, role and the space
-     between them. One link per person, one tab stop, a target the size of the card.
+  /* THE BIO TILES. Every card whose person has a bio (21 of them, in all four groups)
+     links to a page of their own at /team/<slug>/, and the whole tile is that link:
+     photo, name, role and the space between them. One link per person, one tab stop, a target the size of the card.
 
      The link is the design system's link button, the same "Read more ›" the papers and
      every "Learn more ›" on the site use. It was a bare semibold "Read bio" in body ink
@@ -599,7 +599,7 @@
     [data-hero-copy] h1 { position: static; }
     hero-bridge { --hb-entry-clear: 24px; --hb-arch-clear: 0px; }
   }
-  /* The header is sticky and 4.5rem tall, so the stage is a screen minus the header
+  /* The header is sticky and --header-h (6rem) tall, so the stage is a screen minus the header
      and the rig is that plus the pin. The difference between the two is the scroll
      budget the element measures: 240 minus 100 leaves 140svh, over which revolutions="0.6"
      of 48 frames turn — 45px of scroll a frame at 1440x900, the same rate the Approach

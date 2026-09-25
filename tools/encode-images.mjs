@@ -326,10 +326,11 @@ const JOBS = [
   // The photographs in team/ are still the masters, and a better original is now the one
   // thing that improves a tile. Where they came from:
   //
-  // Most are from the "Website Bio tracking" sheet, where each person's photo is embedded
-  // in a Headshots column. Eight are not, under one rule: where the subject's own
-  // institution still publishes the file the sheet's copy was resized from, the
-  // institution wins. Angela is 1000x1407 on her own page against a 680x600 Drupal
+  // Nine are from the "Website Bio tracking" sheet, where each person's photo is embedded
+  // in a Headshots column. Sherry's came from her directly and seven came through the
+  // website info form, both further down. The other eight are from the subject's own
+  // institution, under one rule: where the institution still publishes the file the
+  // sheet's copy was resized from, the institution wins. Angela is 1000x1407 on her own page against a 680x600 Drupal
   // derivative in the sheet, Laura 1200x1800 against 300x450, Sarah 2617x2500 against a
   // 1024x978 re-export, and the four Crosstown fellows below are 2048-2500 against 400-800.
   // Check both before adding anyone new — a photo that has been pasted through a
@@ -373,16 +374,14 @@ const JOBS = [
   // would ship a mushy tile that merely claims to be sharp, so the 203 is the master.
   { in: 'team-cutout/andrew-lan.webp',         out: 'team/andrew-lan.webp',         width: 512, square: true, duotone: DUOTONE },
   { in: 'team-cutout/ryan-baker.webp',         out: 'team/ryan-baker.webp',         width: 512, square: true, duotone: DUOTONE },
-  // These two came off the site in September 2026 when the Fellowship roster changed, and
-  // nothing references their output any more. Kept on purpose rather than deleted: the
-  // decision was to hold the files in case the roster moves again. Same situation as the
-  // two 3/2 frames at the top of this list — encoded and published, linked from nowhere.
-  // They are still the colour photographs, cropped by top-anchored cover, because they left
-  // before the cut-outs came in; tools/cutout-headshots.py only cuts out the people
-  // index.html pictures, so whoever brings one back gives them a card first, runs it with
-  // --only, and moves this job over to the others' form.
-  { in: 'team/danielle-ragavanis.jpg', out: 'team/danielle-ragavanis.webp', width: 512, square: true },
-  { in: 'team/alondra-ramos.jpg',      out: 'team/alondra-ramos.webp',      width: 512, square: true },
+  // Danielle Ragavanis and Alondra Ramos came off the page when the Fellowship roster
+  // changed on 18 September 2026. Their photos were kept encoded here in case it moved
+  // again, which meant two people no longer on the site stayed published at
+  // /assets/team/, linked from nowhere, and the handoff's "the 25 people on the page" was
+  // wrong about the folder. Removed on 25 September. Both masters are in history —
+  // `git show 3087ca5:source-material/image-sources/team/alondra-ramos.jpg` — and they
+  // predate the cut-outs, so whoever brings one back gives them a card, runs
+  // tools/cutout-headshots.py --only on them, and adds a job in the form above.
 
   // The three Leadership portraits, the same ~197px tile as everyone else; their long bios
   // are on their own pages at /team/<slug>/.
@@ -581,7 +580,7 @@ for (const job of runnable) {
   // of each headshot has to meet its duotone exactly — THE COLOUR BLOOM in index.html
   // wipes one into the other — so both come out of the same arithmetic, and wherever the
   // matte is empty the two composites hold exactly the same background. After WebP each
-  // rounds its own way; measured over all 24, the shipped pairs differ there by 0.05 of a
+  // rounds its own way; measured over the first 24, the shipped pairs differ there by 0.05 of a
   // level on average, invisible under a moving mask.
   if (job.duotone || job.flatten) {
     const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));

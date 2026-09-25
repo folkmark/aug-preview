@@ -189,7 +189,7 @@ no profile; converting would apply a transfer function twice).
   back near the strip's end. Retention and requesting used to disagree by a few
   frames, and the frames in the difference were fetched, decoded, closed, and
   re-requested forever: measured on a phone parked on the section doing
-  nothing, **1.01 MB per second, indefinitely**, from a directory of 1.41 MB.
+  nothing, **1.01 MB per second, indefinitely**, from a directory of 1.5 MB (1.41 MiB).
   If retention and requesting are ever two computations again, that loop comes
   back.
 - **Substitution is circular-nearest and always the same index on both

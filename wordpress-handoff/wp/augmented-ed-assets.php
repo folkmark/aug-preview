@@ -3,7 +3,8 @@
  * AugmentED asset loading for a classic WordPress theme.
  *
  * This file registers everything the AugmentED pages need — the design-system
- * stylesheets in their required order, and the four page components — with
+ * stylesheets in their required order, the three page components and the
+ * headshots' colour bloom — with
  * the loading behavior the handoff specifies: filemtime() cache-busting versions,
  * deferred scripts, and the attributes that tell optimization plugins to leave
  * the component scripts alone.
@@ -31,14 +32,22 @@
  *
  *        add_filter( 'augmented_ed_is_active', fn( $active ) => is_page( 'augmented' ) );
  *
+ *    The team members' bio pages are the single template of the `team_member`
+ *    post type (AUGMENTED_ED_POST_TYPE). They get the design system too, which
+ *    is_page() alone would miss, and nothing else: a bio page is static prose
+ *    with no components on it.
+ *
  * What this file deliberately does not do:
  *
- * - It emits no markup. The component markup, the hero-copy CSS block, and the
- *   cycle-wheel CSS live in your page templates; build them from
- *   wordpress-handoff/pages/ and the specs in wordpress-handoff/sections/.
- * - It does not enqueue the Approach scrub (`approach.js`), which is not
- *   currently mounted on any page. Uncomment the lines below if that section
- *   returns; read wordpress-handoff/sections/approach.md first.
+ * - It emits no markup. The component markup and the page-level CSS that
+ *   configures the components — the hero-copy block, and host properties such as
+ *   --cw-pin and --fb-sticky-top — live in your page templates; build them from
+ *   wordpress-handoff/pages/ and the specs in wordpress-handoff/sections/. The
+ *   components' own stylesheets are enqueued here.
+ * - It does not enqueue the Approach scrub (`approach.js`), which is parked:
+ *   not mounted on any page, and not published. Uncomment the lines below if that
+ *   section returns, after refreshing wordpress-handoff/sections/approach.md,
+ *   which predates the component's last retune.
  * - It does not register content types or the Follow form. See "Content" in
  *   the handoff README.
  *
@@ -47,6 +56,9 @@
 
 /** Page slugs this loads on. Override with the augmented_ed_is_active filter. */
 const AUGMENTED_ED_PAGES = array( 'augmented', 'challenge', 'approach', 'team', 'follow' );
+
+/** The post type the team members are stored as; its single template is the bio page. */
+const AUGMENTED_ED_POST_TYPE = 'team_member';
 
 /** Script handles that must survive optimization plugins untouched. */
 const AUGMENTED_ED_PROTECTED_HANDLES = array( 'augmented-hero-bridge', 'augmented-falling-blocks', 'augmented-cycle-wheel', 'augmented-team-colour' );
@@ -58,7 +70,7 @@ const AUGMENTED_ED_PROTECTED_HANDLES = array( 'augmented-hero-bridge', 'augmente
  * and the component scripts never load site-wide on aerdf.org.
  */
 function augmented_ed_is_active() {
-	return (bool) apply_filters( 'augmented_ed_is_active', is_page( AUGMENTED_ED_PAGES ) );
+	return (bool) apply_filters( 'augmented_ed_is_active', is_page( AUGMENTED_ED_PAGES ) || is_singular( AUGMENTED_ED_POST_TYPE ) );
 }
 
 add_action( 'wp_enqueue_scripts', function () {
@@ -91,6 +103,11 @@ add_action( 'wp_enqueue_scripts', function () {
 		$prev = array( $handle );
 	}
 
+	// A bio page needs the design system and nothing more.
+	if ( is_singular( AUGMENTED_ED_POST_TYPE ) ) {
+		return;
+	}
+
 	// The components. Every script is defer-safe and order-independent; the two
 	// canvas rigs find their frames through the `base` attribute your template
 	// sets on the element, never through their own URL, and the cycle wheel
@@ -117,7 +134,7 @@ add_action( 'wp_enqueue_scripts', function () {
 		);
 	}
 
-	// The Approach scrub is not currently mounted anywhere. If it returns:
+	// The Approach scrub is parked: not mounted anywhere, not published. If it returns:
 	// wp_enqueue_style( 'augmented-approach', $uri . 'assets/approach.css', array(), $ver( 'assets/approach.css' ) );
 	// wp_enqueue_script( 'augmented-approach', $uri . 'assets/approach.js', array(), $ver( 'assets/approach.js' ), array( 'strategy' => 'defer', 'in_footer' => true ) );
 } );
