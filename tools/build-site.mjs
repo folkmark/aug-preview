@@ -129,6 +129,36 @@ function share(html) {
   return html.replace(/(<meta (?:property="og:image"|name="twitter:image") content=")(\/[^/"][^"]*)"/g, `$1${ORIGIN}$2"`);
 }
 
+// Every headshot URL carries a version: assets/team/<slug>.webp?v=<8 hex>, a hash of the
+// duotone and its colour twin together. Pages serves every file with max-age=600 under a
+// URL that never changes, and the twin is a separate request made on hover
+// (assets/team-colour.js), so for ten minutes after a deploy a browser could show the new
+// duotone with the old colour poured over it — a different framing wiping in over the
+// face. That is what the owner saw on 26 September 2026, after the reframing shipped. With
+// the pair's hash in the URL, a page naming the new pair asks for both afresh. The script
+// builds the twin's URL by replacing assets/team/ with assets/team/colour/ in the duotone's,
+// query and all, so the twin is fetched under the same version as the duotone it belongs
+// to. Only the pages written here carry it: index.html, the handoff export and the
+// WordPress plugin name the files plainly, and the reference check strips it.
+const headshotVersions = new Map();
+function versionHeadshots(html) {
+  return html.replace(/(assets\/team\/)([a-z0-9-]+)\.webp(?![?\w])/g, (m, dir, slug) => {
+    if (!headshotVersions.has(slug)) {
+      const h = crypto.createHash('sha1');
+      for (const rel of [`assets/team/${slug}.webp`, `assets/team/colour/${slug}.webp`]) {
+        const abs = path.join(root, rel);
+        if (fs.existsSync(abs)) h.update(fs.readFileSync(abs));
+      }
+      headshotVersions.set(slug, h.digest('hex').slice(0, 8));
+    }
+    return `${dir}${slug}.webp?v=${headshotVersions.get(slug)}`;
+  });
+}
+
+// Every page written goes through the same three steps, in this order: paths made
+// absolute, headshots versioned, share tags made full URLs.
+const publish = (html) => share(versionHeadshots(absolutise(html)));
+
 // assets/ and _ds/ are copied whole, and pages.yml force-pushes whatever lands in
 // _site straight to gh-pages on every push to main — so anything that is in those
 // directories but not part of the served site has to be left out here, or it is
@@ -249,7 +279,7 @@ if (teamProblems.length) {
 const problems = [];
 // The root file gets the same treatment as the routes. It is the one the bug starts
 // from: land here, click any nav item, and its relative paths follow you one level down.
-fs.writeFileSync(path.join(outDir, 'index.html'), share(absolutise(home)));
+fs.writeFileSync(path.join(outDir, 'index.html'), publish(home));
 
 // See copyDir() for why each of these stays out of the build.
 const UNSERVED = unserved(home);
@@ -266,7 +296,7 @@ if (fs.existsSync(path.join(root, 'CNAME'))) {
 for (const page of PAGES) {
   const dir = path.join(outDir, page.slug);
   fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, 'index.html'), share(absolutise(retitle(home, page))));
+  fs.writeFileSync(path.join(dir, 'index.html'), publish(retitle(home, page)));
 }
 
 // The slugs were shortened after the preview had been shared, so links to the old
@@ -560,14 +590,14 @@ if (kept.length) console.log(`  bios kept, not built: ${kept.join(', ')}`);
 for (const b of bios) {
   const dir = path.join(outDir, 'team', b.slug);
   fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, 'index.html'), share(absolutise(bioPage(b))));
+  fs.writeFileSync(path.join(dir, 'index.html'), publish(bioPage(b)));
 }
 if (bios.length) console.log(`  bios: ${bios.map((b) => `team/${b.slug}/`).join(', ')}`);
 
 // GitHub Pages serves 404.html from whatever URL was missed, so its references
 // have to be absolute — relative ones would resolve against the bad path — and
 // it has to be told the real base so its links point back into the site.
-const notFound = share(absolutise(home))
+const notFound = publish(home)
   .replace('<head>', `<head>\n<script>window.__siteBase = ${JSON.stringify(basePath)};</script>`);
 fs.writeFileSync(path.join(outDir, '404.html'), notFound);
 
@@ -685,9 +715,10 @@ function checkFile(rel) {
   const abs = path.join(outDir, rel);
   const html = fs.readFileSync(abs, 'utf8');
   for (const ref of refsIn(html)) {
-    const target = ref.startsWith('/')
-      ? path.join(outDir, ref.slice(basePath.length === 1 ? 1 : basePath.length))
-      : path.resolve(path.dirname(abs), ref);
+    const file = ref.split('?')[0]; // a headshot's ?v= names a version, not a file
+    const target = file.startsWith('/')
+      ? path.join(outDir, file.slice(basePath.length === 1 ? 1 : basePath.length))
+      : path.resolve(path.dirname(abs), file);
     if (!fs.existsSync(target)) problems.push(`${rel} -> ${ref}`);
   }
   if (!/<title>[^<]+<\/title>/.test(html)) problems.push(`${rel} has no title`);

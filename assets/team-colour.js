@@ -83,7 +83,9 @@
         layer.setAttribute('loading', 'lazy');
         layer.addEventListener('error', () => layer.remove());
         // From the attribute, not .src: the property is the resolved absolute URL, and
-        // in a serialised copy of the page that would be one machine's localhost.
+        // in a serialised copy of the page that would be one machine's localhost. On the
+        // built site the duotone's URL ends in the pair's ?v= (tools/build-site.mjs), and
+        // this keeps it, so a cached old twin can never bloom over a new duotone.
         layer.setAttribute('src', photo.getAttribute('src').replace('assets/team/', 'assets/team/colour/'));
         photo.after(layer);
       });
