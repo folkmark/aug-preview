@@ -306,9 +306,11 @@ const JOBS = [
   // tools/cutout-headshots.py writes from the photographs in team/: each person lifted off
   // their background by a matting model and framed by one rule for all of them — every
   // face the same height, every eye line at the same height, the shoulders running off
-  // the tile. That file explains the framing and is where it changes; the cut-outs it
-  // writes are 768 square, so the square resize here is a plain downsample with nothing to
-  // crop, and the withoutEnlargement trap described at the resize never comes up.
+  // the tile, and a photo cropped too tight for that stretched, lowered and enlarged by
+  // bounded amounts until they do. That file explains the framing and is where it
+  // changes; the cut-outs it writes are 768 square, so the square resize here is a plain
+  // downsample with nothing to crop, and the withoutEnlargement trap described at the
+  // resize never comes up.
   //
   // What is left for this file is the look, which is DUOTONE above: every pixel's luma
   // mapped from the ink at black to the paper at white, then laid on the background by the
