@@ -159,6 +159,37 @@ function versionHeadshots(html) {
 // absolute, headshots versioned, share tags made full URLs.
 const publish = (html) => share(versionHeadshots(absolutise(html)));
 
+// Where each route lives, said once in its own head: a canonical and og:url, as the bio
+// pages already carry, so the four route copies and the root are not five unrelated
+// pages to a crawler, and a shared link unfurls with its real address. Home also says
+// what the site is — the Organization, with AERDF as its parent — which is what a search
+// result's knowledge panel is built from. Nothing without a CNAME: an origin guessed
+// here would be wrong on every fork, and 404.html never gets any of it, being served
+// from whatever address was missed.
+//
+// The WordPress plugin needs none of this: on aerdf.org, WordPress and Yoast write the
+// canonical, the sitemap and the structured data for every page.
+function locate(html, slug) {
+  if (!ORIGIN) return html;
+  const description = ((html.match(/<meta name="description" content="([^"]*)">/) || [])[1] || '')
+    .replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+  const url = `${ORIGIN}${basePath}${slug ? slug + '/' : ''}`;
+  let head = `<link rel="canonical" href="${url}">\n<meta property="og:url" content="${url}">`;
+  if (!slug) {
+    const ld = {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'AugmentED',
+      url,
+      logo: `${ORIGIN}${basePath}assets/logo/logo-icon.png`,
+      description,
+      parentOrganization: { '@type': 'Organization', name: 'AERDF', url: 'https://aerdf.org/' },
+    };
+    head += `\n<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>`;
+  }
+  if (!/<meta property="og:type" content="website">/.test(html)) { problems.push('index.html has no og:type meta for locate() to follow'); return html; }
+  return html.replace(/(<meta property="og:type" content="website">)/, `$1\n${head}`);
+}
 
 // assets/ and _ds/ are copied whole, and pages.yml force-pushes whatever lands in
 // _site straight to gh-pages on every push to main — so anything that is in those
@@ -280,7 +311,7 @@ if (teamProblems.length) {
 const problems = [];
 // The root file gets the same treatment as the routes. It is the one the bug starts
 // from: land here, click any nav item, and its relative paths follow you one level down.
-fs.writeFileSync(path.join(outDir, 'index.html'), publish(home));
+fs.writeFileSync(path.join(outDir, 'index.html'), publish(locate(home, '')));
 
 // See copyDir() for why each of these stays out of the build.
 const UNSERVED = unserved(home);
@@ -297,7 +328,7 @@ if (fs.existsSync(path.join(root, 'CNAME'))) {
 for (const page of PAGES) {
   const dir = path.join(outDir, page.slug);
   fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, 'index.html'), publish(retitle(home, page)));
+  fs.writeFileSync(path.join(dir, 'index.html'), publish(locate(retitle(home, page), page.slug)));
 }
 
 // The slugs were shortened after the preview had been shared, so links to the old
@@ -616,6 +647,19 @@ if (bios.length) console.log(`  bios: ${bios.map((b) => `team/${b.slug}/`).join(
 const notFound = publish(home)
   .replace('<head>', `<head>\n<script>window.__siteBase = ${JSON.stringify(basePath)};</script>`);
 fs.writeFileSync(path.join(outDir, '404.html'), notFound);
+
+// robots.txt and sitemap.xml: every page a reader can land on — the root, the four
+// routes and the bios — and none of the moved-slug stubs, which are noindex redirects.
+// Only with a CNAME, for the reason locate() gives; a sitemap of paths is not a sitemap.
+if (ORIGIN) {
+  const urls = ['', ...PAGES.map((p) => p.slug + '/'), ...bios.map((b) => `team/${b.slug}/`)].map((rel) => `${ORIGIN}${basePath}${rel}`);
+  fs.writeFileSync(path.join(outDir, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.map((u) => `  <url><loc>${u}</loc></url>`).join('\n')}
+</urlset>
+`);
+  fs.writeFileSync(path.join(outDir, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${ORIGIN}${basePath}sitemap.xml\n`);
+}
 
 // Pages runs Jekyll unless this marker is present, and Jekyll drops every
 // directory whose name starts with an underscore — which would take _ds/ with it.
