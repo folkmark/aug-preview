@@ -55,7 +55,7 @@ photographer chose: face heights measured 26% to 71% of the tile. Now:
   - height: every eye line is at EYE of the tile, measured from the top. The eyes are
             found inside the face box; where they are not, the line is placed at
             EYE_IN_BOX of the box, which is where it measured on everyone else, and the
-            report says so.
+            report says so. It is lowered only by THE REACH and THE HEADROOM below.
   - across: the face box is centred.
 
 Nothing is zoomed to suit a photograph beyond what THE REACH below allows, and that is
@@ -85,15 +85,15 @@ neck 15%. No judge saw that at tile size; keeping the whole neck out would have 
 the reach. So the stretch covers at
 most a quarter of the room between that and the photo's edge, as well as EDGE_STRETCH. The
 first version had only the 8% limit, and on the tightest photos the band reached up past
-the chin. A judge measuring Byungyeon's tile found his lip-to-chin 28% longer than in his
-photo, and Andrew's, Sonia's and Ryan's jaws and necks had grown the same way; at the sides,
+the chin. A judge measuring Byungyeon's tile found the lip-to-chin distance 28% longer than
+in the photo, and Andrew's, Sonia's and Ryan's jaws and necks had grown the same way; at the sides,
 Tom Peterson's, Raquel's and Blair's cheeks had widened. No judge looking only at the grid
 had noticed. Checked since: inside every face keep, the stretched cut-out and the same
 framing unstretched agree to under a pixel.
 
 A side is stretched, or reached for, only where the person meets it below the chin. A side
 met above the chin is hair, or someone standing beside them: Allison's photo has a
-neighbour's shoulder and hair at its left edge, which the matte keeps joined to her.
+neighbour's shoulder and hair at its left edge, which the matte keeps joined to Allison.
 Stretching that edge carried a strip of someone else's hair to the tile's edge, so it keeps
 the fade, as it always had.
 
@@ -113,14 +113,28 @@ normally, by independent judges looking at colour and duotone at 200 and 400px. 
 about 1.2x and eye lines up to 6% lower read as the same crop; 8% lower read as a sunken head,
 and 1.34x as a cramped passport photo with the crown cut off.
 
+THE HEADROOM keeps hair off the tile's top edge. At the shared framing a big head of hair
+can run right up to it: in September 2026 Katie's crown sat 0.3% of the tile below the top,
+Angela's, Laura's and Nikki's 1-2%, against a median of 6.5%, and THE REACH's enlargement
+had pushed Andrew's and Byungyeon's up to 1.5%. So wherever the crown would sit closer than
+HEADROOM to the top, the eye line is lowered by the difference. The face is never shrunk
+for it, which would break the one thing every tile shares. The crown is the first row of the
+matte with more than a stray hair across the head, so a lone wisp can still sit a little
+higher. The lowering shares REACH_DROP with THE REACH, and a photo cut at the top is again
+lowered no further than keeps that cut above the tile.
+
 Where it landed in September 2026:
 - enlarged 1.03x and 1% lower: Aarav's photo;
 - enlarged 1.15-1.21x: Blair's, Raquel's and Tom Peterson's (cut at the sides);
 - enlarged 1.16x and 4% lower: Sonia's;
-- enlarged 1.22x and 5% lower: Andrew's, and at 2.4x his 203px original, one of the softest
-  tiles on the page.
-Byungyeon's is grounded the same way, but his passport photo cuts his shoulders 18% in from
-both sides, and reaching them would take more than the limit, so his sides still fade.
+- enlarged 1.20x and 6% lower: Andrew's, and at 2.4x a 203px original, one of the softest
+  tiles on the page;
+- lowered for the headroom alone: Katie's 3.4%, Angela's 3.0%, Laura's 2.8%, Nikki's 1.5%
+  and Lisa's 0.5%.
+Byungyeon's is grounded the same way as Andrew's, but the passport photo cuts the shoulders
+18% in from both sides, and reaching them would take more than the limit, so the sides
+still fade. Andrew's and Byungyeon's crowns stop about 3% below the top rather than 4%: the
+reach and the headroom between them use the whole of REACH_DROP, and the report says so.
 Ryan's 190px photo is cut at the hairline and across the chest, and cannot be grounded
 within the limits without stretching his chin, so it is left exactly as it was. A 1.29x
 framing that grounded him was preferred by every judge to the floating bust, but its
@@ -180,6 +194,7 @@ FACE_KEEP = 0.10  # THE FACE KEEP: the face box grown by this much of its size o
                   # which the stretch may never reach into
 REACH_DROP = 0.06 # THE REACH's limits: how far below EYE an eye line may be lowered, as a
 REACH_ZOOM = 1.25 # fraction of the tile, and how much larger than FACE a face may be made
+HEADROOM = 0.04   # THE HEADROOM: the least room between the crown and the tile's top edge
 
 
 def pictured():
@@ -322,32 +337,43 @@ def frame(slug):
         return hi
     zoom_at = lambda t: 1 + (REACH_ZOOM - 1) * t
 
+    # THE HEADROOM. The crown is the first row of the matte with more than a stray hair on
+    # it, counted only across the head (the face box and three quarters of its width either
+    # side), so neither a wisp nor someone standing at the photo's edge decides it.
+    x0, x1 = max(0, int(fx - 0.75 * fw)), min(W, int(fx + 1.75 * fw))
+    crown = int(np.argmax((a[:, x0:x1] > 0.5).sum(1) >= max(2, 0.03 * fw)))
+    crown_at = lambda z, d: (EYE + d) * T - (eye_y - crown) * s * z  # its tile row
+    headroom_drop = lambda z: max(0.0, HEADROOM - crown_at(z, 0) / T)
+
     def drop_at(t, z):
-        d = REACH_DROP * t
+        # The eye line is lowered for THE REACH (its share, t) or for THE HEADROOM, whichever
+        # asks more, and the two together never past REACH_DROP.
+        d = min(REACH_DROP, max(REACH_DROP * t, headroom_drop(z)))
         if touches['top']:
             # the photo's top edge sits at (EYE + d) * T - eye_y * s * z; keep it two pixels
             # above the tile, so rounding cannot land it on the first row and fade the crown
             d = min(d, max(0.0, (eye_y * s * z - 2) / T - EYE))
         return d
-    short = [k for k in ('bottom', 'left', 'right') if shoulder[k] and not fits(k, 1, 0)]
+    short = [k for k in ('bottom', 'left', 'right') if shoulder[k] and not fits(k, 1, drop_at(0, 1) if k == 'bottom' else 0)]
     unreached = [k for k in short if not fits(k, REACH_ZOOM, drop_at(1, REACH_ZOOM) if k == 'bottom' else 0)]
     if 'bottom' in unreached:
         # A figure that still floats gains nothing from a larger face: reach nothing.
         unreached = short
     sides = [k for k in short if k != 'bottom' and k not in unreached]
     z = zoom_at(least(lambda t: all(fits(k, zoom_at(t), 0) for k in sides))) if sides else 1.0
-    d = 0.0
+    d = drop_at(0, z)  # THE HEADROOM's own lowering, whatever the reach does
     if 'bottom' in short and 'bottom' not in unreached:
         tb = least(lambda t: fits('bottom', max(z, zoom_at(t)), drop_at(t, max(z, zoom_at(t)))))
         z = max(z, zoom_at(tb))
         # With the zoom settled (the sides may have asked for more), lower no further than
-        # the bottom still needs.
-        most = drop_at(tb, z)
-        d = most * least(lambda u: fits('bottom', z, most * u))
+        # the bottom still needs, and never less than the headroom does.
+        floor, most = drop_at(0, z), drop_at(tb, z)
+        d = floor + (most - floor) * least(lambda u: fits('bottom', z, floor + (most - floor) * u))
     stretch_ok = {k: shoulder[k] and stretchable(k, z, d) for k in ('bottom', 'left', 'right')}
-    s, eye = s * z, EYE + d
-    reach = {'zoom': round(z, 3), 'drop': round(d, 4), 'unreached': unreached,
+    reach = {'zoom': round(float(z), 3), 'drop': round(float(d), 4), 'unreached': unreached,
+             'headroom': round(float(crown_at(z, d) / T), 4),
              'not_shoulder': [k for k in ('left', 'right') if touches[k] and not shoulder[k]]}
+    s, eye = s * z, EYE + d
 
     def place():
         ox, oy = T / 2 - (fx + fw / 2) * s, eye * T - eye_y * s
@@ -471,28 +497,33 @@ def main():
         for s in todo:
             print(f'matting {s}', flush=True)
             subprocess.run([sys.executable, __file__, f'--matte={s}'], check=True)
-    warn, loose, beside = [], [], []
+    warn, loose, beside, crowded = [], [], [], []
     # scale is against the 512 the tile ships at, so anything over 1 is a photograph being
-    # enlarged; "reach" is THE REACH's enlargement of the face and lowering of the eye line;
+    # enlarged; "reach" is the enlargement of the face and lowering of the eye line, by THE
+    # REACH and THE HEADROOM; "room" is the headroom above the crown;
     # "faded" is how far inside the tile each source edge that still cuts the person lands,
     # and "stretched" the ones close enough to the tile's edge to be stretched out to it.
-    print(f"\n{'':22}{'source':>11} {'face':>5} {'eye line':>9} {'scale':>6}  {'reach':16}{'faded':22}{'stretched':30}lift")
+    print(f"\n{'':22}{'source':>11} {'face':>5} {'eye line':>9} {'scale':>6}  {'reach':16}{'room':>5}  {'faded':22}{'stretched':30}lift")
     for s in slugs:
         r = frame(s)
         pct = lambda d: ', '.join(f'{k} {v:.0%}' for k, v in sorted(d.items(), key=lambda kv: -kv[1])) or '-'
-        reach = (f"{r['zoom']:.2f}x" + (f", eye -{r['drop']:.0%}" if r['drop'] >= 0.005 else '')) if r['zoom'] > 1 else '-'
+        reach = ', '.join([f"{r['zoom']:.2f}x"] * (r['zoom'] > 1) + [f"eye -{r['drop']:.1%}" if r['drop'] < 0.0095 else f"eye -{r['drop']:.0%}"] * (r['drop'] >= 0.001)) or '-'
         print(f"{s:22}{r['source']:>11} {r['face_px']:>5} {r['eye_line']:>9} {r['scale']:>5}x  "
-              f"{reach:16}{pct(r['cuts']):22}{pct(r['extended']):30}{r['lift']:.3f}")
+              f"{reach:16}{r['headroom']:>5.0%}  {pct(r['cuts']):22}{pct(r['extended']):30}{r['lift']:.3f}")
         if r['face_kept'] < 0.95:
             warn.append(f"{s} ({r['face_kept']:.0%})")
         if r['unreached']:
             loose.append(f"{s} ({', '.join(r['unreached'])})")
         if r['not_shoulder']:
             beside.append(f"{s} ({', '.join(r['not_shoulder'])})")
+        if r['headroom'] < HEADROOM - 0.0005:
+            crowded.append(f"{s} ({r['headroom']:.1%})")
     if loose:
         print(f'\nbeyond the reach, so still fading: {", ".join(loose)}. A looser original is the fix.')
     if beside:
         print(f'\nmet above the chin, so not a shoulder and left to the fade: {", ".join(beside)}.')
+    if crowded:
+        print(f'\nless than {HEADROOM:.0%} above the crown, the lowering having reached its limit: {", ".join(crowded)}.')
     if warn:
         print(f'\na fade reaches into the face: {", ".join(warn)}. That photograph is too tight for the '
               'shared framing; ask for a looser one rather than special-casing it.')
