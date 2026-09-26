@@ -29,11 +29,16 @@
 //   targets    2.5.8: under 24px in either dimension, with the spacing exception (a 24px
 //              circle on each undersized target clear of every other), inline links exempt.
 //   reflow     1.4.10: no horizontal scroll at 320 CSS px.
-//   spacing    1.4.12: with the text-spacing override applied, no text may end up outside a
-//              box that clips it. Measured on the text, not the box: the page root clips
-//              the falling blocks' plates sideways by design, and a box that merely has
-//              more content than room (a collapsed wheel panel, screen-reader-only text)
-//              hides nothing a reader was shown.
+//   spacing    1.4.12: raising line, letter, word and paragraph spacing must not lose
+//              content. Every run of text is placed against its nearest clipping box
+//              before the override and after it, and only a run that is clipped after but
+//              was not before fails. Both halves matter. Measured on the text, not the box:
+//              the page root clips the falling blocks' plates sideways by design, and a
+//              collapsed wheel panel or screen-reader-only text hides nothing a reader was
+//              shown. And measured as a difference: the skip link sits above its clipping
+//              box until it has focus, so a single look reported it clipped whenever the
+//              focus walk before this check happened to end elsewhere — which it did on
+//              the CI runner and not locally (all 16 of run 36277825736's failures).
 //   imagery    1.4.3 where axe cannot look: text over the hero's plate and over the falling
 //              blocks. At several points in each sequence the box is screenshotted twice,
 //              with the text and with it transparent; the pixels that differ are the
@@ -268,16 +273,20 @@ async function checkReflow(page) {
 }
 
 async function checkSpacing(page) {
-  const tag = await page.addStyleTag({ content: '*{line-height:1.5!important;letter-spacing:.12em!important;word-spacing:.16em!important} p{margin-bottom:2em!important}' });
-  await page.waitForTimeout(300);
-  const r = await page.evaluate(() => {
+  // A known start, whatever the focus walk before this left behind.
+  await page.evaluate(() => { if (document.activeElement) document.activeElement.blur(); window.scrollTo(0, 0); });
+  await page.waitForTimeout(100);
+  // Every visible run of text that lies outside its nearest clipping box, keyed by an id
+  // held on the text node itself, so the two looks name the same runs.
+  const clipped = () => page.evaluate(() => {
+    const ids = window.__a11yTextIds || (window.__a11yTextIds = new WeakMap());
+    let next = window.__a11yTextNext || 0;
     const out = [];
     for (const box of document.querySelectorAll('body *')) {
       const cs = getComputedStyle(box);
       if (!/hidden|clip/.test(cs.overflow + cs.overflowX + cs.overflowY)) continue;
       const b = box.getBoundingClientRect();
       if (b.width <= 4 || b.height <= 4 || cs.visibility === 'hidden' || +cs.opacity === 0) continue;
-      // Text that was visible and now falls outside this box.
       const walker = document.createTreeWalker(box, NodeFilter.SHOW_TEXT);
       for (let t = walker.nextNode(); t; t = walker.nextNode()) {
         if (!t.textContent.trim()) continue;
@@ -298,16 +307,20 @@ async function checkSpacing(page) {
         const tr = range.getBoundingClientRect();
         if (tr.width < 2 || tr.height < 2) continue;
         if (tr.bottom > b.bottom + 2 || tr.right > b.right + 2 || tr.top < b.top - 2 || tr.left < b.left - 2) {
-          out.push(`${window.__a11y.desc(box)} clips "${t.textContent.trim().slice(0, 40)}"`);
-          break;
+          if (!ids.has(t)) ids.set(t, ++next);
+          out.push({ id: ids.get(t), line: `${window.__a11y.desc(box)} clips "${t.textContent.trim().slice(0, 40)}"` });
         }
       }
-      if (out.length >= 8) break;
     }
+    window.__a11yTextNext = next;
     return out;
   });
+  const before = new Set((await clipped()).map((x) => x.id));
+  const tag = await page.addStyleTag({ content: '*{line-height:1.5!important;letter-spacing:.12em!important;word-spacing:.16em!important} p{margin-bottom:2em!important}' });
+  await page.waitForTimeout(300);
+  const after = await clipped();
   await tag.evaluate((n) => n.remove());
-  return r;
+  return [...new Set(after.filter((x) => !before.has(x.id)).map((x) => x.line))].slice(0, 8);
 }
 
 const lum = (r, g, b) => { const f = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b); };
