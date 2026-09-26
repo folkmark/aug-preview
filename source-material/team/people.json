@@ -186,9 +186,9 @@
         "from": "institution",
         "ref": "cics.umass.edu /files/2022-10/lan.jpg (203×203)",
         "approved": false,
-        "upscale": 2.43,
-        "edgesExtended": "bottom 4%, left 1%",
-        "notes": "His only public portrait is 203x203 and ends across his chest. The framing enlarges it 2.4x: 2.0x to put his face at everyone else's height, then 1.22x more with his eye line 5% lower, so his shoulders reach the bottom of the tile (THE REACH in tools/cutout-headshots.py). So this is one of the two soft tiles until a better original arrives. cics.umass.edu serves it at 800x800 through an image style, and that is what the tracker has, but it is an upscale of this file with no extra detail: do not cut out from it."
+        "upscale": 2.4,
+        "edgesExtended": "bottom 3%, left 2%",
+        "notes": "His only public portrait is 203x203 and ends across his chest. The framing enlarges it 2.4x: 2.0x to put his face at everyone else's height, then 1.20x more with his eye line 6% lower, so his shoulders reach the bottom of the tile (THE REACH in tools/cutout-headshots.py). So this is one of the two soft tiles until a better original arrives. cics.umass.edu serves it at 800x800 through an image style, and that is what the tracker has, but it is an upscale of this file with no extra detail: do not cut out from it. The crown sits 3% below the tile's top rather than 4%, the eye line having been lowered as far as it may go (THE HEADROOM in tools/cutout-headshots.py)."
       },
       "bioSource": {
         "from": "tracker",
@@ -255,7 +255,7 @@
         "ref": "her own page (1000×1407)",
         "approved": false,
         "upscale": 0.73,
-        "notes": "Her form upload is the same photograph cropped to 888x1088, and the tracker's copy a 680x600 Drupal derivative, so the 1000x1407 from her own page stays."
+        "notes": "Her form upload is the same photograph cropped to 888x1088, and the tracker's copy a 680x600 Drupal derivative, so the 1000x1407 from her own page stays. At the shared framing the hair would come within 1.0% of the tile's top, so the eye line is lowered 3.0% to leave 4% (THE HEADROOM in tools/cutout-headshots.py)."
       },
       "bioSource": {
         "from": "tracker",
@@ -295,7 +295,7 @@
         "ref": "University of Minnesota page (1200×1800)",
         "approved": false,
         "upscale": 0.51,
-        "notes": "The tracker's copy is 300x450 and her form upload 21.5 KB; the university's 1200x1800 is the master."
+        "notes": "The tracker's copy is 300x450 and her form upload 21.5 KB; the university's 1200x1800 is the master. At the shared framing the hair would come within 1.2% of the tile's top, so the eye line is lowered 2.8% to leave 4% (THE HEADROOM in tools/cutout-headshots.py)."
       },
       "bioSource": {
         "from": "tracker",
@@ -418,7 +418,7 @@
         "approved": false,
         "upscale": 0.42,
         "edgesExtended": "bottom 5%",
-        "notes": "The form upload as submitted (22 Sep). It stops 8% above the bottom of the tile; enlarged 1.03x with his eye line 1% lower, then stretched to the edge (THE REACH in tools/cutout-headshots.py)."
+        "notes": "The form upload as submitted (22 Sep). It stops 8% above the bottom of the tile; enlarged 1.03x with the eye line 1% lower, then stretched to the edge (THE REACH in tools/cutout-headshots.py)."
       },
       "form": {
         "submitted": "2026-09-22 17:23:34",
@@ -454,10 +454,10 @@
         "from": "form",
         "ref": "https://drive.google.com/open?id=1MiZwORsglGY-d42vXSG4xD0Ry9GLrpdr",
         "approved": false,
-        "upscale": 0.96,
-        "edgesFaded": "left 11%, right 11%",
+        "upscale": 0.95,
+        "edgesFaded": "left 12%, right 12%",
         "edgesExtended": "bottom 3%",
-        "notes": "The form upload as submitted (28 Jul). A passport-style photo, cut across the chest and 18% in from both shoulders. The framing enlarges it 1.22x with his eye line 5% lower, so it reaches the bottom of the tile (THE REACH in tools/cutout-headshots.py); reaching the sides would take more than its limit, so they still fade."
+        "notes": "The form upload as submitted (28 Jul). A passport-style photo, cut across the chest and 18% in from both shoulders. The framing enlarges it 1.20x with the eye line 6% lower, so it reaches the bottom of the tile (THE REACH in tools/cutout-headshots.py); reaching the sides would take more than its limit, so they still fade. The crown sits 3% below the tile's top rather than 4%, the eye line having been lowered as far as it may go (THE HEADROOM in tools/cutout-headshots.py)."
       },
       "form": {
         "submitted": "2026-07-28 23:08:32",
@@ -471,7 +471,7 @@
       },
       "notes": null,
       "actions": [
-        "[joan] Optional: a looser photo; his shoulders are cut in the original, so the sides of his tile still fade."
+        "[joan] Optional: a looser photo; the shoulders are cut in the original, so the sides of the tile still fade."
       ],
       "history": [
         "2026-09-24 status: — → on_site (32a0c09)",
@@ -687,7 +687,7 @@
         "ref": "crosstownhigh.org/leadership",
         "approved": false,
         "upscale": 0.23,
-        "notes": "One of the four Crosstown fellows replaced together in September 2026 from a single shoot on the school's staff page (crosstownhigh.org/leadership, through its Squarespace CDN at ?format=2500w), so the group reads as one set. A resolution rescue too: the tracker's copy was 380px effective."
+        "notes": "One of the four Crosstown fellows replaced together in September 2026 from a single shoot on the school's staff page (crosstownhigh.org/leadership, through its Squarespace CDN at ?format=2500w), so the group reads as one set. A resolution rescue too: the tracker's copy was 380px effective. At the shared framing the hair would come within 2.5% of the tile's top, so the eye line is lowered 1.5% to leave 4% (THE HEADROOM in tools/cutout-headshots.py)."
       },
       "bioSource": {
         "from": "tracker",
@@ -853,7 +853,7 @@
         "ref": "Website Bio tracking sheet, Headshots column",
         "approved": false,
         "upscale": 0.5,
-        "notes": "Her form upload is this file, byte for byte."
+        "notes": "Her form upload is this file, byte for byte. At the shared framing the hair would come within 3.5% of the tile's top, so the eye line is lowered 0.5% to leave 4% (THE HEADROOM in tools/cutout-headshots.py)."
       },
       "bioSource": {
         "from": "tracker",
@@ -987,7 +987,7 @@
         "approved": false,
         "upscale": 0.52,
         "edgesExtended": "bottom 4%",
-        "notes": "The form upload as submitted (30 Jul). It ends across her chest, 15% above the bottom of the tile; the framing enlarges it 1.16x with her eye line 4% lower, and stretches the last 4% of her top to the tile's edge (THE REACH in tools/cutout-headshots.py)."
+        "notes": "The form upload as submitted (30 Jul). It ends across the chest, 15% above the bottom of the tile; the framing enlarges it 1.16x with the eye line 4% lower, and stretches the last 4% of the top to the tile's edge (THE REACH in tools/cutout-headshots.py)."
       },
       "form": {
         "submitted": "2026-07-30 14:49:29",
@@ -1072,7 +1072,7 @@
         "approved": false,
         "upscale": 0.52,
         "edgesExtended": "left 3%, right 2%",
-        "notes": "927x1800, as received through the form on 24 September 2026."
+        "notes": "927x1800, as received through the form on 24 September 2026. At the shared framing the hair would come within 0.6% of the tile's top, so the eye line is lowered 3.4% to leave 4% (THE HEADROOM in tools/cutout-headshots.py)."
       },
       "form": {
         "submitted": "2026-09-24 11:46:23",
@@ -1150,7 +1150,7 @@
         "approved": false,
         "upscale": 0.38,
         "edgesFaded": "left 6%",
-        "notes": "1273x1636, as received through the form on 24 September 2026. Her photo's left edge carries the shoulder and hair of whoever stood beside her, which the matte keeps joined to her, so that edge keeps its fade rather than being stretched (tools/cutout-headshots.py); a crop without them would be cleaner."
+        "notes": "1273x1636, as received through the form on 24 September 2026. The photo's left edge carries the shoulder and hair of whoever stood alongside, which the matte keeps joined to the portrait, so that edge keeps its fade rather than being stretched (tools/cutout-headshots.py); a crop without them would be cleaner."
       },
       "form": {
         "submitted": "2026-09-24 17:10:06",
