@@ -358,7 +358,13 @@ for (const p of PAGES) {
   // into every exported page, and it pointed at a wordpress-handoff/assets/ that does not
   // exist — so the handoff pages have never rendered an image from disk. Verify this by
   // opening one with file://, not over a server, where either path appears to work.
+  //
+  // The headshots come back as assets/team/<slug>.webp?v=<hash>: build-site.mjs versions
+  // each pair so a browser cannot pair a cached colour twin with a new duotone on Pages.
+  // The export names the files plainly, as the roster and the plugin do — WordPress serves
+  // them with its own cache-busting — so the version comes off here.
   const out = html
+    .replace(/(assets\/team\/[a-z0-9-]+\.webp)\?v=[0-9a-f]+/g, '$1')
     .replace(/(["'\s,(])\/assets\//g, '$1../../assets/')
     .replace(/(["'\s,(])\/_ds\//g, '$1../../_ds/')
     .replace(/(["'])\/support\.js\1/g, '$1../../support.js$1')

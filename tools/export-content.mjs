@@ -194,7 +194,9 @@ expect(
 
 // ---------------------------------------------------------------------------
 // Research — the "Recent Research" cards on the home page: title, description,
-// and the outbound link on the card's Read-more button.
+// and the outbound link on the card's Read-more button. A paper with no public URL
+// yet carries the word "Forthcoming" where the link would be, and exports with
+// url: null, so a consumer can tell "not published" from "parse failed".
 // ---------------------------------------------------------------------------
 const homeHtml = read('home.html');
 // The heading markup, not the bare words — "Recent Research" also appears in a
@@ -204,12 +206,14 @@ const researchStart = homeHtml.indexOf('>Recent Research</h2>');
 expect(researchStart > 0, 'research: no "Recent Research" heading on home.html');
 const researchEnd = homeHtml.indexOf('</section>', researchStart);
 const researchHtml = homeHtml.slice(researchStart, researchEnd);
-const research = [...researchHtml.matchAll(
-  // A wrapper <div> sits between the title and its paragraph, so the seams are
-  // lazy spans rather than adjacency; the count check below is what keeps a
-  // loosened pattern honest.
-  /<h3[^>]*>([^<]+)<\/h3>[\s\S]*?<p[^>]*>([^<]+)<\/p>[\s\S]*?<a[^>]*href="(https?:[^"]+)"/g
-)].map((m) => ({ title: decode(m[1]), description: decode(m[2]), url: m[3] }));
+// One card per <article>, read on its own, so a card without a link cannot borrow
+// the next card's — which a single lazy pattern across the section would do.
+const research = [...researchHtml.matchAll(/<article[\s\S]*?<\/article>/g)].map(([card]) => {
+  const m = card.match(/<h3[^>]*>([^<]+)<\/h3>[\s\S]*?<p[^>]*>([^<]+)<\/p>/);
+  const url = card.match(/<a[^>]*href="(https?:[^"]+)"/);
+  expect(m && (url || />Forthcoming</.test(card)), 'research: a card with neither a link nor "Forthcoming"');
+  return m ? { title: decode(m[1]), description: decode(m[2]), url: url ? url[1] : null } : null;
+}).filter(Boolean);
 expect(research.length === 3, `research: expected 3 cards, parsed ${research.length}`);
 
 // ---------------------------------------------------------------------------

@@ -11,6 +11,10 @@ name: Publish site to gh-pages
 # (wordpress-handoff/plugin/augmented-ed/). It runs beside the site build, never before
 # it, so a stale plugin fails its own check and cannot stop the site from publishing.
 #
+# A third, `a11y`, runs tools/audit-a11y.mjs over a fresh build and the exported pages:
+# WCAG 2.2 AA, measured in Chromium. It is non-blocking for now (continue-on-error), so a
+# regression shows as a red check on the run without holding up a publish.
+#
 # gh-pages holds build output and nothing else, so each publish replaces it with a
 # single orphan commit rather than adding to it. Left to accumulate it would carry
 # every superseded copy of every re-encoded frame forever, which is how the branch
@@ -97,3 +101,27 @@ jobs:
           name: augmented-ed-plugin
           path: dist/
           retention-days: ${{ github.ref == 'refs/heads/main' && 90 || 14 }}
+
+  # WCAG 2.2 AA over _site and wordpress-handoff/pages/ (see tools/audit-a11y.mjs for what
+  # each check measures and why). Playwright's own Chromium, since the runner has none of
+  # the container's; the audit fetches React from unpkg itself, as the exporter does.
+  a11y:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install the audit's dependencies
+        run: |
+          npm i --no-save playwright@1.63.0 pngjs@7.0.0 axe-core@4.13.0 html-validate@11.16.0
+          npx playwright install --with-deps chromium
+
+      - name: Build the site
+        run: node tools/build-site.mjs _site
+
+      - name: Audit
+        run: node tools/audit-a11y.mjs

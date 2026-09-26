@@ -190,6 +190,14 @@ function programBar(document) {
   const nav = bar.querySelector('nav');
   if (nav) nav.setAttribute('aria-label', 'AugmentED');
 
+  // The skip link. On the site it targets <main>; here there is no <main> (AERDF's theme
+  // owns that landmark) and the page's content is the .aug-page div, which the templates
+  // give this id. A plain fragment link: the browser moves focus to it, and host.css's
+  // scroll-margin keeps it clear of the bar.
+  const skip = bar.querySelector('a.skip-link');
+  if (!skip) fail('the header has no skip link (a.skip-link) — the plugin would ship without one');
+  else skip.setAttribute('href', '#aug-content');
+
   // The toggle. On a phone this sits directly under AERDF's own hamburger, and two
   // identical icons stacked on the right read as one menu drawn twice. So ours carries a
   // visible word beside its bars. A design default, noted in DECISIONS.md; the bars and
@@ -220,6 +228,10 @@ function programBar(document) {
     toggle.appendChild(stack);
   }
 
+  // Which page is current is the SPA's state at the moment of the export, and this one
+  // partial serves every page. js/augmented-ed.js marks the current link at runtime.
+  for (const a of [...bar.querySelectorAll('[aria-current]'), ...menu.querySelectorAll('[aria-current]')]) a.removeAttribute('aria-current');
+
   // The captured overlay, now the program's menu.
   menu.setAttribute('id', 'aug-site-menu');
   menu.setAttribute('data-aug-menu', '');
@@ -237,8 +249,9 @@ function programBar(document) {
 // ---------------------------------------------------------------- the Follow form
 
 // Which fields the SOURCE marks required. React drops required="" (an empty string is a
-// false boolean prop), so the live form has never required anything; the plugin restores
-// what index.html asks for, read from index.html rather than restated here.
+// false boolean prop), so the consent box — which the design system draws as a button —
+// never carries it live; the text fields say required="required" and do. The plugin
+// restores what index.html asks for, read from index.html rather than restated here.
 function sourceFormFields() {
   const start = indexHtml.indexOf('<form onSubmit="{{ onInvolvedSubmit }}"');
   const end = indexHtml.indexOf('</form>', start);
@@ -248,7 +261,9 @@ function sourceFormFields() {
   let label = null;
   for (const m of form.matchAll(/AugmentEDDesignSystem_191b99\.(Label|Input|Textarea|Checkbox)"([^>]*)>([^<]*)/g)) {
     if (m[1] === 'Label') { label = m[3].trim(); continue; }
-    fields.push({ kind: m[1], label: m[1] === 'Checkbox' ? 'consent' : label, required: /\brequired=""/.test(m[2]) });
+    // required="required" on the text fields (the preview needs a truthy value for the
+    // host to render it), required="" on the consent box; either marks the field required.
+    fields.push({ kind: m[1], label: m[1] === 'Checkbox' ? 'consent' : label, required: /\brequired="(?:required)?"/.test(m[2]) });
     label = null;
   }
   const personas = [...form.matchAll(/RadioGroupItem" value="([a-z-]+)"/g)].map((m) => m[1]);
@@ -370,14 +385,16 @@ function followForm(document) {
   const submit = form.querySelector('button[type="submit"]');
   if (!submit) fail('follow form: no submit button');
   else {
-    const status = document.createElement('p');
+    // index.html has its own live region for the preview's empty-submit message; adopt it
+    // rather than add a second one beside it.
+    const status = form.querySelector('[data-follow-status]') || document.createElement('p');
     status.setAttribute('class', 'aug-follow-status');
     status.setAttribute('id', 'aug-follow-status');
     status.setAttribute('role', 'status');
     status.setAttribute('data-aug-follow-status', '');
     status.setAttribute('style', 'font-size: var(--text-small); line-height: var(--text-body-line-height); margin: var(--space-4) 0 0;');
     status.textContent = T('<?php echo augmented_ed_follow_notice(); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped inside. ?>');
-    submit.parentElement.appendChild(status);
+    if (!status.parentElement) submit.parentElement.appendChild(status);
     submit.insertAdjacentHTML('beforebegin', hiddenHtml);
   }
 }
@@ -522,6 +539,9 @@ for (const page of PAGES) {
   rewriteRefs(main, page.file);
 
   const pageDiv = document.createElement('div');
+  // The skip link's target (see programBar()): focusable by script and fragment, not by Tab.
+  pageDiv.setAttribute('id', 'aug-content');
+  pageDiv.setAttribute('tabindex', '-1');
   pageDiv.setAttribute('class', 'aug-page');
   pageDiv.setAttribute('data-aug-page', page.key);
   pageDiv.setAttribute('data-screen-label', main.getAttribute('data-screen-label') || page.label);
@@ -587,7 +607,7 @@ $bio = augmented_ed_bio_data( get_queried_object() );
 <div id="augmented-ed" class="augmented-ed" data-aug-template="bio">
 <div class="scheme-1" style="font-family: var(--font-body); color: var(--text-body); background: var(--surface-page);">
 <?php augmented_ed_partial( 'program-bar' ); ?>
-<div class="aug-page bio" data-aug-page="bio">
+<div id="aug-content" tabindex="-1" class="aug-page bio" data-aug-page="bio">
 ${bioBody(phpHelper('$bio'))}
 </div>
 </div>
@@ -655,6 +675,8 @@ stateCss.push('[data-aug-follow] :is(input[data-slot="input"], textarea[data-slo
 // The form's live region takes no room until it has something to say, so the page is the
 // site's height until then.
 stateCss.push('.aug-follow-status:empty { margin: 0 !important; }');
+// The skip link's target takes focus as a place to start reading, not as a control.
+stateCss.push('.aug-page[tabindex="-1"]:focus { outline: none; }');
 
 // The bio page's own rules: the profile's (tools/lib/bio-page.mjs), plus the two things the
 // static page's chrome gave it — the icon size (its icons carry no inline size) and the

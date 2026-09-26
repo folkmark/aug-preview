@@ -159,6 +159,38 @@ function versionHeadshots(html) {
 // absolute, headshots versioned, share tags made full URLs.
 const publish = (html) => share(versionHeadshots(absolutise(html)));
 
+// Where each route lives, said once in its own head: a canonical and og:url, as the bio
+// pages already carry, so the four route copies and the root are not five unrelated
+// pages to a crawler, and a shared link unfurls with its real address. Home also says
+// what the site is — the Organization, with AERDF as its parent — which is what a search
+// result's knowledge panel is built from. Nothing without a CNAME: an origin guessed
+// here would be wrong on every fork, and 404.html never gets any of it, being served
+// from whatever address was missed.
+//
+// The WordPress plugin needs none of this: on aerdf.org, WordPress and Yoast write the
+// canonical, the sitemap and the structured data for every page.
+function locate(html, slug) {
+  if (!ORIGIN) return html;
+  const description = ((html.match(/<meta name="description" content="([^"]*)">/) || [])[1] || '')
+    .replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+  const url = `${ORIGIN}${basePath}${slug ? slug + '/' : ''}`;
+  let head = `<link rel="canonical" href="${url}">\n<meta property="og:url" content="${url}">`;
+  if (!slug) {
+    const ld = {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'AugmentED',
+      url,
+      logo: `${ORIGIN}${basePath}assets/logo/logo-icon.png`,
+      description,
+      parentOrganization: { '@type': 'Organization', name: 'AERDF', url: 'https://aerdf.org/' },
+    };
+    head += `\n<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>`;
+  }
+  if (!/<meta property="og:type" content="website">/.test(html)) { problems.push('index.html has no og:type meta for locate() to follow'); return html; }
+  return html.replace(/(<meta property="og:type" content="website">)/, `$1\n${head}`);
+}
+
 // assets/ and _ds/ are copied whole, and pages.yml force-pushes whatever lands in
 // _site straight to gh-pages on every push to main — so anything that is in those
 // directories but not part of the served site has to be left out here, or it is
@@ -279,7 +311,7 @@ if (teamProblems.length) {
 const problems = [];
 // The root file gets the same treatment as the routes. It is the one the bug starts
 // from: land here, click any nav item, and its relative paths follow you one level down.
-fs.writeFileSync(path.join(outDir, 'index.html'), publish(home));
+fs.writeFileSync(path.join(outDir, 'index.html'), publish(locate(home, '')));
 
 // See copyDir() for why each of these stays out of the build.
 const UNSERVED = unserved(home);
@@ -296,7 +328,7 @@ if (fs.existsSync(path.join(root, 'CNAME'))) {
 for (const page of PAGES) {
   const dir = path.join(outDir, page.slug);
   fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, 'index.html'), publish(retitle(home, page)));
+  fs.writeFileSync(path.join(dir, 'index.html'), publish(locate(retitle(home, page), page.slug)));
 }
 
 // The slugs were shortened after the preview had been shared, so links to the old
@@ -504,6 +536,20 @@ ${ld ? `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\
   .bio-menu[open] > summary span:last-child { transform: translateY(-4px) rotate(-45deg); }
   .bio-menu-panel { position: fixed; inset: var(--header-h) 0 0 0; z-index: 800; overflow-y: auto; overscroll-behavior: contain; background: var(--surface-page); padding: var(--space-12) var(--page-gutter); display: flex; flex-direction: column; gap: var(--space-8); }
   .bio-menu-panel a { font-size: var(--text-h4); font-weight: var(--font-weight-bold); letter-spacing: var(--heading-letter-spacing); }
+  /* What the panel covers, it also takes out of reach: without this, Tab walks off the
+     panel's last link onto the profile underneath, links the overlay hides (WCAG
+     2.4.11). visibility: hidden drops them from the tab order and the accessibility
+     tree with no script, and changes nothing a reader sees — the panel is opaque. */
+  body:has(.bio-menu[open]) :is(main, footer) { visibility: hidden; }
+  /* Keyboard access, as the SPA's page styles have it (index.html, "Keyboard access"):
+     the skip link, a ring-free <main> as its target, and scroll-padding while a keyboard
+     focus shows, so a control focused while moving backwards never scrolls under the
+     sticky header. */
+  .skip-link { position: absolute; left: var(--page-gutter); top: 0; z-index: 1000; transform: translateY(-120%); padding: var(--space-3) var(--space-4); background: var(--surface-page); color: var(--text-body); font-weight: var(--font-weight-semibold); text-decoration: underline; border-radius: var(--radius-button, 0.5rem); }
+  .skip-link:focus { transform: translateY(var(--space-3)); outline: 2px solid var(--brand-accent); outline-offset: 2px; }
+  main[tabindex="-1"] { scroll-margin-top: var(--header-h); }
+  main[tabindex="-1"]:focus { outline: none; }
+  html:has(:focus-visible) { scroll-padding-top: calc(var(--header-h) + var(--space-2, 0.5rem)); }
 
 ${BIO_PROFILE_CSS}
   /* The SPA's touch-target rule, for the links this page has. Below the desktop
@@ -520,6 +566,7 @@ ${BIO_PROFILE_DESKTOP_CSS}
 </head>
 <body class="scheme-1">
 <header class="bio-header">
+  <a class="skip-link" href="#main">Skip to content</a>
   <div class="bio-header-row">
     <a class="bio-logo" href="${basePath}"><img src="assets/logo/logo-horiz.svg" alt="augment^ed, supported by AERDF" width="504" height="169" decoding="async"></a>
     <nav class="bio-nav at-desktop" aria-label="Main">
@@ -536,7 +583,7 @@ ${BIO_PROFILE_DESKTOP_CSS}
   </div>
 </header>
 
-<main class="bio">
+<main id="main" tabindex="-1" class="bio">
 ${bioBody(staticHelper({
   back: `${basePath}team/`,
   photo: hasPhoto ? `assets/team/${b.slug}.webp` : '',
@@ -600,6 +647,19 @@ if (bios.length) console.log(`  bios: ${bios.map((b) => `team/${b.slug}/`).join(
 const notFound = publish(home)
   .replace('<head>', `<head>\n<script>window.__siteBase = ${JSON.stringify(basePath)};</script>`);
 fs.writeFileSync(path.join(outDir, '404.html'), notFound);
+
+// robots.txt and sitemap.xml: every page a reader can land on — the root, the four
+// routes and the bios — and none of the moved-slug stubs, which are noindex redirects.
+// Only with a CNAME, for the reason locate() gives; a sitemap of paths is not a sitemap.
+if (ORIGIN) {
+  const urls = ['', ...PAGES.map((p) => p.slug + '/'), ...bios.map((b) => `team/${b.slug}/`)].map((rel) => `${ORIGIN}${basePath}${rel}`);
+  fs.writeFileSync(path.join(outDir, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.map((u) => `  <url><loc>${u}</loc></url>`).join('\n')}
+</urlset>
+`);
+  fs.writeFileSync(path.join(outDir, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${ORIGIN}${basePath}sitemap.xml\n`);
+}
 
 // Pages runs Jekyll unless this marker is present, and Jekyll drops every
 // directory whose name starts with an underscore — which would take _ds/ with it.

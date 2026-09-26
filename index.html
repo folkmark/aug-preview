@@ -654,19 +654,62 @@
        direct-child selector: the design system nests the control in a wrapper. */
     label:has(button) { min-height: 2.75rem; }
   }
+
+  /* Keyboard access. Every rule here closes a failure tools/audit-a11y.mjs measured in
+     September 2026; that script is the test for all of them.
+
+     The skip link is the header's first stop and invisible until it has focus. On the
+     WordPress plugin it moves into the program bar with the rest of the header, where
+     the generator points it at the page's own content. */
+  .skip-link { position: absolute; left: var(--page-gutter); top: 0; z-index: 1000; transform: translateY(-120%); padding: var(--space-3) var(--space-4); background: var(--surface-page); color: var(--text-body); font-weight: var(--font-weight-semibold); text-decoration: underline; border-radius: var(--radius-button, 0.5rem); }
+  .skip-link:focus { transform: translateY(var(--space-3)); outline: 2px solid var(--brand-accent); outline-offset: 2px; }
+  /* <main> takes focus on a page change and from the skip link, as a place to start
+     reading from, not as a control, so it draws no ring; and it stops under the header
+     when scrolled to, as the plugin's page div does from host.css's [id] rule. */
+  main[tabindex="-1"] { scroll-margin-top: var(--header-h); }
+  main[tabindex="-1"]:focus { outline: none; }
+  /* The header is sticky and 6rem tall. When a keyboard user moves backwards the
+     browser scrolls the newly focused control to the top edge — behind the header,
+     entirely hidden (2.4.11); fifteen of the team page's links went under it on a
+     Shift+Tab walk. scroll-padding on the scroller is what fixes it: the browser counts
+     the padded band as out of view, so a control under the header gets scrolled clear.
+     A scroll-margin on the controls reads the same and does not work — Chromium decides
+     WHETHER to scroll from the control's own box, and four stops still went under.
+
+     Only while a keyboard focus is showing, because padding on the scroller also moves
+     the region scroll anchoring works from: tools/verify-wp-plugin.mjs measured the
+     page nudged down when images loaded after a scroll back to the top. :focus-visible
+     is keyboard focus, so a reader using a mouse or a finger never gets the padding. */
+  html:has(:focus-visible) { scroll-padding-top: calc(var(--header-h) + var(--space-2, 0.5rem)); }
+  /* A reader who raises letter spacing (1.4.12) makes the longest heading words wider
+     than a phone: "infrastructure." at h2 size ran 13px past 375 and was clipped by the
+     page's overflow-x. break-word only breaks a word that cannot otherwise fit, so at the
+     page's own spacing nothing moves. */
+  h1, h2, h3, h4 { overflow-wrap: break-word; }
+  /* The design system draws its fields and marks with outline: none and no focus
+     state of their own (2.4.7). The plugin's generated CSS carries the same ring for
+     its rebuilt form; this is the preview's. */
+  form [data-slot="input"]:focus-visible,
+  form [data-slot="textarea"]:focus-visible,
+  form [data-slot="radio-group-item"]:focus-visible,
+  form [data-slot="checkbox"]:focus-visible { outline: 2px solid var(--color-st-tropaz) !important; outline-offset: 2px; }
+  /* The halo falling-blocks.css draws around the CTA's body copy where a block passes
+     behind it: the page colour, so it is invisible except over a block. */
+  falling-blocks { --fb-halo: var(--surface-page); }
 </style>
 </helmet>
 
 <div class="scheme-1" style="min-height:100vh;overflow-x:clip;font-family:var(--font-body);color:var(--text-body);background:var(--surface-page)">
 
   <header style="position: sticky; top: 0; z-index: 900; display: flex; min-height: var(--header-h); width: 100%; align-items: center; padding-inline: var(--page-gutter); background: var(--surface-page)">
+    <a class="skip-link" href="{{ mainHref }}" onClick="{{ skipToMain }}">Skip to content</a>
     <div style="margin-inline:auto;display:flex;width:100%;max-width:var(--container-xxl);align-items:center;justify-content:space-between;gap:var(--space-8)">
       <a href="{{ hrefHome }}" onClick="{{ goHome }}" style="display:block;flex-shrink:0"><img src="assets/logo/logo-horiz.svg" alt="augment^ed, supported by AERDF" style="width:220px;display:block" width="504" height="169" decoding="async"></a>
       <nav class="at-desktop" style="display:flex;align-items:center;gap:var(--space-10)">
-        <a href="{{ hrefChallenge }}" onClick="{{ goChallenge }}">The Challenge</a>
-        <a href="{{ hrefApproach }}" onClick="{{ goApproach }}">Our Approach</a>
-        <a href="{{ hrefTeam }}" onClick="{{ goTeam }}">Who We Are</a>
-        <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" as="a" href="{{ hrefInvolved }}" onClick="{{ goInvolved }}" size="sm" data-btn-size="sm">Follow our work</x-import>
+        <a href="{{ hrefChallenge }}" onClick="{{ goChallenge }}" aria-current="{{ currentChallenge }}">The Challenge</a>
+        <a href="{{ hrefApproach }}" onClick="{{ goApproach }}" aria-current="{{ currentApproach }}">Our Approach</a>
+        <a href="{{ hrefTeam }}" onClick="{{ goTeam }}" aria-current="{{ currentTeam }}">Who We Are</a>
+        <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" as="a" href="{{ hrefInvolved }}" onClick="{{ goInvolved }}" aria-current="{{ currentInvolved }}" size="sm" data-btn-size="sm">Follow our work</x-import>
       </nav>
       <button class="at-mobile" onClick="{{ toggleNav }}" aria-label="{{ navLabel }}" aria-expanded="{{ navExpanded }}" aria-controls="site-menu" style="display:flex;flex-direction:column;justify-content:center;gap:6px;width:44px;height:44px;padding:0;border:0;background:transparent;cursor:pointer">
         <span style="{{ barTopStyle }}"></span>
@@ -677,15 +720,15 @@
 
   <sc-if value="{{ navOpen }}" hint-placeholder-val="{{ false }}">
     <div id="site-menu" class="scheme-1 at-mobile" style="position:fixed;inset:var(--header-h) 0 0 0;z-index:800;overflow-y:auto;overscroll-behavior:contain;background:var(--surface-page);padding:var(--space-12) var(--page-gutter);display:flex;flex-direction:column;gap:var(--space-8)">
-      <a href="{{ hrefChallenge }}" onClick="{{ goChallenge }}" style="font-size:var(--text-h4);font-weight:var(--font-weight-bold);letter-spacing:var(--heading-letter-spacing)">The Challenge</a>
-      <a href="{{ hrefApproach }}" onClick="{{ goApproach }}" style="font-size:var(--text-h4);font-weight:var(--font-weight-bold);letter-spacing:var(--heading-letter-spacing)">Our Approach</a>
-      <a href="{{ hrefTeam }}" onClick="{{ goTeam }}" style="font-size:var(--text-h4);font-weight:var(--font-weight-bold);letter-spacing:var(--heading-letter-spacing)">Who We Are</a>
-      <a href="{{ hrefInvolved }}" onClick="{{ goInvolved }}" style="font-size:var(--text-h4);font-weight:var(--font-weight-bold);letter-spacing:var(--heading-letter-spacing)">Follow Our Work</a>
+      <a href="{{ hrefChallenge }}" onClick="{{ goChallenge }}" aria-current="{{ currentChallenge }}" style="font-size:var(--text-h4);font-weight:var(--font-weight-bold);letter-spacing:var(--heading-letter-spacing)">The Challenge</a>
+      <a href="{{ hrefApproach }}" onClick="{{ goApproach }}" aria-current="{{ currentApproach }}" style="font-size:var(--text-h4);font-weight:var(--font-weight-bold);letter-spacing:var(--heading-letter-spacing)">Our Approach</a>
+      <a href="{{ hrefTeam }}" onClick="{{ goTeam }}" aria-current="{{ currentTeam }}" style="font-size:var(--text-h4);font-weight:var(--font-weight-bold);letter-spacing:var(--heading-letter-spacing)">Who We Are</a>
+      <a href="{{ hrefInvolved }}" onClick="{{ goInvolved }}" aria-current="{{ currentInvolved }}" style="font-size:var(--text-h4);font-weight:var(--font-weight-bold);letter-spacing:var(--heading-letter-spacing)">Follow Our Work</a>
     </div>
   </sc-if>
 
   <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
-  <main data-screen-label="Home">
+  <main id="main-home" tabindex="-1" data-screen-label="Home">
 
     <!-- The hero: the copy laid OVER the bridge assembling. The plate is pinned from the
          moment the page loads, so the first screen is the artwork with the headline on top
@@ -756,7 +799,7 @@
     <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
       <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-inline:auto;max-width:var(--container-lg);text-align:center">
         <p style="font-weight:var(--font-weight-semibold);font-size:var(--text-regular);margin:0 0 var(--space-4)">The Challenge</p>
-        <h2 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0;text-wrap:pretty">Ready or not, AI tools have arrived in the classroom. Many companies and schools are rushing in before we know what AI can do well, what teachers uniquely bring, or what would actually benefit students. Today’s tools rely on general-purpose AI that was never designed for education, and it shows. We need better evidence on the roles AI should (and shouldn’t) play in schools, and purpose-built technology that can bridge between AI and real classroom needs.</h2>
+        <p style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0;text-wrap:pretty">Ready or not, AI tools have arrived in the classroom. Many companies and schools are rushing in before we know what AI can do well, what teachers uniquely bring, or what would actually benefit students. Today’s tools rely on general-purpose AI that was never designed for education, and it shows. We need better evidence on the roles AI should (and shouldn’t) play in schools, and purpose-built technology that can bridge between AI and real classroom needs.</p>
         <div style="margin-top:var(--space-8);display:flex;justify-content:center">
           <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" as="a" href="{{ hrefChallenge }}" onClick="{{ goChallenge }}">Learn more<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import>
         </div>
@@ -1008,14 +1051,14 @@
             <h3 style="font-size:var(--text-h4);line-height:var(--text-h4-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0">A repeatable method for testing and strengthening the capacity of AI to measure durable skills</h3>
             <div>
               <p style="font-size:var(--text-regular);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">We share a standardized, step-by-step process for improving and validating the capacity of AI systems to detect complex skills like critical thinking, so the field can build AI measurement tools without starting from scratch every time.</p>
-              <div style="margin-top:var(--space-6);display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" as="a" href="https://educationaldatamining.org/wp-content/uploads/2026/proceedings/2026.EDM.full-papers/2026.EDM.full-papers.174.pdf" target="_blank" rel="noopener">Read more<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import></div>
+              <p style="margin:var(--space-6) 0 0;font-size:var(--text-regular);line-height:var(--text-body-line-height);font-weight:var(--font-weight-semibold)">Forthcoming</p>
             </div>
           </article>
           <article data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);padding:var(--space-10) 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr));column-gap:var(--space-20);row-gap:var(--space-4)">
             <h3 style="font-size:var(--text-h4);line-height:var(--text-h4-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0">The AI Roles for Education framework</h3>
             <div>
               <p style="font-size:var(--text-regular);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">Arguing over whether AI is good or bad for education misses the point: AI isn't one thing. We define five distinct roles AI can play in the classroom, and show how naming a tool's role determines what it should do, how to judge whether it works, and what safeguards it needs.</p>
-              <div style="margin-top:var(--space-6);display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" as="a" href="https://educationaldatamining.org/wp-content/uploads/2026/proceedings/2026.EDM.full-papers/2026.EDM.full-papers.174.pdf" target="_blank" rel="noopener">Read more<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import></div>
+              <p style="margin:var(--space-6) 0 0;font-size:var(--text-regular);line-height:var(--text-body-line-height);font-weight:var(--font-weight-semibold)">Forthcoming</p>
             </div>
           </article>
         </div>
@@ -1073,7 +1116,7 @@
   </sc-if>
 
   <sc-if value="{{ isChallenge }}" hint-placeholder-val="{{ false }}">
-  <main data-screen-label="The Challenge">
+  <main id="main-challenge" tabindex="-1" data-screen-label="The Challenge">
 
     <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
       <div style="margin-inline:auto;max-width:var(--container-lg);text-align:center">
@@ -1130,7 +1173,7 @@
   </sc-if>
 
   <sc-if value="{{ isApproach }}" hint-placeholder-val="{{ false }}">
-  <main data-screen-label="Our Approach">
+  <main id="main-approach" tabindex="-1" data-screen-label="Our Approach">
 
 
     <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
@@ -1228,7 +1271,7 @@
   </sc-if>
 
   <sc-if value="{{ isTeam }}" hint-placeholder-val="{{ false }}">
-  <main data-screen-label="Who We Are">
+  <main id="main-team" tabindex="-1" data-screen-label="Who We Are">
 
     <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter)">
       <div style="margin-inline:auto;max-width:var(--container-xxl);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr));column-gap:var(--space-20);row-gap:var(--space-8)">
@@ -1579,7 +1622,7 @@
   </sc-if>
 
   <sc-if value="{{ isInvolved }}" hint-placeholder-val="{{ false }}">
-  <main data-screen-label="Get Involved">
+  <main id="main-involved" tabindex="-1" data-screen-label="Get Involved">
 
     <section style="padding:clamp(var(--section-pad-y),7vw,var(--section-pad-y-lg)) var(--page-gutter) clamp(var(--space-20),9vw,8rem)">
       <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-inline:auto;max-width:var(--container-lg);text-align:center;margin-bottom:clamp(var(--section-header-gap),6vw,var(--section-header-gap-lg))">
@@ -1591,22 +1634,22 @@
       <form onSubmit="{{ onInvolvedSubmit }}" data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);margin-inline:auto;max-width:40rem;display:flex;flex-direction:column;gap:var(--space-8)">
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:var(--space-6)">
           <div>
-            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Label">First name</x-import>
-            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Input" type="text" required=""></x-import>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Label" html-for="aug-f-firstname">First name</x-import>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Input" id="aug-f-firstname" name="firstname" auto-complete="given-name" type="text" required="required"></x-import>
           </div>
           <div>
-            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Label">Last name</x-import>
-            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Input" type="text" required=""></x-import>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Label" html-for="aug-f-lastname">Last name</x-import>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Input" id="aug-f-lastname" name="lastname" auto-complete="family-name" type="text" required="required"></x-import>
           </div>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:var(--space-6)">
           <div>
-            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Label">Email</x-import>
-            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Input" type="email" required=""></x-import>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Label" html-for="aug-f-email">Email</x-import>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Input" id="aug-f-email" name="email" auto-complete="email" type="email" required="required"></x-import>
           </div>
           <div>
-            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Label">Contact number</x-import>
-            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Input" type="tel"></x-import>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Label" html-for="aug-f-phone">Contact number</x-import>
+            <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Input" id="aug-f-phone" name="phone" auto-complete="tel" type="tel"></x-import>
           </div>
         </div>
         <div>
@@ -1624,15 +1667,16 @@
           </x-import>
         </div>
         <div>
-          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Label">Tell us more</x-import>
-          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Textarea" placeholder="Share what brought you here..." rows="4" required=""></x-import>
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Label" html-for="aug-f-message">Tell us more</x-import>
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Textarea" id="aug-f-message" name="message" auto-complete="off" placeholder="Share what brought you here..." rows="4" required="required"></x-import>
         </div>
         <label style="display:flex;align-items:flex-start;gap:var(--space-3)">
-          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Checkbox" required=""></x-import>
-          <span style="font-size:var(--text-small)">I agree to the privacy policy</span>
+          <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Checkbox" required="" aria-required="true" aria-invalid="{{ consentInvalid }}" aria-describedby="{{ consentDescribedBy }}"></x-import>
+          <span style="font-size:var(--text-small)">I agree to the <a href="https://aerdf.org/termsofuse/" target="_blank" rel="noopener" style="text-decoration:underline">privacy policy</a></span>
         </label>
         <div>
           <x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" type="submit">Subscribe</x-import>
+          <p role="status" id="follow-status" data-follow-status="" style="{{ followStatusStyle }}">{{ followStatus }}</p>
         </div>
       </form>
     </section>
@@ -1719,8 +1763,10 @@ function readRoute() {
 
 class Component extends DCLogic {
   route = readRoute();
-  state = { page: this.route.page, navOpen: false };
+  state = { page: this.route.page, navOpen: false, followStatus: "", consentInvalid: false };
   lastPage = this.route.page;
+  menuWasOpen = false;
+  inerted = [];
 
   componentDidMount() {
     document.title = TITLES[this.state.page] || TITLES.home;
@@ -1728,9 +1774,16 @@ class Component extends DCLogic {
     this.onPopState = () => this.show(readRoute().page);
     window.addEventListener("popstate", this.onPopState);
 
-    // Escape closes the menu, the way every other overlay on the web does.
+    // Escape closes the menu, the way every other overlay on the web does, and hands
+    // focus back to the button that opened it — otherwise a keyboard user is left on
+    // whichever menu link they had reached, which the closing just removed.
     this.onKeyDown = (e) => {
-      if (e.key === "Escape" && this.state.navOpen) this.setState({ navOpen: false });
+      if (e.key === "Escape" && this.state.navOpen) {
+        this.setState({ navOpen: false }, () => {
+          const toggle = document.querySelector('header button[aria-controls="site-menu"]');
+          if (toggle) toggle.focus();
+        });
+      }
     };
     window.addEventListener("keydown", this.onKeyDown);
 
@@ -1749,24 +1802,24 @@ class Component extends DCLogic {
     };
     this.sweepTimer = setInterval(this.sweep, 250);
 
-    // Drops the body copy to sit against the middle of the heading beside it. That
-    // is a two-column idea: below 992px the pair stacks, and the same offset becomes
-    // a gap the height of half a wrapped headline.
-    this.syncApproachOffset = () => {
-      const h = document.querySelector("[data-approach-heading]");
-      const t = document.querySelector("[data-approach-text]");
-      if (!h || !t) return;
-      t.style.marginTop = window.innerWidth >= 992 ? (h.offsetHeight / 2) + "px" : "";
-    };
-    this.syncApproachOffset();
-    this.approachTimer = setInterval(this.syncApproachOffset, 250);
-
     // The hero's rising block kit used to be driven from here, and the cycle
     // wheel after it. Both are their own elements now — falling-blocks and
     // cycle-wheel each listen for their own scroll — so this handler has only the
     // reveal sweep left to run.
     this.onScroll = () => this.sweep();
     window.addEventListener("scroll", this.onScroll, { passive: true });
+
+    // The hero's body and buttons dissolve as the page scrolls (hero-dissolve above) but
+    // stay in the tab order, so a reader moving backwards with Shift+Tab lands on a button
+    // that is invisible or behind the plate (WCAG 2.4.7, 2.4.11; measured). Where they are
+    // whole is the top of the page, so a focus arriving on a faded one goes there.
+    this.onFocusIn = (e) => {
+      const body = e.target && e.target.closest ? e.target.closest("[data-hero-body]") : null;
+      // On the next frame: the browser scrolls the focused button into view itself,
+      // after this handler, and would otherwise undo the jump.
+      if (body && window.scrollY > 0 && parseFloat(getComputedStyle(body).opacity) < 0.99) requestAnimationFrame(() => window.scrollTo(0, 0));
+    };
+    document.addEventListener("focusin", this.onFocusIn);
     window.addEventListener("resize", this.onScroll, { passive: true });
     this.sweep();
   }
@@ -1777,18 +1830,51 @@ class Component extends DCLogic {
     document.body.style.overflow = "";
     window.removeEventListener("scroll", this.onScroll);
     window.removeEventListener("resize", this.onScroll);
+    document.removeEventListener("focusin", this.onFocusIn);
     clearInterval(this.sweepTimer);
-    clearInterval(this.approachTimer);
+    this.setInert(false);
+  }
+
+  // While the menu is open, everything but the header and the menu is inert: the menu
+  // is a full-screen overlay, and without this Tab walks off its last link into the page
+  // underneath, where focus lands on links the overlay hides (WCAG 2.4.11, measured by
+  // tools/audit-a11y.mjs). The header stays live so the button can close it again.
+  // inert is an attribute this component never renders, so the host leaves it alone.
+  setInert(on) {
+    this.inerted.forEach((el) => el.removeAttribute("inert"));
+    this.inerted = [];
+    if (!on) return;
+    const menu = document.getElementById("site-menu");
+    const header = document.querySelector(".scheme-1 > header");
+    const shell = header && header.parentElement;
+    if (!menu || !shell) return;
+    for (const el of shell.children) {
+      if (el === header || el.contains(menu) || el.hasAttribute("inert")) continue;
+      el.setAttribute("inert", "");
+      this.inerted.push(el);
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
     document.body.style.overflow = this.state.navOpen ? "hidden" : "";
+    if (this.menuWasOpen !== this.state.navOpen) {
+      this.menuWasOpen = this.state.navOpen;
+      this.setInert(this.state.navOpen);
+    }
     // The runtime invokes this with prevProps only, so prevState is undefined —
     // reading it threw on every update and swallowed the sweep below.
     // go() already scrolls to the top, so track the page change ourselves.
     if (this.lastPage !== this.state.page) {
       this.lastPage = this.state.page;
       window.scrollTo(0, 0);
+      // A page change the reader asked for moves focus into the new page, the way a
+      // real page load would put them at its top. Without it focus stays on the nav
+      // link, and a screen reader says nothing at all about the page having changed.
+      if (this.focusMain) {
+        this.focusMain = false;
+        const main = document.querySelector("main");
+        if (main) main.focus({ preventScroll: true });
+      }
     }
     if (this.sweep) requestAnimationFrame(this.sweep);
   }
@@ -1822,8 +1908,39 @@ class Component extends DCLogic {
       if (!IN_EDITOR && window.history && window.history.pushState) {
         try { window.history.pushState({ page: page }, "", this.href(page)); } catch (err) {}
       }
+      if (page !== this.state.page) this.focusMain = true;
       this.show(page);
     };
+  }
+
+  // The empty-submit check. The text fields carry a real required (required="required":
+  // the host drops an empty-string boolean), so the browser validates them itself and
+  // names the problem at each field — the same as the plugin's form, whose validation is
+  // the browser's own. What it cannot validate is the consent box, which the design system
+  // draws as a button; that one is checked here, marked invalid through its props (the
+  // host reconciles away attributes it did not render), focused, and explained in the
+  // live region with the sentence the plugin's relay uses for the same case
+  // (includes/follow.php, 'invalid'). A complete form still goes nowhere: the preview has
+  // no relay, and on aerdf.org the plugin's form replaces this one.
+  submitFollow(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const form = e && e.currentTarget;
+    if (!form || !form.querySelector) return;
+    const box = form.querySelector('[role="checkbox"][aria-required="true"]');
+    const missing = box && box.getAttribute("aria-checked") !== "true";
+    this.setState({
+      consentInvalid: !!missing,
+      followStatus: missing ? "Please fill in the required fields and try again." : ""
+    }, () => { if (missing) box.focus(); });
+  }
+
+  // The skip link. A plain #main would do the job on a static page, but here a hash
+  // change fires popstate, which re-shows the page and scrolls to the top; so move
+  // focus directly, and leave the URL alone.
+  skipToMain(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const main = document.querySelector("main");
+    if (main) main.focus();
   }
 
   // The R&D cycle wheel used to be driven from here — a scroll clock, a latch
@@ -1834,7 +1951,22 @@ class Component extends DCLogic {
 
   renderVals() {
     const open = this.state.navOpen;
+    const current = (p) => (this.state.page === p ? "page" : undefined);
     return {
+      currentChallenge: current("challenge"),
+      currentApproach: current("approach"),
+      currentTeam: current("team"),
+      currentInvolved: current("involved"),
+      // Each page's <main> has its own id — the served file holds all five at once, and
+      // one id on five elements is a parsing error — so the skip link names this page's.
+      mainHref: "#main-" + this.state.page,
+      followStatus: this.state.followStatus,
+      consentInvalid: this.state.consentInvalid ? "true" : undefined,
+      consentDescribedBy: this.state.consentInvalid ? "follow-status" : undefined,
+      // The region is always in the page, so a screen reader is already listening when
+      // it speaks, but it takes no room until it has something to say.
+      followStatusStyle: { fontSize: "var(--text-small)", lineHeight: "var(--text-body-line-height)", margin: this.state.followStatus ? "var(--space-4) 0 0" : "0" },
+      skipToMain: (e) => this.skipToMain(e),
       isHome: this.state.page === "home",
       isChallenge: this.state.page === "challenge",
       isApproach: this.state.page === "approach",
@@ -1853,7 +1985,7 @@ class Component extends DCLogic {
       goHome: this.go("home"),
       goChallenge: this.go("challenge"),
       goApproach: this.go("approach"),
-      onInvolvedSubmit: (e) => { if (e && e.preventDefault) e.preventDefault(); },
+      onInvolvedSubmit: (e) => this.submitFollow(e),
       toggleNav: () => this.setState((s) => ({ navOpen: !s.navOpen })),
       barTopStyle: { ...BAR, transform: open ? "translateY(4px) rotate(45deg)" : "none" },
       barBottomStyle: { ...BAR, transform: open ? "translateY(-4px) rotate(-45deg)" : "none" }

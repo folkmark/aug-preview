@@ -51,8 +51,12 @@ cycle-wheel [data-cycle][data-sel="3"] [data-node="3"]:hover { transform: transl
 cycle-wheel [data-cycle][data-sel="0"] [data-rl="0"] [data-num], cycle-wheel [data-cycle][data-sel="1"] [data-rl="1"] [data-num],
 cycle-wheel [data-cycle][data-sel="2"] [data-rl="2"] [data-num], cycle-wheel [data-cycle][data-sel="3"] [data-rl="3"] [data-num] { color: var(--brand-accent, #255799); }
 /* The reading column is one integrated list: each row is a step title, and the
-   active row opens to hold its copy — the title is never said twice. */
-cycle-wheel [data-cycle] [data-rl] { opacity: 0.45; transition: opacity 200ms ease-in-out; }
+   active row opens to hold its copy — the title is never said twice.
+
+   0.6, not the 0.45 it was: a closed row's 12px step number, faded that far over the
+   page colour, measured 3.27:1 against the 4.5:1 small text needs (1.4.3). 0.55 is
+   the least that clears it; 0.6 leaves room for antialiasing. */
+cycle-wheel [data-cycle] [data-rl] { opacity: 0.6; transition: opacity 200ms ease-in-out; }
 cycle-wheel [data-cycle] [data-rl]:hover { opacity: 1; }
 cycle-wheel [data-cycle][data-sel="0"] [data-rl="0"],
 cycle-wheel [data-cycle][data-sel="1"] [data-rl="1"],
@@ -76,7 +80,14 @@ cycle-wheel [data-cycle][data-sel="3"] [data-body="3"] p { opacity: 1; transitio
   cycle-wheel [data-cycle][data-sel="2"] [data-body="2"],
   cycle-wheel [data-cycle][data-sel="3"] [data-body="3"] { max-height: 40rem; }
 }
+/* Reduced motion: no pinned run at all. The ring is drawn whole (the script's build
+   value is 1 under this query) and sits in the page like any other section, one
+   screen tall; the steps open by click or focus instead of by scroll, and a click opens
+   its step in place rather than scrolling to a beat that no longer exists. A pinned
+   stage the reader has to scroll through while nothing moves is still a pin. */
 @media (prefers-reduced-motion: reduce) {
   cycle-wheel [data-cycle] [data-arc], cycle-wheel [data-cycle] [data-node], cycle-wheel [data-cycle] [data-rl],
   cycle-wheel [data-cycle] [data-body], cycle-wheel [data-cycle] [data-body] p { transition: none; }
+  cycle-wheel [data-cycle-rig] { height: auto; }
+  cycle-wheel [data-cycle-stage] { position: relative; top: auto; height: auto; min-height: calc(100vh - var(--cw-pin, 4.5rem)); min-height: calc(100svh - var(--cw-pin, 4.5rem)); }
 }

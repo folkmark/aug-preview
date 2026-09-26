@@ -94,7 +94,7 @@ CAPTCHA on; the plugin has its own spam defences (a hidden field, a minimum time
 limit).
 
 Then Settings → **AugmentED** → the portal ID (AERDF's is 20910033) and the form's ID → the
-privacy policy URL → Save → **Send test submission**. It sends one real submission as you
+privacy policy URL (AERDF's is its Terms of Use & Privacy Policy page, `https://aerdf.org/termsofuse/`) → Save → **Send test submission**. It sends one real submission as you
 and shows HubSpot's answer.
 
 ### 5. Optional: AERDF's job-title field

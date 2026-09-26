@@ -15,6 +15,14 @@
  *                top on the document, less --aug-top. The hero's copy fades on the
  *                document's scroll timeline (index.html), so without this it would be half
  *                gone before the reader had scrolled past AERDF's header.
+ *
+ * The same height is what keeps a focused control clear of the bar. Moving backwards
+ * with Shift+Tab, a browser scrolls each link to the top edge, under the sticky bar and
+ * entirely hidden (WCAG 2.4.11), unless the document has scroll-padding. The site sets
+ * that in CSS on html:has(:focus-visible) (index.html, "Keyboard access"), which the
+ * plugin's scoped stylesheet cannot reach, so it is set here — and, as there, only while
+ * the reader is using the keyboard: padding on the scroller also shifts scroll
+ * anchoring, and verify-wp-plugin.mjs measured the page nudged down by it.
  */
 (function () {
   'use strict';
@@ -46,7 +54,20 @@
     root.style.setProperty('--aug-top', top + 'px');
     root.style.setProperty('--header-h', header + 'px');
     root.style.setProperty('--hero-lead', Math.max(0, lead) + 'px');
+    headerPx = header;
+    if (keyboard) document.documentElement.style.scrollPaddingTop = (headerPx + 8) + 'px';
   }
+  var headerPx = 0, keyboard = false;
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Tab' || keyboard) return;
+    keyboard = true;
+    document.documentElement.style.scrollPaddingTop = (headerPx + 8) + 'px';
+  }, true);
+  document.addEventListener('pointerdown', function () {
+    if (!keyboard) return;
+    keyboard = false;
+    document.documentElement.style.scrollPaddingTop = '';
+  }, true);
 
   var pending = false;
   function schedule() {
@@ -107,9 +128,48 @@
   window.addEventListener('scroll', function () { if (blocks.length) sweep(); }, { passive: true });
 
   // ------------------------------------------------------------------ the menu
+  // The hero's body and buttons dissolve on scroll but stay in the tab order (index.html,
+  // hero-dissolve). A focus arriving on one while it is faded — Shift+Tab from further
+  // down — goes to the top of the page, where they are whole, rather than resting on a
+  // button nobody can see (WCAG 2.4.7, 2.4.11).
+  document.addEventListener('focusin', function (e) {
+    var body = e.target && e.target.closest ? e.target.closest('[data-hero-body]') : null;
+    // Next frame: the browser's own scroll-into-view runs after this and would undo it.
+    if (body && root.contains(body) && window.scrollY > 0 && parseFloat(getComputedStyle(body).opacity) < 0.99) requestAnimationFrame(function () { window.scrollTo(0, 0); });
+  });
+
+  // The current page's link, in the bar and the menu. One partial serves every page, so
+  // the generator strips whatever the export had and this marks it from the address.
+  var here = location.pathname.replace(/\/+$/, '');
+  root.querySelectorAll('[data-aug-bar] a[href], [data-aug-menu] a[href]').forEach(function (a) {
+    var to = (a.pathname || '').replace(/\/+$/, '');
+    if (to && to === here && !a.classList.contains('skip-link')) a.setAttribute('aria-current', 'page');
+  });
+
   var toggle = root.querySelector('[data-aug-menu-toggle]');
   var menu = root.querySelector('[data-aug-menu]');
   if (!toggle || !menu) return;
+
+  // While the menu is open, everything on the page except the bar and the menu is inert —
+  // AERDF's header and footer included. The menu is a full-screen overlay, and without
+  // this Tab walks off its last link into the page underneath, onto links the overlay
+  // hides (2.4.11). Walked up from the bar to <body>, marking every sibling that holds
+  // neither; whatever was already inert is left alone and not un-inerted on close.
+  var inerted = [];
+  function setInert(on) {
+    inerted.forEach(function (el) { el.removeAttribute('inert'); });
+    inerted = [];
+    if (!on) return;
+    for (var n = bar; n && n !== document.body && n.parentElement; n = n.parentElement) {
+      Array.prototype.forEach.call(n.parentElement.children, function (sib) {
+        if (sib === n || sib === menu || sib.contains(menu) || sib.contains(bar) || sib.hasAttribute('inert')) return;
+        if (/^(SCRIPT|STYLE|LINK|TEMPLATE)$/.test(sib.tagName)) return;
+        sib.setAttribute('inert', '');
+        inerted.push(sib);
+      });
+    }
+  }
+
   function setOpen(open, restoreFocus) {
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     if (open) {
@@ -118,9 +178,11 @@
       menu.style.top = Math.max(0, bar.getBoundingClientRect().bottom) + 'px';
       menu.removeAttribute('hidden');
       document.body.style.overflow = 'hidden';
+      setInert(true);
     } else {
       menu.setAttribute('hidden', '');
       document.body.style.overflow = '';
+      setInert(false);
       if (restoreFocus) toggle.focus();
     }
   }
