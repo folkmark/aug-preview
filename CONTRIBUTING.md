@@ -130,6 +130,30 @@ measurements. Match that when editing them — a change that leaves a comment
 describing the old behaviour is worse than no comment. Several of those comments are
 load-bearing warnings; read them before simplifying the code they sit on.
 
+## Accessibility is measured, not asserted
+
+The site targets WCAG 2.2 AA. That is every WCAG 2.1 AA criterion (what ADA Title II holds
+partner districts to from 26 April 2027) plus six more, and it is ISO/IEC 40500:2025.
+`tools/audit-a11y.mjs` is the test: axe-core, a real Tab and Shift+Tab walk, target sizes,
+320 px reflow, the text-spacing override, contrast sampled from pixels where text sits on
+imagery, the menu, the route change, the form, and reduced motion — over `_site` and the
+exported pages. Run it after any change to `index.html`, `assets/` or the page chrome in
+`tools/build-site.mjs`:
+
+```sh
+node tools/build-site.mjs _site && node tools/audit-a11y.mjs [--motion]
+```
+
+It exits non-zero on a failure. The plugin's own layer (its form, menu script and CSS) is
+exercised by `tools/verify-wp-plugin.mjs`. The rules behind the fixes are in the comments
+under "Keyboard access" in `index.html`; two are easy to undo by accident:
+
+- **scroll-padding only while a keyboard focus shows** (`html:has(:focus-visible)`, and the
+  plugin sets it on Tab). Always-on padding moves scroll anchoring; element scroll-margin does
+  not stop Chromium scrolling a control under the header.
+- **The design system's controls reconcile.** Anything the page needs on them — `aria-invalid`,
+  `required`, `aria-current` — goes through props in the template, not onto the DOM by script.
+
 ## The WordPress plugin is generated from the site
 
 `wordpress-handoff/plugin/augmented-ed/` is how the site reaches aerdf.org: a plugin AERDF's
@@ -137,7 +161,7 @@ developer installs (`wordpress-handoff/START-HERE.md`). Half of it is generated 
 and that half goes stale silently unless the chain is re-run:
 
 ```sh
-npm i --no-save playwright@1.63.0 linkedom@0.18.13 postcss@8.5.28 postcss-selector-parser@7.1.6 pixelmatch@7.2.0 pngjs@7.0.0
+npm i --no-save playwright@1.63.0 linkedom@0.18.13 postcss@8.5.28 postcss-selector-parser@7.1.6 pixelmatch@7.2.0 pngjs@7.0.0 axe-core@4.13.0 html-validate@11.16.0
 node tools/export-static.mjs && node tools/export-content.mjs   # after any index.html change
 node tools/build-wp-plugin.mjs                                   # writes plugin/augmented-ed/generated/
 node tools/build-wp-plugin.mjs --assemble dist && node tools/verify-wp-plugin.mjs [--live]
