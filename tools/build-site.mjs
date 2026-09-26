@@ -159,6 +159,7 @@ function versionHeadshots(html) {
 // absolute, headshots versioned, share tags made full URLs.
 const publish = (html) => share(versionHeadshots(absolutise(html)));
 
+
 // assets/ and _ds/ are copied whole, and pages.yml force-pushes whatever lands in
 // _site straight to gh-pages on every push to main — so anything that is in those
 // directories but not part of the served site has to be left out here, or it is
@@ -504,6 +505,20 @@ ${ld ? `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\
   .bio-menu[open] > summary span:last-child { transform: translateY(-4px) rotate(-45deg); }
   .bio-menu-panel { position: fixed; inset: var(--header-h) 0 0 0; z-index: 800; overflow-y: auto; overscroll-behavior: contain; background: var(--surface-page); padding: var(--space-12) var(--page-gutter); display: flex; flex-direction: column; gap: var(--space-8); }
   .bio-menu-panel a { font-size: var(--text-h4); font-weight: var(--font-weight-bold); letter-spacing: var(--heading-letter-spacing); }
+  /* What the panel covers, it also takes out of reach: without this, Tab walks off the
+     panel's last link onto the profile underneath, links the overlay hides (WCAG
+     2.4.11). visibility: hidden drops them from the tab order and the accessibility
+     tree with no script, and changes nothing a reader sees — the panel is opaque. */
+  body:has(.bio-menu[open]) :is(main, footer) { visibility: hidden; }
+  /* Keyboard access, as the SPA's page styles have it (index.html, "Keyboard access"):
+     the skip link, a ring-free <main> as its target, and scroll-padding while a keyboard
+     focus shows, so a control focused while moving backwards never scrolls under the
+     sticky header. */
+  .skip-link { position: absolute; left: var(--page-gutter); top: 0; z-index: 1000; transform: translateY(-120%); padding: var(--space-3) var(--space-4); background: var(--surface-page); color: var(--text-body); font-weight: var(--font-weight-semibold); text-decoration: underline; border-radius: var(--radius-button, 0.5rem); }
+  .skip-link:focus { transform: translateY(var(--space-3)); outline: 2px solid var(--brand-accent); outline-offset: 2px; }
+  main[tabindex="-1"] { scroll-margin-top: var(--header-h); }
+  main[tabindex="-1"]:focus { outline: none; }
+  html:has(:focus-visible) { scroll-padding-top: calc(var(--header-h) + var(--space-2, 0.5rem)); }
 
 ${BIO_PROFILE_CSS}
   /* The SPA's touch-target rule, for the links this page has. Below the desktop
@@ -520,6 +535,7 @@ ${BIO_PROFILE_DESKTOP_CSS}
 </head>
 <body class="scheme-1">
 <header class="bio-header">
+  <a class="skip-link" href="#main">Skip to content</a>
   <div class="bio-header-row">
     <a class="bio-logo" href="${basePath}"><img src="assets/logo/logo-horiz.svg" alt="augment^ed, supported by AERDF" width="504" height="169" decoding="async"></a>
     <nav class="bio-nav at-desktop" aria-label="Main">
@@ -536,7 +552,7 @@ ${BIO_PROFILE_DESKTOP_CSS}
   </div>
 </header>
 
-<main class="bio">
+<main id="main" tabindex="-1" class="bio">
 ${bioBody(staticHelper({
   back: `${basePath}team/`,
   photo: hasPhoto ? `assets/team/${b.slug}.webp` : '',

@@ -246,6 +246,17 @@ no profile; converting would apply a transfer function twice).
   and absolutely positioned, nothing outside the stage should ever paint, and
   the containment also makes the stage the stacking context the sandwich's
   z-indexes resolve against, and keeps arriving frames from shifting layout.
+  Its screen height is a `min-height`, not a `height`: at the page's own
+  spacing they are the same, but a reader who raises line or letter spacing
+  (WCAG 1.4.12) makes the copy taller than a screen, and a fixed height cut
+  the paragraph and buttons off at 375 px.
+- **6.3a The body copy carries a halo.** In front of every plate is not the same
+  as readable: dark text over the blue block measured 1.46:1 (1440) and 3.18:1
+  (375) against the 4.5:1 WCAG 1.4.3 asks. `[data-fb-front] p` has a stacked `text-shadow` in
+  `--fb-halo`, which the host sets to its page colour — invisible on the page,
+  a background of its own wherever a block passes behind. Measured afterwards
+  at 5.75:1 (1440) and 5.9:1 (375), the fifth percentile of the pixels around
+  each glyph, by `tools/audit-a11y.mjs`.
 - **6.4 The canvas backing store is the source frame's size, never
   display × DPR.** It changes only when the tier does, which changes the
   drawn-frame tag in the same breath, so the clear that assigning `width`

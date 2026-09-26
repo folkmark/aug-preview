@@ -49,6 +49,9 @@
      here that cannot be eased). Scrolling back up never un-draws the ring; only
      remounting (a page navigation) starts it over.
    - On the mobile arm there is no pinned run, so a row tap simply opens the row.
+   - Under prefers-reduced-motion there is no pinned run on either arm (the stylesheet
+     drops the rig to one screen), so the same holds everywhere: the ring is drawn
+     whole, scrolling selects nothing, and a click or focus opens its step in place.
 
    The sticky offset is read back off [data-cycle-stage]'s computed top, so the CSS
    and the script cannot disagree and a host with a different header sets --cw-pin
@@ -145,10 +148,12 @@
     this.paint(false);
   };
 
+  CycleWheel.prototype.reduced = function () { return !!(this.mq && this.mq.matches); };
+
   CycleWheel.prototype.travel = function (i) {
     var self = this;
-    // No pinned run on the mobile arm — the row simply opens.
-    if (!this.rig || !this.rig.offsetHeight || this.rig.offsetParent === null) { this.select(i); return; }
+    // No pinned run on the mobile arm, or under reduced motion — the row simply opens.
+    if (this.reduced() || !this.rig || !this.rig.offsetHeight || this.rig.offsetParent === null) { this.select(i); return; }
     var pin = this.pin();
     var span = this.rig.offsetHeight - this.stage.offsetHeight;
     var top = this.rig.getBoundingClientRect().top + (window.scrollY || 0);
@@ -156,7 +161,6 @@
     // boundary, where two steps contest it.
     var target = Math.round(top - pin + (i * 0.25 + 0.125) * span);
     if (this.travRaf) { cancelAnimationFrame(this.travRaf); this.travRaf = 0; }
-    if (this.mq && this.mq.matches) { window.scrollTo(0, target); return; }
     var from = window.scrollY || 0;
     if (Math.abs(target - from) < 2) { this.select(i); return; }
     var dur = 520, t0 = performance.now();
@@ -183,7 +187,7 @@
     // remount — connectedCallback resets it — never by a step change, which runs
     // on every scroll tick and would un-build the ring while the reader watches.
     if (p > 0.97) this.done = true;
-    var reduced = this.mq && this.mq.matches;
+    var reduced = this.reduced();
     var b = reduced || this.done ? 1 : p;
     var sel = this.sel();
     var seg = function (a, c) { return clamp01((b - a) / (c - a)); };
@@ -233,7 +237,9 @@
 
     // The clock owns the open step while the reader scrolls; the pointer and the
     // keyboard outrank it only until the page next moves.
-    if (updateSel) {
+    // With no pinned run (reduced motion) there is no clock, so the step stays wherever
+    // the reader put it.
+    if (updateSel && !reduced) {
       var at = Math.min(3, Math.floor(p / 0.25));
       if (at !== sel) this.select(at);
     }

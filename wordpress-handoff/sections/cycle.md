@@ -232,10 +232,11 @@ target = rigTopAbsolute − pin + (i·0.25 + 0.125) × span
 short or long by the difference. Mid-beat (`+ 0.125`), where the stage is unambiguously the active one — not the
 beat boundary, where two steps contest it. The travel eases with
 `smoothstep` over 520 ms via `requestAnimationFrame`; a new click cancels the
-previous travel; under reduced motion it jumps with `scrollTo` instead.
+previous travel.
 
-If the rig is hidden (`offsetParent === null` — the mobile arm is showing), a
-click selects in place, because the mobile arm has no pinned run to travel.
+If the rig is hidden (`offsetParent === null` — the mobile arm is showing), or
+the visitor prefers reduced motion, a click selects in place: neither has a
+pinned run to travel.
 
 Keyboard focus on a node calls `focus({ preventScroll: true })` and selects in
 place.
@@ -257,14 +258,20 @@ incidental and are not:
   `data-active` arc is 1. Drawing uses `pathLength="100"` on each path so the
   script's dash-offset math is unit-free — keep that attribute.
 - **The open row's number** takes the accent color, matching its lit arc.
-- **Rows** sit at opacity 0.45, 1 on hover and while selected.
+- **Rows** sit at opacity 0.6, 1 on hover and while selected. Not lower: a
+  closed row's 12 px step number faded to 0.45 measured 3.27:1 against the
+  page colour, under the 4.5:1 WCAG 1.4.3 asks of small text; 0.55 is the least
+  that clears it.
 - **Bodies** are a `max-height` accordion: 0 → 26 rem on desktop (40 rem on
   mobile), opening at 420 ms ease-out with a 200 ms delay, the paragraph fading
   in at 260 ms with a 340 ms delay — close-then-open reads as one motion, not
   two fighting.
 - **`@media (prefers-reduced-motion: reduce)`** switches every transition in
-  the block off. Combined with `b = 1`, a reduced-motion visitor gets the
-  finished ring and instant accordion moves.
+  the block off and removes the pinned run: the rig's height becomes `auto`
+  and the stage stops being sticky (one screen tall, in the page like any
+  other section). Combined with `b = 1`, a reduced-motion visitor gets the
+  finished ring, instant accordion moves, and steps chosen by click or focus;
+  scrolling selects nothing.
 - **Focus** is visible: 2 px accent outline, offset 3 px, on nodes and rows.
 
 ---
@@ -318,8 +325,9 @@ A five-minute smoke test at 1440×900, plus the checks the page cannot show you:
    arc 3 is lit, and the picture is not mid-transition.
 4. Tab to a node: its step opens without the page moving.
 5. Resize below 992 px: the accordion shows, rows open on tap, no pinned run.
-6. Enable reduced motion: the ring renders complete immediately, clicks jump
-   without animation, and no transition runs.
+6. Enable reduced motion: the section is one screen tall with no pin, the ring
+   renders complete immediately, a click opens its step without moving the
+   page, scrolling changes nothing, and no transition runs.
 7. Confirm the scroll handler is not doing layout work when neither `b` nor the
    selection changed.
 

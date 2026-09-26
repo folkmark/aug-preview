@@ -6,6 +6,9 @@
 
 falling-blocks {
   --fb-sticky-top: 0px;
+  /* The colour of the halo around the body copy (see [data-fb-front] below). A host
+     sets it to its page colour; unset, there is no halo. */
+  --fb-halo: transparent;
   /* Which encoded width this viewport scrubs. The element reads this back at boot and
      on every media-query flip, so the breakpoint that changes the page's layout is
      also the one that picks the file — the same arrangement approach-scrub uses for
@@ -63,8 +66,13 @@ falling-blocks:not([data-fb-motion="on"]) {
 falling-blocks [data-fb-stage] {
   position: sticky;
   top: var(--fb-sticky-top);
-  height: calc(100vh - var(--fb-sticky-top));
-  height: calc(100svh - var(--fb-sticky-top));
+  /* A floor, not a height. The copy fits a screen at every width at the page's own
+     spacing, so this is exactly the old fixed height — until a reader raises line or
+     letter spacing (WCAG 1.4.12). Then the copy outgrows a screen, and a fixed height
+     with overflow: hidden cut the paragraph and buttons off at 375px (measured). Now
+     the stage grows with its copy and only the plates are clipped to it. */
+  min-height: calc(100vh - var(--fb-sticky-top));
+  min-height: calc(100svh - var(--fb-sticky-top));
   overflow: hidden;
   display: grid;
   place-items: center;
@@ -114,6 +122,17 @@ falling-blocks [data-fb-copy]           { position: relative; }
 falling-blocks [data-fb-copy] h1        { position: relative; z-index: 2; }
 falling-blocks [data-fb-layer="top"]    { z-index: 3; }
 falling-blocks [data-fb-front]          { position: relative; z-index: 4; }
+
+/* The body copy stays in front of every plate, but in front is not the same as
+   readable: where dark text crosses the blue block, the pixels around its glyphs
+   measured 1.46:1 at 1440 and 3.18:1 at 375 against the 4.5:1 it needs (1.4.3). A halo in the page colour, stacked tight around each glyph, gives the
+   text its own background wherever a block passes behind it and is invisible
+   everywhere else. On the paragraph only — the buttons carry their own fill. */
+falling-blocks [data-fb-front] p {
+  text-shadow:
+    0 0 1px var(--fb-halo), 0 0 1px var(--fb-halo), 0 0 2px var(--fb-halo),
+    0 0 2px var(--fb-halo), 0 0 3px var(--fb-halo), 0 0 4px var(--fb-halo);
+}
 
 /* Frame 1 is the designed composition, so the still is a deliberate state rather than
    a degraded one. It is a plain <img>, which means it also survives with scripting
