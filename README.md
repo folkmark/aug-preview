@@ -1,11 +1,10 @@
 # AugmentED — site preview
 
-The AugmentED marketing site, built as a Claude Design handoff bundle. It is a
-single-page app: `index.html` carries every page (Home, The Challenge, Our
-Approach, Who We Are, Follow Our Work) and switches between them client-side.
-I built it; everything in this repository is either the site, the tools that
-build it, or the documents that hand it on. The finished thing is live at
-[augmented2.folkmark.com](https://augmented2.folkmark.com).
+The AugmentED marketing site. It is a single-page app: `index.html` carries
+every page (Home, The Challenge, Our Approach, Who We Are, Follow Our Work) and
+switches between them client-side. I built it; everything in this repository is
+either the site, the tools that build it, or the documents that hand it on. The
+finished thing is live at [augmented2.folkmark.com](https://augmented2.folkmark.com).
 
 ## Start here
 
@@ -22,7 +21,7 @@ document links onward to the more specific ones it needs:
    [`wordpress-handoff/DECISIONS.md`](wordpress-handoff/DECISIONS.md) for the decisions
    that are yours (or AERDF's) to make, each with the default the plugin uses until then.
 3. **You're changing this repository** — the preview site, the encoders, the
-   publish: read [`CLAUDE.md`](CLAUDE.md) first (where work goes and what
+   publish: read [`CONTRIBUTING.md`](CONTRIBUTING.md) first (where work goes and what
    breaks quietly), then the rest of this file.
 4. **You're re-rendering or re-encoding artwork**: the render notes in
    [`docs/`](docs/) are the authority for frame numbers, and the restore table
@@ -34,7 +33,7 @@ document links onward to the more specific ones it needs:
 | Path              | What it is                                                          |
 | ----------------- | ------------------------------------------------------------------- |
 | `index.html`      | The home page and the whole site — markup plus its `<script>` logic  |
-| `support.js`      | Claude Design runtime that renders the `<x-dc>` block                |
+| `support.js`      | Page runtime that renders the `<x-dc>` block with React              |
 | `_ds/`            | Design system — tokens, `styles.css`, component bundle, fonts        |
 | `assets/`         | Web-ready images — everything here is sized and encoded for the page |
 | `docs/`           | Render notes, including the frame ↔ beat map for the Approach section |

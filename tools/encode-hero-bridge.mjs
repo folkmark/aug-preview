@@ -35,7 +35,7 @@
 // alphaQuality 70 was free on the Approach moves because their alpha was hard-edged and
 // had no gradient to lose. Here it costs the shadow. And since 90 to 100 is 183KB to
 // 187KB a frame — 2% — there is no reason to sit in between: lossless alpha it is, which
-// is also what CLAUDE.md says the original masters used.
+// is also what CONTRIBUTING.md says the original masters used.
 //
 // Be aware what this buys and at what price: at lossless alpha the shadow is about 65%
 // of every frame's bytes. Dropping it from the render, or moving it into an opaque
