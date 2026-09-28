@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- exported from b0df00797edf07bdfce95d3fe94b7eb4cd3709d7 by tools/export-static.mjs; index.html sha256 c7507c0ad24befb7 -->
+<!-- exported from 8527424ee4043a561c413f81437e7d6dddb2a11d by tools/export-static.mjs; index.html sha256 b6c52e122118a970 -->
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -606,6 +606,14 @@
   falling-blocks [data-fb-copy] h2 { position: relative; z-index: 2; }
 
   [data-slot="button"]:not([data-variant^="link"]) { padding-left: 2.25rem !important; padding-right: 2.25rem !important; }
+  /* The research cards' link sits under a left-aligned paragraph, and the link variant's
+     0.75rem inline padding pushed its text 12px in from the column's edge (measured 693
+     against 680 at 1280). Only the left: the right padding keeps the chevron's hit area,
+     and there is no background for the missing padding to show. !important for the same
+     reason as above — the component's padding is inline. A descendant selector, not a
+     child one: the runtime wraps each component in a display: contents host element, so
+     on the live page the link is a grandchild of [data-card-link]. */
+  [data-card-link] [data-slot="button"][data-variant^="link"] { padding-left: 0 !important; }
   [data-slot="button"][data-btn-size="sm"] { padding-left: 1.875rem !important; padding-right: 1.875rem !important; }
   /* Touch targets. The hint-size attributes in the markup are preview annotations and
      set nothing, so buttons render at their text height — about 35px, and 31px at the
