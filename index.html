@@ -636,6 +636,14 @@
   falling-blocks [data-fb-copy] h2 { position: relative; z-index: 2; }
 
   [data-slot="button"]:not([data-variant^="link"]) { padding-left: 2.25rem !important; padding-right: 2.25rem !important; }
+  /* The research cards' link sits under a left-aligned paragraph, and the link variant's
+     0.75rem inline padding pushed its text 12px in from the column's edge (measured 693
+     against 680 at 1280). Only the left: the right padding keeps the chevron's hit area,
+     and there is no background for the missing padding to show. !important for the same
+     reason as above — the component's padding is inline. A descendant selector, not a
+     child one: the runtime wraps each component in a display: contents host element, so
+     on the live page the link is a grandchild of [data-card-link]. */
+  [data-card-link] [data-slot="button"][data-variant^="link"] { padding-left: 0 !important; }
   [data-slot="button"][data-btn-size="sm"] { padding-left: 1.875rem !important; padding-right: 1.875rem !important; }
   /* Touch targets. The hint-size attributes in the markup are preview annotations and
      set nothing, so buttons render at their text height — about 35px, and 31px at the
@@ -1044,7 +1052,7 @@
             <h3 style="font-size:var(--text-h4);line-height:var(--text-h4-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0">Measuring critical thinking with AI</h3>
             <div>
               <p style="font-size:var(--text-regular);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">Can AI help assess a skill as complex as critical thinking? We show that AI models—when given skill definitions and training—can measure some critical-thinking subskills in student writing, and we map where they still fall short.</p>
-              <div style="margin-top:var(--space-6);display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" as="a" href="https://educationaldatamining.org/wp-content/uploads/2026/proceedings/2026.EDM.full-papers/2026.EDM.full-papers.174.pdf" target="_blank" rel="noopener">Read more<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import></div>
+              <div data-card-link="" style="margin-top:var(--space-6);display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" as="a" href="https://educationaldatamining.org/wp-content/uploads/2026/proceedings/2026.EDM.full-papers/2026.EDM.full-papers.174.pdf" target="_blank" rel="noopener">Open link<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import></div>
             </div>
           </article>
           <article data-reveal="" style="opacity:0;transition:opacity var(--transition-fade);padding:var(--space-10) 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(var(--container-xxs),100%),1fr));column-gap:var(--space-20);row-gap:var(--space-4)">
@@ -1058,7 +1066,7 @@
             <h3 style="font-size:var(--text-h4);line-height:var(--text-h4-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0">The AI Roles for Education framework</h3>
             <div>
               <p style="font-size:var(--text-regular);line-height:var(--text-body-line-height);margin:0;text-wrap:pretty">Arguing over whether AI is good or bad for education misses the point: AI isn't one thing. We define five distinct roles AI can play in the classroom, and show how naming a tool's role determines what it should do, how to judge whether it works, and what safeguards it needs.</p>
-              <div style="margin-top:var(--space-6);display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" as="a" href="https://osf.io/preprints/psyarxiv/dnefa_v2" target="_blank" rel="noopener">Read more<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import></div>
+              <div data-card-link="" style="margin-top:var(--space-6);display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Button" variant="link" as="a" href="https://osf.io/preprints/psyarxiv/dnefa_v2" target="_blank" rel="noopener">Open link<x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="chevron_right" size="sm"></x-import></x-import></div>
             </div>
           </article>
         </div>
