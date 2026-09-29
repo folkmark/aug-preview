@@ -1,0 +1,76 @@
+/* The colour bloom on the Who We Are headshots — see team-colour.js for what it is and
+   why it is built this way. This file is the look of it.
+
+   The colour layer sits exactly over the duotone: the same box at the top of the tile,
+   the same radius. It is revealed through a radial mask centred on the pointer's way in
+   (--x, --y, written by the script in the photo's own pixels), whose front travels from
+   nothing to past the farthest corner as --bloom runs 0 to 1. The front is a soft band
+   --feather wide — a third of the photo — so it reads as colour flowing in rather than
+   a circle being cut out.
+
+   THIS BREAKS TWO DESIGN-SYSTEM RULES ON PURPOSE, the way the duotone itself breaks "not
+   black-and-white": the system's motion is opacity-only fades at 200 ms, and its hover
+   goes darker, never lighter. A 200 ms front across a 200px photo is a flash, not a flow,
+   so the bloom takes 900 ms in and 450 ms out; and what hover reveals is the photograph
+   itself, not a lighter state of the tile. Everything else on the page still follows the
+   system, including the darken on a placeholder's hover in index.html.
+
+   --bloom is a registered property so the browser can animate it; an unregistered
+   custom property does not interpolate. Every engine that supports @property animates
+   this. One that does not ignores the registration, and the colour simply switches on
+   and off — the right way for this to fail. prefers-reduced-motion gets the system's own
+   motion instead: a 200 ms opacity fade, no travelling front. */
+@property --bloom {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+/* The layer is positioned against its tile. The Leadership tiles already are (THE BIO
+   TILES); the other groups' tiles were not, and nothing else in them is positioned. */
+.team-grid-3 > * { position: relative; }
+
+[data-team-colour] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  /* index.html gives every image in a team grid a bottom margin, with !important. */
+  margin: 0 !important;
+  border-radius: var(--radius-image);
+  pointer-events: none;
+  --bloom: 0;
+  -webkit-mask-image: radial-gradient(circle at var(--x, 50%) var(--y, 38%),
+    #000 calc(var(--bloom) * var(--reach, 0px) - var(--feather, 0px)),
+    transparent calc(var(--bloom) * var(--reach, 0px)));
+          mask-image: radial-gradient(circle at var(--x, 50%) var(--y, 38%),
+    #000 calc(var(--bloom) * var(--reach, 0px) - var(--feather, 0px)),
+    transparent calc(var(--bloom) * var(--reach, 0px)));
+  /* Leaving: quicker, and even-paced, so the colour clears before the eye has moved on. */
+  transition: --bloom 450ms cubic-bezier(0.4, 0, 0.6, 1);
+}
+[data-team-colour][data-on] {
+  --bloom: 1;
+  /* Arriving: moving within 100 ms so the tile answers the pointer at once, then a
+     visible spread through the middle and a long settle. Sampled every frame in
+     Chromium, --bloom reads 0.15 at 100 ms, 0.61 at 300 and 0.94 at 600. The first
+     curve tried here, (0.2, 0.7, 0.2, 1) over 700 ms, was at 0.80 by 150 ms: the photo
+     simply turned colour, and nobody would have seen it flow. */
+  transition: --bloom 900ms cubic-bezier(0.3, 0.2, 0.25, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-team-colour] {
+    -webkit-mask-image: none;
+            mask-image: none;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+  }
+  [data-team-colour][data-on] { opacity: 1; transition: opacity var(--transition-fast); }
+}
+
+@media print {
+  [data-team-colour] { display: none; }
+}

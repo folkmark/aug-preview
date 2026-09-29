@@ -1,0 +1,55 @@
+/* Radii, containers, breakpoints, section rhythm. */
+:root {
+  --radius-button: 6.25rem;   /* 100px — full pill */
+  --radius-badge: 6.25rem;
+  --radius-carousel: 6.25rem;
+  --radius-card: 0.5rem;      /* 8px, all card sizes */
+  --radius-image: 0.5rem;
+  --radius-form: 0.75rem;
+  --radius-checkbox: 0.25rem;
+
+  --border-width-card: 0px;   /* cards are flat: no border */
+  --border-width-divider: 1px;
+
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+
+  --container-xxs: 20rem;
+  --container-xs: 25rem;
+  --container-sm: 30rem;
+  --container-md: 35rem;
+  --container-lg: 48rem;
+  --container-xl: 64rem;
+  --container-xxl: 80rem;  /* page container max-width */
+
+  /* Section rhythm: page gutter is a percentage, vertical padding steps up per breakpoint. */
+  --page-gutter: 5%;
+  --section-pad-y: 4rem;       /* 64px  — mobile */
+  --section-pad-y-md: 6rem;    /* 96px  — >=768px */
+  --section-pad-y-lg: 7rem;    /* 112px — >=992px */
+  --section-header-gap: 3rem;      /* mobile mb below a section intro */
+  --section-header-gap-md: 4.5rem; /* 72px, the source's spacing-18 */
+  --section-header-gap-lg: 5rem;   /* 80px */
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-18: 4.5rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  --space-28: 7rem;
+  --space-30: 7.5rem;
+
+  --transition-fast: 200ms ease-in-out; /* @kind other */
+  --transition-accordion: 200ms ease-out; /* @kind other */
+  --transition-fade: 300ms ease-in-out; /* @kind other */
+  --blur-glass: 10px;
+}
