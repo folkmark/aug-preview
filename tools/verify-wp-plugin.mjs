@@ -708,6 +708,23 @@ export async function checks() {
     const kept = JSON.parse(wp('option', 'get', 'augmented_ed_settings', '--format=json')).hubspot_token;
     check('settings: saving with the token field empty keeps the saved token', kept === 'pat-test-0123456789', kept ? 'kept' : 'lost');
     wp('option', 'update', 'augmented_ed_settings', JSON.stringify(settings), '--format=json');
+    // An update with team changes says so: the import's fingerprint of the team data it ran
+    // from no longer matches the version installed.
+    const imp = JSON.parse(wp('option', 'get', 'augmented_ed_import', '--format=json'));
+    wp('option', 'update', 'augmented_ed_import', JSON.stringify({ ...imp, source: 'a-different-version' }), '--format=json');
+    await p.goto(BASE + '/wp-admin/options-general.php?page=augmented-ed', { waitUntil: 'load' });
+    const news = /has team changes the site does not have yet/.test(await p.content());
+    wp('option', 'update', 'augmented_ed_import', JSON.stringify(imp), '--format=json');
+    await p.goto(BASE + '/wp-admin/options-general.php?page=augmented-ed', { waitUntil: 'load' });
+    const quiet = !/has team changes the site does not have yet/.test(await p.content());
+    check('settings: the status panel says when this version has team changes the site lacks, and only then', news && quiet, JSON.stringify({ news, quiet }));
+    // A dry run hands its options back to the Import that follows it.
+    await p.goto(BASE + '/wp-admin/tools.php?page=augmented-ed-team', { waitUntil: 'load' });
+    await p.selectOption('select[name="status"]', 'draft');
+    await p.check('input[name="force"]');
+    await Promise.all([p.waitForNavigation({ waitUntil: 'load' }), p.click('input[name="dry_run"]')]);
+    const kept2 = await p.evaluate(() => ({ status: document.querySelector('select[name="status"]').value, force: document.querySelector('input[name="force"]').checked, said: /as drafts/.test(document.body.innerText) }));
+    check('import: a dry run keeps its options for the Import, and says it will create drafts', kept2.status === 'draft' && kept2.force && kept2.said, JSON.stringify(kept2));
     // The block editor, where the classic editor's notice never showed.
     const home = wp('post', 'list', '--post_type=page', '--meta_key=_wp_page_template', '--meta_value=augmented-ed/home.php', '--field=ID').split('\n')[0];
     await p.goto(`${BASE}/wp-admin/post.php?post=${home}&action=edit`, { waitUntil: 'load' });

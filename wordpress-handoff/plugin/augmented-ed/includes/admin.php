@@ -168,6 +168,14 @@ function augmented_ed_status_panel() {
 	if ( ! $groups ) {
 		$rows[] = array( 'warning', __( 'Team', 'augmented-ed' ), __( 'Not imported yet (Tools → AugmentED team).', 'augmented-ed' ) );
 	} else {
+		// An update can change the team (a new title, a new person) without anyone reading the
+		// changelog, and nothing on the page would say so: the import records a fingerprint of
+		// the team data it ran from, and a different one here means this version has news.
+		$last = get_option( 'augmented_ed_import' );
+		$now  = augmented_ed_data( 'team' ) ? md5( (string) wp_json_encode( augmented_ed_data( 'team' ) ) ) : '';
+		if ( is_array( $last ) && ! empty( $last['source'] ) && $now !== $last['source'] ) {
+			$rows[] = array( 'warning', __( 'Team', 'augmented-ed' ), __( 'This version of the plugin has team changes the site does not have yet. Tools → AugmentED team → Dry run, then Import.', 'augmented-ed' ) );
+		}
 		$counts = augmented_ed_group_counts();
 		foreach ( $groups as $slug => $t ) {
 			$n      = $counts[ $slug ] ?? array( 'shown' => 0, 'archived' => 0 );
@@ -276,10 +284,15 @@ function augmented_ed_tools_page() {
 	echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 	wp_nonce_field( 'augmented_ed_import' );
 	$key = augmented_ed_settings()['title_meta_key'];
+	// After a dry run the form comes back as it was sent, so the Import that follows does what
+	// the dry run showed. It used to come back at its defaults: someone who chose Drafts, ran
+	// a dry run and then clicked Import published everyone.
+	$prev = is_array( $report ) && ! empty( $report['dry_run'] ) ? (array) ( $report['args'] ?? array() ) : array();
+	$prev = array_merge( array( 'status' => 'publish', 'attach' => '', 'overwrite_content' => false, 'force' => false ), $prev );
 	echo '<input type="hidden" name="action" value="augmented_ed_import"><table class="form-table" role="presentation">'
-		. '<tr><th scope="row">' . esc_html__( 'New people are', 'augmented-ed' ) . '</th><td><select name="status"><option value="publish">' . esc_html__( 'Published', 'augmented-ed' ) . '</option><option value="draft">' . esc_html__( 'Drafts', 'augmented-ed' ) . '</option></select></td></tr>'
-		. '<tr><th scope="row">' . esc_html__( 'Attach', 'augmented-ed' ) . '</th><td><input class="regular-text" name="attach" placeholder="slug-one, slug-two"><p class="description">' . esc_html__( 'Only if a dry run reports a slug that already exists and you have checked it is the same person.', 'augmented-ed' ) . '</p></td></tr>'
-		. '<tr><th scope="row">' . esc_html__( 'Options', 'augmented-ed' ) . '</th><td><label><input type="checkbox" name="overwrite_content" value="1"> ' . esc_html__( 'Replace existing posts\' content with the AugmentED bio', 'augmented-ed' ) . '</label><br><label><input type="checkbox" name="force" value="1"> ' . esc_html__( 'Update cards edited in WordPress since the last import', 'augmented-ed' ) . '</label>'
+		. '<tr><th scope="row">' . esc_html__( 'New people are', 'augmented-ed' ) . '</th><td><select name="status"><option value="publish"' . selected( $prev['status'], 'publish', false ) . '>' . esc_html__( 'Published', 'augmented-ed' ) . '</option><option value="draft"' . selected( $prev['status'], 'draft', false ) . '>' . esc_html__( 'Drafts', 'augmented-ed' ) . '</option></select></td></tr>'
+		. '<tr><th scope="row">' . esc_html__( 'Attach', 'augmented-ed' ) . '</th><td><input class="regular-text" name="attach" placeholder="slug-one, slug-two" value="' . esc_attr( $prev['attach'] ) . '"><p class="description">' . esc_html__( 'Only if a dry run reports a slug that already exists and you have checked it is the same person. Separate several with commas.', 'augmented-ed' ) . '</p></td></tr>'
+		. '<tr><th scope="row">' . esc_html__( 'Options', 'augmented-ed' ) . '</th><td><label><input type="checkbox" name="overwrite_content" value="1"' . checked( $prev['overwrite_content'], true, false ) . '> ' . esc_html__( 'Replace existing posts\' content with the AugmentED bio', 'augmented-ed' ) . '</label><br><label><input type="checkbox" name="force" value="1"' . checked( $prev['force'], true, false ) . '> ' . esc_html__( 'Update cards edited in WordPress since the last import', 'augmented-ed' ) . '</label>'
 		. ( $key ? '<br>' . esc_html( sprintf( /* translators: %s: a post meta key. */ __( 'Roles are also written to AERDF\'s "%s" field where it is empty.', 'augmented-ed' ), $key ) ) : '' ) . '</td></tr></table>';
 	submit_button( __( 'Dry run', 'augmented-ed' ), 'secondary', 'dry_run', false );
 	echo ' ';
@@ -288,6 +301,9 @@ function augmented_ed_tools_page() {
 
 	if ( is_array( $report ) ) {
 		echo '<h2>' . esc_html( $report['dry_run'] ? __( 'Dry run — nothing was changed', 'augmented-ed' ) : ( $report['errors'] ? __( 'Nothing imported', 'augmented-ed' ) : __( 'Imported', 'augmented-ed' ) ) ) . '</h2>';
+		if ( $report['dry_run'] && ! $report['errors'] ) {
+			echo '<p>' . esc_html( 'draft' === $prev['status'] ? __( 'Import with the options above will create new people as drafts.', 'augmented-ed' ) : __( 'Import with the options above will create new people published.', 'augmented-ed' ) ) . '</p>';
+		}
 		foreach ( $report['errors'] as $e ) {
 			echo '<div class="notice notice-error inline"><p>' . esc_html( $e ) . '</p></div>';
 		}
@@ -323,6 +339,12 @@ add_action(
 				'title_meta_key'    => augmented_ed_settings()['title_meta_key'],
 				'force'             => ! empty( $_POST['force'] ),
 			)
+		);
+		$report['args'] = array(
+			'status'            => isset( $_POST['status'] ) && 'draft' === $_POST['status'] ? 'draft' : 'publish',
+			'attach'            => implode( ', ', $attach ),
+			'overwrite_content' => ! empty( $_POST['overwrite_content'] ),
+			'force'             => ! empty( $_POST['force'] ),
 		);
 		set_transient( 'augmented_ed_report_' . get_current_user_id(), $report, 600 );
 		wp_safe_redirect( admin_url( 'tools.php?page=augmented-ed-team' ) );

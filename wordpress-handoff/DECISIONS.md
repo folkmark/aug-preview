@@ -19,7 +19,7 @@ working default. Brendan is AugmentED's side of the build: [brendan@folkmark.com
   own, and the redirect stops.
 - Decide whether page 11371 stays (and links to the new pages), is redirected to
   `/augmented/` (a Redirection rule, source `/opportunities/advanced-fellows/augmented/`), or
-  is unpublished.
+  is unpublished. **Until decided:** it stays exactly as it is.
 - `/team/` cannot be the address of Who We Are: it is the archive of AERDF's team post type.
 - The pages link to each other by template, so any address works and can change later.
 

@@ -51,6 +51,15 @@ https://github.com/folkmark/aug-preview/blob/main/wordpress-handoff/START-HERE.m
 * A refused import says "Nothing imported", and its messages name the options as the
   screen labels them. The dry run reports the categories an attach adds.
 * The block editor shows the same "drawn by the AugmentED plugin" notice as the classic one.
+* A dry run keeps its options (status, Attach, the tick boxes) for the Import that follows,
+  and says whether Import will create people published or as drafts.
+* Settings → AugmentED says when an installed version has team changes the site does not
+  have yet, so an update is never left un-imported.
+* "Skip to content" is hidden by clipping until it has focus, so it no longer shows over
+  AERDF's header.
+* Team: Joan Lee is Educational Consultant; Chris Daniels is Finance Advisor, with LinkedIn;
+  Allison Rapoport's, Byungyeon Yun's, Nicolle DeSilva's and Ryan Baker's headshots no longer
+  fade at the edges. Run the import after updating.
 * The bio page's JSON-LD cannot be ended early by a "</script>" in a role or bio, and the
   bio template's variables carry the plugin's prefix.
 

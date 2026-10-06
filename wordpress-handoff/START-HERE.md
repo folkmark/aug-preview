@@ -32,9 +32,11 @@ HubSpot form. Publishing (step 6) needs all three.
 
 - Administrator access to WordPress on WP Engine **staging** and **production**, and to the
   WP Engine User Portal (for backups and caches).
-- The zip, `augmented-ed-plugin.zip`, from Brendan, with its SHA-256. Install only a zip he
-  sends: the repository's CI also builds zips from unmerged changes, and every one of them
-  reports the same version.
+- The zip, `augmented-ed-plugin.zip`, from Brendan, with its SHA-256. Check it before
+  installing: `shasum -a 256 augmented-ed-plugin.zip` (macOS, Linux) or
+  `certutil -hashfile augmented-ed-plugin.zip SHA256` (Windows) must print the same value.
+  Install only a zip he sends: the repository's CI also builds zips from unmerged changes,
+  and every one of them reports the same version.
 - WordPress 6.5 or later and PHP 8.0 or later. The plugin is tested on both of those floors
   and on WordPress 7.1 with PHP 8.4.
 
@@ -56,10 +58,11 @@ Plugins → **Add Plugin** ("Add New Plugin" in older WordPress) → **Upload Pl
 Check the Plugins screen says **AugmentED 1.1.1**.
 
 The zip is about 22 MB, because it carries every image and animation frame the pages use. If
-WordPress answers "The link you followed has expired.", the zip is over PHP's upload limit
-(the Upload Plugin screen shows the "Maximum upload file size"). Then unzip it and copy the
-`augmented-ed/` folder into `wp-content/plugins/` over SFTP and activate it on the Plugins
-screen, or run `wp plugin install augmented-ed-plugin.zip --activate`.
+WordPress answers "The link you followed has expired." or "The uploaded file exceeds the
+upload_max_filesize directive in php.ini.", the zip is over PHP's upload limit (Media → Add
+New shows the "Maximum upload file size"). Then unzip it and copy the `augmented-ed/` folder
+into `wp-content/plugins/` over SFTP and activate it on the Plugins screen, or copy the zip to
+the server and run `wp plugin install /path/to/augmented-ed-plugin.zip --activate`.
 
 ### 2. Create the pages
 
@@ -68,8 +71,9 @@ Tools → **AugmentED team** → **Create the pages as drafts**.
 That makes five draft pages, each with its AugmentED template — "AugmentED" at
 `/augmented/`, and The Challenge, Our Approach, Who We Are and Follow Our Work under it —
 with their Yoast titles and descriptions filled in. Rename, move or re-parent them as you
-like: the pages link to each other by template, never by address. Drafts have no public
-address, so nothing changes on the site yet.
+like: the pages link to each other by template, never by address. (Once they are published,
+an address you change needs a redirect from the old one, in Redirection.) Drafts have no
+public address, so nothing changes on the site yet.
 
 Or do it by hand: give any page one of the five "AugmentED —" templates (block editor: the
 Page panel → Template; classic editor: Page Attributes → Template). Each template must be
@@ -122,15 +126,24 @@ Settings → AugmentED → **AERDF's job-title field** can have the import write
 roles into it, where it is empty, so the AugmentED people's AERDF pages show their titles.
 The Who We Are page shows AugmentED's roles either way.
 
-To find the field: in Elementor → Templates → Theme Builder, open the single template for
-team members and look at the job-title widget's dynamic tag; or in ACF → Field Groups, open
-the group shown on Team and read the field's **Name**. **If you are not sure, leave it at
-"(none)".** Pick it before step 5; if the team is already imported, pick it and run the
+The dropdown lists the meta keys already used on team posts. To tell which one is the job
+title: in Elementor → Templates → Theme Builder, open the single template for team members
+and look at the job-title widget's dynamic tag; or open the field group shown on Team (in
+ACF → Field Groups, or JetEngine's meta boxes) and read the field's **Name**. **If you are not
+sure, leave it at "(none)".** Pick it before step 5; if the team is already imported, pick it and run the
 import again, which then fills the field where it is empty.
 
 ### 5. Import the team
 
-Tools → **AugmentED team** → **Dry run**. Expect:
+**On production, import straight before you publish (step 6).** "New people are" defaults
+to **Published**, so the people are live as soon as the import runs: Leadership's bio pages,
+the team sitemap and `/category/augmented-team/` appear, while the AugmentED pages they link
+to are still drafts. On staging that does not matter. On production, either do steps 5 and
+6 in one sitting, or set **New people are → Drafts** and publish them in step 6.
+
+Tools → **AugmentED team** → **Dry run**. The options you set are kept for the Import that
+follows, and the dry run says whether Import will create people published or as drafts.
+Expect:
 
 - **6 categories** to create: "AugmentED Team" and one child per Who We Are group —
   Leadership, Strategy, Research Partners, Education Fellows, Technology and Design Partners;
@@ -144,22 +157,15 @@ Tools → **AugmentED team** → **Dry run**. Expect:
 If the dry run stops with "Nothing was changed. These slugs already belong to team posts
 that are not AugmentED's: …", check each one:
 
-- **The same person** already on aerdf.org: type their slug under **Attach** and run the dry
-  run again.
+- **The same person** already on aerdf.org: type their slug under **Attach** (several
+  separated by commas) and run the dry run again.
 - **A different person** with the same name: do not attach them. Email Brendan the slug; the
-  import cannot skip one person, so he will send a build that names them differently.
+  import cannot skip one person, so he will send a build that names them differently. Do not
+  publish the pages meanwhile: without the import, Who We Are shows empty groups.
 
 Then **Import**. Running it again later changes only what changed; it never deletes anything
 and never overwrites edits made in WordPress (unless you tick "Update cards edited in
 WordPress since the last import").
-
-**On production, import straight before you publish (step 6).** "New people are" defaults
-to **Published**, so the people are live as soon as the import runs: Leadership's bio pages,
-the team sitemap and `/category/augmented-team/` appear, while the AugmentED pages they link
-to are still drafts. On staging that does not matter. On production, either do steps 5 and
-6 in one sitting, or set **New people are → Drafts** and publish them in step 6 (Team →
-filter by the "AugmentED Team" category → select all → Bulk actions → Edit → Status:
-Published).
 
 Each person is an ordinary team post you can edit. The **AugmentED card** box on the edit
 screen holds what the Who We Are grid shows (role, a Fellow's school and city, links, the
@@ -177,11 +183,15 @@ editor has ticked alone.
 1. Preview the five drafts.
 2. **Check nothing else claims `/augmented/`.** Today WordPress itself redirects it to the
    existing AugmentED page, and publishing a page there ends that. A rule in Tools →
-   Redirection, or in the WP Engine User Portal's redirect rules, would not be replaced: it
-   would keep sending visitors away from the new page. Remove any such rule.
+   Redirection, in Yoast's redirects (Yoast SEO Premium), or in the WP Engine User Portal's
+   redirect rules would not be replaced: it would keep sending visitors away from the new
+   page. Remove any such rule.
 3. Apply the decision about the existing AugmentED page, `/opportunities/advanced-fellows/augmented/`
    ([DECISIONS.md](DECISIONS.md)).
-4. Publish the five pages (and the team, if you imported them as drafts).
+4. Publish the five pages. If you imported the team as drafts, publish them too: Team →
+   Screen Options (top right) → Number of items per page: 100, so all of them are on one
+   page → filter by the "AugmentED Team" category → select all → Bulk actions → Edit →
+   Status: Published.
 5. Purge the caches: in wp-admin, **WP Engine → Caching → Clear all caches**, and
    Cloudflare's too if it caches pages.
 6. Add AugmentED to AERDF's own navigation if that has been decided
@@ -190,13 +200,20 @@ editor has ticked alone.
 ### 7. Check it
 
 Check each item **logged out in a private window** (which is what visitors get, through the
-caches), then logged in; with the cookie banner both accepted and declined; and with the
-AccessiBe widget on.
+caches), then logged in. With the cookie banner accepted and then declined, and with the
+AccessiBe widget open, nothing should cover AugmentED's bar, its menu or the form, and the
+form should still send.
+
+The reference site is the AugmentED site as it stands on `main`, and the zip Brendan sends is
+built from the same commit (`generated/build.json` in the plugin names it). Expected
+differences: AERDF's header and footer in place of AugmentED's, and on phones the bar's menu
+button carries the word "Menu" ([DECISIONS.md](DECISIONS.md)).
 
 - [ ] The five pages match [the reference site](https://augmented2.folkmark.com) below
       AERDF's header, at 360, 768, 1440 and 1920 px wide.
-- [ ] The home page's hero plays when scrolled, and its copy is whole when the hero first
-      reaches the bar; the closing blocks fall; clicking a step of the cycle wheel travels to it.
+- [ ] The home page's hero plays when scrolled, and its copy is fully visible, not yet
+      fading, when the hero first reaches AugmentED's bar; the closing blocks fall; clicking a
+      step of the cycle wheel travels to it.
 - [ ] Who We Are shows 35 headshots in colour and 1 placeholder in five groups; each
       "Read bio" (Leadership's five only) opens that person's page.
 - [ ] A member without a bio (e.g. `/team/tom-peterson/`) goes to Who We Are.
@@ -205,7 +222,11 @@ AccessiBe widget on.
 - [ ] Sherry Lachman's and Caitlin Mills's AERDF pages are unchanged, apart from a Yoast
       meta description where theirs was empty.
 - [ ] The Follow form's test submission reaches HubSpot, and a real one from the page does.
-- [ ] AERDF's header, footer and every other page look exactly as before.
+- [ ] AERDF's header, footer and every other page look exactly as before. The one expected
+      change: the `/team/` archive and search now list the AugmentED people too
+      ([DECISIONS.md](DECISIONS.md)).
+- [ ] Nothing shows over AERDF's header until you press Tab: the first Tab on an AugmentED
+      page shows "Skip to content" in AugmentED's bar.
 - [ ] Settings → AugmentED shows every line of its status panel as done, and
       `wp augmented-ed team status` (WP-CLI) lists one published page per template and the
       team in five groups.
@@ -217,10 +238,11 @@ who checked it.
 
 - **Don't open the AugmentED pages in Elementor**, or pick an Elementor layout for them. The
   plugin draws the whole page; an Elementor layout replaces it. The edit screen says so, in
-  both editors.
-- **Don't duplicate an AugmentED page** (Duplicate Post's "Clone" or "New Draft"). The copy
-  has the same template, and the pages' links go to the oldest of the two. The status panel
-  warns when a template is doubled.
+  both editors. If someone does open one, the page still draws correctly; "Back to WordPress
+  Editor" on its edit screen switches it back.
+- **Don't duplicate an AugmentED page** (Duplicate Post's "Clone", "New Draft" or "Rewrite &
+  Republish"). The copy has the same template, and the pages' links go to the oldest of the
+  two. The status panel warns when a template is doubled.
 - **Don't upload any of the plugin's images to the media library**, or point an image or
   asset optimiser (EWWW, Smush, ShortPixel, Cloudflare Polish, WP Engine's Page Speed Boost)
   at the plugin's folder. The animations address their frames by exact filename.
@@ -234,8 +256,9 @@ who checked it.
 2. Upload the new zip the same way; WordPress shows the installed and uploaded versions side
    by side and offers **Replace current with uploaded**.
 3. Check the Plugins screen shows the new version.
-4. Re-run the import only if the version's changelog (the plugin's `readme.txt`) says the
-   team changed.
+4. Open Settings → AugmentED. If its status panel says the version has team changes, run the
+   import: Tools → AugmentED team → Dry run, then Import. (The changelog, `readme.txt` inside
+   the zip, says what else changed.)
 5. Purge the caches.
 
 Keep every zip you are sent: the previous one is how you roll an update back.
@@ -252,11 +275,17 @@ the content of these team posts by hand: `alexandra-wiggins`, `andrew-lan`,
 
 - **A bad update:** upload the previous zip. **Replace current with uploaded** works for an
   older version too.
-- **Taking AugmentED off the site:** set the five pages to Draft, then the AugmentED Team
-  posts (Team → filter by "AugmentED Team"; leave Sherry Lachman's and Caitlin Mills's
-  alone, which are AERDF's own), then deactivate the plugin. Deactivating alone is not
-  enough: the pages stay published and draw as empty theme pages, and the people's pages
-  stop redirecting.
+- **Taking AugmentED off the site:** set the five pages to Draft (the ones Settings →
+  AugmentED's status panel lists; the existing AugmentED page under Opportunities, also
+  titled "AugmentED", is not one of them), then the AugmentED Team posts (Team → Screen
+  Options → 100 per page → filter by "AugmentED Team" → select all; leave Sherry Lachman's
+  and Caitlin Mills's alone, which are AERDF's own), then deactivate the plugin.
+  Deactivating alone is not enough: the pages stay published and draw as empty theme pages,
+  and the people's pages stop redirecting.
+  - What stays: the six AugmentED categories (so `/category/augmented-team/` still answers)
+    and, on Sherry's and Caitlin's posts, the AugmentED categories, card fields and any
+    Yoast description the import filled. Delete the six categories (Posts → Categories) to
+    take those away too; a later import recreates them.
 - **Anything else:** restore the backup point (WP Engine User Portal → Backups). That
   restores the whole site to that moment, AERDF's own changes since included.
 
