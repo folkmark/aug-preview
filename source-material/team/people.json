@@ -461,9 +461,10 @@
         "from": "form",
         "ref": "https://drive.google.com/open?id=1MiZwORsglGY-d42vXSG4xD0Ry9GLrpdr",
         "approved": false,
-        "upscale": 1.21,
-        "edgesExtended": "left 1%, right 1%",
-        "notes": "The form upload as submitted (28 Jul). A passport-style photo, cut across the chest and 18% in from both shoulders. The framing enlarges it 1.20x with the eye line 6% lower, so it reaches the bottom of the tile (THE REACH in tools/cutout-headshots.py); reaching the sides would take more than its limit, so they still fade. The crown sits 3% below the tile's top rather than 4%, the eye line having been lowered as far as it may go (THE HEADROOM in tools/cutout-headshots.py). Its EXIF block, which carried a GPS position, was removed on 6 October 2026; the image data is untouched."
+        "upscale": 0.95,
+        "edgesExtended": "bottom 3%",
+        "notes": "The form upload as submitted (28 Jul). A passport-style photo, cut across the chest and 18% in from both shoulders. The framing enlarges it 1.20x with the eye line 6% lower, so it reaches the bottom of the tile (THE REACH in tools/cutout-headshots.py); reaching the sides would take more than its limit, so they still fade. The crown sits 3% below the tile's top rather than 4%, the eye line having been lowered as far as it may go (THE HEADROOM in tools/cutout-headshots.py). Its EXIF block, which carried a GPS position, was removed on 6 October 2026; the image data is untouched.",
+        "edgesFaded": "left 12%, right 12%"
       },
       "form": {
         "submitted": "2026-07-28 23:08:32",
@@ -477,12 +478,13 @@
       },
       "notes": null,
       "actions": [
-        "[joan] Optional: a looser headshot that shows the shoulders. The passport photo is cut 18% in from both sides, so the tile is enlarged 1.54x to avoid a fade; a looser photo would return it to the shared framing."
+        "[joan] Ask for a looser headshot that shows the shoulders: the passport photo is cut 18% in from both sides, so the tile fades there. (Enlarging it to hide the fade was tried and looked wrong.)"
       ],
       "history": [
         "2026-09-24 status: — → on_site (32a0c09)",
         "2026-09-25 title: — → Graduate Student, University of Minnesota (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)",
-        "2026-10-06 headshot: sides no longer fade; face enlarged 1.54x and eye line 18% lower, past the shared limit, by the client's choice (THE EXCEPTIONS in tools/cutout-headshots.py) (Brendan)"
+        "2026-10-06 headshot: sides no longer fade; face enlarged 1.54x and eye line 18% lower, past the shared limit, by the client's choice (THE EXCEPTIONS in tools/cutout-headshots.py) (Brendan)",
+        "2026-10-06 headshot: enlargement undone (it read as a giant close-up); back to the shared framing, sides fading (Brendan)"
       ]
     },
     {

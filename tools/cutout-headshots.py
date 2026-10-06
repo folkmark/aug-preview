@@ -142,24 +142,25 @@ Where it landed in September 2026:
 Andrew's crown stops about 3% below the top rather than 4%: the reach and the headroom
 between them use the whole of REACH_DROP, and the report says so.
 
-THE EXCEPTIONS are three photographs too tight for any of this, each enlarged past the limit
+THE EXCEPTIONS are two photographs too tight for any of this, each enlarged past the limit
 because the client chose a larger face over a fade (October 2026), with the trade shown on a
 sheet beside a normally framed tile:
-- Byungyeon's passport photo cuts the shoulders 18% in from both sides: 1.54x, with the eye
-  line 18% lower so the tile does not cut off his hair.
 - Nicolle's selfie cuts through her hair at the left, which THE CROP clears at 1.35x.
 - Ryan's is cut at the hairline and across the chest: 1.55x. A 1.29x framing that grounded
   him by stretching reached his jaw, which is not a trade this makes on someone's face;
   enlarging stretches nothing. (Filling the tile this way was declined once, before the
   fades were weighed against it.)
-Each is listed in ENLARGED, and a looser photograph makes its entry unnecessary.
+Each is listed in ENLARGED, and a looser photograph makes its entry unnecessary. Byungyeon's
+passport photo cuts the shoulders 18% in from both sides and was enlarged the same way, 1.54x;
+in a passport photo that read as a giant close-up, so it was taken back out, and his sides
+fade. His crown stops about 3% below the top rather than 4%, as Andrew's does.
 
 THE EDGE FADE is what is left: wherever a photograph's own edge still cuts through the
 person, the figure fades to nothing over EDGE_FADE as it approaches that cut. The fade is
 measured from the cut itself — the stretch of the border the matte actually touches — not
 from the whole edge, so a photo cut at the shoulder does not also fade the cheek above it.
 Before the stretch and the reach, nine photos faded like this, and they looked different
-from everyone else. Since October 2026 none does: Allison's is cropped, and Byungyeon's,
+from everyone else. Since October 2026 only Byungyeon's sides do: Allison's is cropped, and
 Nicolle's and Ryan's are THE EXCEPTIONS. Before that, two shared fades were tried to hide
 the fading few, and both went:
 - A single vignette tuned so every one of those cuts fell where it had already faded
@@ -215,10 +216,11 @@ HEADROOM = 0.04   # THE HEADROOM: the least room between the crown and the tile'
 # 6 October 2026), because the fade these photographs otherwise need was judged worse than a
 # face larger than everyone else's. Each replaces REACH_ZOOM, and REACH_DROP where given,
 # for that person, and the reach and the headroom still take the least that removes the fade
-# and keeps the crown in. Byungyeon's needs the lower eye line too: enlarged 1.54x with it
-# held at 6%, the tile cut 8% off the top of his hair. Remove an entry when a looser
-# photograph arrives: it will not need it.
-ENLARGED = {'byungyeon-yun': {'zoom': 1.6, 'drop': 0.2}, 'nicolle-desilva': {'zoom': 1.4}, 'ryan-baker': {'zoom': 1.6}}
+# and keeps the crown in. Remove an entry when a looser photograph arrives: it will not need
+# it. Byungyeon's was one for an hour: enlarged 1.54x with the eye line 18% lower so the tile
+# kept his hair, his passport photo became a giant close-up the client called ridiculous, and
+# the fade at his sides was the lesser evil.
+ENLARGED = {'nicolle-desilva': {'zoom': 1.4}, 'ryan-baker': {'zoom': 1.6}}
 
 
 def pictured():
