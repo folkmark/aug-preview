@@ -19,14 +19,13 @@ const AUGMENTED_ED_PROTECTED_HANDLES = array(
 	'augmented-ed-hero-bridge',
 	'augmented-ed-falling-blocks',
 	'augmented-ed-cycle-wheel',
-	'augmented-ed-team-colour',
 	'augmented-ed-follow',
 );
 
 /** Which component scripts each template uses. */
 const AUGMENTED_ED_COMPONENTS = array(
 	'home'   => array( 'hero-bridge', 'falling-blocks', 'cycle-wheel' ),
-	'team'   => array( 'team-colour' ),
+	'team'   => array(),
 	'follow' => array(),
 );
 

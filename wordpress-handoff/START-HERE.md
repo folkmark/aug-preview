@@ -131,8 +131,8 @@ Logged out and logged in, and with the AccessiBe widget on:
       AERDF's header, at 360, 768, 1440 and 1920 px wide.
 - [ ] The home page's hero plays when scrolled, and its copy is whole when the hero first
       reaches the bar; the closing blocks fall; clicking a step of the cycle wheel travels to it.
-- [ ] Who We Are shows 30 headshots and 2 placeholders in four groups; with a mouse, a
-      headshot blooms into colour; each "Read bio" opens that person's page.
+- [ ] Who We Are shows 34 headshots in colour and 1 placeholder in five groups; each
+      "Read bio" (Leadership only) opens that person's page.
 - [ ] A member without a bio (e.g. `/team/tom-peterson/`) goes to Who We Are.
 - [ ] Ticking **Archived** on a member's AugmentED card takes their tile off Who We Are and
       sends their page to Who We Are; unticking it brings them back.
@@ -146,7 +146,7 @@ Logged out and logged in, and with the AccessiBe widget on:
 WordPress with a stand-in AERDF theme (and AERDF's real stylesheets), follows the steps
 above, and checks every page against the site it was generated from — layout, computed
 styles and pixels at four widths — plus the components, the offsets logged in and out, the
-reveal, the menu, the colour bloom, the form end to end through the relay, the bio pages and
+reveal, the menu, the headshots, the form end to end through the relay, the bio pages and
 redirects, and that nothing reaches AERDF's header or footer. With `--live` it renders the
 plugin's pages inside real aerdf.org pages. The plugin's own README (`plugin/augmented-ed/`)
 and [README.md](README.md) explain how it is built.

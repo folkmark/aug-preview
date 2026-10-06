@@ -2,7 +2,12 @@
   "groups": [
     {
       "key": "leadership",
-      "name": "Leadership"
+      "name": "Leadership",
+      "bios": true
+    },
+    {
+      "key": "strategy",
+      "name": "Strategy"
     },
     {
       "key": "research-partners",
@@ -216,13 +221,13 @@
       "linkedin": null,
       "website": "https://learninganalytics.upenn.edu/ryanbaker/",
       "photo": {
-        "master": "ryan-baker.png",
-        "from": "tracker",
-        "ref": "Website Bio tracking sheet, Headshots column",
+        "master": "ryan-baker.jpg",
+        "from": "institution",
+        "ref": "researchers.adelaide.edu.au /sites/default/files/profile-images/37136.jpeg (540x540)",
         "approved": false,
-        "upscale": 1.72,
-        "edgesFaded": "bottom 23%, left 13%, top 6%",
-        "notes": "His only public portrait is 190x213, enlarged 1.7x, so this is one of the two soft tiles until a better original arrives. The photo stops at his hairline, and his is the only top edge the cut-out fades. Too tight for THE REACH in tools/cutout-headshots.py: grounding him within its limits would stretch his chin, so the tile is left as it was."
+        "upscale": 0.61,
+        "edgesFaded": "bottom 27%, left 13%, top 10%",
+        "notes": "His Adelaide University researcher profile, the file behind its 860x860 \"profile_large\" rendition (which is an upscale of this). The same shoot as the 190x213 he had before, cropped tighter at the hair and the chest but with his face at about three times the pixels. The file carries less detail than its size: halving it loses almost nothing, so it was itself enlarged or smoothed somewhere. It still fades at the bottom, the left and the top, like the copy before it: every public copy found (his own page, Adelaide, UTS, IIIT) is this crop, so a looser original is the only fix. Kept under the shared framing rather than filling the tile, by Brendan, 6 October 2026."
       },
       "bioSource": {
         "from": "tracker",
@@ -231,10 +236,11 @@
       "form": null,
       "notes": null,
       "actions": [
-        "[joan] Send a larger or looser photo; the current one stops inside the tile and fades where it ends."
+        "[joan] Ask Ryan for a looser headshot that shows his shoulders: his photo is cropped at the hair and chest, so his tile still fades (Sherry asked for the fade fixed, 6 October)."
       ],
       "history": [
-        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/ryan-baker/ (6008fab)"
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/ryan-baker/ (6008fab)",
+        "2026-10-06 headshot: 190x213 from the Bio tracking sheet → 540x540 from his Adelaide University profile (fixing the fade, Sherry's request)"
       ]
     },
     {
@@ -457,7 +463,7 @@
         "upscale": 0.95,
         "edgesFaded": "left 12%, right 12%",
         "edgesExtended": "bottom 3%",
-        "notes": "The form upload as submitted (28 Jul). A passport-style photo, cut across the chest and 18% in from both shoulders. The framing enlarges it 1.20x with the eye line 6% lower, so it reaches the bottom of the tile (THE REACH in tools/cutout-headshots.py); reaching the sides would take more than its limit, so they still fade. The crown sits 3% below the tile's top rather than 4%, the eye line having been lowered as far as it may go (THE HEADROOM in tools/cutout-headshots.py)."
+        "notes": "The form upload as submitted (28 Jul). A passport-style photo, cut across the chest and 18% in from both shoulders. The framing enlarges it 1.20x with the eye line 6% lower, so it reaches the bottom of the tile (THE REACH in tools/cutout-headshots.py); reaching the sides would take more than its limit, so they still fade. The crown sits 3% below the tile's top rather than 4%, the eye line having been lowered as far as it may go (THE HEADROOM in tools/cutout-headshots.py). Its EXIF block, which carried a GPS position, was removed on 6 October 2026; the image data is untouched."
       },
       "form": {
         "submitted": "2026-07-28 23:08:32",
@@ -471,7 +477,7 @@
       },
       "notes": null,
       "actions": [
-        "[joan] Optional: a looser photo; the shoulders are cut in the original, so the sides of the tile still fade."
+        "[joan] Ask for a looser headshot that shows the shoulders: the passport photo is cut 18% in from both sides, so the tile fades there."
       ],
       "history": [
         "2026-09-24 status: — → on_site (32a0c09)",
@@ -939,7 +945,7 @@
         "ref": "Website Bio tracking sheet, Headshots column",
         "approved": false,
         "upscale": 0.3,
-        "notes": "Her form upload is this file, byte for byte."
+        "notes": "Her form upload is this file, byte for byte. Its EXIF block, which carried a GPS position, was removed on 6 October 2026; the image data is untouched."
       },
       "form": {
         "submitted": "2026-07-28 18:10:46",
@@ -1075,7 +1081,7 @@
       "group": "research-partners",
       "order": 10,
       "tags": [],
-      "role": null,
+      "role": "Ground Truth Coding Consultant",
       "affiliation": null,
       "location": null,
       "linkedin": "https://www.linkedin.com/in/katie-quinton-butler-1a9187125/",
@@ -1100,11 +1106,10 @@
         "detail": "927×1800, usable; used since her group was confirmed on 2026-09-25"
       },
       "notes": "Submitted the website info form. Group confirmed by Brendan on 25 September 2026; no title yet, so the tile shows none.",
-      "actions": [
-        "[joan] Send a title and organisation."
-      ],
+      "actions": [],
       "history": [
-        "2026-09-25 status: held → on_site; group: — → research-partners, confirmed by Brendan (daf7a21)"
+        "2026-09-25 status: held → on_site; group: — → research-partners, confirmed by Brendan (daf7a21)",
+        "2026-10-06 role: — → Ground Truth Coding Consultant (Joan Lee, Slack, 6 October 2026)"
       ]
     },
     {
@@ -1114,7 +1119,7 @@
       "group": "technology-and-design-partners",
       "order": 8,
       "tags": [],
-      "role": null,
+      "role": "Engineering Consultant",
       "affiliation": null,
       "location": null,
       "linkedin": "https://www.linkedin.com/in/tom-keefe/",
@@ -1138,12 +1143,11 @@
         "detail": "Headshot replaced by Joan Lee on 2026-09-25 (1187x1240, usable); the first upload was a 237x222 screenshot"
       },
       "notes": "Submitted the website info form. Group confirmed by Brendan on 25 September 2026; no title yet, so the tile shows none.",
-      "actions": [
-        "[joan] Send a title and organisation."
-      ],
+      "actions": [],
       "history": [
         "2026-09-25 headshot: 237x222 screenshot → 1187x1240 photo, replaced in the form by Joan Lee",
-        "2026-09-25 status: held → on_site; group: — → technology-and-design-partners, confirmed by Brendan (daf7a21)"
+        "2026-09-25 status: held → on_site; group: — → technology-and-design-partners, confirmed by Brendan (daf7a21)",
+        "2026-10-06 role: — → Engineering Consultant (Joan Lee, Slack, 6 October 2026)"
       ]
     },
     {
@@ -1153,7 +1157,7 @@
       "group": "technology-and-design-partners",
       "order": 9,
       "tags": [],
-      "role": null,
+      "role": "Engineering Consultant",
       "affiliation": null,
       "location": null,
       "linkedin": "https://www.linkedin.com/in/allison-rapoport",
@@ -1179,10 +1183,11 @@
       },
       "notes": "Submitted the website info form. Group confirmed by Brendan on 25 September 2026; no title yet, so the tile shows none.",
       "actions": [
-        "[joan] Send a title and organisation."
+        "[joan] Optional: a headshot without a neighbour at the left edge; the matte keeps their hair joined to hers, so that edge fades."
       ],
       "history": [
-        "2026-09-25 status: held → on_site; group: — → technology-and-design-partners, confirmed by Brendan (daf7a21)"
+        "2026-09-25 status: held → on_site; group: — → technology-and-design-partners, confirmed by Brendan (daf7a21)",
+        "2026-10-06 role: — → Engineering Consultant (Joan Lee, Slack, 6 October 2026)"
       ]
     },
     {
@@ -1395,19 +1400,21 @@
       "id": 39,
       "slug": "ann-marie-guzzi",
       "name": "Ann Marie Guzzi",
-      "group": null,
-      "order": null,
+      "group": "strategy",
+      "order": 2,
       "tags": [],
-      "role": null,
+      "role": "Strategy Advisor",
       "affiliation": null,
       "location": null,
       "linkedin": "https://www.linkedin.com/in/amguzzi/",
       "website": "https://www.annmarieguzzi.com/",
       "photo": {
-        "drive": "15IfhZLAQkpypdJMDdsRGfY9UzreDfBG0",
+        "master": "ann-marie-guzzi.jpg",
         "from": "form",
         "ref": "https://drive.google.com/open?id=15IfhZLAQkpypdJMDdsRGfY9UzreDfBG0",
-        "notes": "A 9.7 MB JPEG (\"rooftop headshot (1)\"), not yet inspected: too large for the Drive connector this session used. Not committed until a group is confirmed: this repository is public."
+        "approved": false,
+        "upscale": 0.34,
+        "notes": "Sent through the website info form on 29 September 2026 as a 6240x4160, 9.7 MB camera original (\"rooftop headshot (1)\"). Committed resized to 2560x1707, metadata dropped and colour profile kept: the tile ships at 512, and the cut-out framing needs about a third of that."
       },
       "form": {
         "submitted": "2026-09-29 16:07:10",
@@ -1416,32 +1423,36 @@
         "other": "https://www.annmarieguzzi.com/",
         "headshot": "15IfhZLAQkpypdJMDdsRGfY9UzreDfBG0",
         "group": null,
-        "outcome": "held",
-        "detail": "9.7 MB JPEG, not inspected; person held until group and title are confirmed"
+        "outcome": "used",
+        "detail": "6240x4160 camera original; used since her group was set on 2026-10-06"
       },
-      "notes": "Submitted the website info form; group and title not yet confirmed (held by Brendan on 6 October 2026).",
-      "actions": [
-        "[joan] Confirm group and title, then add to the page (photo is in the form)."
-      ],
-      "history": []
+      "notes": "Owns the website info form (Dalmatian Ops).",
+      "actions": [],
+      "history": [
+        "2026-10-06 status: held → on_site; group: — → strategy; role: — → Strategy Advisor (Joan Lee, Slack, 6 October 2026)"
+      ]
     },
     {
       "id": 40,
       "slug": "nicolle-desilva",
       "name": "Nicolle DeSilva",
-      "group": null,
-      "order": null,
+      "group": "research-partners",
+      "order": 11,
       "tags": [],
-      "role": null,
+      "role": "Community Engagement Coordinator, University of Pittsburgh",
       "affiliation": null,
       "location": null,
       "linkedin": "https://www.linkedin.com/in/nicolle-desilva-457669b3/",
       "website": null,
       "photo": {
-        "drive": "1SijERZGU6rLMEXGHA9VFlsFLePCFa_ja",
+        "master": "nicolle-desilva.jpg",
         "from": "form",
         "ref": "https://drive.google.com/open?id=1SijERZGU6rLMEXGHA9VFlsFLePCFa_ja",
-        "notes": "1775x2360, usable: a selfie (\"staff selfie\") against a bright window. Not committed until a group is confirmed: this repository is public."
+        "approved": false,
+        "upscale": 0.26,
+        "edgesFaded": "left 6%",
+        "edgesExtended": "right 3%",
+        "notes": "Sent through the website info form on 30 September 2026: a 1775x2360 phone selfie (\"staff selfie\") against a bright window. Committed with its EXIF block removed (it carried the phone's GPS position); the image data is untouched. Enlarged 1.18x and lowered 4% (THE REACH) to ground it; her hair meets the selfie's left edge above the chin, so that edge fades."
       },
       "form": {
         "submitted": "2026-09-30 12:40:23",
@@ -1450,32 +1461,34 @@
         "other": "n/a",
         "headshot": "1SijERZGU6rLMEXGHA9VFlsFLePCFa_ja",
         "group": null,
-        "outcome": "held",
-        "detail": "1775x2360 selfie, usable; person held until group and title are confirmed"
+        "outcome": "used",
+        "detail": "1775x2360 selfie; used since her group was set on 2026-10-06"
       },
-      "notes": "Submitted the website info form; group and title not yet confirmed (held by Brendan on 6 October 2026). The form files her as \"Nicolle Desilva\"; her name field says \"Nicolle DeSilva\", which is kept.",
-      "actions": [
-        "[joan] Confirm group and title, then add to the page (photo is in the form)."
-      ],
-      "history": []
+      "notes": "The form files her as \"Nicolle Desilva\"; her name field says \"Nicolle DeSilva\", which is kept. Title as Joan gave it (\"University of Pittsburgh Community Engagement Coordinator\"), in the Research Partners' \"Title, Organisation\" order (decided by Brendan, 2026-10-06).",
+      "actions": [],
+      "history": [
+        "2026-10-06 status: held → on_site; group: — → research-partners; role: — → Community Engagement Coordinator, University of Pittsburgh (Joan Lee, Slack, 6 October 2026)"
+      ]
     },
     {
       "id": 41,
       "slug": "jake-maguire",
       "name": "Jake Maguire",
-      "group": null,
-      "order": null,
+      "group": "strategy",
+      "order": 1,
       "tags": [],
-      "role": null,
+      "role": "Senior Advisor",
       "affiliation": null,
       "location": null,
       "linkedin": "https://www.linkedin.com/in/jakemaguire",
       "website": null,
       "photo": {
-        "drive": "1TvG_1BNNwAn5k0TEXqcXtkl3dpxf1uAt",
+        "master": "jake-maguire.jpg",
         "from": "form",
         "ref": "https://drive.google.com/open?id=1TvG_1BNNwAn5k0TEXqcXtkl3dpxf1uAt",
-        "notes": "933x1400, usable: a studio portrait (\"Rcht WEB Jacob Maguire8351\"), arms crossed on a chair back. Not committed until a group is confirmed: this repository is public."
+        "approved": false,
+        "upscale": 0.61,
+        "notes": "Sent through the website info form by Joan Lee on 30 September 2026, as received: a 933x1400 studio portrait (\"Rcht WEB Jacob Maguire8351\")."
       },
       "form": {
         "submitted": "2026-09-30 19:08:33",
@@ -1484,14 +1497,14 @@
         "other": null,
         "headshot": "1TvG_1BNNwAn5k0TEXqcXtkl3dpxf1uAt",
         "group": null,
-        "outcome": "held",
-        "detail": "933x1400 studio portrait, usable, submitted by Joan Lee; person held until group and title are confirmed"
+        "outcome": "used",
+        "detail": "933x1400 studio portrait, submitted by Joan Lee; used since his group was set on 2026-10-06"
       },
-      "notes": "Submitted the website info form; group and title not yet confirmed (held by Brendan on 6 October 2026). Submitted by Joan Lee; the file is named \"Jacob Maguire\", the form says \"Jake Maguire\", which is kept.",
-      "actions": [
-        "[joan] Confirm group and title, then add to the page (photo is in the form)."
-      ],
-      "history": []
+      "notes": "Submitted by Joan Lee; the file is named \"Jacob Maguire\", the form says \"Jake Maguire\", which is kept.",
+      "actions": [],
+      "history": [
+        "2026-10-06 status: held → on_site; group: — → strategy; role: — → Senior Advisor (Joan Lee, Slack, 6 October 2026)"
+      ]
     }
   ]
 }

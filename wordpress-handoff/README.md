@@ -261,10 +261,9 @@ components' JavaScript and CSS are hand-written.
 | `assets/approach/ap*.webp` + `manifest.json` | Approach sequence: 122 frames × 2 cuts. | **Parked, not published.** Do not deploy unless the scrub is mounted again. See [The Approach scrub](#the-approach-scrub-approach-scrub). Filenames are load-bearing. |
 | `assets/approach/cyc0*.webp` | The four cycle-wheel node icons, 320 px square with alpha. | Used by the home page wheel. Not part of the sequence; the manifest does not track them. |
 | `assets/cycle-wheel.js` / `.css` | The `<cycle-wheel>` component. | See [The cycle wheel](#the-cycle-wheel-cycle-wheel). |
-| `assets/team-colour.js` / `.css` | The headshots' colour bloom on Who We Are. Not an element: it finds the team cards from the document and lays each photo's colour twin over it on hover. | Mouse and trackpad only; phones never fetch the twins. See [Headshots](sections/leadership.md#headshots) for what it needs of the markup. |
 | `assets/approach.js` / `.css` | The `<approach-scrub>` component. | **Parked, not published.** Do not deploy unless mounted again. See [The Approach scrub](#the-approach-scrub-approach-scrub). |
 | `assets/images/`, `assets/icons/`, `assets/logo/` | Photography, marks. | Plain images. The seven portrait photos ship in two widths picked by `srcset`. |
-| `assets/team/`, `assets/team/colour/` | Headshots, 512 × 512, finished: each person cut out, framed identically (same face height, same eye line) and composited in a navy duotone onto `#e9eef4`. The folder holds exactly the people pictured on the page (the build fails otherwise), and `colour/` holds the same people in their own colour, which the hover reveals. | Use as-is — no CSS filter, no `object-position`, nothing behind them. **They ship as the plugin's own files, never through the media library**: the bloom recognises a headshot by `assets/team/` in its `src` and builds the colour URL from it by string replacement, so a renamed or WP-Stateless URL silently turns the hover off. A team post's "Bundled headshot" names one; a person added in WordPress without one shows their featured image, without the bloom. A person without a photo gets an empty square in the same `#e9eef4` (`--color-st-tropaz-lightest`). See [Headshots](sections/leadership.md#headshots). |
+| `assets/team/` | Headshots, 512 × 512, finished: each person cut out, framed identically (same face height, same eye line) and composited in their own colour onto `#e9eef4`. The folder holds exactly the people pictured on the page (the build fails otherwise). | Use as-is — no CSS filter, no `object-position`, nothing behind them. They ship as the plugin's own files, not through the media library, so the framing survives untouched. A team post's "Bundled headshot" names one; a person added in WordPress without one shows their featured image. A person without a photo gets an empty square in the same `#e9eef4` (`--color-st-tropaz-lightest`). Until October 2026 the tiles were a duotone with a colour twin in `assets/team/colour/` and a hover script, `assets/team-colour.js`; both are gone. See [Headshots](sections/leadership.md#headshots). |
 | `assets/illustrations/{brain,blocks,laptop}.webp` | The three home-page illustrations, 810 × 810 with alpha. | See the note below. |
 
 **The illustrations are framed plates; do not crop them.** Each carries its own
@@ -292,7 +291,7 @@ still image, the cycle wheel to its reading column, which is real text either
 way.
 
 **The plugin installs all three mounted components**: it enqueues their scripts on the home
-page (and the bloom on Who We Are), points each `base` at its frames in the plugin, and
+page, points each `base` at its frames in the plugin, and
 supplies the host properties below from the measured offsets. The "To install it" steps in
 each section say what that involves, for anyone porting a component somewhere else.
 
@@ -321,7 +320,7 @@ cannot run.
 - **Enqueue with `filemtime()` versions and `'strategy' => 'defer'`.** The
   scripts are defer-safe and order-independent.
   The plugin's `includes/assets.php` does this for the three
-  mounted components and the headshots' colour bloom, gates everything to the
+  mounted components, gates everything to the
   AugmentED pages and the team members' bio pages, and adds the
   optimizer opt-out attributes from
   [Protect the components from optimization plugins](#protect-the-components-from-optimization-plugins).
@@ -790,14 +789,18 @@ active.
 
 **Who We Are and the bio pages** (full criteria in [`sections/leadership.md`](sections/leadership.md)):
 
-- [ ] 30 headshots and 2 placeholder squares in `#e9eef4`, in the four groups and the
-      order of `content/team.json`; the people without a title show no empty line.
-- [ ] With a mouse, a headshot's colour blooms in from the pointer and drains on
-      leaving; on a phone or tablet nothing blooms and no `assets/team/colour/` file is
-      requested.
-- [ ] The 21 "Read bio" tiles each open `/team/<slug>/`: an AugmentED bio page for the
-      19 who are only in AugmentED, AERDF's own page for Sherry Lachman and Caitlin Mills.
-- [ ] The 11 without a bio redirect to Who We Are.
+- [ ] 34 headshots in colour and 1 placeholder square in `#e9eef4`, in the five groups
+      (Leadership, Strategy, Research Partners, Education Fellows, Technology and Design
+      Partners) and the order of `content/team.json`; the people without a title show no
+      empty line.
+- [ ] Hovering a headshot only darkens it slightly; nothing else loads.
+- [ ] Only Leadership's 5 tiles say "Read bio", and each opens `/team/<slug>/`: an
+      AugmentED bio page for Raquel Romano, Jenny Bradbury and Abby (Csaba) Petre, AERDF's
+      own page for Sherry Lachman and Caitlin Mills.
+- [ ] The 30 others have no link, and their `/team/<slug>/` redirects to Who We Are. A
+      site that imported the team before October 2026 holds bios for 16 of them as post
+      content, which still draws a "Read bio": clear those posts' content (the import never
+      empties a post).
 
 **Site-wide:**
 
@@ -823,7 +826,7 @@ repository and print the restore path they need if you run them without it.
 | `node tools/encode-falling-blocks.mjs` | Re-encodes the CTA frames and manifest. Tiers: `WIDTHS` in the script. |
 | `node tools/encode-approach.mjs` | Re-encodes the parked Approach frames and manifest. Sequence: `OPEN` / `BEATS` / `STRIDE` in the script. |
 | `python3 tools/cutout-headshots.py [--only=<slug>]` | Cuts a headshot out of its photo and frames it; writes `source-material/image-sources/team-cutout/`. Needs a 973 MB model that is not committed — the script's header says where to get it. Only for a new or replaced photo. |
-| `node tools/encode-images.mjs` | Re-encodes photography and headshots from committed sources, including the headshots' duotone and their colour twins. |
+| `node tools/encode-images.mjs` | Re-encodes photography and headshots from committed sources. |
 | `node tools/encode-fonts.mjs` | Converts the design system's Avenir OTFs to the committed WOFF2. Needs `npm i --no-save wawoff2`. Only if the font files change. |
 | `node tools/build-wp-plugin.mjs` | Regenerates the plugin's `generated/` from `pages/`, `content/` and the bios. Run it after every export, and commit the result; CI fails if you do not. Needs `npm i --no-save linkedom postcss postcss-selector-parser` (versions in its header). `--assemble dist [--zip]` builds the installable plugin. |
 | `node tools/verify-wp-plugin.mjs [--live]` | Installs the assembled plugin into a fresh local WordPress (PHP 8, SQLite, a stand-in AERDF theme) and checks it end to end; `--live` also renders it inside real aerdf.org pages. Reports to `.wp-verify/report/`. |

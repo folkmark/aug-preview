@@ -14,7 +14,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { readRoster, surfaces, hasPhoto, hasBio, statusOf } from './lib/team.mjs';
+import { readRoster, surfaces, hasPhoto, hasBio, linksBio, statusOf } from './lib/team.mjs';
 
 const root = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
 const out = process.argv[2];
@@ -36,8 +36,8 @@ const SOURCE = { tracker: 'tracker_sheet', form: 'form_upload' };
 const COLUMNS = ['person_id', 'slug', 'full_name', 'group_name', 'sort_order', 'title', 'organisation', 'location', 'status', 'tags',
   'status_since', 'status_commit', 'open_actions', 'notes', 'linkedin_url', 'linkedin_on_site', 'website_url', 'website_on_site',
   'headshot_status', 'headshot_approved', 'headshot_source', 'headshot_source_ref', 'headshot_master_path', 'headshot_master_width_px',
-  'headshot_master_height_px', 'headshot_upscale', 'headshot_edges_faded', 'headshot_edges_extended', 'headshot_duotone_url',
-  'headshot_colour_url', 'headshot_notes', 'bio_published', 'bio_page_url', 'bio_source', 'bio_tracker_approved', 'bio_word_count',
+  'headshot_master_height_px', 'headshot_upscale', 'headshot_edges_faded', 'headshot_edges_extended', 'headshot_url',
+  'headshot_notes', 'bio_published', 'bio_page_url', 'bio_source', 'bio_tracker_approved', 'bio_word_count',
   'bio_text', 'form_submitted_at', 'form_name_as_submitted', 'form_linkedin_url', 'form_other_profile', 'form_headshot_drive_id',
   'form_group_note', 'form_outcome', 'form_outcome_detail', 'history'];
 
@@ -72,10 +72,9 @@ for (const p of people) {
     headshot_master_path: ph.master ? `source-material/image-sources/team/${ph.master}` : '',
     headshot_master_width_px: w, headshot_master_height_px: h,
     headshot_upscale: ph.upscale ?? '', headshot_edges_faded: ph.edgesFaded || '', headshot_edges_extended: ph.edgesExtended || '',
-    headshot_duotone_url: shown ? `${origin}/assets/team/${p.slug}.webp` : '',
-    headshot_colour_url: shown ? `${origin}/assets/team/colour/${p.slug}.webp` : '',
+    headshot_url: shown ? `${origin}/assets/team/${p.slug}.webp` : '',
     headshot_notes: ph.notes || '',
-    bio_published: bio ? bool(on) : '', bio_page_url: bio && on ? `${origin}/team/${p.slug}/` : '',
+    bio_published: bio ? bool(on && linksBio(root, roster, p)) : '', bio_page_url: bio && on && linksBio(root, roster, p) ? `${origin}/team/${p.slug}/` : '',
     bio_source: p.bioSource?.from || '', bio_tracker_approved: bool(p.bioSource?.trackerApproved),
     bio_word_count: bio ? bio.split(/\s+/).length : '', bio_text: bio,
     form_submitted_at: p.form?.submitted || '', form_name_as_submitted: p.form?.name || '', form_linkedin_url: p.form?.linkedin || '',

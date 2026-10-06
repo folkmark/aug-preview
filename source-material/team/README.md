@@ -12,7 +12,7 @@ A person appears on the page if and only if they have a `group` **and** are not 
 
 | Status | `group` | `tags` | What happens |
 |---|---|---|---|
-| On the page | a group key | — | A tile in that group, in `order`. Their photograph is cut out, encoded and published; their bio (if `source-material/bios/<slug>.md` exists) is built at `/team/<slug>/`. |
+| On the page | a group key | — | A tile in that group, in `order`. Their photograph is cut out, encoded and published; their bio (if `source-material/bios/<slug>.md` exists, and their group is marked `"bios": true`, which only Leadership is) is built at `/team/<slug>/` and linked as "Read bio". |
 | Held | `null` | — | Nothing is published. Used for someone who has sent their details but whose group is not confirmed yet. |
 | Archived | kept | `["Archived"]` | Nothing is published. They keep their group and everything else, so bringing them back is removing the tag. In WordPress the import marks their post Archived instead of deleting it. |
 

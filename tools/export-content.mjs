@@ -22,7 +22,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { readRoster, surfaced, hasPhoto, hasBio } from './lib/team.mjs';
+import { readRoster, surfaced, hasPhoto, linksBio } from './lib/team.mjs';
 
 const root = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
 const PAGES_DIR = path.join(root, 'wordpress-handoff/pages');
@@ -140,7 +140,7 @@ onPage.forEach((r, i) => {
   const want = {
     slug: r.slug, name: r.name, group: groupName.get(r.group), role: r.role, affiliation: r.affiliation,
     location: r.location, photo: hasPhoto(r) ? `assets/team/${r.slug}.webp` : null,
-    bio: hasBio(root, r.slug) ? r.slug : null,
+    bio: linksBio(root, roster, r) ? r.slug : null,
     links: [r.linkedin && { label: 'LinkedIn', url: r.linkedin }, r.website && { label: 'Website', url: r.website }].filter(Boolean),
   };
   const got = { ...t, bio: t.bioUrl?.match(/\/team\/([a-z0-9-]+)\/$/)?.[1] ?? null };
@@ -149,11 +149,10 @@ onPage.forEach((r, i) => {
   }
 });
 
-// A role line is no longer on every card. In September five people were added from the
+// A role line is not guaranteed on every card. In September people were added from the
 // website info form before anyone had given their titles, and the client chose to show
-// them without. Abby (Csaba) Petre's arrived on the 25th (Head of Engineering); Aarav
-// Kalkar, Byungyeon Yun, Stephen Hutt and Sonia Prusaitis still carry `role: null` until
-// theirs do.
+// them without; the last of those titles arrived on 6 October 2026, so today every card
+// has one, but the next person from the form may again arrive without.
 //
 // Not simply dropped, though: every card used to be asserted to have one, and that check is
 // what would catch the role <p> changing shape and every role in the export silently going

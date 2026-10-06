@@ -355,10 +355,10 @@ person out of their photograph with a matting model and frames everyone on the p
 same face height, the same eye line, the shoulders running off the tile, with bounded
 adjustments for a photo cropped too tight for that — and writes 768px cut-outs to
 `source-material/image-sources/team-cutout/`, which are committed. `encode-images.mjs`
-reads those and writes each person twice — the navy duotone the page shows, and a colour
-twin in `assets/team/colour/` that pours in under the cursor on hover (`assets/team-colour.js`)
-— so re-encoding the headshots or changing their
-colours runs from a clean checkout like the rest. Only a new or replaced photograph needs
+reads those and lays each person, in their own colour, on the tiles' light blue — so
+re-encoding the headshots or changing their look runs from a clean checkout like the rest.
+(From September to October 2026 the tiles were a navy duotone with the colour photograph
+blooming in under the cursor; the client asked for colour at rest, and both went.) Only a new or replaced photograph needs
 the cut-out step, and that needs Python and a 973 MB model that is not in the repository;
 the script's header says where to get both.
 

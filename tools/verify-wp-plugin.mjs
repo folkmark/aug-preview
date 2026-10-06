@@ -9,7 +9,7 @@
 //   - every page against the exported page it was generated from, pixel for pixel;
 //   - the team grid against the exported grid, element for element;
 //   - the components booting, pinning under the program bar, and loading their frames from
-//     the plugin; the offsets logged in and out; the reveal; the menu; the colour bloom;
+//     the plugin; the offsets logged in and out; the reveal; the menu; the headshots;
 //   - the Follow form end to end, through the plugin's relay to a stand-in HubSpot;
 //   - the bio pages, the bio-less redirects, AERDF's own team pages left alone;
 //   - and that none of it leaks: AERDF's header and footer compute the same with the
@@ -264,7 +264,7 @@ const results = [];
 const check = (name, ok, detail = '') => { results.push({ name, ok: !!ok, detail }); console.log(`${ok ? 'ok  ' : 'FAIL'} ${name}${detail ? ' — ' + detail : ''}`); };
 
 const PAGES = [['home', '/augmented/', 'home.html'], ['challenge', '/augmented/challenge/', 'challenge.html'], ['approach', '/augmented/approach/', 'approach.html'], ['team', '/augmented/team/', 'team.html'], ['follow', '/augmented/follow/', 'follow.html']];
-const COMPONENT_JS = /\/assets\/(hero-bridge|falling-blocks|cycle-wheel|team-colour)\.js/;
+const COMPONENT_JS = /\/assets\/(hero-bridge|falling-blocks|cycle-wheel)\.js/;
 const STILL = '[data-reveal]{opacity:1!important;transition:none!important;animation:none!important}';
 
 function findChromium() {
@@ -510,28 +510,32 @@ export async function checks() {
     await c.close();
   }
 
-  // 7. The colour bloom: on a mouse, and never on touch.
+  // 7. The headshots: the plugin's own files, drawn, and nothing else fetched for them on
+  // a mouse or on touch. Until October 2026 this checked the colour bloom, a second file
+  // per person fetched under the mouse; the tiles are the colour photograph at rest now,
+  // and a request for the old twins or their script would be a stale plugin.
   {
     const c = await newCtx();
     const p = await c.newPage();
-    const colour = [];
-    p.on('request', (r) => { if (r.url().includes('/assets/team/colour/')) colour.push(r.url()); });
+    const stale = [];
+    const watch = (pg) => pg.on('request', (r) => { if (/\/assets\/team\/colour\/|team-colour\.js/.test(r.url())) stale.push(r.url()); });
+    watch(p);
     await p.goto(BASE + '/augmented/team/', { waitUntil: 'load' });
     const tile = p.locator('.team-grid-3 img[src*="assets/team/"]').first();
     await tile.scrollIntoViewIfNeeded(); await p.waitForTimeout(300);
     const box = await tile.boundingBox();
     await p.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 5 });
     await p.waitForTimeout(800);
-    const bloom = await p.evaluate(() => !!document.querySelector('[data-team-colour]'));
-    check('bloom: a headshot blooms under the mouse, from the plugin', bloom && colour.length > 0 && colour[0].includes('/wp-content/plugins/augmented-ed/'), `${colour.length} colour requests`);
+    const shot = await tile.evaluate((i) => ({ src: i.currentSrc, w: i.naturalWidth }));
+    const srcs = await p.evaluate(() => [...document.querySelectorAll('.team-grid-3 img[src*="assets/team/"]')].map((i) => i.getAttribute('src')));
+    check('team: every headshot is the plugin\'s own file, and one draws at 512', shot.w === 512 && srcs.length > 0 && srcs.every((s) => s.includes('/wp-content/plugins/augmented-ed/assets/team/')), `${JSON.stringify(shot)}, ${srcs.length} tiles`);
     await c.close();
     const t = await newCtx({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } });
     const q = await t.newPage();
-    const touchColour = [];
-    q.on('request', (r) => { if (r.url().includes('/assets/team/colour/')) touchColour.push(r.url()); });
+    watch(q);
     await q.goto(BASE + '/augmented/team/', { waitUntil: 'load' });
     await q.waitForTimeout(800);
-    check('bloom: no colour images on a touch screen', touchColour.length === 0, `${touchColour.length}`);
+    check('team: no colour twins or bloom script requested, on a mouse or on touch', stale.length === 0, stale.slice(0, 3).join(', '));
     // Team grid vs export, element for element, with URLs normalised.
     const norm = `(() => [...document.querySelectorAll('.team-grid-3 > div')].map((t) => t.outerHTML
       .replace(/https?:\\/\\/[^"]*?\\/assets\\//g, 'A/').replace(/\\.\\.\\/\\.\\.\\/assets\\//g, 'A/')
@@ -612,11 +616,11 @@ export async function checks() {
   {
     const c = await newCtx();
     const p = await c.newPage();
-    await p.goto(BASE + '/team/andrew-lan/', { waitUntil: 'load' });
+    await p.goto(BASE + '/team/raquel-romano/', { waitUntil: 'load' });
     const bio = await p.evaluate(() => ({ tpl: document.querySelector('[data-aug-template]')?.dataset.augTemplate, h1: document.querySelector('.bio h1')?.textContent, portrait: document.querySelector('.bio-portrait')?.src, back: document.querySelector('.bio-back a')?.href, paras: document.querySelectorAll('.bio-body p').length, links: document.querySelectorAll('.bio-links a').length, schema: [...document.querySelectorAll('script[type="application/ld+json"]')].map((s) => s.textContent).join(' ') }));
-    check('bio: an AugmentED-only member gets the AugmentED bio page', bio.tpl === 'bio' && bio.h1 === 'Andrew Lan' && /augmented-ed\/assets\/team\/andrew-lan\.webp/.test(bio.portrait || '') && /\/augmented\/team\/$/.test(bio.back || '') && bio.paras > 0, JSON.stringify({ ...bio, schema: undefined }));
+    check('bio: an AugmentED-only member gets the AugmentED bio page', bio.tpl === 'bio' && bio.h1 === 'Raquel Romano' && /augmented-ed\/assets\/team\/raquel-romano\.webp/.test(bio.portrait || '') && /\/augmented\/team\/$/.test(bio.back || '') && bio.paras > 0, JSON.stringify({ ...bio, schema: undefined }));
     check('bio: Yoast marks it a ProfilePage about a Person', /ProfilePage/.test(bio.schema) && /"Person"/.test(bio.schema));
-    await p.screenshot({ path: path.join(REPORT, 'bio-andrew-lan-1440.png') });
+    await p.screenshot({ path: path.join(REPORT, 'bio-raquel-romano-1440.png') });
     await p.goto(BASE + '/team/sherry-lachman/', { waitUntil: 'load' });
     check('bio: Sherry, also AERDF leadership, keeps AERDF\'s own template and text', await p.locator('[data-aerdf-stub="team-single"]').count() === 1 && /must not replace/.test(await p.textContent('body')));
     const r = await p.request.get(BASE + '/team/tom-peterson/', { maxRedirects: 0 });
@@ -626,13 +630,14 @@ export async function checks() {
     const gone = await p.request.get(BASE + `/team/${TEAM.archived[0].slug}/`, { maxRedirects: 0 });
     check('archived: an archived member\'s page redirects (302) to Who We Are, bio and all', gone.status() === 302 && /\/augmented\/team\/$/.test(gone.headers().location || ''), `${gone.status()} ${gone.headers().location}`);
     const sm = await (await p.request.get(BASE + '/team-sitemap.xml')).text();
-    check('sitemap: the members without a bio are left out', sm.includes('/team/andrew-lan/') && !sm.includes('/team/tom-peterson/'), sm.length ? '' : 'no sitemap');
+    check('sitemap: the members without a bio are left out', sm.includes('/team/raquel-romano/') && !sm.includes('/team/tom-peterson/'), sm.length ? '' : 'no sitemap');
     check('sitemap: archived members are left out', !sm.includes(`/team/${TEAM.archived[0].slug}/`));
     await c.close();
   }
 
   // 10. Archiving from WordPress: the Archived box in the AugmentED card, ticked and unticked
-  // by hand, as an AERDF editor would. Andrew Lan, because he has a bio, so the redirect is
+  // by hand, as an AERDF editor would. Raquel Romano, because she has a bio (since October
+  // 2026 only Leadership does, and Sherry and Caitlin keep AERDF's pages), so the redirect is
   // a real change and not the one every member without a bio already gets.
   {
     const c = await newCtx();
@@ -640,7 +645,7 @@ export async function checks() {
     await p.goto(BASE + '/wp-login.php');
     await p.fill('#user_login', 'admin'); await p.fill('#user_pass', 'admin'); await p.click('#wp-submit');
     await p.waitForLoadState('load');
-    const id = wp('post', 'list', '--post_type=team', '--name=andrew-lan', '--field=ID');
+    const id = wp('post', 'list', '--post_type=team', '--name=raquel-romano', '--field=ID');
     const tileCount = async () => { await p.goto(BASE + '/augmented/team/', { waitUntil: 'load' }); return p.evaluate(() => document.querySelectorAll('.team-grid-3 > div').length); };
     const setArchived = async (on) => {
       await p.goto(`${BASE}/wp-admin/post.php?post=${id}&action=edit`, { waitUntil: 'load' });
@@ -649,11 +654,11 @@ export async function checks() {
     };
     await setArchived(true);
     const offTiles = await tileCount();
-    const offBio = await p.request.get(BASE + '/team/andrew-lan/', { maxRedirects: 0 });
+    const offBio = await p.request.get(BASE + '/team/raquel-romano/', { maxRedirects: 0 });
     const offDry = wp('augmented-ed', 'team', 'import', '--dry-run');
     check('archived in WordPress: ticking Archived takes the tile off Who We Are', offTiles === E.people - 1, `${offTiles} tiles`);
     check('archived in WordPress: their bio page redirects (302) to Who We Are', offBio.status() === 302, `${offBio.status()}`);
-    check('archived in WordPress: the import leaves an editor\'s Archived alone', /andrew-lan\s+skipped/.test(offDry), offDry.split('\n').find((l) => l.includes('andrew-lan')) || '');
+    check('archived in WordPress: the import leaves an editor\'s Archived alone', /raquel-romano\s+skipped/.test(offDry), offDry.split('\n').find((l) => l.includes('raquel-romano')) || '');
     await setArchived(false);
     const onTiles = await tileCount();
     const onDry = countsOf(wp('augmented-ed', 'team', 'import', '--dry-run'));
@@ -697,7 +702,7 @@ export async function matrix() {
       sameCounts(m.arch || {}, { unchanged: E.people, archive: 1, absent: E.archived - 1 }) && sameCounts(m.arch2 || {}, { unchanged: E.people, archived: 1, absent: E.archived - 1 }) && (await get(`/team/${m.archived_slug}/`)).status === 302,
       JSON.stringify({ arch: m.arch, arch2: m.arch2 }));
     const pages = {};
-    for (const [u, want] of [['/augmented/', 'home'], ['/augmented/challenge/', 'challenge'], ['/augmented/approach/', 'approach'], ['/augmented/team/', 'team'], ['/augmented/follow/', 'follow'], ['/team/andrew-lan/', 'bio']]) {
+    for (const [u, want] of [['/augmented/', 'home'], ['/augmented/challenge/', 'challenge'], ['/augmented/approach/', 'approach'], ['/augmented/team/', 'team'], ['/augmented/follow/', 'follow'], ['/team/raquel-romano/', 'bio']]) {
       const r = await get(u);
       pages[u] = r.status === 200 && r.body.includes(`data-aug-template="${want}"`) && !/Fatal error/.test(r.body);
     }

@@ -107,8 +107,8 @@ working default.
 - **Default:** WordPress. Edits there are kept: the import skips any card edited since.
 - If the repository stays the source instead, re-run the import after each change (with
   Force for cards also edited in WordPress).
-- A person added in WordPress without a bundled headshot shows their featured image (without
-  the colour bloom), or a placeholder square.
+- A person added in WordPress without a bundled headshot shows their featured image, or a
+  placeholder square.
 
 ### Required fields on the form — AugmentED
 

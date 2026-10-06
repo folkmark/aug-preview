@@ -26,12 +26,15 @@ affiliation and location (a Fellow's school and city) are not repeated here: the
 reads them off the card, the same way it reads their LinkedIn and website, so the card
 stays the one place those are written.
 
-**A page is built only for someone on the page.** Every bio here belongs to someone in the
-team roster, `source-material/team/people.json` (the build fails on one that does not), and
-the roster decides who appears: a person with a group who is not tagged `Archived` gets a
-tile, and a tile gets a "Read bio" link when their file exists here. Everyone else's bio is
-kept and not built — the build lists them as "bios kept, not built" — so it is here with
-all their other details the day they come back. That is also why a bio can be written
+**A page is built only for someone on the page, in Leadership.** Every bio here belongs to
+someone in the team roster, `source-material/team/people.json` (the build fails on one that
+does not), and the roster decides who appears: a person with a group who is not tagged
+`Archived` gets a tile, and a tile gets a "Read bio" link when their file exists here and
+their group is marked `"bios": true` in the roster's `groups`. Only Leadership is: until
+October 2026 every bio here was linked, 21 of 32 tiles, and the client asked for Leadership
+alone. Everyone else's bio is kept and not built — the build lists them as "bios kept, not
+built" — so it is here with all their other details the day they come back, or the day
+another group is marked. That is also why a bio can be written
 ahead of someone being announced: until the roster gives them a group, nothing publishes.
 
 Blank lines separate paragraphs. There is no Markdown parser here: bold, links and lists
