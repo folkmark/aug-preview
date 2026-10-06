@@ -194,7 +194,7 @@ expect(
 
 // ---------------------------------------------------------------------------
 // Research — the "Recent Research" cards on the home page: title, description,
-// and the outbound link on the card's Read-more button. A paper with no public URL
+// and the outbound link on the card's "Open link" button. A paper with no public URL
 // yet carries the word "Forthcoming" where the link would be, and exports with
 // url: null, so a consumer can tell "not published" from "parse failed".
 // ---------------------------------------------------------------------------
