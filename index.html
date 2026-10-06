@@ -102,11 +102,13 @@
   .team-grid-3 img, .team-grid-3 > div > div:first-child { margin-bottom: var(--space-4) !important; }
   .team-grid-3 a[aria-label] { width: var(--icon-size); height: var(--icon-size); align-items: center; justify-content: center; flex: 0 0 auto; }
   .team-grid-3 a[aria-label] > * { width: var(--icon-size) !important; height: var(--icon-size) !important; min-width: var(--icon-size) !important; min-height: var(--icon-size) !important; font-size: var(--icon-size) !important; line-height: var(--icon-size) !important; display: block !important; margin: 0 !important; }
-  /* THE BIO TILES. Every card whose person has a bio (21 of them, in all four groups)
-     links to a page of their own at /team/<slug>/, and the whole tile is that link:
+  /* THE BIO TILES. Every card whose person has a bio and whose group shows bios — only
+     Leadership's five, by the roster (linksBio in tools/lib/team.mjs; 21 tiles across
+     four groups until October 2026) — links to a page of their own at /team/<slug>/, and
+     the whole tile is that link:
      photo, name, role and the space between them. One link per person, one tab stop, a target the size of the card.
 
-     The link is the design system's link button, the same "Read more ›" the papers and
+     The link is the design system's link button, the same "Open link ›" the papers and
      every "Learn more ›" on the site use. It was a bare semibold "Read bio" in body ink
      with no underline and no glyph, the only text link on the site that was not the
      system's, and at 64x16 it read as a caption rather than something to click.
@@ -120,7 +122,7 @@
      Raquel's LinkedIn icon is lifted above it, or the overlay would swallow the click.
 
      THE NAME IN THE LINK is a .visually-hidden span, so a screen reader hears "Read bio
-     of Sherry Lachman" instead of four identical "Read bio"s. Not an aria-label: the
+     of Sherry Lachman" instead of five identical "Read bio"s. Not an aria-label: the
      rules just above style every .team-grid-3 a[aria-label] as a 24px icon box (44px on
      a coarse pointer), and an aria-label here would shrink the link into one.
 
@@ -1356,6 +1358,10 @@
               <a href="https://www.linkedin.com/in/amguzzi/" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex"><img src="assets/icons/linkedin.svg" alt="" style="width:var(--icon-size);height:var(--icon-size);display:block" width="24" height="24" decoding="async" loading="lazy"></a>
               <a href="https://www.annmarieguzzi.com/" target="_blank" rel="noopener" aria-label="Website" style="display:flex"><x-import component-from-global-scope="AugmentEDDesignSystem_191b99.Icon" name="language"></x-import></a>
             </div>
+          </div>
+          <div data-reveal="" style="opacity:0;transition:opacity var(--transition-fade)">
+            <img src="assets/team/chris-daniels.webp" alt="Chris Daniels" style="aspect-ratio:1/1;width:100%;object-fit:cover;object-position:50% 50%;border-radius:var(--radius-image);margin-bottom:var(--space-6);display:block" width="512" height="512" decoding="async" loading="lazy">
+            <h3 style="font-size:var(--text-h5);line-height:var(--text-h5-line-height);letter-spacing:var(--heading-letter-spacing);font-weight:var(--font-weight-bold);margin:0 0 var(--space-2)">Chris Daniels</h3>
           </div>
         <!-- /team tiles: strategy --></div>
       </div>
