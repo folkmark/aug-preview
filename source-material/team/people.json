@@ -570,19 +570,34 @@
       "location": "San Diego, CA",
       "linkedin": null,
       "website": "https://www.hightechhigh.org/staff/chris-mutter/",
-      "photo": null,
+      "photo": {
+        "master": "chris-mutter.jpg",
+        "from": "form",
+        "ref": "https://drive.google.com/open?id=1uWQC7bUlY5fxN6AQt1v-3uyqrMl2X0ce",
+        "approved": false,
+        "upscale": 1.06,
+        "notes": "Sent through the website info form by Joan Lee on 25 September 2026, as received: 707x624 (\"Chris Mutter Headshot\"). Already toned almost to black and white (mean saturation 22/255), so the colour version on hover stays grey. Enlarged 1.06x at the tile size, which does not show."
+      },
       "bioSource": {
         "from": "tracker",
         "trackerApproved": null
       },
-      "form": null,
-      "notes": null,
+      "form": {
+        "submitted": "2026-09-25 16:59:10",
+        "name": "Chris Mutter",
+        "linkedin": "n/a",
+        "headshot": "1uWQC7bUlY5fxN6AQt1v-3uyqrMl2X0ce",
+        "outcome": "used",
+        "detail": "707x624, near black and white, submitted by Joan Lee"
+      },
+      "notes": "The form (filled in by Joan Lee) gives LinkedIn as \"n/a\"; the tile keeps the High Tech High staff page as the website.",
       "actions": [
-        "[client] Send a headshot (client is chasing it).",
-        "[joan] Sign off the published bio (the tracker's fellows tab has no Approved column)."
+        "[joan] Sign off the published bio (the tracker's fellows tab has no Approved column).",
+        "[joan] Optional: a colour original, so the hover shows colour like everyone else."
       ],
       "history": [
-        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/chris-mutter/ (6008fab)"
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/chris-mutter/ (6008fab)",
+        "2026-10-06 headshot: placeholder → form upload (5f7a382)"
       ]
     },
     {
@@ -1375,6 +1390,108 @@
         "2026-09-18 status: on_site → removed (50d516f)",
         "2026-09-25 status: removed → tagged Archived; the roster keeps everyone and the tag keeps them off the page (d4b4525)"
       ]
+    },
+    {
+      "id": 39,
+      "slug": "ann-marie-guzzi",
+      "name": "Ann Marie Guzzi",
+      "group": null,
+      "order": null,
+      "tags": [],
+      "role": null,
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/amguzzi/",
+      "website": "https://www.annmarieguzzi.com/",
+      "photo": {
+        "drive": "15IfhZLAQkpypdJMDdsRGfY9UzreDfBG0",
+        "from": "form",
+        "ref": "https://drive.google.com/open?id=15IfhZLAQkpypdJMDdsRGfY9UzreDfBG0",
+        "notes": "A 9.7 MB JPEG (\"rooftop headshot (1)\"), not yet inspected: too large for the Drive connector this session used. Not committed until a group is confirmed: this repository is public."
+      },
+      "form": {
+        "submitted": "2026-09-29 16:07:10",
+        "name": "Ann Marie Guzzi",
+        "linkedin": "https://www.linkedin.com/in/amguzzi/",
+        "other": "https://www.annmarieguzzi.com/",
+        "headshot": "15IfhZLAQkpypdJMDdsRGfY9UzreDfBG0",
+        "group": null,
+        "outcome": "held",
+        "detail": "9.7 MB JPEG, not inspected; person held until group and title are confirmed"
+      },
+      "notes": "Submitted the website info form; group and title not yet confirmed (held by Brendan on 6 October 2026).",
+      "actions": [
+        "[joan] Confirm group and title, then add to the page (photo is in the form)."
+      ],
+      "history": []
+    },
+    {
+      "id": 40,
+      "slug": "nicolle-desilva",
+      "name": "Nicolle DeSilva",
+      "group": null,
+      "order": null,
+      "tags": [],
+      "role": null,
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/nicolle-desilva-457669b3/",
+      "website": null,
+      "photo": {
+        "drive": "1SijERZGU6rLMEXGHA9VFlsFLePCFa_ja",
+        "from": "form",
+        "ref": "https://drive.google.com/open?id=1SijERZGU6rLMEXGHA9VFlsFLePCFa_ja",
+        "notes": "1775x2360, usable: a selfie (\"staff selfie\") against a bright window. Not committed until a group is confirmed: this repository is public."
+      },
+      "form": {
+        "submitted": "2026-09-30 12:40:23",
+        "name": "Nicolle DeSilva",
+        "linkedin": "https://www.linkedin.com/in/nicolle-desilva-457669b3/?isSelfProfile=false",
+        "other": "n/a",
+        "headshot": "1SijERZGU6rLMEXGHA9VFlsFLePCFa_ja",
+        "group": null,
+        "outcome": "held",
+        "detail": "1775x2360 selfie, usable; person held until group and title are confirmed"
+      },
+      "notes": "Submitted the website info form; group and title not yet confirmed (held by Brendan on 6 October 2026). The form files her as \"Nicolle Desilva\"; her name field says \"Nicolle DeSilva\", which is kept.",
+      "actions": [
+        "[joan] Confirm group and title, then add to the page (photo is in the form)."
+      ],
+      "history": []
+    },
+    {
+      "id": 41,
+      "slug": "jake-maguire",
+      "name": "Jake Maguire",
+      "group": null,
+      "order": null,
+      "tags": [],
+      "role": null,
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/jakemaguire",
+      "website": null,
+      "photo": {
+        "drive": "1TvG_1BNNwAn5k0TEXqcXtkl3dpxf1uAt",
+        "from": "form",
+        "ref": "https://drive.google.com/open?id=1TvG_1BNNwAn5k0TEXqcXtkl3dpxf1uAt",
+        "notes": "933x1400, usable: a studio portrait (\"Rcht WEB Jacob Maguire8351\"), arms crossed on a chair back. Not committed until a group is confirmed: this repository is public."
+      },
+      "form": {
+        "submitted": "2026-09-30 19:08:33",
+        "name": "Jake Maguire",
+        "linkedin": "https://www.linkedin.com/in/jakemaguire",
+        "other": null,
+        "headshot": "1TvG_1BNNwAn5k0TEXqcXtkl3dpxf1uAt",
+        "group": null,
+        "outcome": "held",
+        "detail": "933x1400 studio portrait, usable, submitted by Joan Lee; person held until group and title are confirmed"
+      },
+      "notes": "Submitted the website info form; group and title not yet confirmed (held by Brendan on 6 October 2026). Submitted by Joan Lee; the file is named \"Jacob Maguire\", the form says \"Jake Maguire\", which is kept.",
+      "actions": [
+        "[joan] Confirm group and title, then add to the page (photo is in the form)."
+      ],
+      "history": []
     }
   ]
 }
