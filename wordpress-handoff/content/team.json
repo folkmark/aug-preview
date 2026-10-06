@@ -120,6 +120,17 @@
     ]
   },
   {
+    "slug": "chris-daniels",
+    "name": "Chris Daniels",
+    "group": "Strategy",
+    "role": null,
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/chris-daniels.webp",
+    "bioUrl": null,
+    "links": []
+  },
+  {
     "slug": "andrew-lan",
     "name": "Andrew Lan",
     "group": "Research Partners",
