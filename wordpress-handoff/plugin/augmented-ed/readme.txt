@@ -59,7 +59,7 @@ https://github.com/folkmark/aug-preview/blob/main/wordpress-handoff/START-HERE.m
   AERDF's header.
 * Team: Joan Lee is Educational Consultant; Chris Daniels is Finance Advisor, with LinkedIn;
   Allison Rapoport's, Nicolle DeSilva's and Ryan Baker's headshots no longer fade at the
-  edges. Run the import after updating.
+  edges, and Byungyeon Yun's barely does. Run the import after updating.
 * The bio page's JSON-LD cannot be ended early by a "</script>" in a role or bio, and the
   bio template's variables carry the plugin's prefix.
 
