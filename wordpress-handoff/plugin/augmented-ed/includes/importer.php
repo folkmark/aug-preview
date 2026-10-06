@@ -147,7 +147,7 @@ function augmented_ed_import_team( $args = array() ) {
 	}
 	if ( $unexpected ) {
 		$report['errors'][] = sprintf(
-			'These slugs already belong to team posts that are not AugmentED\'s: %s. Check each is the same person, then run again with them listed under "Attach" (--attach=%s). Nothing was changed.',
+			'Nothing was changed. These slugs already belong to team posts that are not AugmentED\'s: %s. If each is the same person, run again with them listed under "Attach" (--attach=%s). If one is a different person, do not attach it: the import cannot skip anyone, so ask AugmentED for a build that names them differently.',
 			implode( ', ', $unexpected ),
 			implode( ',', $unexpected )
 		);
@@ -214,7 +214,7 @@ function augmented_ed_import_team( $args = array() ) {
 		} else {
 			$stored = (string) get_post_meta( $post->ID, '_augmented_ed_import_hash', true );
 			if ( $stored && augmented_ed_meta_hash( $post->ID ) !== $stored && ! $args['force'] ) {
-				$report['people'][ $p['slug'] ] = array( 'skipped', 'its card was edited in WordPress since the last import (use Force to overwrite)' );
+				$report['people'][ $p['slug'] ] = array( 'skipped', 'its card was edited in WordPress since the last import (tick "Update cards edited in WordPress since the last import", or --force, to overwrite it)' );
 				continue;
 			}
 		}
@@ -222,7 +222,9 @@ function augmented_ed_import_team( $args = array() ) {
 		if ( $post ) {
 			$changes = array();
 			$current = wp_get_post_terms( $post->ID, 'category', array( 'fields' => 'ids' ) );
-			if ( array_diff( $terms, is_wp_error( $current ) ? array() : $current ) ) {
+			// Fewer than two terms only in a dry run before the categories exist: the import
+			// would create them and add both.
+			if ( count( $terms ) < 2 || array_diff( $terms, is_wp_error( $current ) ? array() : $current ) ) {
 				$changes[] = 'categories';
 				if ( ! $args['dry_run'] ) {
 					wp_set_post_terms( $post->ID, $terms, 'category', true );
@@ -246,7 +248,7 @@ function augmented_ed_import_team( $args = array() ) {
 					wp_update_post( array( 'ID' => $post->ID, 'post_content' => $bio ) );
 				}
 			} elseif ( 'create' !== $action && '' !== $bio && '' !== trim( (string) $post->post_content ) && trim( (string) $post->post_content ) !== trim( $bio ) ) {
-				$note = 'its existing content was kept (Overwrite content replaces it with the AugmentED bio)';
+				$note = 'its existing content was kept ("Replace existing posts\' content with the AugmentED bio", or --overwrite-content, replaces it)';
 			}
 			// Yoast's description for the bio page: the bio's first sentence, as the site's
 			// own bio pages use, only where Yoast has none.
@@ -307,7 +309,7 @@ function augmented_ed_import_team( $args = array() ) {
 			continue;
 		}
 		if ( '' !== $stored && augmented_ed_meta_hash( $post->ID ) !== $stored && ! $args['force'] ) {
-			$report['people'][ $a['slug'] ] = array( 'skipped', 'archived in the roster, but its card was edited in WordPress since the last import (use Force to archive it anyway)' );
+			$report['people'][ $a['slug'] ] = array( 'skipped', 'archived in the roster, but its card was edited in WordPress since the last import (tick "Update cards edited in WordPress since the last import", or --force, to archive it anyway)' );
 			continue;
 		}
 		if ( ! $args['dry_run'] ) {

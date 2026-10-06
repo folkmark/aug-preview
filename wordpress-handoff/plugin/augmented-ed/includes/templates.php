@@ -105,8 +105,36 @@ add_action(
 			return;
 		}
 		echo '<div class="notice notice-info inline"><p><strong>' . esc_html__( 'This page is drawn by the AugmentED plugin.', 'augmented-ed' ) . '</strong> '
-			. esc_html__( 'Its content box is not shown on the site, so leave it empty, and do not open this page in Elementor: choosing an Elementor layout replaces the AugmentED template. The title, slug, parent and Yoast fields are used as normal.', 'augmented-ed' )
+			. esc_html( augmented_ed_editor_notice() )
 			. '</p></div>';
+	}
+);
+
+function augmented_ed_editor_notice() {
+	return __( 'Its content box is not shown on the site, so leave it empty, and do not open this page in Elementor: choosing an Elementor layout replaces the AugmentED template. The title, slug, parent and Yoast fields are used as normal.', 'augmented-ed' );
+}
+
+/**
+ * The same notice in the block editor, where edit_form_after_title never fires and the empty
+ * body invites "Type / to choose a block". It reads the template the page was opened with;
+ * choosing one in the editor shows the notice from the next time the page is opened.
+ */
+add_action(
+	'enqueue_block_editor_assets',
+	function () {
+		$post = get_post();
+		if ( ! $post || 'page' !== $post->post_type || ! str_starts_with( (string) get_page_template_slug( $post ), 'augmented-ed/' ) ) {
+			return;
+		}
+		wp_register_script( 'augmented-ed-editor-notice', false, array( 'wp-data', 'wp-notices', 'wp-dom-ready' ), AUGMENTED_ED_VERSION, true );
+		wp_enqueue_script( 'augmented-ed-editor-notice' );
+		wp_add_inline_script(
+			'augmented-ed-editor-notice',
+			sprintf(
+				'wp.domReady(function(){wp.data.dispatch("core/notices").createWarningNotice(%s,{id:"augmented-ed-page",isDismissible:false});});',
+				wp_json_encode( __( 'This page is drawn by the AugmentED plugin.', 'augmented-ed' ) . ' ' . augmented_ed_editor_notice(), JSON_HEX_TAG )
+			)
+		);
 	}
 );
 

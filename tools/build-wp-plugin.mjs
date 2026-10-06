@@ -104,9 +104,10 @@ for (const [key, html] of Object.entries(exported)) {
   // T1. What must not be in an export this is built from. Each is a real failure seen or
   // designed against: a hydration placeholder is a page with a hole in it, a runtime
   // wrapper is markup no host should carry, {{ is an unrendered binding, <? would open PHP
-  // inside a template, and the Approach scrub is parked.
+  // inside a template, and the Approach scrub's component left the repository in October
+  // 2026, so an <approach-scrub> would be an element with nothing behind it.
   for (const [what, re] of [['a runtime wrapper (sc-host)', /class="sc-host/], ['a hydration placeholder', /sc-placeholder/],
-    ['an unrendered {{ binding }}', /\{\{/], ['a PHP open tag', /<\?/], ['the parked <approach-scrub>', /<approach-scrub\b/]]) {
+    ['an unrendered {{ binding }}', /\{\{/], ['a PHP open tag', /<\?/], ['an <approach-scrub>, whose component was removed', /<approach-scrub\b/]]) {
     if (re.test(html.replace(/<!--[\s\S]*?-->/g, '').replace(/<style[\s\S]*?<\/style>/g, ''))) fail(`${key}.html contains ${what}`);
   }
 }
@@ -605,15 +606,15 @@ function domKey(el) {
 }
 
 // The bio template: the profile from tools/lib/bio-page.mjs, as PHP, under the program bar.
-files.set('templates/bio.php', `${templateHeader('AugmentED — a team member\'s bio page (the single template of an AugmentED team post). Expects $bio from augmented_ed_bio_data().', 'tools/lib/bio-page.mjs')}
+files.set('templates/bio.php', `${templateHeader('AugmentED — a team member\'s bio page (the single template of an AugmentED team post). Expects $augmented_ed_bio from augmented_ed_bio_data().', 'tools/lib/bio-page.mjs')}
 get_header();
-$bio = augmented_ed_bio_data( get_queried_object() );
+$augmented_ed_bio = augmented_ed_bio_data( get_queried_object() );
 ?>
 <div id="augmented-ed" class="augmented-ed" data-aug-template="bio">
 <div class="scheme-1" style="font-family: var(--font-body); color: var(--text-body); background: var(--surface-page);">
 <?php augmented_ed_partial( 'program-bar' ); ?>
 <div id="aug-content" tabindex="-1" class="aug-page bio" data-aug-page="bio">
-${bioBody(phpHelper('$bio'))}
+${bioBody(phpHelper('$augmented_ed_bio'))}
 </div>
 </div>
 </div>
@@ -794,7 +795,7 @@ for (const js of ['hero-bridge', 'falling-blocks', 'cycle-wheel']) ship.set(`ass
 for (const p of people.filter((x) => x.photo)) ship.set(`assets/team/${p.photo}.webp`, `assets/team/${p.photo}.webp`);
 ship.set('assets/icons/linkedin.svg', 'assets/icons/linkedin.svg');
 for (const [repo, plugin] of fontsShipped) ship.set(plugin, repo);
-const deny = unserved(indexHtml);
+const deny = unserved();
 for (const [plugin, repo] of ship) {
   if (!fs.existsSync(path.join(root, repo)) || !fs.statSync(path.join(root, repo)).isFile()) fail(`ships ${repo}, which is not a file`);
   if (deny.some((re) => re.test(repo))) fail(`would ship ${repo}, which is never published`);

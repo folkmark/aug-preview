@@ -81,9 +81,12 @@ export function staticHelper(data, assetBase = 'assets/') {
   };
 }
 
-// Writes PHP. `v` is the PHP expression holding the data array ('$bio'); list items are
-// bound to a fresh variable per nesting level so loops can nest. Output is escaped by
-// WordPress (esc_html, esc_attr, esc_url) at the point of echo, never beforehand.
+// Writes PHP. `v` is the PHP expression holding the data array ('$augmented_ed_bio'); list
+// items are bound to a fresh variable per nesting level so loops can nest. The bio template
+// runs in WordPress's global scope (template_include), so every variable it sets carries
+// the plugin's prefix rather than risk meeting a theme's or another plugin's global. Output
+// is escaped by WordPress (esc_html, esc_attr, esc_url) at the point of echo, never
+// beforehand.
 export function phpHelper(v, depth = 0) {
   const get = (k) => (k === '.' ? v : `${v}['${k}']`);
   const echo = (fn, k) => `<?php echo ${fn}( ${get(k)} ); ?>`;
@@ -96,11 +99,11 @@ export function phpHelper(v, depth = 0) {
     unless: (k, html) => `<?php if ( empty( ${get(k)} ) ) : ?>${html}<?php endif; ?>`,
     is: (k, value, yes, no) => `<?php if ( '${value}' === ${get(k)} ) : ?>${yes}<?php else : ?>${no}<?php endif; ?>`,
     each: (k, fn, sep = '') => {
-      const item = `$item${depth}`;
+      const item = `$augmented_ed_item${depth}`;
       // A separator between items needs to know which item is first; PHP gets it from the
       // loop index rather than from a join, so the markup inside fn stays a template.
-      const lead = sep ? `<?php if ( $i${depth} > 0 ) : ?>${sep}<?php endif; ?>` : '';
-      const head = sep ? `<?php foreach ( ${get(k)} as $i${depth} => ${item} ) : ?>` : `<?php foreach ( ${get(k)} as ${item} ) : ?>`;
+      const lead = sep ? `<?php if ( $augmented_ed_i${depth} > 0 ) : ?>${sep}<?php endif; ?>` : '';
+      const head = sep ? `<?php foreach ( ${get(k)} as $augmented_ed_i${depth} => ${item} ) : ?>` : `<?php foreach ( ${get(k)} as ${item} ) : ?>`;
       return `${head}${lead}${fn(phpHelper(item, depth + 1))}<?php endforeach; ?>`;
     },
     join: (k, sep) => `<?php echo implode( '${sep}', array_map( 'esc_html', ${get(k)} ) ); ?>`,
