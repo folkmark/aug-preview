@@ -76,7 +76,7 @@ working default.
 - Titles differ: AERDF has "Executive Director of AugmentED" for Sherry; AugmentED has
   "Founder & Executive Director". The grid shows AugmentED's; AERDF's pages keep AERDF's.
 - Either can be switched to the AugmentED bio page (the card's "Bio page style"), or have
-  AugmentED's bio imported over AERDF's (Import with "Replace existing content").
+  AugmentED's bio imported over AERDF's (Import with "Replace existing posts' content with the AugmentED bio" ticked).
 
 ### New team members: published or draft — AERDF web team
 
@@ -86,8 +86,9 @@ working default.
   sitemap — like every other programme's members, and in a new category archive at
   `/category/augmented-team/`. AERDF's own team listings (Our Team) filter by their own
   categories and are unaffected.
-- The people without a bio (eleven today) have no page of their own: theirs redirects to Who We Are and is
-  left out of the sitemap.
+- The people without a bio have no page of their own: theirs redirects to Who We Are and is
+  left out of the sitemap. Since October 2026 that is everyone outside Leadership (31 today):
+  the client asked for bios on Leadership alone.
 
 ### Archived members — AugmentED, with AERDF
 

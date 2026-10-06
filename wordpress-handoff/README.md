@@ -77,7 +77,9 @@ working defaults.
 ## The target environment: aerdf.org
 
 Checked directly on 2026-09-25 — aerdf.org's HTML, headers, REST index, stylesheets and
-scripts, and its pages loaded in Chromium. Verify anything you depend on; installs change.
+scripts, and its pages loaded in Chromium — and re-checked on 2026-10-06, when the plugin was
+also re-run inside today's live pages (`verify-wp-plugin.mjs --live`). Verify anything you
+depend on; installs change.
 
 - **Hosting:** WordPress on WP Engine, behind Cloudflare. No page optimiser, Rocket Loader,
   lazy-load rewriter, smooth-scroll library or Content-Security-Policy is running.
@@ -89,12 +91,26 @@ scripts, and its pages loaded in Chromium. Verify anything you depend on; instal
   - Nothing above `main` breaks `position: sticky`.
   - It loads Bootstrap 5.0.2's reboot (`og-css2.css`) site-wide, including
     `scroll-behavior: smooth` on the root.
-- **Page builder:** Elementor 4.3.1 + Pro 4.3.0, Flexbox containers only.
+- **Page builder:** Elementor 4.3.2 + Pro 4.3.0 (Elementor was 4.3.1 on 2026-09-25), Flexbox
+  containers only.
   - The kit sets `font-family: "avenir"` on every `a` and heading, and colours `h1`.
   - Theme Builder single template 3899 draws every team member's page.
 - **Plugins:** JetEngine 3.8.13.1, CPT UI, ACF Pro 6.8.10, Gravity Forms 3.1.2
   (installed, no form in use), Yoast 28.5, Redirection, Wordfence, WP-Stateless, Use Any
-  Font. GTM, GA4, CookieYes and AccessiBe load site-wide.
+  Font. GTM, GA4, CookieYes and AccessiBe load site-wide. Also present on 2026-10-06 (REST
+  index and page HTML), none of which touches templates, images or the plugin's output:
+  - Google Language Translator, whose floating widget sits on every page, ours included. A
+    visitor who picks a language has Google rewrite the text in place; the markup and
+    layout are untouched, and the widget, like AccessiBe's, floats in a corner where our
+    pages have nothing fixed.
+  - Lazy Load for Videos, which only swaps video embeds — images are not rewritten, so "no
+    lazy-load rewriter" above still holds for them.
+  - Custom Twitter Feeds, Simple History, Duplicator, Duplicate Post, Safe SVG, String
+    Locator, the WPMU DEV Dashboard, WP Engine's cache and sign-on plugins, and Elementor's
+    AI, One and MCP add-ons.
+- **WordPress core:** its version is not exposed (assets carry hashed versions), but the
+  REST index has the Abilities API, so it is 6.9 or later. The plugin needs 6.5 or later and
+  PHP 8.0 or later.
 - **Forms:** every live form is HubSpot (portal 20910033): the footer newsletter and the
   contact page.
 - **The team:** a `team` post type, 199 people, single pages at `/team/<slug>/`, grouped with
@@ -148,7 +164,7 @@ index.html ──tools/export-static.mjs──▶ pages/ (+ states.json)
 [What the plugin does](#what-the-plugin-does).
 
 **Assembled:** `node tools/build-wp-plugin.mjs --assemble dist [--zip]` copies the plugin and
-exactly the files in `ship.json` — about 22 MB, 378 files — into `dist/augmented-ed/`. The
+exactly the files in `ship.json` — 362 files, 22.5 MB — into `dist/augmented-ed/`. The
 hero ships only frames 276–417, the ones it plays.
 
 **Checked:**
@@ -175,9 +191,12 @@ hero ships only frames 276–417, the ones it plays.
   become that element.
   - Measured inside live aerdf.org pages, this changes zero properties on AERDF's header and
     footer.
-  - It reproduces every page's layout and computed styles, except four things AERDF sets
-    that the site never does: the kit's link font and heading colour, and Bootstrap's image
-    `vertical-align` and button font. `css/host.css` reverts exactly those.
+  - It reproduces every page's layout and computed styles, except what AERDF sets that the
+    site never does: the Elementor kit's link and heading font and its heading colour, and
+    from Bootstrap's reboot the media `vertical-align`, the form controls' font, size,
+    line height, margin and text transform, `label`'s display, list padding and margins,
+    and smooth scrolling on the root. `css/host.css` reverts exactly those, each found by
+    `verify-wp-plugin.mjs --live`.
 - **Offsets are measured, not assumed.** AERDF's header scrolls away, so everything sticky
   pins under the program bar alone, plus the admin bar when logged in. `js/augmented-ed.js`
   writes `--aug-top`, `--header-h` and `--hero-lead` onto the wrapper.
@@ -630,7 +649,7 @@ nothing in it is needed. What the pages did at runtime, the plugin does:
 | | Links each page to the others by template. | `includes/links.php` |
 | | Loads the scoped stylesheet, `css/host.css`, and only the component scripts that page uses, deferred, `filemtime()`-versioned, with the optimiser opt-outs. | `includes/assets.php` |
 | | Measures the offsets: what is fixed above the program bar, the bar, the hero's lead. | `js/augmented-ed.js` |
-| | The reveal (the site's `data-reveal`, 64 blocks): the same 92% line; hidden only once script is known to be running, and shown after 4s regardless. | `js/augmented-ed.js`, `css/host.css` |
+| | The reveal (the site's `data-reveal`, 72 blocks): the same 92% line; hidden only once script is known to be running, and shown after 4s regardless. | `js/augmented-ed.js`, `css/host.css` |
 | | The program bar's menu on a phone: toggle, scroll lock, Escape, placed under the bar wherever the bar is. | `js/augmented-ed.js` |
 | Who We Are | Draws each group's tiles from team posts, in their order. | `includes/team.php` |
 | A team member's page | The AugmentED bio page for members only in AugmentED; AERDF's own page for members also in another programme (Sherry, Caitlin), switchable per person. Members without a bio redirect (302) to Who We Are and are left out of the sitemap. With Yoast, the page is a ProfilePage about a Person. | `includes/team.php` |
@@ -647,8 +666,10 @@ No CMS sits behind the prototype; its copy is in `index.html`. In WordPress:
   ([`content/team.json`](content/team.json) is the source the importer reads, through
   `generated/data/team.json`):
   - The groups are child categories of "AugmentED Team" (`augmented-team`):
-    `augmented-leadership`, `augmented-research-partners`, `augmented-education-fellows`,
-    `augmented-technology-and-design-partners`, ordered by term meta.
+    `augmented-leadership`, `augmented-strategy`, `augmented-research-partners`,
+    `augmented-education-fellows`, `augmented-technology-and-design-partners`, ordered by
+    term meta. The import creates whatever groups the site has, so a new group on Who We Are
+    becomes a new category on the next import.
   - The card is the plugin's post meta, edited in the "AugmentED card" box:
     `augmented_ed_archived` (the Archived tick box), `_role`, `_affiliation`, `_location`,
     `_linkedin`, `_website`, `_sort`, `_photo` (a bundled headshot's slug), and `_template`
@@ -789,22 +810,23 @@ active.
 
 **Who We Are and the bio pages** (full criteria in [`sections/leadership.md`](sections/leadership.md)):
 
-- [ ] 34 headshots in colour and 1 placeholder square in `#e9eef4`, in the five groups
+- [ ] 35 headshots in colour and 1 placeholder square in `#e9eef4`, in the five groups
       (Leadership, Strategy, Research Partners, Education Fellows, Technology and Design
       Partners) and the order of `content/team.json`; the people without a title show no
       empty line.
-- [ ] Hovering a headshot only darkens it slightly; nothing else loads.
+- [ ] Hovering a Leadership tile (a link) darkens its headshot slightly; the other tiles
+      are not links and do not respond. Nothing else loads on hover.
 - [ ] Only Leadership's 5 tiles say "Read bio", and each opens `/team/<slug>/`: an
       AugmentED bio page for Raquel Romano, Jenny Bradbury and Abby (Csaba) Petre, AERDF's
       own page for Sherry Lachman and Caitlin Mills.
-- [ ] The 30 others have no link, and their `/team/<slug>/` redirects to Who We Are. A
+- [ ] The 31 others have no link, and their `/team/<slug>/` redirects to Who We Are. A
       site that imported the team before October 2026 holds bios for 16 of them as post
       content, which still draws a "Read bio": clear those posts' content (the import never
       empties a post).
 
 **Site-wide:**
 
-- [ ] All 64 reveal blocks become visible; none is stranded at `opacity: 0`.
+- [ ] All 72 reveal blocks become visible; none is stranded at `opacity: 0`.
 - [ ] "Send test submission" (Settings → AugmentED) is accepted, and a submission from the
       page arrives in HubSpot.
 - [ ] Fonts self-hosted, WOFF2 only; Avenir license confirmation on file.

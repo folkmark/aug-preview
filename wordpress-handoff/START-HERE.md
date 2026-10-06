@@ -6,7 +6,8 @@ AERDF's header and footer stay, with AugmentED's navigation as a bar beneath the
 Assessment for Good's pages do — puts the AugmentED team into AERDF's existing **Team**
 post type, and connects the Follow form to HubSpot.
 
-It has been installed and tested on WordPress 7.1 with a stand-in for AERDF's theme, and its
+It needs WordPress 6.5 or later and PHP 8.0 or later; both floors are tested, and so is the
+current release. It has been installed and tested on WordPress 7.1 with a stand-in for AERDF's theme, and its
 pages have been rendered inside live aerdf.org pages with AERDF's own CSS and JavaScript
 running (see [Verification](#verification)). Install it on **WP Engine staging first**.
 
@@ -27,15 +28,17 @@ every open decision with a default and an owner; these three block launch:
 
 ### 1. Upload and activate
 
-Plugins → Add New → **Upload Plugin** → `augmented-ed.zip` → Activate.
+Plugins → Add New → **Upload Plugin** → `augmented-ed-plugin.zip` → Activate.
 
 The zip is about 22 MB (it carries every image and animation frame the pages use). If the
 upload is refused for size, copy the unzipped `augmented-ed/` folder into
-`wp-content/plugins/` over SFTP instead, or `wp plugin install augmented-ed.zip --activate`.
+`wp-content/plugins/` over SFTP instead, or `wp plugin install augmented-ed-plugin.zip --activate`.
 
 Where the zip comes from: AugmentED sends it. It is built by the repository's CI (the
 `plugin` job of the "Publish site to gh-pages" workflow, artifact **augmented-ed-plugin**)
-on every pull request and every change to `main`.
+on every pull request and every change to `main`; GitHub hands it over as
+`augmented-ed-plugin.zip`, with `augmented-ed/` at its root, which is what Upload Plugin
+expects. Check the version on the Plugins screen: this handoff describes **1.1.0**.
 
 ### 2. Create the pages
 
@@ -52,24 +55,32 @@ AugmentED says if one is missing or doubled.
 
 ### 3. Import the team
 
-Tools → **AugmentED team** → **Dry run**. Expect:
+First, if you want the AugmentED roles written into AERDF's own job-title field as well, pick
+it under Settings → AugmentED → "AERDF's job-title field" (see [step 5](#5-optional-aerdfs-job-title-field)).
 
-- 5 categories to create: "AugmentED Team" and one child per Who We Are group;
-- **30 people to create** and **2 to attach** — Sherry Lachman and Caitlin Mills, who are
-  already AERDF team members. Attaching adds the AugmentED categories and card fields only:
+Then Tools → **AugmentED team** → **Dry run**. Expect:
+
+- **6 categories** to create: "AugmentED Team" and one child per Who We Are group —
+  Leadership, Strategy, Research Partners, Education Fellows, Technology and Design Partners;
+- **34 people to create** and **2 to attach** — Sherry Lachman and Caitlin Mills, who are
+  already AERDF team members. Attaching adds the AugmentED categories and card fields, and
+  fills Yoast's meta description and AERDF's job-title field only where they are empty:
   their titles, bios and photos on AERDF's pages are not touched;
 - **6 absent**: people AugmentED has archived (off its Who We Are page on purpose). They are
   never created. If one ever exists as an AugmentED team post, the import marks it
   Archived instead of deleting it.
 
-If the dry run names any other person as "already exists", stop and check it is the same
-person before listing them under **Attach**. Then **Import**. Running it again changes only
-what changed; it never deletes anything and never overwrites edits made in WordPress
-(unless you tick Force).
+If the dry run stops with "These slugs already belong to team posts that are not
+AugmentED's: …", check each is the same person before listing them under **Attach**; nothing
+has been changed. Then **Import**. Running it again changes only what changed; it never
+deletes anything and never overwrites edits made in WordPress (unless you tick "Update cards
+edited in WordPress since the last import").
 
 Each person is an ordinary team post you can edit. The **AugmentED card** box on the edit
 screen holds what the Who We Are grid shows (role, a Fellow's school and city, links, the
-position in the group, the bundled headshot); the post's content is the bio.
+position in the group, the bundled headshot); the post's content is the bio. Only
+Leadership's five have one from AugmentED; everyone else's post is created empty, and an
+empty post has no page of its own — it redirects to Who We Are.
 
 To take someone off Who We Are without losing them, tick **Archived** at the top of their
 AugmentED card: their tile goes, their page redirects to Who We Are and leaves the sitemap,
@@ -94,14 +105,15 @@ CAPTCHA on; the plugin has its own spam defences (a hidden field, a minimum time
 limit).
 
 Then Settings → **AugmentED** → the portal ID (AERDF's is 20910033) and the form's ID → the
-privacy policy URL (AERDF's is its Terms of Use & Privacy Policy page, `https://aerdf.org/termsofuse/`) → Save → **Send test submission**. It sends one real submission as you
+privacy policy URL (AERDF's is its Terms of Use & Privacy Policy page, `https://aerdf.org/termsofuse/`) → **Save Changes** → **Send test submission**. It sends one real submission as you
 and shows HubSpot's answer.
 
 ### 5. Optional: AERDF's job-title field
 
 AERDF's team pages show a job title from a field the plugin cannot see from outside. If you
 want the AugmentED roles in that field too, pick it under Settings → AugmentED → "AERDF's
-job-title field" before importing.
+job-title field" before importing (step 3). If the team is already imported, pick it and run
+the import again: it writes the roles where the field is empty.
 
 ### 6. Review, publish, purge
 
@@ -123,6 +135,12 @@ caches pages). Add AugmentED to AERDF's own navigation if that has been decided.
 Upload the new zip the same way; WordPress offers **Replace current with uploaded**. Re-run
 the import only if the team changed. Purge the caches afterwards.
 
+**From 1.0.0 to 1.1.0** (October 2026): the headshots are colour, the team has a fifth group
+(Strategy), and only Leadership has bios. Re-run the import for the new group and people. If
+the team was imported under 1.0.0, sixteen people outside Leadership still hold their bio as
+post content, and a post with content still draws "Read bio" — clear those posts' content by
+hand; the import never empties a post.
+
 ## Acceptance
 
 Logged out and logged in, and with the AccessiBe widget on:
@@ -131,8 +149,8 @@ Logged out and logged in, and with the AccessiBe widget on:
       AERDF's header, at 360, 768, 1440 and 1920 px wide.
 - [ ] The home page's hero plays when scrolled, and its copy is whole when the hero first
       reaches the bar; the closing blocks fall; clicking a step of the cycle wheel travels to it.
-- [ ] Who We Are shows 34 headshots in colour and 1 placeholder in five groups; each
-      "Read bio" (Leadership only) opens that person's page.
+- [ ] Who We Are shows 35 headshots in colour and 1 placeholder in five groups; each
+      "Read bio" (Leadership's five only) opens that person's page.
 - [ ] A member without a bio (e.g. `/team/tom-peterson/`) goes to Who We Are.
 - [ ] Ticking **Archived** on a member's AugmentED card takes their tile off Who We Are and
       sends their page to Who We Are; unticking it brings them back.

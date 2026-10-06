@@ -7,7 +7,7 @@ whoever changes it.
 
 | | What | Edited by |
 |---|---|---|
-| `generated/` | The five page templates, the bio template, the program bar, the team tile, one stylesheet (`css/augmented-ed.css`, every sheet the pages use, scoped to `#augmented-ed`), and the data the importer and the form read. | **Nobody.** `node tools/build-wp-plugin.mjs` writes it from `wordpress-handoff/pages/` (the export) and `wordpress-handoff/content/`. |
+| `generated/` | The five page templates, the bio template, the program bar, the team tile, one stylesheet (`css/augmented-ed.css`, every sheet the pages use, scoped to `#augmented-ed`), and the data the importer and the form read. | **Nobody.** `node tools/build-wp-plugin.mjs` writes it from `wordpress-handoff/pages/` (the export), `wordpress-handoff/content/`, the team roster (`source-material/team/people.json`) and the bios it links (`source-material/bios/`). |
 | everything else | `augmented-ed.php`, `includes/`, `js/`, `css/host.css`: which page is an AugmentED page, what it loads, where links point, the team, the importer, the form's relay, the settings. | By hand. |
 
 `assets/` is not in the repository: `node tools/build-wp-plugin.mjs --assemble dist` copies in

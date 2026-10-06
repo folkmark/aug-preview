@@ -578,11 +578,11 @@
       "website": "https://www.hightechhigh.org/staff/chris-mutter/",
       "photo": {
         "master": "chris-mutter.jpg",
-        "from": "form",
-        "ref": "https://drive.google.com/open?id=1uWQC7bUlY5fxN6AQt1v-3uyqrMl2X0ce",
+        "from": "direct",
+        "ref": "https://drive.google.com/open?id=1uppXhUlShUsD77NqugHRPjkrx3XSnCaW",
         "approved": false,
-        "upscale": 1.06,
-        "notes": "Sent through the website info form by Joan Lee on 25 September 2026, as received: 707x624 (\"Chris Mutter Headshot\"). Already toned almost to black and white (mean saturation 22/255), so the colour version on hover stays grey. Enlarged 1.06x at the tile size, which does not show."
+        "upscale": 0.85,
+        "notes": "A colour original, uploaded by Brendan to the form's Drive folder on 6 October 2026 (\"Chris Mutter Headshot.jpeg\"), as received: a 2993x4032 iPhone photograph, seated, full length, with no location data. It replaces the 707x624 near-black-and-white crop sent through the form on 25 September. Cut out at the shared framing with nothing faded or stretched; the crown sits 14% below the tile top, more than most, because the face box is small for his hair."
       },
       "bioSource": {
         "from": "tracker",
@@ -598,12 +598,12 @@
       },
       "notes": "The form (filled in by Joan Lee) gives LinkedIn as \"n/a\"; the tile keeps the High Tech High staff page as the website.",
       "actions": [
-        "[joan] Sign off the published bio (the tracker's fellows tab has no Approved column).",
-        "[joan] Optional: a colour original, so the hover shows colour like everyone else."
+        "[joan] Sign off the published bio (the tracker's fellows tab has no Approved column)."
       ],
       "history": [
         "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/chris-mutter/ (6008fab)",
-        "2026-10-06 headshot: placeholder → form upload (5f7a382)"
+        "2026-10-06 headshot: placeholder → form upload (5f7a382)",
+        "2026-10-06 headshot: 707x624 black and white (form) → 2993x4032 colour original (Drive)"
       ]
     },
     {
@@ -1504,6 +1504,37 @@
       "actions": [],
       "history": [
         "2026-10-06 status: held → on_site; group: — → strategy; role: — → Senior Advisor (Joan Lee, Slack, 6 October 2026)"
+      ]
+    },
+    {
+      "id": 42,
+      "slug": "chris-daniels",
+      "name": "Chris Daniels",
+      "group": "strategy",
+      "order": 3,
+      "tags": [],
+      "role": null,
+      "affiliation": null,
+      "location": null,
+      "linkedin": null,
+      "website": null,
+      "photo": {
+        "master": "chris-daniels.jpg",
+        "from": "direct",
+        "ref": "https://drive.google.com/open?id=1GBPtr7hUSnRAS-bagsUgZf6MWAuSZpqR",
+        "approved": false,
+        "upscale": 0.28,
+        "edgesExtended": "bottom 2%",
+        "notes": "Uploaded by Brendan to the form's Drive folder on 6 October 2026 (\"Chris Daniels\") as a 1975x2116 PNG, fully opaque and 5.1 MB; committed as a JPEG at quality 95 with full-resolution colour, which is visually the same at a twelfth of the weight. No location data."
+      },
+      "bioSource": null,
+      "form": null,
+      "notes": "In the Strategy group per Sherry (via Brendan, 6 October 2026). No form entry, so no title or links yet; the tile shows the name alone until they arrive (decided by Brendan, 6 October 2026).",
+      "actions": [
+        "[joan] Send Chris Daniels's title, and a LinkedIn or website if wanted."
+      ],
+      "history": [
+        "2026-10-06 status: — → on_site; group: — → strategy (Brendan)"
       ]
     }
   ]
