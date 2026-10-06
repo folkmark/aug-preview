@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- exported from caad7016b1c9f59b8d45b74b717073d51012c0fb by tools/export-static.mjs; index.html sha256 d4539f361fcd9534 -->
+<!-- exported from c771c9506cb99dde83fe4f71b2f35e3929bddacf by tools/export-static.mjs; index.html sha256 f041097460b52a81 -->
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -641,9 +641,13 @@
 
      The skip link is the header's first stop and invisible until it has focus. On the
      WordPress plugin it moves into the program bar with the rest of the header, where
-     the generator points it at the page's own content. */
-  .skip-link { position: absolute; left: var(--page-gutter); top: 0; z-index: 1000; transform: translateY(-120%); padding: var(--space-3) var(--space-4); background: var(--surface-page); color: var(--text-body); font-weight: var(--font-weight-semibold); text-decoration: underline; border-radius: var(--radius-button, 0.5rem); }
-  .skip-link:focus { transform: translateY(var(--space-3)); outline: 2px solid var(--brand-accent); outline-offset: 2px; }
+     the generator points it at the page's own content. It is hidden by clipping, not by
+     being moved above its box: on aerdf.org the bar sits under AERDF's own header, and a
+     link moved 120% up sat in plain view over that header on every page (measured in an
+     install trial, October 2026). Clipped, it is invisible wherever the bar is. */
+  .skip-link { position: absolute; left: var(--page-gutter); top: var(--space-3); z-index: 1000; padding: var(--space-3) var(--space-4); background: var(--surface-page); color: var(--text-body); font-weight: var(--font-weight-semibold); text-decoration: underline; border-radius: var(--radius-button, 0.5rem); }
+  .skip-link:not(:focus) { clip-path: inset(50%); width: 1px; height: 1px; padding: 0; overflow: hidden; white-space: nowrap; }
+  .skip-link:focus { outline: 2px solid var(--brand-accent); outline-offset: 2px; }
   /* <main> takes focus on a page change and from the skip link, as a place to start
      reading from, not as a control, so it draws no ring; and it stops under the header
      when scrolled to, as the plugin's page div does from host.css's [id] rule. */
