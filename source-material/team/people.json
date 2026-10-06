@@ -225,9 +225,9 @@
         "from": "institution",
         "ref": "researchers.adelaide.edu.au /sites/default/files/profile-images/37136.jpeg (540x540)",
         "approved": false,
-        "upscale": 0.61,
-        "edgesFaded": "bottom 27%, left 13%, top 10%",
-        "notes": "His Adelaide University researcher profile, the file behind its 860x860 \"profile_large\" rendition (which is an upscale of this). The same shoot as the 190x213 he had before, cropped tighter at the hair and the chest but with his face at about three times the pixels. The file carries less detail than its size: halving it loses almost nothing, so it was itself enlarged or smoothed somewhere. It still fades at the bottom, the left and the top, like the copy before it: every public copy found (his own page, Adelaide, UTS, IIIT) is this crop, so a looser original is the only fix. Kept under the shared framing rather than filling the tile, by Brendan, 6 October 2026."
+        "upscale": 0.94,
+        "notes": "His Adelaide University researcher profile, the file behind its 860x860 \"profile_large\" rendition (which is an upscale of this). The same shoot as the 190x213 he had before, cropped tighter at the hair and the chest but with his face at about three times the pixels. The file carries less detail than its size: halving it loses almost nothing, so it was itself enlarged or smoothed somewhere. It still fades at the bottom, the left and the top, like the copy before it: every public copy found (his own page, Adelaide, UTS, IIIT) is this crop, so a looser original is the only fix. Kept under the shared framing rather than filling the tile, by Brendan, 6 October 2026.",
+        "edgesExtended": "bottom 1%"
       },
       "bioSource": {
         "from": "tracker",
@@ -236,11 +236,12 @@
       "form": null,
       "notes": null,
       "actions": [
-        "[joan] Ask Ryan for a looser headshot that shows his shoulders: his photo is cropped at the hair and chest, so his tile still fades (Sherry asked for the fade fixed, 6 October)."
+        "[joan] Optional: a looser headshot that shows his shoulders. His photo is cropped at the hair and chest, so the tile is enlarged 1.55x to avoid a fade; a looser photo would return it to the shared framing."
       ],
       "history": [
         "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/ryan-baker/ (6008fab)",
-        "2026-10-06 headshot: 190x213 from the Bio tracking sheet → 540x540 from his Adelaide University profile (fixing the fade, Sherry's request)"
+        "2026-10-06 headshot: 190x213 from the Bio tracking sheet → 540x540 from his Adelaide University profile (fixing the fade, Sherry's request)",
+        "2026-10-06 headshot: no longer fades; face enlarged 1.55x, past the shared limit, by the client's choice (THE EXCEPTIONS in tools/cutout-headshots.py) (Brendan)"
       ]
     },
     {
@@ -460,9 +461,8 @@
         "from": "form",
         "ref": "https://drive.google.com/open?id=1MiZwORsglGY-d42vXSG4xD0Ry9GLrpdr",
         "approved": false,
-        "upscale": 0.95,
-        "edgesFaded": "left 12%, right 12%",
-        "edgesExtended": "bottom 3%",
+        "upscale": 1.21,
+        "edgesExtended": "left 1%, right 1%",
         "notes": "The form upload as submitted (28 Jul). A passport-style photo, cut across the chest and 18% in from both shoulders. The framing enlarges it 1.20x with the eye line 6% lower, so it reaches the bottom of the tile (THE REACH in tools/cutout-headshots.py); reaching the sides would take more than its limit, so they still fade. The crown sits 3% below the tile's top rather than 4%, the eye line having been lowered as far as it may go (THE HEADROOM in tools/cutout-headshots.py). Its EXIF block, which carried a GPS position, was removed on 6 October 2026; the image data is untouched."
       },
       "form": {
@@ -477,11 +477,12 @@
       },
       "notes": null,
       "actions": [
-        "[joan] Ask for a looser headshot that shows the shoulders: the passport photo is cut 18% in from both sides, so the tile fades there."
+        "[joan] Optional: a looser headshot that shows the shoulders. The passport photo is cut 18% in from both sides, so the tile is enlarged 1.54x to avoid a fade; a looser photo would return it to the shared framing."
       ],
       "history": [
         "2026-09-24 status: — → on_site (32a0c09)",
-        "2026-09-25 title: — → Graduate Student, University of Minnesota (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
+        "2026-09-25 title: — → Graduate Student, University of Minnesota (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)",
+        "2026-10-06 headshot: sides no longer fade; face enlarged 1.54x and eye line 18% lower, past the shared limit, by the client's choice (THE EXCEPTIONS in tools/cutout-headshots.py) (Brendan)"
       ]
     },
     {
@@ -934,7 +935,7 @@
       "group": "technology-and-design-partners",
       "order": 4,
       "tags": [],
-      "role": "Project Consultant & Manager",
+      "role": "Educational Consultant",
       "affiliation": null,
       "location": null,
       "linkedin": "https://www.linkedin.com/in/about-joan-lee/",
@@ -960,7 +961,8 @@
       "notes": null,
       "actions": [],
       "history": [
-        "2026-09-25 title: Project Manager → Project Consultant & Manager (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
+        "2026-09-25 title: Project Manager → Project Consultant & Manager (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)",
+        "2026-10-06 title: Project Consultant & Manager → Educational Consultant (Brendan)"
       ]
     },
     {
@@ -1167,8 +1169,7 @@
         "from": "form",
         "ref": "https://drive.google.com/open?id=16kOPcBQcItb99LDwUHyYYaJo_HDvRTwN",
         "approved": false,
-        "upscale": 0.38,
-        "edgesFaded": "left 6%",
+        "upscale": 0.44,
         "notes": "1273x1636, as received through the form on 24 September 2026. The photo's left edge carries the shoulder and hair of whoever stood alongside, which the matte keeps joined to the portrait, so that edge keeps its fade rather than being stretched (tools/cutout-headshots.py); a crop without them would be cleaner."
       },
       "form": {
@@ -1182,12 +1183,11 @@
         "detail": "1273×1636, usable; used since her group was confirmed on 2026-09-25"
       },
       "notes": "Submitted the website info form. Group confirmed by Brendan on 25 September 2026; no title yet, so the tile shows none.",
-      "actions": [
-        "[joan] Optional: a headshot without a neighbour at the left edge; the matte keeps their hair joined to hers, so that edge fades."
-      ],
+      "actions": [],
       "history": [
         "2026-09-25 status: held → on_site; group: — → technology-and-design-partners, confirmed by Brendan (daf7a21)",
-        "2026-10-06 role: — → Engineering Consultant (Joan Lee, Slack, 6 October 2026)"
+        "2026-10-06 role: — → Engineering Consultant (Joan Lee, Slack, 6 October 2026)",
+        "2026-10-06 headshot: left fade removed by THE CROP, face 1.14x (within the shared limit) (Brendan)"
       ]
     },
     {
@@ -1449,9 +1449,7 @@
         "from": "form",
         "ref": "https://drive.google.com/open?id=1SijERZGU6rLMEXGHA9VFlsFLePCFa_ja",
         "approved": false,
-        "upscale": 0.26,
-        "edgesFaded": "left 6%",
-        "edgesExtended": "right 3%",
+        "upscale": 0.3,
         "notes": "Sent through the website info form on 30 September 2026: a 1775x2360 phone selfie (\"staff selfie\") against a bright window. Committed with its EXIF block removed (it carried the phone's GPS position); the image data is untouched. Enlarged 1.18x and lowered 4% (THE REACH) to ground it; her hair meets the selfie's left edge above the chin, so that edge fades."
       },
       "form": {
@@ -1467,7 +1465,8 @@
       "notes": "The form files her as \"Nicolle Desilva\"; her name field says \"Nicolle DeSilva\", which is kept. Title as Joan gave it (\"University of Pittsburgh Community Engagement Coordinator\"), in the Research Partners' \"Title, Organisation\" order (decided by Brendan, 2026-10-06).",
       "actions": [],
       "history": [
-        "2026-10-06 status: held → on_site; group: — → research-partners; role: — → Community Engagement Coordinator, University of Pittsburgh (Joan Lee, Slack, 6 October 2026)"
+        "2026-10-06 status: held → on_site; group: — → research-partners; role: — → Community Engagement Coordinator, University of Pittsburgh (Joan Lee, Slack, 6 October 2026)",
+        "2026-10-06 headshot: left fade removed; face enlarged 1.35x, past the shared limit, by the client's choice (THE EXCEPTIONS in tools/cutout-headshots.py) (Brendan)"
       ]
     },
     {
@@ -1513,10 +1512,10 @@
       "group": "strategy",
       "order": 3,
       "tags": [],
-      "role": null,
+      "role": "Finance Advisor",
       "affiliation": null,
       "location": null,
-      "linkedin": null,
+      "linkedin": "https://www.linkedin.com/in/christopherdaniels/",
       "website": null,
       "photo": {
         "master": "chris-daniels.jpg",
@@ -1529,12 +1528,11 @@
       },
       "bioSource": null,
       "form": null,
-      "notes": "In the Strategy group per Sherry (via Brendan, 6 October 2026). No form entry, so no title or links yet; the tile shows the name alone until they arrive (decided by Brendan, 6 October 2026).",
-      "actions": [
-        "[joan] Send Chris Daniels's title, and a LinkedIn or website if wanted."
-      ],
+      "notes": "In the Strategy group per Sherry (via Brendan, 6 October 2026). No form entry. Title from Brendan, 6 October 2026: Chris is a fractional CFO; the client asked for \"Financial Advisor\", and Brendan chose \"Finance Advisor\" so it does not read as selling insurance. LinkedIn from Brendan the same day.",
+      "actions": [],
       "history": [
-        "2026-10-06 status: — → on_site; group: — → strategy (Brendan)"
+        "2026-10-06 status: — → on_site; group: — → strategy (Brendan)",
+        "2026-10-06 title: — → Finance Advisor; linkedin added (Brendan)"
       ]
     }
   ]

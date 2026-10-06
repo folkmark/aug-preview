@@ -45,18 +45,17 @@ bug, and I would like to hear about it.
 | [`sections/hero-bridge.md`](sections/hero-bridge.md) | Build specification for the hero bridge. |
 | [`sections/falling-blocks.md`](sections/falling-blocks.md) | Build specification for the falling-blocks CTA. |
 | [`sections/cycle.md`](sections/cycle.md) | Build specification for the cycle wheel. |
-| [`sections/approach.md`](sections/approach.md) | Build specification for the Approach scrub. Parked and out of date: refresh it before the scrub is mounted again. |
 | [`sections/leadership.md`](sections/leadership.md) | The team grid and the bio pages, and the invariants the team export depends on. |
 | `../_ds/augmented-design-system-*/` | The design system: tokens, stylesheet, fonts. |
-| `../assets/` | Production images, animation frames, and the four components. |
+| `../assets/` | Production images, animation frames, and the three components. |
 | `../tools/build-wp-plugin.mjs`, `../tools/verify-wp-plugin.mjs` | The plugin's generator, and the harness that installs it into WordPress and verifies it. |
-| `../docs/approach-render-map.md`, `../docs/hero-bridge-render.md` | Render notes. The authority for frame numbers and for what a re-render needs. |
+| `../docs/hero-bridge-render.md` | The hero's render notes. The authority for its frame numbers and for what a re-render needs. |
 
 ## Key terms
 
 | Term | Meaning |
 |---|---|
-| **component** | One of the four self-contained custom elements: `<hero-bridge>`, `<falling-blocks>`, `<cycle-wheel>`, `<approach-scrub>`. |
+| **component** | One of the three self-contained custom elements: `<hero-bridge>`, `<falling-blocks>`, `<cycle-wheel>`. |
 | **plate** | One rendered artwork image. The animation plates carry alpha and composite directly on the page color. |
 | **frame** | One WebP file in an animation sequence, named by its Blender frame number. |
 | **cut** (or **tier**) | A size variant of a sequence. Each sequence ships in two; a browser fetches one. |
@@ -83,6 +82,10 @@ depend on; installs change.
 
 - **Hosting:** WordPress on WP Engine, behind Cloudflare. No page optimiser, Rocket Loader,
   lazy-load rewriter, smooth-scroll library or Content-Security-Policy is running.
+  - Static files under `wp-content/plugins/` are served with `Cache-Control: public,
+    max-age=31536000`, a year (measured 2026-10-06). So every image URL the plugin writes
+    carries `?ver=` the file's modification time, as its scripts and stylesheets do, and a
+    replaced headshot reaches returning visitors the day it ships.
 - **Theme:** a custom classic theme, `sessionwise-starter-master` ("AERDF" by SessionWise).
   - Its header and footer are hard-coded. `header.php` opens `<main id="content"
     class="site-content">` and `footer.php` closes it, on every template.
@@ -264,10 +267,9 @@ below, not only the three a glance at the headings suggests.
 ## The assets
 
 The plugin ships exactly the files the pages use — `generated/ship.json`, computed from the
-templates' references and the sequences' manifests — and nothing else: not the parked
-Approach scrub's files, not the three images that encode but that no page uses
-(`images/classroom-morning.webp`, `images/student-notes.webp`, `logo/logo-light.png`), and
-only the hero frames the page plays. Every image and frame is produced by four encoder
+templates' references and the sequences' manifests — and nothing else: not
+`logo/logo-light.png`, which no page uses, and only the hero frames the page plays. Every
+image and frame is produced by four encoder
 scripts (see [Regenerating the artifacts](#regenerating-the-artifacts)); the SVGs and the
 components' JavaScript and CSS are hand-written.
 
@@ -277,10 +279,8 @@ components' JavaScript and CSS are hand-written.
 | `assets/hero-bridge.js` / `.css` | The `<hero-bridge>` component. | See [The hero bridge](#the-hero-bridge-hero-bridge). |
 | `assets/falling-blocks/w1440/`, `w720/` + `manifest.json` | Closing CTA frames: 48 per layer × 2 layers × 2 tiers. w1440 = 3.4 MB, w720 = 1.5 MB. | The stylesheet picks the tier. Filenames are load-bearing. |
 | `assets/falling-blocks.js` / `.css` | The `<falling-blocks>` component. | See [The falling-blocks CTA](#the-falling-blocks-cta-falling-blocks). |
-| `assets/approach/ap*.webp` + `manifest.json` | Approach sequence: 122 frames × 2 cuts. | **Parked, not published.** Do not deploy unless the scrub is mounted again. See [The Approach scrub](#the-approach-scrub-approach-scrub). Filenames are load-bearing. |
-| `assets/approach/cyc0*.webp` | The four cycle-wheel node icons, 320 px square with alpha. | Used by the home page wheel. Not part of the sequence; the manifest does not track them. |
+| `assets/approach/cyc0*.webp` | The four cycle-wheel node icons, 320 px square with alpha. | Used by the home page wheel. The folder's name is left from the Approach scrub, which left the repository in October 2026. |
 | `assets/cycle-wheel.js` / `.css` | The `<cycle-wheel>` component. | See [The cycle wheel](#the-cycle-wheel-cycle-wheel). |
-| `assets/approach.js` / `.css` | The `<approach-scrub>` component. | **Parked, not published.** Do not deploy unless mounted again. See [The Approach scrub](#the-approach-scrub-approach-scrub). |
 | `assets/images/`, `assets/icons/`, `assets/logo/` | Photography, marks. | Plain images. The seven portrait photos ship in two widths picked by `srcset`. |
 | `assets/team/` | Headshots, 512 × 512, finished: each person cut out, framed identically (same face height, same eye line) and composited in their own colour onto `#e9eef4`. The folder holds exactly the people pictured on the page (the build fails otherwise). | Use as-is — no CSS filter, no `object-position`, nothing behind them. They ship as the plugin's own files, not through the media library, so the framing survives untouched. A team post's "Bundled headshot" names one; a person added in WordPress without one shows their featured image. A person without a photo gets an empty square in the same `#e9eef4` (`--color-st-tropaz-lightest`). Until October 2026 the tiles were a duotone with a colour twin in `assets/team/colour/` and a hover script, `assets/team-colour.js`; both are gone. See [Headshots](sections/leadership.md#headshots). |
 | `assets/illustrations/{brain,blocks,laptop}.webp` | The three home-page illustrations, 810 × 810 with alpha. | See the note below. |
@@ -291,18 +291,16 @@ in equal boxes at `aspect-ratio: 1 / 1` with `object-fit: contain`. Any crop tig
 enough to change the framing slices the shadow off against a straight edge.
 
 **Master material is not in the repository.** The Blender plates, source PNG
-sequences, and frame archives (692 MB of a 702 MB checkout) were removed from
-history; they live with me. Nothing in this handoff depends on them —
-every encoder output is committed. They matter only for re-rendering artwork, and
-each encoder prints the restore path it needs if you run it without them. The hero
-sequence's masters are the one set that was never in the history at all. The render
-notes in `../docs/` stayed, and they are the authority for frame numbers.
+sequences and frame archives are on Brendan's machine, and nothing in this handoff
+depends on them: every encoder output is committed. They matter only for re-rendering
+artwork, and each encoder prints the restore path it needs if you run it without them.
+The hero's render notes in `../docs/` are the authority for its frame numbers.
 
 ---
 
 ## The components
 
-The page's four scroll behaviors are all portable. Each is a dependency-free
+The page's three scroll behaviors are all portable. Each is a dependency-free
 custom element with no framework and no build step. Each one drives markup the
 page authors, so nothing a block editor does can leave it half-constructed, and
 each degrades safely when its script does not run: the canvas rigs to their
@@ -604,38 +602,6 @@ beat-windowed clock, the measured 0.97 latch and why that value cannot be
 eased, the click-versus-focus semantics, the repaint discipline, a verification
 procedure, and a native-rebuild fallback.
 
-### The Approach scrub (`<approach-scrub>`)
-
-> **Status: parked.** AugmentED found the long scrub hard going, so the home page
-> now runs the hero bridge and the cycle wheel instead. The component and its frames
-> are kept in the repository for the shortened sequence planned to replace it, but
-> the site build no longer publishes them, and nor should you. **Do not port or
-> deploy it** as part of rebuilding the site as it stands.
->
-> Its [build specification](sections/approach.md) predates the component's last
-> retune, and says so at the top. The numbers below and in the spec (heights,
-> timing, sizes) are the old tuning. Treat the code as the source of truth and
-> refresh the spec before the scrub returns.
-
-A canvas sequence scrubbed through six beats, with copy and tick markers synced to
-it, a camera push-in, and a separate crop for phones. Same doctrine as the other
-two components.
-
-**Read [the build specification](sections/approach.md) before touching it.** It
-documents the frame contract, the scroll and camera math, the design decisions
-that look arbitrary and are load-bearing, and a five-minute smoke test. If the
-section is ever rebuilt natively instead of ported, that document is the
-specification.
-
-If and when it mounts, installation follows the shared pattern: copy
-`assets/approach.js`, `assets/approach.css`, and `assets/approach/`; enqueue;
-emit the markup contract from the top of `assets/approach.js` with `base` set;
-set `--arch-pin` to the theme header's height. The element's own height is the
-scroll budget (1250vh desktop, 1240svh phone, per `assets/approach.css`). Component-specific warnings —
-the manifest requirement, the top-edge anchor, the crop contract, the
-reduced-motion fallback's dependency on the reveal sweeper — are in the
-specification.
-
 ---
 
 ## What the plugin does
@@ -698,10 +664,12 @@ The site's form never submitted anywhere. The plugin's does:
   - With script, it posts by `fetch` and answers in place; without, it posts and redirects
     back with a message.
   - Spam defences: a honeypot, a minimum time on the form (three seconds, measured by the
-    visitor's browser, so a wrong device clock cannot drop a sign-up), and a rate limit per
-    address. There is no nonce, because WP Engine's page cache would make it stale.
+    visitor's browser, so a wrong device clock cannot drop a sign-up), and a rate limit over
+    ten minutes: five per visitor address, and fifty per connecting address, which a forged
+    `CF-Connecting-IP` header cannot change. There is no nonce, because WP Engine's page
+    cache would make it stale.
 - **What AERDF's HubSpot form needs:** exactly these fields and CAPTCHA off.
-  [START-HERE step 4](START-HERE.md#4-connect-the-follow-form) lists them.
+  [START-HERE step 3](START-HERE.md#3-connect-the-follow-form) lists them.
 - **2027:** HubSpot ends support for its v1–v3 APIs in September 2027. The submission call is
   one class, `Augmented_ED_HubSpot`, which already accepts a private-app token.
 
@@ -723,8 +691,8 @@ use, written into Yoast by the import (only where empty).
 
 ### Redirects
 
-- **On aerdf.org, the site's old preview slugs** (`/the-challenge/` and the rest, in
-  `content/redirects.csv`) **never existed** and need no rules.
+- **On aerdf.org, the preview site's old slugs** (`/the-challenge/` and the rest) **never
+  existed** and need no rules.
 - **What aerdf.org may need:** a rule from the existing AugmentED page
   (`/opportunities/advanced-fellows/augmented/`) to the new home, if AERDF retires it. See
   [DECISIONS.md](DECISIONS.md).
@@ -774,7 +742,7 @@ scroll budgets are made of.
 
 ## Acceptance checklist
 
-[START-HERE.md](START-HERE.md#acceptance) has the short list for the install. The detail
+[START-HERE.md](START-HERE.md#7-check-it) has the short list for the install. The detail
 below is the full one. `tools/verify-wp-plugin.mjs` checks most of it automatically on a
 local install, and `--live` checks it inside aerdf.org's own pages. Test logged out *and*
 logged in (the admin bar moves the offsets), and on aerdf.org with the AccessiBe widget
@@ -837,8 +805,10 @@ active.
 
 Every file this handoff lists is committed and final; **none of these commands is
 needed to rebuild the site in WordPress.** They matter only when the artwork or
-the export changes. The encoders read master material that is no longer in the
-repository and print the restore path they need if you run them without it.
+the export changes. The hero and falling-blocks encoders read render masters that are
+not in the repository, and print the restore path they need if you run them without it;
+`encode-images.mjs` and `encode-fonts.mjs` read committed sources, apart from the
+Shutterstock originals that `source-material/README.md` says how to fetch.
 
 | Command | What it does |
 |---|---|
@@ -846,10 +816,10 @@ repository and print the restore path they need if you run them without it.
 | `node tools/export-content.mjs` | Re-parses `pages/` into the `content/` data files. Run it after every export. |
 | `node tools/encode-hero-bridge.mjs` | Re-encodes the hero frames and manifest. Widths: `FULL_W` / `CROP_W` in the script. |
 | `node tools/encode-falling-blocks.mjs` | Re-encodes the CTA frames and manifest. Tiers: `WIDTHS` in the script. |
-| `node tools/encode-approach.mjs` | Re-encodes the parked Approach frames and manifest. Sequence: `OPEN` / `BEATS` / `STRIDE` in the script. |
 | `python3 tools/cutout-headshots.py [--only=<slug>]` | Cuts a headshot out of its photo and frames it; writes `source-material/image-sources/team-cutout/`. Needs a 973 MB model that is not committed — the script's header says where to get it. Only for a new or replaced photo. |
-| `node tools/encode-images.mjs` | Re-encodes photography and headshots from committed sources. |
+| `node tools/build-team.mjs` | Writes the Who We Are tiles in `index.html` from the roster, `source-material/team/people.json`. Run it after any roster change; the site build fails when the tiles and the roster differ. |
+| `node tools/encode-images.mjs` | Re-encodes photography and headshots. |
 | `node tools/encode-fonts.mjs` | Converts the design system's Avenir OTFs to the committed WOFF2. Needs `npm i --no-save wawoff2`. Only if the font files change. |
 | `node tools/build-wp-plugin.mjs` | Regenerates the plugin's `generated/` from `pages/`, `content/` and the bios. Run it after every export, and commit the result; CI fails if you do not. Needs `npm i --no-save linkedom postcss postcss-selector-parser` (versions in its header). `--assemble dist [--zip]` builds the installable plugin. |
 | `node tools/verify-wp-plugin.mjs [--live]` | Installs the assembled plugin into a fresh local WordPress (PHP 8, SQLite, a stand-in AERDF theme) and checks it end to end; `--live` also renders it inside real aerdf.org pages. Reports to `.wp-verify/report/`. |
-| `node tools/build-site.mjs _site` | Builds the static site for comparison while rebuilding. It is exactly what the reference site serves: leaving out the design system's dev files and `.otf` sources, and the parked Approach scrub. |
+| `node tools/build-site.mjs _site` | Builds the static site for comparison while rebuilding. It is exactly what the reference site serves: leaving out the design system's dev files and `.otf` sources. |

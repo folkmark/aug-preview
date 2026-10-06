@@ -16,7 +16,7 @@
 //
 // What it does inherit is where the bytes are. Alpha is the expensive channel on these
 // plates, not colour, because they are mostly transparent — see encode-approach.mjs for
-// the measurements.
+// the measurements (in the repository's history: git log -- tools/encode-approach.mjs).
 //
 // It does NOT inherit that encoder's alphaQuality 70, and this is the one setting here
 // most likely to be "simplified" back. Do not. These plates put a soft ground shadow in
@@ -35,7 +35,7 @@
 // alphaQuality 70 was free on the Approach moves because their alpha was hard-edged and
 // had no gradient to lose. Here it costs the shadow. And since 90 to 100 is 183KB to
 // 187KB a frame — 2% — there is no reason to sit in between: lossless alpha it is, which
-// is also what CONTRIBUTING.md says the original masters used.
+// is also what the Approach scrub's masters used (q90 with lossless alpha).
 //
 // Be aware what this buys and at what price: at lossless alpha the shadow is about 65%
 // of every frame's bytes. Dropping it from the render, or moving it into an opaque

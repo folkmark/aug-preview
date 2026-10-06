@@ -124,10 +124,10 @@ empty tile and a photographed one sit on one colour.
 Do not re-crop them — no Media Library "crop to square", no theme `object-position`. The
 framing is what makes photographs by thirty-odd different photographers read as one team, and
 it is already done. They are 6–36 KB each. A photograph that stops a little short of where
-the framing wants it is stretched or enlarged within limits; where it stops further in
-than that, the figure fades out where the photo ends (Ryan Baker's bottom, left and top, Byungyeon
-Yun's sides, and Nicolle DeSilva's and Allison Rapoport's left edges). That is baked into the
-file, not an effect to reproduce, and it goes away when a looser original replaces one.
+the framing wants it is stretched or enlarged within limits. Three photographs too tight for
+those limits (Byungyeon Yun's, Nicolle DeSilva's and Ryan Baker's) are enlarged further, by
+the client's choice, rather than fade where the photo ends; no tile fades today. All of it is
+baked into the file, not an effect to reproduce.
 
 They are made in two steps, and the split is on purpose. `tools/cutout-headshots.py`
 does the slow part once — a matting model, face and eye detection, the framing — and

@@ -19,8 +19,8 @@
  *
  * There is NO NONCE, on purpose: WP Engine caches the Follow page, so a nonce printed into it
  * would be stale for most visitors and every submission would fail. The defences are the
- * honeypot field, a minimum time on the form (measured by the browser), and a per-address
- * rate limit.
+ * honeypot field, a minimum time on the form (measured by the browser), and a rate limit
+ * per address (augmented_ed_follow_limited()).
  *
  * @package AugmentED
  */
@@ -159,14 +159,51 @@ function augmented_ed_follow_notice() {
 	return isset( $all[ $key ] ) ? esc_html( $all[ $key ] ) : '';
 }
 
-/** The visitor's address, for the rate limit and HubSpot's context. */
-function augmented_ed_client_ip() {
+/** The address the request came from: the visitor's, or a proxy's in front of them. */
+function augmented_ed_peer_ip() {
 	$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-	// Behind Cloudflare the connecting address is Cloudflare's; it passes the visitor's.
-	if ( isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) {
-		$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) );
-	}
 	return filter_var( $ip, FILTER_VALIDATE_IP ) ? $ip : '';
+}
+
+/**
+ * The visitor's address, for the rate limit and HubSpot's context.
+ *
+ * Behind Cloudflare the connecting address can be Cloudflare's, and Cloudflare passes the
+ * visitor's in CF-Connecting-IP, overwriting any the visitor sent. A request that reaches
+ * WP Engine without passing through Cloudflare can send that header with any value, so it
+ * is believed only for the per-visitor limit and HubSpot's context, and never on its own:
+ * see augmented_ed_follow_limited().
+ */
+function augmented_ed_client_ip() {
+	$ip = isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) : '';
+	return filter_var( $ip, FILTER_VALIDATE_IP ) ? $ip : augmented_ed_peer_ip();
+}
+
+/**
+ * Whether this submission is over the rate limit, counting it if not.
+ *
+ * Two counts over ten minutes. Five per visitor address, which is the limit anyone sending
+ * the form by hand could reach. And fifty per connecting address, which a forged
+ * CF-Connecting-IP cannot change: with only the first, a script that sent a new made-up
+ * address with every request was never limited at all. Fifty binds real visitors only if
+ * more than fifty of them sign up within ten minutes through one Cloudflare edge address;
+ * on a host that gives PHP the visitor's own address, both counts key on the same address
+ * and the lower one rules.
+ */
+function augmented_ed_follow_limited() {
+	$counts = array(
+		'augmented_ed_rl_' . md5( augmented_ed_client_ip() )    => 5,
+		'augmented_ed_rl_peer_' . md5( augmented_ed_peer_ip() ) => 50,
+	);
+	foreach ( $counts as $key => $max ) {
+		if ( (int) get_transient( $key ) >= $max ) {
+			return true;
+		}
+	}
+	foreach ( $counts as $key => $max ) {
+		set_transient( $key, (int) get_transient( $key ) + 1, 10 * MINUTE_IN_SECONDS );
+	}
+	return false;
 }
 
 function augmented_ed_follow_handle() {
@@ -195,13 +232,10 @@ function augmented_ed_follow_handle() {
 		$respond( 'ok' );
 	}
 
-	$ip  = augmented_ed_client_ip();
-	$key = 'augmented_ed_rl_' . md5( $ip );
-	$n   = (int) get_transient( $key );
-	if ( $n >= 5 ) {
+	if ( augmented_ed_follow_limited() ) {
 		$respond( 'busy' );
 	}
-	set_transient( $key, $n + 1, 10 * MINUTE_IN_SECONDS );
+	$ip = augmented_ed_client_ip();
 
 	$spec   = augmented_ed_data( 'form' );
 	$values = array();

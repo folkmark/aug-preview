@@ -169,7 +169,7 @@ expect(
 expect(new Set(team.map((p) => p.group)).size >= 4, 'team: expected at least 4 groups');
 
 // Bio links asserted RELATIONALLY, not against a hard-coded count. How many people have
-// a bio is not a fixed fact about this site the way the four redirects are — it went
+// a bio is not a fixed fact about this site — it went
 // from 4 to 21 in a day, and a new bio should be a markup change, not a build break. Counting the "Read bio" links in
 // the raw markup and matching still fails loudly on the case that matters: a link that is
 // on the page and did not survive the parse, which is what a changed href shape does.
@@ -251,16 +251,6 @@ const pages = ROUTES.map(([file, route]) => {
 });
 
 // ---------------------------------------------------------------------------
-// Redirects — the old long slugs, read from MOVED in build-site.mjs so this
-// stays a single list. CSV in the Redirection plugin's import format.
-// ---------------------------------------------------------------------------
-const buildSrc = fs.readFileSync(path.join(root, 'tools/build-site.mjs'), 'utf8');
-const movedBlock = buildSrc.match(/const MOVED = \[([\s\S]*?)\];/)?.[1] ?? '';
-const redirects = [...movedBlock.matchAll(/\['([^']+)',\s*'([^']+)'\]/g)]
-  .map((m) => ({ source: `/${m[1]}/`, target: `/${m[2]}/` }));
-expect(redirects.length === 4, `redirects: expected 4 MOVED entries in build-site.mjs, parsed ${redirects.length}`);
-
-// ---------------------------------------------------------------------------
 if (problems.length) {
   for (const p of problems) console.error(`::error::export-content: ${p}`);
   process.exit(1);
@@ -277,5 +267,4 @@ write('team.json', team);
 write('research.json', research);
 write('cycle.json', cycle);
 write('pages.json', pages);
-write('redirects.csv', 'source,target\n' + redirects.map((r) => `${r.source},${r.target}`).join('\n') + '\n');
 console.log(`\n-> wordpress-handoff/content/  (parsed from wordpress-handoff/pages/, ${team.length} team / ${research.length} research / ${cycle.length} cycle steps)`);
