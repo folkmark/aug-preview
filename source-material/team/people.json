@@ -1514,10 +1514,10 @@
       "group": "strategy",
       "order": 3,
       "tags": [],
-      "role": null,
+      "role": "Finance Advisor",
       "affiliation": null,
       "location": null,
-      "linkedin": null,
+      "linkedin": "https://www.linkedin.com/in/christopherdaniels/",
       "website": null,
       "photo": {
         "master": "chris-daniels.jpg",
@@ -1530,12 +1530,11 @@
       },
       "bioSource": null,
       "form": null,
-      "notes": "In the Strategy group per Sherry (via Brendan, 6 October 2026). No form entry, so no title or links yet; the tile shows the name alone until they arrive (decided by Brendan, 6 October 2026).",
-      "actions": [
-        "[joan] Send Chris Daniels's title, and a LinkedIn or website if wanted."
-      ],
+      "notes": "In the Strategy group per Sherry (via Brendan, 6 October 2026). No form entry. Title from Brendan, 6 October 2026: Chris is a fractional CFO; the client asked for \"Financial Advisor\", and Brendan chose \"Finance Advisor\" so it does not read as selling insurance. LinkedIn from Brendan the same day.",
+      "actions": [],
       "history": [
-        "2026-10-06 status: — → on_site; group: — → strategy (Brendan)"
+        "2026-10-06 status: — → on_site; group: — → strategy (Brendan)",
+        "2026-10-06 title: — → Finance Advisor; linkedin added (Brendan)"
       ]
     }
   ]
