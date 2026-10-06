@@ -167,7 +167,7 @@ index.html ──tools/export-static.mjs──▶ pages/ (+ states.json)
 [What the plugin does](#what-the-plugin-does).
 
 **Assembled:** `node tools/build-wp-plugin.mjs --assemble dist [--zip]` copies the plugin and
-exactly the files in `ship.json` — 362 files, 22.5 MB — into `dist/augmented-ed/`. The
+exactly the files in `ship.json` — 363 files, 22.5 MB — into `dist/augmented-ed/`. The
 hero ships only frames 276–417, the ones it plays.
 
 **Checked:**
