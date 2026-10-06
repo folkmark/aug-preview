@@ -43,7 +43,7 @@ import { parseHTML } from 'linkedom';
 import { scopeCss, assertScoped } from './lib/css-scope.mjs';
 import { readBios, lede, staticHelper, phpHelper, bioBody, BIO_PROFILE_CSS, BIO_PROFILE_DESKTOP_CSS } from './lib/bio-page.mjs';
 import { unserved, readManifest, heroFrames, fallingFrames } from './lib/sequences.mjs';
-import { ROSTER, readRoster, isArchived } from './lib/team.mjs';
+import { ROSTER, readRoster, isArchived, surfaced } from './lib/team.mjs';
 
 const root = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
 const PAGES_DIR = path.join(root, 'wordpress-handoff/pages');
@@ -405,7 +405,12 @@ function followForm(document) {
 const groupNames = [...new Set(team.map((p) => p.group))];
 const GROUPS = groupNames.map((name, i) => ({ slug: `augmented-${slugify(name)}`, name, order: i + 1 }));
 const groupSlug = Object.fromEntries(GROUPS.map((g) => [g.name, g.slug]));
-if (GROUPS.length !== 4) fail(`team: ${GROUPS.length} groups, expected 4`);
+// Every group the roster has someone on the page in, and no other: a heading the export lost
+// or invented would otherwise become a WordPress category. Pinned at 4 until the Strategy
+// group arrived (October 2026), when the roster became the count.
+const onPage = surfaced(readRoster(root));
+const rosterGroups = readRoster(root).groups.filter((g) => onPage.some((p) => p.group === g.key)).map((g) => g.name);
+if (JSON.stringify(groupNames) !== JSON.stringify(rosterGroups)) fail(`team: the export's groups are ${JSON.stringify(groupNames)}, the roster's ${JSON.stringify(rosterGroups)}`);
 
 // The tile template, taken apart from the exported tiles. Every part must use ONE style
 // string across everyone on the page — if one tile differs, a template cannot reproduce it, and the
@@ -784,13 +789,9 @@ const seq = [
 ];
 const ship = new Map(); // plugin path -> repo path
 for (const r of [...shipped, ...seq]) ship.set(r, r);
-for (const js of ['hero-bridge', 'falling-blocks', 'cycle-wheel', 'team-colour']) ship.set(`assets/${js}.js`, `assets/${js}.js`);
-// Every bundled headshot and its colour twin, which the bloom builds by string replacement
-// and nothing names.
-for (const p of people.filter((x) => x.photo)) {
-  ship.set(`assets/team/${p.photo}.webp`, `assets/team/${p.photo}.webp`);
-  ship.set(`assets/team/colour/${p.photo}.webp`, `assets/team/colour/${p.photo}.webp`);
-}
+for (const js of ['hero-bridge', 'falling-blocks', 'cycle-wheel']) ship.set(`assets/${js}.js`, `assets/${js}.js`);
+// Every bundled headshot, which the tile partial names by the photo key in the team data.
+for (const p of people.filter((x) => x.photo)) ship.set(`assets/team/${p.photo}.webp`, `assets/team/${p.photo}.webp`);
 ship.set('assets/icons/linkedin.svg', 'assets/icons/linkedin.svg');
 for (const [repo, plugin] of fontsShipped) ship.set(plugin, repo);
 const deny = unserved(indexHtml);

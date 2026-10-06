@@ -49,9 +49,12 @@ Second paragraph.
 no Markdown parser — bold, links and lists are not rendered, they ship as literal
 characters. Keep bios to prose, or add a parser; it is about ten lines in `readBios()`.
 
-Anyone in any group can have one; eleven people on the page currently do not, because the
-tracking sheet has no bio for them, and their cards have no link. The bios of people off the
-page (archived, or waiting for a group) are kept in the same folder and not built.
+Only Leadership's tiles link a bio: the roster marks that group `"bios": true`, and
+`linksBio()` in `tools/lib/team.mjs` reads it. Until October 2026 every bio in the folder was
+linked, 21 of 32 tiles across four groups, and the client asked for Leadership alone. The
+bios of everyone else — people in the other groups, and people off the page (archived, or
+waiting for a group) — are kept in the same folder and not built, so marking another group
+is all it takes to bring theirs back.
 
 ## 3. The card contract
 
@@ -99,7 +102,7 @@ nav's own links.
 | Icon links stay clickable | `.bio-tile a[aria-label] { position:relative; z-index:1 }` | Otherwise the overlay swallows Raquel's LinkedIn. |
 | Screen readers hear "Read bio of Sherry Lachman" | A `.visually-hidden` span after the visible words | Four identical "Read bio" links are ambiguous out of context. The visible words come first so speech-control users can say what they see (WCAG 2.5.3). **Not an `aria-label`**: the team grid styles every `.team-grid-3 a[aria-label]` as a 24px icon box (44px on touch), and it would shrink the link into one. |
 | Every "Read bio" in a row sits on one line | `.bio-tile` is a flex column; `.bio-cta` has `margin-top:auto` | Before this, the link followed the role line and any icon row, and sat at 320, 320, 340 and 344px down the four tiles. |
-| Hover | Link to 70% opacity (the site's `a:hover`); the photo or placeholder to `brightness(.92)`; on a photo, its colour then pours back in from the pointer's side (see Headshots) | The design system's two hover rules — links dim, hover goes darker — plus the colour bloom, which breaks the second on purpose. A placeholder has no colour to show, so it only darkens. |
+| Hover | Link to 70% opacity (the site's `a:hover`); the photo or placeholder to `brightness(.92)` | The design system's two hover rules: links dim, hover goes darker. Until October 2026 a photo's colour also bloomed in over a duotone; the photos are colour at rest now, so that is gone. |
 | Keyboard focus | 2px `--brand-accent` outline on the overlay, 6px offset | The design system has no focus ring and says to add one in that colour. Drawn on the overlay, it outlines the whole tile. |
 
 Measured at 1440: tile 197x363, link 94x38, four links on one line; clicks on the
@@ -107,45 +110,36 @@ photo, the name and the empty space all open the bio.
 
 ### Headshots
 
-Every headshot on the page — all four groups, not only Leadership — is a finished
+Every headshot on the page — every group, not only Leadership — is a finished
 512 × 512 WebP: the person cut out of their photograph, framed by one rule for everybody
 (the face 46% of the tile's height, the eyes 38% down, centred across), their shoulders
-running off the tile's bottom and sides, and the whole composited in a navy duotone (`#0b1a2d` to white)
-onto `#e9eef4`, which is `--color-st-tropaz-lightest`. **Place them as they are:**
+running off the tile's bottom and sides, and the whole composited in its own colour onto
+`#e9eef4`, which is `--color-st-tropaz-lightest`. **Place them as they are:**
 `aspect-ratio: 1 / 1`, `object-fit: cover` at the default centre, no filter, nothing
 behind them. A person without a photo gets an empty square in the same `#e9eef4`, so an
 empty tile and a photographed one sit on one colour.
 
 Do not re-crop them — no Media Library "crop to square", no theme `object-position`. The
 framing is what makes photographs by thirty different photographers read as one team, and
-it is already done. They are 5–33 KB each. Nine of the photographs stop short of where the
-framing wants them, and those fade out where the photo ends (clearly for Ryan Baker,
-Andrew Lan, Byungyeon Yun, Sonia Prusaitis and Tom Peterson); that is baked into the file, not an
-effect to reproduce, and it goes away when a looser original replaces one.
+it is already done. They are 6–36 KB each. A photograph that stops a little short of where
+the framing wants it is stretched or enlarged within limits; where it stops further in
+than that, the figure fades out where the photo ends (Ryan Baker's bottom, left and top, Byungyeon
+Yun's sides, and Nicolle DeSilva's and Allison Rapoport's left edges). That is baked into the
+file, not an effect to reproduce, and it goes away when a looser original replaces one.
 
 They are made in two steps, and the split is on purpose. `tools/cutout-headshots.py`
 does the slow part once — a matting model, face and eye detection, the framing — and
 writes 768px cut-outs to `source-material/image-sources/team-cutout/`, with no colour.
-`tools/encode-images.mjs` then applies the look, from the `DUOTONE` object at the top of
-the file, in seconds. Change the colours there; change the framing in the cut-out tool.
+`tools/encode-images.mjs` then lays the cut-out on the tile's colour, from
+`TILE_BACKGROUND` at the top of the file, in seconds. Change the background there; change
+the framing in the cut-out tool.
 
-**Each has a colour twin**, `assets/team/colour/<slug>.webp`: the same cut-out in its own
-colour on the same `#e9eef4`, 6–36 KB. On hover, the colour pours back into the duotone
-from wherever the pointer came in — a radial mask, 900 ms in, draining out where the
-pointer leaves in 450 ms — and a keyboard focus on "Read bio" blooms it from the face.
-That is `assets/team-colour.js` and `.css`, enqueued like the other components; porting it
-needs three things of the markup, all already true here:
-- the headshot is an `<img>` whose `src` contains `assets/team/<slug>.webp`, and it is the
-  first child of a card that is a direct child of `.team-grid-3`;
-- the twin sits at the same path with `colour/` after `team/` — the script derives it
-  from the `src` attribute and never needs a list;
-- hover is judged on the whole card, so it works through the stretched link.
-
-It only runs on a device with a mouse or trackpad (`(hover: hover) and (pointer: fine)`),
-and it creates the colour layers only when a pointer first crosses a team grid, so phones
-never download the twins. Reduced motion gets a 200 ms crossfade instead of the bloom.
-The encoder derives the twins from the duotone jobs, so they cannot drift apart, and the
-build fails if a pictured person is missing one.
+**There is no hover effect to port.** From September to October 2026 each tile was a navy
+duotone with a colour twin, `assets/team/colour/<slug>.webp`, that `assets/team-colour.js`
+bloomed in under the pointer. The client asked for colour at rest, so the duotone, the twins
+and the script are gone, and the colour file is now the tile itself. **If an older copy of
+this handoff, or a plugin built before then, mentions `team-colour` or `assets/team/colour/`,
+it is dead.**
 
 ## 4. Two invariants you must not break
 
@@ -254,17 +248,18 @@ group and are not tagged `Archived`.
    subject's institution is in the headshot comment in `tools/encode-images.mjs`. Record it
    as their `photo` in the roster, with where it came from.
 3. If they have a bio, write `source-material/bios/<slug>.md`, headed with their roster name
-   and role. That is what gives their tile the "Read bio" link.
+   and role. In Leadership, that is what gives their tile the "Read bio" link; in any other
+   group it is kept and not built.
 4. `node tools/build-team.mjs` writes the tiles and prints what else to run: for a photograph,
    `tools/cutout-headshots.py --only=<slug>` (read its report; a warning means the photo is
    cropped too tight for the shared framing and wants a looser one), then
-   `node tools/encode-images.mjs --only=<slug>`, which writes the duotone and its colour twin.
+   `node tools/encode-images.mjs --only=<slug>`, which writes their tile.
 5. Re-export (`tools/export-static.mjs`, then `tools/export-content.mjs`, whose counts follow
    the roster), regenerate the plugin (`node tools/build-wp-plugin.mjs`), and on aerdf.org
    re-run the import. It creates the new person and changes nothing else. Or add them in
    WordPress directly: a team post in their AugmentED group, with the "AugmentED card"
-   filled in. A person added that way shows their featured image, without the colour
-   bloom, unless a bundled headshot is chosen.
+   filled in. A person added that way shows their featured image, uncut and unframed,
+   unless a bundled headshot is chosen.
 
 Taking someone off is the `Archived` tag, never a deletion: the encoder then removes their
 published photographs, their bio stops being built, and the WordPress import marks their
@@ -276,8 +271,7 @@ Build, then confirm at 1440, 992 and 400:
 - every card on the page is the same width, and each row's "Read bio" links share a line;
 - clicking the photo, name or the space between on a card with a bio opens their page;
 - Tab stops once per card with a bio;
-- with a mouse, hovering a photo pours its colour in from the side the pointer entered,
-  and it drains out where the pointer leaves; a touch device fetches no `colour/` files;
+- every headshot is in colour at rest, and hovering one only darkens it slightly;
 - a bio page's header and footer match `/team/`'s;
 - a bio page renders correctly **with JavaScript disabled**. That last one is the
   property that makes these pages portable, and it is easy to lose by reaching for the

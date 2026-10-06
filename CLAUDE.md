@@ -117,8 +117,9 @@ tiles in `index.html` from it (between marker comments in each `.team-grid-3`), 
 run `node tools/build-team.mjs`, and it prints what else to run.
 
 What is published follows the roster too. The headshot encodes exist only for people on the
-page, and `tools/encode-images.mjs` deletes any others. Bios of people off the page are kept
-in `source-material/bios/` and never built. Held people's photographs are not committed
+page, and `tools/encode-images.mjs` deletes any others. Bios of people off the page, and of
+everyone outside Leadership (the one group the roster marks `"bios": true`), are kept in
+`source-material/bios/` and never built. Held people's photographs are not committed
 (this repository is public); the roster records their Drive file ID instead.
 `source-material/team/README.md` has the fields.
 

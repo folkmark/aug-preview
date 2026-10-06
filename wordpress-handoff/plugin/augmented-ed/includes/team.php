@@ -144,12 +144,12 @@ function augmented_ed_serves_bio( $post ) {
 }
 
 /** The bundled headshot for a member, as a URL into the plugin, or ''. */
-function augmented_ed_bundled_photo( $post, $colour = false ) {
+function augmented_ed_bundled_photo( $post ) {
 	$photo = sanitize_file_name( (string) get_post_meta( $post->ID, 'augmented_ed_photo', true ) );
 	if ( '' === $photo ) {
 		return '';
 	}
-	$rel = 'team/' . ( $colour ? 'colour/' : '' ) . $photo . '.webp';
+	$rel = 'team/' . $photo . '.webp';
 	return is_readable( AUGMENTED_ED_DIR . 'assets/' . $rel ) ? augmented_ed_asset( $rel ) : '';
 }
 
@@ -177,10 +177,8 @@ function augmented_ed_links( $post ) {
 /**
  * What one tile is drawn from (generated/templates/partials/team-tile.php).
  *
- * The photo is the bundled duotone when there is one — the colour bloom on hover finds its
- * twin by rewriting that URL (assets/team/x.webp -> assets/team/colour/x.webp) — and
- * otherwise the post's featured image, which draws but does not bloom. A person with
- * neither gets the grid's placeholder square.
+ * The photo is the bundled headshot when there is one, and otherwise the post's featured
+ * image. A person with neither gets the grid's placeholder square.
  */
 function augmented_ed_tile_data( $post ) {
 	$photo = augmented_ed_bundled_photo( $post );

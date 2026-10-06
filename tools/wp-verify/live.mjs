@@ -15,7 +15,7 @@ import path from 'node:path';
 import http from 'node:http';
 
 const HOST_PAGE = 'https://aerdf.org/opportunities/advanced-fellows/augmented/';
-const COMPONENT_JS = /\/assets\/(hero-bridge|falling-blocks|cycle-wheel|team-colour)\.js/;
+const COMPONENT_JS = /\/assets\/(hero-bridge|falling-blocks|cycle-wheel)\.js/;
 const STILL = '[data-reveal]{opacity:1!important;transition:none!important;animation:none!important}';
 const HOST_UI = '.cky-consent-container,.cky-overlay,.cky-btn-revisit-wrapper,#glt-translate-trigger,#flags,.gtranslate_wrapper,[id*="gt_float"],.acsb-trigger,access-widget-ui{display:none!important}';
 const PROPS = ['font-family', 'font-size', 'font-weight', 'line-height', 'color', 'background-color', 'margin-top', 'margin-bottom', 'padding-top', 'padding-bottom', 'letter-spacing', 'text-transform', 'text-decoration-line', 'vertical-align', 'box-sizing', 'display', 'border-top-width', 'width', 'height'];

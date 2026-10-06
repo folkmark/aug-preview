@@ -39,19 +39,18 @@ const sharp = await import('sharp').then((m) => m.default).catch(() => {
   process.exit(1);
 });
 
-// The headshots' look — see THE HEADSHOTS in the job list. Ink is
-// --color-st-tropaz-darkest and the background --color-st-tropaz-lightest, resolved,
-// because an image cannot read a custom property: if either token moves, move these with
-// it. The placeholder squares for people without a photo use the same lightest tint in
-// index.html, so an empty tile and a photographed one sit on one colour.
-const DUOTONE = { ink: '#0b1a2d', paper: '#ffffff', background: '#e9eef4' };
+// The headshots' background — see THE HEADSHOTS in the job list. It is
+// --color-st-tropaz-lightest, resolved, because an image cannot read a custom property: if
+// the token moves, move this with it. The placeholder squares for people without a photo use
+// the same tint in index.html, so an empty tile and a photographed one sit on one colour.
+const TILE_BACKGROUND = '#e9eef4';
 
 // width: the target in real pixels. The comment on each is the box it renders into.
 // One headshot job per person on the page with a photograph — see THE HEADSHOTS below.
 const roster = readRoster(root);
 const onPage = surfacedWithPhoto(roster).map((p) => p.slug);
 const HEADSHOTS = onPage.map((slug) =>
-  ({ in: `team-cutout/${slug}.webp`, out: `team/${slug}.webp`, width: 512, square: true, duotone: DUOTONE }));
+  ({ in: `team-cutout/${slug}.webp`, out: `team/${slug}.webp`, width: 512, square: true, flatten: TILE_BACKGROUND }));
 
 const JOBS = [
   // Full-width photography in a 3/2 box, sized for ~640 CSS px on desktop.
@@ -312,26 +311,21 @@ const JOBS = [
   // downsample with nothing to crop, and the withoutEnlargement trap described at the
   // resize never comes up.
   //
-  // What is left for this file is the look, which is DUOTONE above: every pixel's luma
-  // mapped from the ink at black to the paper at white, then laid on the background by the
-  // cut-out's own matte. Before it, the tile showed 24 photographs by 24 photographers —
-  // bookshelves, a mountainside, studio grey, a blurred school interior, lit warm and cold
-  // — and no crop or white point makes that read as one team. The Crosstown fellows were
-  // once swapped for masters from a single shoot for exactly that reason (see below); the
-  // duotone makes the same argument for everybody at once. It was chosen off full-page
-  // renders of the Who We Are page, against black-and-white on the same blue and on warm
-  // paper, and against colour cut-outs on warm paper, soft blue and neutral grey.
+  // What is left for this file is the look: each person in their own colour, laid on
+  // TILE_BACKGROUND above by the cut-out's own matte. Lifting everyone off 24 different
+  // backdrops — bookshelves, a mountainside, studio grey, a blurred school interior — onto
+  // one tint is what makes 24 photographers' work read as one team.
+  //
+  // From September to October 2026 the tile was a duotone instead (luma mapped from
+  // --color-st-tropaz-darkest to white on the same tint), and the colour photograph was a
+  // second file, team/colour/<slug>.webp, that a script bloomed in under the cursor. The
+  // client asked for colour at rest (Sherry, 6 October), which left the bloom nothing to
+  // reveal, so both the duotone and the twins went. The colour here is the twins' own
+  // arithmetic, so the tiles are the hover state the page used to show.
   //
   // It lives here rather than in the cut-out tool because the tool needs a 973 MB model and
   // about 40 s a photograph, and this needs sharp and a few seconds. The cut-outs carry no
-  // colour treatment, so changing the look — another ink, another page colour, back to
-  // colour — is an edit to DUOTONE and a re-run of this file.
-  //
-  // Each of these also writes a colour twin, team/colour/<slug>.webp: the same cut-out in
-  // its own colour on the same background, which the page reveals under the cursor (THE
-  // COLOUR BLOOM in index.html). The twins are not listed here. They are derived from
-  // these jobs just after the list, so adding a person adds both, and nobody can give one
-  // a crop or a framing the other lacks.
+  // colour treatment, so changing the look is an edit here and a re-run of this file.
   //
   // The photographs in team/ are still the masters, and a better original is now the one
   // thing that improves a tile. Which photograph each person has, where it came from and
@@ -448,14 +442,6 @@ const JOBS = [
     card: { width: 1200, height: 630, background: '#fdfcfa', scale: 0.62 } }
 ];
 
-// The headshots' colour twins — see THE HEADSHOTS in the list above. Same cut-out, same
-// size, same background, and the duotone pass's own compositing with the luma mapping left
-// out. tools/build-site.mjs fails the build if a pictured person is missing one, because
-// the page builds these URLs in script and the build's reference check never sees them.
-for (const j of JOBS.filter((j) => j.duotone)) {
-  JOBS.push({ in: j.in, out: j.out.replace(/^team\//, 'team/colour/'), width: j.width, square: true, flatten: j.duotone.background });
-}
-
 // Two jobs that read the same master must frame and grade it the same way. Seven of the
 // photographs ship in two tiers and three of those carry a grade, and a crop or a grade
 // that differs between the 800 and the 1264 is a jump in framing or colour the moment
@@ -475,7 +461,7 @@ for (const j of JOBS) {
   if (!seen) byMaster.set(j.in, { key, out: j.out, crop: j.crop, grade: j.grade });
 }
 
-// --only=<slug,…> encodes just those people's headshots and their colour twins. Everything
+// --only=<slug,…> encodes just those people's headshots. Everything
 // else here re-encodes byte for byte on an unchanged toolchain, but a sharp or libwebp
 // update moves every file by a few bytes, and one new photograph should not carry the whole
 // site's assets into its commit.
@@ -486,7 +472,7 @@ for (const slug of only) {
     process.exit(1);
   }
 }
-const slugOf = (j) => j.out.match(/^team\/(?:colour\/)?([a-z0-9-]+)\.webp$/)?.[1];
+const slugOf = (j) => j.out.match(/^team\/([a-z0-9-]+)\.webp$/)?.[1];
 const wanted = JOBS.filter((j) => !only.length || only.includes(slugOf(j)));
 
 // A job whose source is missing is skipped, not fatal — see the note on SRC above.
@@ -519,34 +505,21 @@ for (const job of runnable) {
       create: { width: job.card.width, height: job.card.height, channels: 3, background: job.card.background },
     }).composite([{ input: inner, gravity: 'centre' }]);
   }
-  // A duotone job reads an RGBA cut-out and writes an opaque tile: one pass over the
-  // pixels, luma to a point between ink and paper, then over the background by the
-  // cut-out's alpha. Luma is Rec. 709 weights on the encoded values rather than luminance
-  // in linear light, because that is what the look was chosen from; the blend is in the
-  // encoded space too, as a browser would composite it. It runs at the cut-out's full 768
-  // and the resize below takes the finished, opaque tile down to 512, so there is no alpha
-  // left for the resize to get wrong.
-  //
-  // A flatten job is the same pass without the luma mapping: the cut-out's own colour over
-  // the background. It is here rather than sharp's .flatten() on purpose. The colour twin
-  // of each headshot has to meet its duotone exactly — THE COLOUR BLOOM in index.html
-  // wipes one into the other — so both come out of the same arithmetic, and wherever the
-  // matte is empty the two composites hold exactly the same background. After WebP each
-  // rounds its own way; measured over the first 24, the shipped pairs differ there by 0.05 of a
-  // level on average, invisible under a moving mask.
-  if (job.duotone || job.flatten) {
+  // A flatten job reads an RGBA cut-out and writes an opaque tile: one pass over the
+  // pixels, the cut-out's own colour over the background by its alpha, blended in the
+  // encoded space as a browser would composite it. It runs at the cut-out's full 768 and the
+  // resize below takes the finished, opaque tile down to 512, so there is no alpha left for
+  // the resize to get wrong. It is a pass of its own rather than sharp's .flatten() because
+  // it was written to match a duotone pass exactly (THE HEADSHOTS above); the arithmetic is
+  // kept so the tiles are byte for byte the colour the hover used to reveal.
+  if (job.flatten) {
     const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
-    const tone = job.duotone && [job.duotone.ink, job.duotone.paper].map(hex);
-    const ground = hex(job.duotone ? job.duotone.background : job.flatten);
+    const ground = hex(job.flatten);
     const { data, info } = await sharp(src).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
     const tile = Buffer.alloc(info.width * info.height * 3);
     for (let i = 0, o = 0; i < data.length; i += 4, o += 3) {
-      const y = (0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2]) / 255;
       const a = data[i + 3] / 255;
-      for (let c = 0; c < 3; c++) {
-        const fg = tone ? tone[0][c] + (tone[1][c] - tone[0][c]) * y : data[i + c];
-        tile[o + c] = Math.round(fg * a + ground[c] * (1 - a));
-      }
+      for (let c = 0; c < 3; c++) tile[o + c] = Math.round(data[i + c] * a + ground[c] * (1 - a));
     }
     pipe = sharp(tile, { raw: { width: info.width, height: info.height, channels: 3 } });
   }
@@ -613,7 +586,7 @@ if (skipped.length) {
 // published for a week, until 8db345c removed them by hand. Archiving someone in the roster
 // and running this is now the whole of taking their photograph down; build-site fails if it
 // was skipped. Runs with --only too, since it touches only files the roster has disowned.
-for (const dir of ['team', 'team/colour']) {
+for (const dir of ['team']) {
   for (const f of fs.readdirSync(path.join(OUT, dir)).filter((f) => f.endsWith('.webp'))) {
     const slug = f.slice(0, -'.webp'.length);
     if (onPage.includes(slug)) continue;

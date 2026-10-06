@@ -130,25 +130,22 @@ function share(html) {
 }
 
 // Every headshot URL carries a version: assets/team/<slug>.webp?v=<8 hex>, a hash of the
-// duotone and its colour twin together. Pages serves every file with max-age=600 under a
-// URL that never changes, and the twin is a separate request made on hover
-// (assets/team-colour.js), so for ten minutes after a deploy a browser could show the new
-// duotone with the old colour poured over it — a different framing wiping in over the
-// face. That is what the owner saw on 26 September 2026, after the reframing shipped. With
-// the pair's hash in the URL, a page naming the new pair asks for both afresh. The script
-// builds the twin's URL by replacing assets/team/ with assets/team/colour/ in the duotone's,
-// query and all, so the twin is fetched under the same version as the duotone it belongs
-// to. Only the pages written here carry it: index.html, the handoff export and the
-// WordPress plugin name the files plainly, and the reference check strips it.
+// file. Pages serves every file with max-age=600 under a URL that never changes, so for ten
+// minutes after a deploy a browser could keep showing a headshot that has since been
+// re-cut or replaced. It was added for a sharper case: until October 2026 each headshot
+// was a duotone with a colour twin fetched on hover, and on 26 September the owner saw a
+// cached duotone with the new framing's colour wiping in over the face. The twin is gone
+// (tools/encode-images.mjs, THE HEADSHOTS), but a new photograph or framing should still
+// reach every reader at once. Only the pages written here carry it: index.html, the
+// handoff export and the WordPress plugin name the files plainly, and the reference check
+// strips it.
 const headshotVersions = new Map();
 function versionHeadshots(html) {
   return html.replace(/(assets\/team\/)([a-z0-9-]+)\.webp(?![?\w])/g, (m, dir, slug) => {
     if (!headshotVersions.has(slug)) {
       const h = crypto.createHash('sha1');
-      for (const rel of [`assets/team/${slug}.webp`, `assets/team/colour/${slug}.webp`]) {
-        const abs = path.join(root, rel);
-        if (fs.existsSync(abs)) h.update(fs.readFileSync(abs));
-      }
+      const abs = path.join(root, `assets/team/${slug}.webp`);
+      if (fs.existsSync(abs)) h.update(fs.readFileSync(abs));
       headshotVersions.set(slug, h.digest('hex').slice(0, 8));
     }
     return `${dir}${slug}.webp?v=${headshotVersions.get(slug)}`;
@@ -622,9 +619,9 @@ ${bioBody(staticHelper({
 //
 // Skipping rather than building is the safe default for the other reason too: on a public
 // site an unlinked page is still a published page. Since the roster, a bio with no link is
-// never an accident — the tiles are written from the roster, so every person on the page
-// with a bio has one — it is the bio of someone held back or archived, kept on purpose so
-// they can return with everything. checkTeam() has already failed the build on a bio with
+// never an accident — the tiles are written from the roster, which links a bio only in a
+// group marked `bios: true` (Leadership; linksBio() in tools/lib/team.mjs) — it is the bio
+// of someone outside Leadership, held back or archived, kept on purpose so it can return. checkTeam() has already failed the build on a bio with
 // no roster entry, so what is left here is one line saying who is kept.
 const kept = [];
 const bios = readBios().filter((b) => {
@@ -680,18 +677,6 @@ const fallManifest = readManifest(root, 'assets/falling-blocks/manifest.json', '
 const archManifest = readManifest(root, 'assets/approach/manifest.json', 'tools/encode-approach.mjs', problems);
 
 const heroManifest = readManifest(root, 'assets/hero-bridge/manifest.json', 'tools/encode-hero-bridge.mjs', problems);
-
-// The headshots' colour twins are the same kind of reference. assets/team-colour.js
-// builds each one's URL from its duotone's (assets/team/<slug>.webp becomes
-// assets/team/colour/<slug>.webp), so no page names them and the src/href scan below
-// never sees them. Check the pairing here instead. A missing twin would not break the
-// page — the script drops a layer whose image fails to load — it would leave one person
-// who never blooms, which is exactly the gap nobody notices in review.
-for (const slug of new Set([...home.matchAll(/assets\/team\/([a-z0-9-]+)\.webp/g)].map((m) => m[1]))) {
-  if (!fs.existsSync(path.join(root, `assets/team/colour/${slug}.webp`))) {
-    problems.push(`assets/team/colour/${slug}.webp is missing — every pictured headshot has a colour twin; run tools/encode-images.mjs`);
-  }
-}
 
 function refsIn(html) {
   const out = new Set();

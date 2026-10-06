@@ -99,9 +99,9 @@ function augmented_ed_url( $key ) {
  * A URL into the plugin's assets/ directory.
  *
  * Plugin files, not media-library uploads, and that is deliberate: the components address
- * their frames by exact filename, the headshots' colour twins are found by rewriting the
- * headshot's own URL, and WP-Stateless on aerdf.org moves every upload to Google Cloud
- * Storage under a URL none of that could construct. Plugin files are left where they are.
+ * their frames by exact filename, and WP-Stateless on aerdf.org moves every upload to
+ * Google Cloud Storage under a URL they could not construct. Plugin files are left where
+ * they are.
  */
 function augmented_ed_asset( $rel ) {
 	return plugins_url( 'assets/' . ltrim( $rel, '/' ), AUGMENTED_ED_FILE );

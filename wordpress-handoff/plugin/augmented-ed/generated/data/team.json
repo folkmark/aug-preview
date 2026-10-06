@@ -10,19 +10,24 @@
       "order": 1
     },
     {
+      "slug": "augmented-strategy",
+      "name": "Strategy",
+      "order": 2
+    },
+    {
       "slug": "augmented-research-partners",
       "name": "Research Partners",
-      "order": 2
+      "order": 3
     },
     {
       "slug": "augmented-education-fellows",
       "name": "Education Fellows",
-      "order": 3
+      "order": 4
     },
     {
       "slug": "augmented-technology-and-design-partners",
       "name": "Technology and Design Partners",
-      "order": 4
+      "order": 5
     }
   ],
   "existing": [
@@ -129,6 +134,32 @@
       }
     },
     {
+      "slug": "jake-maguire",
+      "name": "Jake Maguire",
+      "group": "augmented-strategy",
+      "sort": 1,
+      "role": "Senior Advisor",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/jakemaguire",
+      "website": "",
+      "photo": "jake-maguire",
+      "bio": null
+    },
+    {
+      "slug": "ann-marie-guzzi",
+      "name": "Ann Marie Guzzi",
+      "group": "augmented-strategy",
+      "sort": 2,
+      "role": "Strategy Advisor",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/amguzzi/",
+      "website": "https://www.annmarieguzzi.com/",
+      "photo": "ann-marie-guzzi",
+      "bio": null
+    },
+    {
       "slug": "andrew-lan",
       "name": "Andrew Lan",
       "group": "augmented-research-partners",
@@ -139,12 +170,7 @@
       "linkedin": "",
       "website": "https://www.cics.umass.edu/about/directory/andrew-lan",
       "photo": "andrew-lan",
-      "bio": {
-        "paragraphs": [
-          "Andrew Lan develops artificial intelligence (AI) and especially natural language processing (NLP) methods to enable scalable and effective personalized learning in education. His research covers areas such as learner modeling, personalization, content generation, and human-in-the-loop AI."
-        ],
-        "description": "Andrew Lan develops artificial intelligence (AI) and especially natural language processing (NLP) methods to enable scalable and effective personalized learning in education."
-      }
+      "bio": null
     },
     {
       "slug": "ryan-baker",
@@ -157,12 +183,7 @@
       "linkedin": "",
       "website": "https://learninganalytics.upenn.edu/ryanbaker/",
       "photo": "ryan-baker",
-      "bio": {
-        "paragraphs": [
-          "Ryan uses Educational Data Mining/Learning Analytics to understand how students interact with and learn from digital learning platforms. He develops automated detectors that assess constructs such as student engagement and behavior in real time. Ryan is also an Adjunct Professor at University of Pennsylvania’s Graduate School of Education and directs the Penn Center for Learning Analytics."
-        ],
-        "description": "Ryan uses Educational Data Mining/Learning Analytics to understand how students interact with and learn from digital learning platforms."
-      }
+      "bio": null
     },
     {
       "slug": "angela-stewart",
@@ -175,12 +196,7 @@
       "linkedin": "https://www.linkedin.com/in/angelastewart1/",
       "website": "https://www.angelaebstewart.com/",
       "photo": "angela-stewart",
-      "bio": {
-        "paragraphs": [
-          "Angela conducts research at the intersection of learning sciences, AI, and human-computer interaction. She uses multimodal data to understand students’ cognitive and social states in collaborative STEM learning, focusing on equitable educational technologies that support student and teacher agency."
-        ],
-        "description": "Angela conducts research at the intersection of learning sciences, AI, and human-computer interaction."
-      }
+      "bio": null
     },
     {
       "slug": "laura-allen",
@@ -193,12 +209,7 @@
       "linkedin": "https://www.linkedin.com/in/laura-allen-37344528/",
       "website": "https://edpsych.umn.edu/laura-allen",
       "photo": "laura-allen",
-      "bio": {
-        "paragraphs": [
-          "Laura studies how people learn and communicate through text and discourse. She uses computational linguistics to analyze the detailed, nuanced processes of learning, and then applies these insights to design adaptive educational technologies."
-        ],
-        "description": "Laura studies how people learn and communicate through text and discourse."
-      }
+      "bio": null
     },
     {
       "slug": "blair-lehman",
@@ -211,12 +222,7 @@
       "linkedin": "https://www.linkedin.com/in/blair-lehman-bb043b11/",
       "website": "https://sites.google.com/site/blairlehman/home",
       "photo": "blair-lehman",
-      "bio": {
-        "paragraphs": [
-          "Blair studies student emotional and motivational states during learning and assessment. Her research focuses on developing personalized educational systems that are sensitive to students’ experience with the educational system, personal characteristics, and the contexts in which they live and learn to promote engagement and deeper learning."
-        ],
-        "description": "Blair studies student emotional and motivational states during learning and assessment."
-      }
+      "bio": null
     },
     {
       "slug": "isa-peczuh",
@@ -229,12 +235,7 @@
       "linkedin": "https://www.linkedin.com/in/isa-peczuh/",
       "website": "https://marisapeczuh.wixsite.com/website",
       "photo": "isa-peczuh",
-      "bio": {
-        "paragraphs": [
-          "Isa studies how young people construct and negotiate identity across relationships and contexts, over time, and within systemic inequities. She uses qualitative methods to explore identity processes in STEM and the ways that families shape STEM identity development."
-        ],
-        "description": "Isa studies how young people construct and negotiate identity across relationships and contexts, over time, and within systemic inequities."
-      }
+      "bio": null
     },
     {
       "slug": "aarav-kalkar",
@@ -280,12 +281,25 @@
       "name": "Katie Butler",
       "group": "augmented-research-partners",
       "sort": 10,
-      "role": "",
+      "role": "Ground Truth Coding Consultant",
       "affiliation": "",
       "location": "",
       "linkedin": "https://www.linkedin.com/in/katie-quinton-butler-1a9187125/",
       "website": "",
       "photo": "katie-butler",
+      "bio": null
+    },
+    {
+      "slug": "nicolle-desilva",
+      "name": "Nicolle DeSilva",
+      "group": "augmented-research-partners",
+      "sort": 11,
+      "role": "Community Engagement Coordinator, University of Pittsburgh",
+      "affiliation": "",
+      "location": "",
+      "linkedin": "https://www.linkedin.com/in/nicolle-desilva-457669b3/",
+      "website": "",
+      "photo": "nicolle-desilva",
       "bio": null
     },
     {
@@ -299,12 +313,7 @@
       "linkedin": "",
       "website": "https://www.hightechhigh.org/staff/alexandra-wiggins/",
       "photo": "alexandra-wiggins",
-      "bio": {
-        "paragraphs": [
-          "Lexi has been teaching with High Tech High for eight years and is passionate about developing students into informed, engaged global citizens. She is especially committed to supporting diverse learners and helping students build the literacy and critical thinking skills they need to thoughtfully navigate the world."
-        ],
-        "description": "Lexi has been teaching with High Tech High for eight years and is passionate about developing students into informed, engaged global citizens."
-      }
+      "bio": null
     },
     {
       "slug": "chris-mutter",
@@ -317,12 +326,7 @@
       "linkedin": "",
       "website": "https://www.hightechhigh.org/staff/chris-mutter/",
       "photo": "chris-mutter",
-      "bio": {
-        "paragraphs": [
-          "Chris Mutter has been teaching for over 20 years and joined High Tech High International in 2012, where he teaches 12th grade Digital Video Communications (CTE) through project-based learning. He is passionate about digital storytelling and helping students build the confidence to trust their ideas and express themselves in creative work they can be proud of."
-        ],
-        "description": "Chris Mutter has been teaching for over 20 years and joined High Tech High International in 2012, where he teaches 12th grade Digital Video Communications (CTE) through project-based learning."
-      }
+      "bio": null
     },
     {
       "slug": "christopher-hanks",
@@ -374,12 +378,7 @@
       "linkedin": "https://www.linkedin.com/in/nikki-wallace-hmw/",
       "website": "",
       "photo": "nikki-wallace",
-      "bio": {
-        "paragraphs": [
-          "Nikki Wallace is the Head of Research and Innovation and Lead Science Instructor at Crosstown High School in Memphis and a former scientific researcher, bringing 15 years of teaching experience to her work designing interdisciplinary STEM and project based learning experiences. She is passionate about empowering students to tackle real world community challenges through biotechnology, AI, and hands on innovation that expands access and opportunity for all learners."
-        ],
-        "description": "Nikki Wallace is the Head of Research and Innovation and Lead Science Instructor at Crosstown High School in Memphis and a former scientific researcher, bringing 15 years of teaching experience to her work designing interdisciplinary STEM and project based learning experiences."
-      }
+      "bio": null
     },
     {
       "slug": "danie-cowden",
@@ -392,12 +391,7 @@
       "linkedin": "https://www.linkedin.com/in/danie-cowden/",
       "website": "",
       "photo": "danie-cowden",
-      "bio": {
-        "paragraphs": [
-          "Danie Cowden is a veteran educator with 12 years of classroom experience focused on design, technology, and STEM, and holds multiple professional certifications in technology and design. With more than 30 years as a professional photographer and designer, she brings a practitioner’s lens to education, bridging creative industry expertise with innovative instructional practice."
-        ],
-        "description": "Danie Cowden is a veteran educator with 12 years of classroom experience focused on design, technology, and STEM, and holds multiple professional certifications in technology and design."
-      }
+      "bio": null
     },
     {
       "slug": "joshua-sloan",
@@ -410,12 +404,7 @@
       "linkedin": "https://www.linkedin.com/in/joshua-sloan-746aa1226/",
       "website": "",
       "photo": "joshua-sloan",
-      "bio": {
-        "paragraphs": [
-          "Joshua Sloan is the Math Department Chair at Crosstown High School in Memphis, where he has spent 4 of his 10 years teaching. He is passionate about building positive math identity and character through project based learning in the math classroom."
-        ],
-        "description": "Joshua Sloan is the Math Department Chair at Crosstown High School in Memphis, where he has spent 4 of his 10 years teaching."
-      }
+      "bio": null
     },
     {
       "slug": "mohammed-al-harthy",
@@ -428,12 +417,7 @@
       "linkedin": "https://www.linkedin.com/in/mohammed-al-harthy/",
       "website": "",
       "photo": "mohammed-al-harthy",
-      "bio": {
-        "paragraphs": [
-          "Mohammed Al Harthy is the 9th Grade Team Lead and Computer Science Instructor at Crosstown High School in Memphis, where he has spent five years teaching. With a background in engineering and education, he is passionate about helping students find their passion in tech and game development, and start their computer science careers."
-        ],
-        "description": "Mohammed Al Harthy is the 9th Grade Team Lead and Computer Science Instructor at Crosstown High School in Memphis, where he has spent five years teaching."
-      }
+      "bio": null
     },
     {
       "slug": "sarah-zaner",
@@ -446,12 +430,7 @@
       "linkedin": "",
       "website": "https://bendablelabs.com/who_we_are/sarah-zaner",
       "photo": "sarah-zaner",
-      "bio": {
-        "paragraphs": [
-          "Sarah has spent over 25 years in edtech, learning sciences, and human-centered design. She previously led R&D teams at IDEO, SRI International, and Scholastic and has led design and development of award-winning learning tools, including Read 180 and Math 180."
-        ],
-        "description": "Sarah has spent over 25 years in edtech, learning sciences, and human-centered design."
-      }
+      "bio": null
     },
     {
       "slug": "lisa-peterson",
@@ -464,12 +443,7 @@
       "linkedin": "https://www.linkedin.com/in/lisa-peterson/",
       "website": "",
       "photo": "lisa-peterson",
-      "bio": {
-        "paragraphs": [
-          "Lisa is a product designer with more than 25 years of experience, including time at Google and eBay. She brings expertise in product strategy, user research, and designing complex digital products."
-        ],
-        "description": "Lisa is a product designer with more than 25 years of experience, including time at Google and eBay."
-      }
+      "bio": null
     },
     {
       "slug": "neil-sharma",
@@ -482,12 +456,7 @@
       "linkedin": "https://www.linkedin.com/in/neilshar/",
       "website": "",
       "photo": "neil-sharma",
-      "bio": {
-        "paragraphs": [
-          "Neil is a startup founder, full stack engineer, and public servant who turns messy, ambiguous problems into software that meaningfully impacts people’s lives. He builds products across both Silicon Valley and the federal government."
-        ],
-        "description": "Neil is a startup founder, full stack engineer, and public servant who turns messy, ambiguous problems into software that meaningfully impacts people’s lives."
-      }
+      "bio": null
     },
     {
       "slug": "joan-lee",
@@ -513,14 +482,7 @@
       "linkedin": "",
       "website": "",
       "photo": "",
-      "bio": {
-        "paragraphs": [
-          "Brandon is a hands-on software engineer who turns complex technical challenges into production-ready AI/ML systems, data platforms, and secure cloud infrastructure across civic technology, enterprise, and startup environments.",
-          "Previously, he co-built a federal department’s first generative AI platform and led engineering teams delivering critical systems for immigration and humanitarian missions. He has also built feature stores and model serving pipelines to operationalize petabyte-scale data at John Deere and developed trust and safety tools to detect harmful content at Facebook.",
-          "Brandon holds a B.S. in Computer Science from Iowa State University and a J.D. from Cornell Law School. He is also a U.S. Air Force veteran who served as an Arabic linguist supporting counterterrorism operations."
-        ],
-        "description": "Brandon is a hands-on software engineer who turns complex technical challenges into production-ready AI/ML systems, data platforms, and secure cloud infrastructure across civic technology, enterprise, and startup environments."
-      }
+      "bio": null
     },
     {
       "slug": "sonia-prusaitis",
@@ -540,7 +502,7 @@
       "name": "Tom Keefe",
       "group": "augmented-technology-and-design-partners",
       "sort": 7,
-      "role": "",
+      "role": "Engineering Consultant",
       "affiliation": "",
       "location": "",
       "linkedin": "https://www.linkedin.com/in/tom-keefe/",
@@ -553,7 +515,7 @@
       "name": "Allison Rapoport",
       "group": "augmented-technology-and-design-partners",
       "sort": 8,
-      "role": "",
+      "role": "Engineering Consultant",
       "affiliation": "",
       "location": "",
       "linkedin": "https://www.linkedin.com/in/allison-rapoport",

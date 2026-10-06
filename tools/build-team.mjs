@@ -21,7 +21,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ROSTER, readRoster, formatRoster, spliceTeam, checkTeam, surfaced, hasPhoto, hasBio, statusOf } from './lib/team.mjs';
+import { ROSTER, readRoster, formatRoster, spliceTeam, checkTeam, surfaced, hasPhoto, linksBio, statusOf } from './lib/team.mjs';
 
 const root = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
 const args = process.argv.slice(2);
@@ -53,7 +53,7 @@ console.log(after === before ? 'index.html: tiles already match the roster' : 'i
 // What the page now shows, per group, and who is kept off it.
 for (const g of roster.groups) {
   const on = surfaced(roster).filter((p) => p.group === g.key);
-  console.log(`  ${g.name}: ${on.length} (${on.filter(hasPhoto).length} photos, ${on.filter((p) => !hasPhoto(p)).length} placeholders, ${on.filter((p) => hasBio(root, p.slug)).length} bios)`);
+  console.log(`  ${g.name}: ${on.length} (${on.filter(hasPhoto).length} photos, ${on.filter((p) => !hasPhoto(p)).length} placeholders, ${on.filter((p) => linksBio(root, roster, p)).length} bios)`);
 }
 for (const status of ['held', 'archived']) {
   const off = roster.people.filter((p) => statusOf(p) === status);

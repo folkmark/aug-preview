@@ -12,7 +12,8 @@ Who is pictured is read off index.html (every assets/team/<slug>.webp it referen
 whose tiles tools/build-team.mjs writes from the roster, source-material/team/people.json:
 a person is added there, with a group and a photo, and their card follows. The output
 carries no colour treatment: it is the person, lifted off their background, at a shared scale and
-position, and the duotone is applied by the encoder. That split is deliberate. This
+position, and the look (the person in colour on the tile's tint) is applied by the
+encoder. That split is deliberate. This
 step needs a 973 MB model and ~40 s an image; the look needs neither, and should be
 changeable in a minute without anyone re-running a neural network.
 
@@ -135,18 +136,21 @@ Byungyeon's is grounded the same way as Andrew's, but the passport photo cuts th
 18% in from both sides, and reaching them would take more than the limit, so the sides
 still fade. Andrew's and Byungyeon's crowns stop about 3% below the top rather than 4%: the
 reach and the headroom between them use the whole of REACH_DROP, and the report says so.
-Ryan's 190px photo is cut at the hairline and across the chest, and cannot be grounded
-within the limits without stretching his chin, so it is left exactly as it was. A 1.29x
-framing that grounded him was preferred by every judge to the floating bust, but its
-stretch reached his jaw, and that is not a trade this makes on someone's face.
+Ryan's photo is cut at the hairline and across the chest, and cannot be grounded within
+the limits without stretching his chin, so it is left exactly as it was. A 1.29x framing
+that grounded him was preferred by every judge to the floating bust, but its stretch
+reached his jaw, and that is not a trade this makes on someone's face. In October 2026 his
+190px copy was replaced by Adelaide University's 540px, which is sharper but the same crop
+cut tighter, and fades the same way; filling the tile with it instead was offered and
+declined, since it makes his face about 1.6x everyone else's.
 
 THE EDGE FADE is what is left: wherever a photograph's own edge still cuts through the
 person, the figure fades to nothing over EDGE_FADE as it approaches that cut. The fade is
 measured from the cut itself — the stretch of the border the matte actually touches — not
 from the whole edge, so a photo cut at the shoulder does not also fade the cheek above it.
 Before the stretch and the reach, nine photos faded like this, and they looked different
-from everyone else. Three still do, as described above: Ryan's, Byungyeon's sides and
-Allison's left edge. Two shared fades were tried to hide that, and both went:
+from everyone else. Four still do: Ryan's, Byungyeon's sides, Allison's left edge, and
+Nicolle's (October 2026), whose selfie cuts through her hair at the left. Two shared fades were tried to hide that, and both went:
 - A single vignette tuned so every one of those cuts fell where it had already faded
   out. Ryan's chest and Byungyeon's shoulders force it to finish just below everybody's
   chin, which kept 4-13% of anyone's shoulders — 24 floating heads, with the curve cutting

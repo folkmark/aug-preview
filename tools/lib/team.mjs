@@ -35,8 +35,8 @@
 //   - No boolean attributes. React drops required="" and its kind (an empty string is a
 //     false prop), so nothing here writes one.
 //   - The marker text must not contain `assets/team/`, `team/<slug>/` or `<h3`:
-//     tools/cutout-headshots.py pictured(), build-site's colour-twin scan and its bio-link
-//     gate all read raw index.html for exactly those strings.
+//     tools/cutout-headshots.py pictured() and build-site's bio-link gate read raw
+//     index.html for exactly those strings.
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -55,6 +55,14 @@ export const isArchived = (p) => (p.tags || []).includes('Archived');
 export const surfaces = (p) => Boolean(p.group) && !isArchived(p);
 export const hasPhoto = (p) => Boolean(p.photo && p.photo.master);
 export const hasBio = (root, slug) => fs.existsSync(path.join(root, 'source-material/bios', `${slug}.md`));
+
+// Whether a person's tile links their bio, and so whether build-site builds the page: they
+// have one, and their group is marked `bios: true` in the roster. Only Leadership is. Until
+// October 2026 everyone with a bio got a "Read bio" — 21 of 32 tiles — and the client asked
+// for it on Leadership alone (Sherry, 6 October). The other bios stay in source-material/bios/,
+// unbuilt, like those of people off the page, so marking another group brings them back.
+export const linksBio = (root, roster, p) =>
+  hasBio(root, p.slug) && roster.groups.some((g) => g.key === p.group && g.bios === true);
 
 // Surfaced people in page order: group by group, then by `order` inside each.
 export function surfaced(roster) {
@@ -113,7 +121,7 @@ export function renderTile(p, bio) {
 
 export function renderTiles(root, roster, groupKey) {
   return surfaced(roster).filter((p) => p.group === groupKey)
-    .map((p) => renderTile(p, hasBio(root, p.slug))).join('\n');
+    .map((p) => renderTile(p, linksBio(root, roster, p))).join('\n');
 }
 
 // ---------------------------------------------------------------- the markers
@@ -206,15 +214,15 @@ export function checkTeam(root, html, roster = readRoster(root)) {
   // the page with a photograph. Anything else in assets/team/ is published and linked from
   // nowhere, which is what 8db345c had to clean up by hand.
   const want = new Set(surfacedWithPhoto(roster).map((p) => p.slug));
-  for (const dir of ['assets/team', 'assets/team/colour', 'source-material/image-sources/team-cutout']) {
+  for (const dir of ['assets/team', 'source-material/image-sources/team-cutout']) {
     const have = new Set(fs.readdirSync(path.join(root, dir)).filter((f) => f.endsWith('.webp')).map((f) => f.slice(0, -5)));
     for (const s of want) if (!have.has(s)) problems.push(`${dir}/${s}.webp is missing — run tools/cutout-headshots.py --only=${s} and tools/encode-images.mjs --only=${s}`);
     for (const s of have) if (!want.has(s)) problems.push(`${dir}/${s}.webp belongs to nobody on the page — ${seen.has(s) ? 'they are not on the page' : 'nobody in the roster'}; tools/encode-images.mjs removes stale encodes`);
   }
 
   // Bios. Every bio belongs to someone in the roster; build-site builds a page only for
-  // the ones on the page. A surfaced person's bio page repeats their name, so the two
-  // must agree.
+  // the ones a tile links (linksBio above: on the page, in a group that shows bios). A
+  // bio's page repeats the person's name, so the two must agree.
   const bioDir = path.join(root, 'source-material/bios');
   for (const f of fs.readdirSync(bioDir).filter((f) => f.endsWith('.md') && f !== 'README.md')) {
     const slug = f.slice(0, -3);

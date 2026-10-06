@@ -1308,10 +1308,6 @@
   "repo": "assets/logo/logo-horiz.svg"
  },
  {
-  "plugin": "assets/team-colour.js",
-  "repo": "assets/team-colour.js"
- },
- {
   "plugin": "assets/team/aarav-kalkar.webp",
   "repo": "assets/team/aarav-kalkar.webp"
  },
@@ -1334,6 +1330,10 @@
  {
   "plugin": "assets/team/angela-stewart.webp",
   "repo": "assets/team/angela-stewart.webp"
+ },
+ {
+  "plugin": "assets/team/ann-marie-guzzi.webp",
+  "repo": "assets/team/ann-marie-guzzi.webp"
  },
  {
   "plugin": "assets/team/ben-hoff.webp",
@@ -1360,136 +1360,16 @@
   "repo": "assets/team/christopher-hanks.webp"
  },
  {
-  "plugin": "assets/team/colour/aarav-kalkar.webp",
-  "repo": "assets/team/colour/aarav-kalkar.webp"
- },
- {
-  "plugin": "assets/team/colour/abby-petre.webp",
-  "repo": "assets/team/colour/abby-petre.webp"
- },
- {
-  "plugin": "assets/team/colour/alexandra-wiggins.webp",
-  "repo": "assets/team/colour/alexandra-wiggins.webp"
- },
- {
-  "plugin": "assets/team/colour/allison-rapoport.webp",
-  "repo": "assets/team/colour/allison-rapoport.webp"
- },
- {
-  "plugin": "assets/team/colour/andrew-lan.webp",
-  "repo": "assets/team/colour/andrew-lan.webp"
- },
- {
-  "plugin": "assets/team/colour/angela-stewart.webp",
-  "repo": "assets/team/colour/angela-stewart.webp"
- },
- {
-  "plugin": "assets/team/colour/ben-hoff.webp",
-  "repo": "assets/team/colour/ben-hoff.webp"
- },
- {
-  "plugin": "assets/team/colour/blair-lehman.webp",
-  "repo": "assets/team/colour/blair-lehman.webp"
- },
- {
-  "plugin": "assets/team/colour/byungyeon-yun.webp",
-  "repo": "assets/team/colour/byungyeon-yun.webp"
- },
- {
-  "plugin": "assets/team/colour/caitlin-mills.webp",
-  "repo": "assets/team/colour/caitlin-mills.webp"
- },
- {
-  "plugin": "assets/team/colour/chris-mutter.webp",
-  "repo": "assets/team/colour/chris-mutter.webp"
- },
- {
-  "plugin": "assets/team/colour/christopher-hanks.webp",
-  "repo": "assets/team/colour/christopher-hanks.webp"
- },
- {
-  "plugin": "assets/team/colour/danie-cowden.webp",
-  "repo": "assets/team/colour/danie-cowden.webp"
- },
- {
-  "plugin": "assets/team/colour/isa-peczuh.webp",
-  "repo": "assets/team/colour/isa-peczuh.webp"
- },
- {
-  "plugin": "assets/team/colour/jenny-bradbury.webp",
-  "repo": "assets/team/colour/jenny-bradbury.webp"
- },
- {
-  "plugin": "assets/team/colour/joan-lee.webp",
-  "repo": "assets/team/colour/joan-lee.webp"
- },
- {
-  "plugin": "assets/team/colour/joshua-sloan.webp",
-  "repo": "assets/team/colour/joshua-sloan.webp"
- },
- {
-  "plugin": "assets/team/colour/katie-butler.webp",
-  "repo": "assets/team/colour/katie-butler.webp"
- },
- {
-  "plugin": "assets/team/colour/laura-allen.webp",
-  "repo": "assets/team/colour/laura-allen.webp"
- },
- {
-  "plugin": "assets/team/colour/lisa-peterson.webp",
-  "repo": "assets/team/colour/lisa-peterson.webp"
- },
- {
-  "plugin": "assets/team/colour/mohammed-al-harthy.webp",
-  "repo": "assets/team/colour/mohammed-al-harthy.webp"
- },
- {
-  "plugin": "assets/team/colour/neil-sharma.webp",
-  "repo": "assets/team/colour/neil-sharma.webp"
- },
- {
-  "plugin": "assets/team/colour/nikki-wallace.webp",
-  "repo": "assets/team/colour/nikki-wallace.webp"
- },
- {
-  "plugin": "assets/team/colour/raquel-romano.webp",
-  "repo": "assets/team/colour/raquel-romano.webp"
- },
- {
-  "plugin": "assets/team/colour/ryan-baker.webp",
-  "repo": "assets/team/colour/ryan-baker.webp"
- },
- {
-  "plugin": "assets/team/colour/sarah-zaner.webp",
-  "repo": "assets/team/colour/sarah-zaner.webp"
- },
- {
-  "plugin": "assets/team/colour/sherry-lachman.webp",
-  "repo": "assets/team/colour/sherry-lachman.webp"
- },
- {
-  "plugin": "assets/team/colour/sonia-prusaitis.webp",
-  "repo": "assets/team/colour/sonia-prusaitis.webp"
- },
- {
-  "plugin": "assets/team/colour/stephen-hutt.webp",
-  "repo": "assets/team/colour/stephen-hutt.webp"
- },
- {
-  "plugin": "assets/team/colour/tom-keefe.webp",
-  "repo": "assets/team/colour/tom-keefe.webp"
- },
- {
-  "plugin": "assets/team/colour/tom-peterson.webp",
-  "repo": "assets/team/colour/tom-peterson.webp"
- },
- {
   "plugin": "assets/team/danie-cowden.webp",
   "repo": "assets/team/danie-cowden.webp"
  },
  {
   "plugin": "assets/team/isa-peczuh.webp",
   "repo": "assets/team/isa-peczuh.webp"
+ },
+ {
+  "plugin": "assets/team/jake-maguire.webp",
+  "repo": "assets/team/jake-maguire.webp"
  },
  {
   "plugin": "assets/team/jenny-bradbury.webp",
@@ -1522,6 +1402,10 @@
  {
   "plugin": "assets/team/neil-sharma.webp",
   "repo": "assets/team/neil-sharma.webp"
+ },
+ {
+  "plugin": "assets/team/nicolle-desilva.webp",
+  "repo": "assets/team/nicolle-desilva.webp"
  },
  {
   "plugin": "assets/team/nikki-wallace.webp",
