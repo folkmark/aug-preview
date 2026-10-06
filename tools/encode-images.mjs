@@ -12,8 +12,8 @@
 // cuts each person out and frames them first, and the jobs here read its output — see
 // THE HEADSHOTS in the job list. Every target below is set from the box the image
 // actually occupies, at roughly three device pixels per CSS pixel, which is what a phone
-// at DPR 3 can resolve and no more. The approach frames have their own encoder,
-// tools/encode-approach.mjs.
+// at DPR 3 can resolve and no more. The hero and falling-block frames have their own
+// encoders.
 
 import path from 'node:path';
 import fs from 'node:fs';
@@ -22,8 +22,9 @@ import { readRoster, surfacedWithPhoto } from './lib/team.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 // Every source this reads is committed under source-material/image-sources — see that
-// directory's README — so the whole run works from a clean checkout with nothing
-// restored. The icons used to sit apart, under assets/icons-rigtest, which meant their
+// directory's README — except the seven Shutterstock originals, which the licence keeps
+// out of the repository; the README says how to fetch them. Without them the run
+// re-encodes everything else. The icons used to sit apart, under assets/icons-rigtest, which meant their
 // lossless plates were copied into the published site by tools/build-site.mjs and served
 // to nobody: assets/ ships wholesale, and no page has ever referenced a source plate.
 // A job whose source is absent is still skipped rather than killing the run, so a
@@ -53,39 +54,19 @@ const HEADSHOTS = onPage.map((slug) =>
   ({ in: `team-cutout/${slug}.webp`, out: `team/${slug}.webp`, width: 512, square: true, flatten: TILE_BACKGROUND }));
 
 const JOBS = [
-  // Full-width photography in a 3/2 box, sized for ~640 CSS px on desktop.
-  //
-  // NEITHER OF THESE IS ON THE SITE. Nothing references them — not index.html, not
-  // assets/*.js, not support.js, not the design system, not the built _site — and
-  // assets/ ships wholesale, so the two of them are 164 KB published and served to
-  // nobody. That is the same failure the icons note above describes, in a different
-  // directory. Checked with grep across every referencing file type, September 2026.
-  //
-  // They are kept and graded rather than dropped because dropping them is a content
-  // decision and not this file's to take: both are strong editorial frames, and if one
-  // is ever placed it should already match the rest. Whoever settles it either wires
-  // them into a page or deletes these two jobs and the two masters with them.
-  //
-  // They are also the low-key end of the set and are meant to be: classroom-morning is a
-  // dawn classroom at mean luminance 59, student-notes a library at 93, against a stock
-  // set that averages ~145. Neither is brightened — see THE GRADE above. classroom-morning
-  // takes the white-point lift only (it was inside the warmth band at +18 already), and
-  // student-notes, the warmest frame after student-notebook at +30, is cooled to +18 by
-  // pulling red down rather than lifting blue.
-  { in: 'images/classroom-morning.png', out: 'images/classroom-morning.webp', width: 1264, grade: [1.048, 1.048, 1.048] },
-  { in: 'images/student-notes.png',     out: 'images/student-notes.webp',     width: 1264, grade: [0.889, 1, 1] },
-
   // The seven portrait photographs on The Challenge and Our Approach, in a 4/5 box, two
   // tiers each.
   //
   // All seven are licensed Shutterstock photography, read straight from the full-resolution
-  // originals in stock-photos-aug/large/ and cropped by the box on each job.
+  // originals in stock-photos-aug/large/ and cropped by the box on each job. Those
+  // originals are not committed (the licence does not allow sharing the files), so that
+  // directory is git-ignored: source-material/README.md lists the asset IDs to download.
   //
   // Two of them were generated frames until September 2026: they arrived in the build
   // hotlinked to a generation CDN under a user-scoped path, at 1856x2304 and 6.4-9.2 MB
   // apiece, and that bucket is not a home for production images, so their masters were
-  // committed here rather than fetched. Those masters now sit in image-sources/unused/
-  // beside the superseded hero frames. Nothing in this set is generated or hotlinked any
+  // committed here rather than fetched. Those masters are in the repository's history,
+  // with the superseded hero frames. Nothing in this set is generated or hotlinked any
   // more, and the whole row can be re-framed from originals.
   //
   // Reading the stock frames from the original rather than from a cropped master is
@@ -119,8 +100,7 @@ const JOBS = [
   // then 320 at 800, 406 at 992, and a flat 600 from 1422 up, where the container caps.
   //
   // 1264 is 2.1x the 600px desktop box, and above the 1053 a 390px phone at DPR 3 asks
-  // for. (It is also what the two unreferenced 3/2 frames above ship at, but they are not
-  // in this grid and never were — do not read that as corroboration.) 800 is the
+  // for. 800 is the
   // smallest round width that still covers every DPR-1 viewport including the 719px peak,
   // and a 430px phone at DPR 2 (774).
   //
@@ -132,11 +112,15 @@ const JOBS = [
   // and 1264.
   //
   // --------------------------------------------------------------------------------
-  // THE GRADE. This applies to all twelve photographs this encoder writes into
+  // THE GRADE. This applies to all ten photographs this encoder writes into
   // assets/images/, not only the seven in this block, so it is written out once here.
   // --------------------------------------------------------------------------------
   //
-  // The twelve come from four places — two editorial stock frames, seven Shutterstock
+  // It was solved over twelve. Two of them, classroom-morning and student-notes, were
+  // never placed on a page and left the repository in October 2026; the measurements and
+  // targets below are the twelve's and were not re-solved for the ten.
+  //
+  // The twelve came from four places — two editorial stock frames, seven Shutterstock
   // selects, three phone snapshots from school visits — and they did not agree on white
   // balance. Measured over each one's shipped crop, mean(R) - mean(B) ran -17 to +37,
   // which is four visibly different renderings of white in one set. `grade` is the fix: a
@@ -157,9 +141,9 @@ const JOBS = [
   // MEAN LUMINANCE IS NOT A TARGET, and this is the decision most likely to be "fixed" by
   // someone later. It runs 59 to 163 across the twelve and that spread is content, not
   // exposure: classroom-morning measures 59 because it is a dawn classroom deliberately
-  // dark, student-notes 93 because it is a library at a warm low key. They are the two
-  // best photographs on the site and normalising them to the stock set's ~145 would
-  // destroy both. What a viewer reads as "the same light" is where the white point sits,
+  // dark, student-notes 93 because it is a library at a warm low key. Normalising them to
+  // the stock set's ~145 would have destroyed both, and the same holds for the darker
+  // frames that remain. What a viewer reads as "the same light" is where the white point sits,
   // not where the average sits, which is why the axis above is p99.8 and not the mean.
   //
   // Three implementation details that are load-bearing:
@@ -400,11 +384,9 @@ const JOBS = [
   // arm uses. That is 3.3x the one element a reader deliberately points at. The generosity
   // is free: 4.18 MB of plate becomes 50 KB for the set.
   //
-  // These live in assets/approach/ beside the arch frames, which is two families in one
-  // directory but is safe: tools/encode-approach.mjs only unlinks /^ap\d{4}m?\.webp$/, so
-  // re-encoding that sequence leaves these alone, and its manifest check walks the manifest
-  // to disk rather than the other way round. The name is the Blender render's, which is
-  // that directory's own convention.
+  // These live in assets/approach/, which held the Approach scrub's frames beside them
+  // until the scrub left the repository in October 2026. The path is in the plugin's
+  // templates and the site's markup, so it stayed. The name is the Blender render's.
   { in: 'icons/cyc01_role_0001.png',         out: 'approach/cyc01_role_0001.webp',         width: 320, alpha: true },
   { in: 'icons/cyc02_capabilities_0001.png', out: 'approach/cyc02_capabilities_0001.webp', width: 320, alpha: true },
   { in: 'icons/cyc03_applications_0002.png', out: 'approach/cyc03_applications_0002.webp', width: 320, alpha: true },
@@ -427,9 +409,9 @@ const JOBS = [
   // (og:image:width/height), which lets a scraper lay out the card before it has fetched it.
   //
   // The source reaches up out of image-sources/ into the brand kit, which no other job does.
-  // That is the lesser evil: source-material/brand-logos/ is the kit exactly as AERDF
-  // supplied it, and copying a lockup into image-sources/ to avoid one `../` would fork it —
-  // two files to keep in step, and no way to tell which is canonical. The colour horizontal
+  // That is the lesser evil: source-material/brand-logos/ keeps this one file of the kit
+  // exactly as AERDF supplied it, and copying it into image-sources/ to avoid one `../`
+  // would fork it — two files to keep in step, and no way to tell which is canonical. The colour horizontal
   // lockup is the one that carries "supported by aerdf", which is the variant the client
   // asked for by name.
   //
@@ -598,7 +580,7 @@ for (const dir of ['team']) {
 
 // Print the band THE GRADE above holds the photography to, measured off the files just
 // written rather than off the pipeline that wrote them. Every images/ output of this
-// encoder is one of the twelve photographs — the headshots go to team/, the plates to
+// encoder is one of the ten photographs — the headshots go to team/, the plates to
 // illustrations/ and approach/ — so no job needs to declare itself.
 //
 // Why print and not assert: each grade is a constant solved by hand against one master,

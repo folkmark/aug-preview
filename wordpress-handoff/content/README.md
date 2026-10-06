@@ -21,7 +21,6 @@ or import these by hand. They stay useful as a readable record of the content.
 | `research.json` | 3 | The Recent Research cards: `title`, `description`, `url`. `url` is `null` for a paper with no public link yet, which the page shows as "Forthcoming" in place of the "Open link" button; none is null today. |
 | `cycle.json` | 4 | The R&D cycle wheel's steps: `number`, `title`, `body`, `icon`. The count is fixed at four — the wheel's geometry is not content. See [`../sections/cycle.md`](../sections/cycle.md). |
 | `pages.json` | 5 | Per-route `title` and meta `description`, ready for Yoast's fields. |
-| `redirects.csv` | 4 | The preview site's old long slugs and their replacements (`source,target`). These paths never existed on aerdf.org, so the plugin needs none of them. |
 
 Five bios are on the site, one page each at the `bioUrl` above: Leadership's five, the one
 group the roster marks `"bios": true` (until October 2026 every bio was linked, 21 across

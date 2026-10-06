@@ -84,7 +84,8 @@ partial coverage against 33% now. The shadow is smooth and correct as rendered; 
 about it needs fixing in the render.
 
 What it changes is the encode, and this is the one setting here most likely to be tidied
-back into line with `encode-approach.mjs`. Do not. Alpha now carries a low-amplitude
+back into line with the Approach encoder (`encode-approach.mjs`, in the repository's history
+since October 2026). Do not. Alpha now carries a low-amplitude
 gradient rather than just object edges, and **lossy alpha posterises it into visible
 terraces** — a topographic-map floor. Measured along one scanline through the shadow on
 frame 417, counting distinct alpha levels and the longest flat run over 100 samples:
@@ -131,7 +132,7 @@ alpha 48, and nothing in the scene casts there. Worth a look at the render setup
 
 ## Payload
 
-`encode-approach.mjs` measured "1600 is the knee" at ~47 KB a frame, on the **two-desk**
+The Approach encoder measured "1600 is the knee" at ~47 KB a frame, on the **two-desk**
 plates. That number does not transfer. The rack's grille mesh, cable bundles and LED rows
 hold far more detail, so the same width costs 78 KB here. Colour only, measured on frames
 276 / 348 / 417 with clean alpha estimated at 15 KB scaled by area:
@@ -182,9 +183,8 @@ difference between 1.72 and 1.13.
 
 So the 2048 cut this file costs at 110 KB a frame is now the lever on how large the hero
 can enter, not only on how it looks on a 5K. **It needs new renders.** The sequence
-masters have never been in this repository — `98d0243` carries `project/renders/hero-frames`,
-which is nine beat plates, not the 66-frame sequence — so unlike the Approach cuts this
-one cannot be re-encoded from the history. Only the entry actually needs the resolution:
+masters have never been in this repository or its history, so it cannot be re-encoded
+from them. Only the entry actually needs the resolution:
 the approach holds on frame 276 throughout and the plate is back at 1× before the scrub
 starts, so a single 2048 plate of frame 276 would buy most of it.
 

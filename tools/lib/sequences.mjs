@@ -1,6 +1,6 @@
 // The image sequences' frame lists, and what must never be published.
 //
-// Three components address their frames by string concatenation — a base the page carries
+// Two components address their frames by string concatenation — a base the page carries
 // as an attribute, and numbers and cuts the encoder wrote into a manifest beside the frames
 // — so no src or href anywhere names a single frame, and nothing that scans markup can see
 // them. Two tools need the list anyway: tools/build-site.mjs, which checks every frame the
@@ -11,18 +11,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 // WHAT IS NEVER PUBLISHED. See copyDir() in build-site.mjs for why each entry is here; the
-// plugin's packager asserts none of these ends up in the zip either.
-//   - the design system's dev files and its .otf sources (only the .woff2 are loaded);
-//   - the parked Approach scrub's code and frames, while <approach-scrub> is off the page.
-//     Keyed to the element rather than listed as dead, so mounting it again ships its
-//     files again with no second edit. The four cyc0* thumbnails in assets/approach/ are
-//     the cycle wheel's, used on every page, and are not matched.
-export function unserved(homeHtml) {
-  const approachMounted = /<approach-scrub\b/.test(homeHtml.replace(/<!--[\s\S]*?-->/g, ''));
+// plugin's packager asserts none of these ends up in the zip either: the design system's
+// dev files and its .otf sources (only the .woff2 are loaded).
+export function unserved() {
   return [
     /^_ds\/[^/]+\/(_adherence\.oxlintrc\.json|_ds_manifest\.json|readme\.md)$/,
     /^_ds\/.*\.otf$/,
-    ...(approachMounted ? [] : [/^assets\/approach\.(js|css)$/, /^assets\/approach\/(ap\d{4}m?\.webp|manifest\.json)$/]),
   ];
 }
 
@@ -74,23 +68,6 @@ export function heroFrames(attrs, m, problems) {
     problems.push(`hero-bridge plays ${played.length} of the manifest's ${m.frames.length} frames — that is a still, not a sequence`);
   }
   for (const n of played) {
-    for (const v of Object.keys(m.cuts)) {
-      out.push(base + m.stem + String(n).padStart(m.pad, '0') + v + '.' + m.ext);
-    }
-  }
-  out.push(base + 'manifest.json');
-  return out;
-}
-
-// Every frame of a mounted <approach-scrub>, in every cut, plus its manifest.
-export function approachFrames(attrs, m, problems) {
-  const base = attrOf(attrs)('base');
-  const out = [];
-  if (!base) {
-    problems.push('approach-scrub has no base attribute');
-    return out;
-  }
-  for (const n of m.frames) {
     for (const v of Object.keys(m.cuts)) {
       out.push(base + m.stem + String(n).padStart(m.pad, '0') + v + '.' + m.ext);
     }
