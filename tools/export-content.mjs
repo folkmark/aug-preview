@@ -68,8 +68,9 @@ const team = heads.map((m, k) => {
   // The bio link, read from the UNCAPPED card slice rather than from `after`. The link
   // is the last thing in its card, after the role, any muted lines and the icon row, so
   // it is the part of a card most likely to fall past `after`'s 2500-character cap. It
-  // does not today — measured on this export, "Read bio" sits 904 to 1847 characters
-  // after its <h3>, the far end being a Fellow's card — but when the bios were still set
+  // does not today — measured on this export, "Read bio" sits 1306 to 1707 characters
+  // after its <h3>, on the five Leadership cards that have one (a Fellow's card, with its
+  // school and city, reached 1847 when Fellows had bios) — but when the bios were still set
   // inline it did, silently: null, no error, a green build. `end` — the next <h3> — is
   // the real bound and is already computed above.
   //

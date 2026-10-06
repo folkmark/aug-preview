@@ -1,7 +1,8 @@
 === AugmentED ===
 Requires at least: 6.5
+Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: Proprietary
 
 The AugmentED pages, team and Follow form, drawn inside the site's own theme.
@@ -31,6 +32,14 @@ The full procedure, and the decisions to settle first, are in wordpress-handoff/
 and DECISIONS.md in the AugmentED repository.
 
 == Changelog ==
+
+= 1.1.0 =
+* Headshots in colour at rest; the colour-on-hover bloom, its script and the second set of
+  headshot files are gone.
+* Who We Are has a fifth group, Strategy, right below Leadership; the import creates its
+  category.
+* Bio pages for Leadership only. A team imported under 1.0.0 keeps sixteen other bios as
+  post content, which still draws "Read bio": clear those posts' content by hand.
 
 = 1.0.0 =
 First release.

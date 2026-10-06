@@ -16,7 +16,8 @@
 
 /* aerdf.org's Elementor kit: `.elementor-kit-1734 a, … h1–h6 { font-family: "avenir" }`, and
    AERDF's avenir files return 404, so every link without an inline font — the program bar's
-   nav, 31 links on Who We Are — fell back to the system sans-serif. It also colours h1. */
+   nav, every icon and bio link on Who We Are — fell back to the system sans-serif. It also
+   colours h1. */
 #augmented-ed :where(a) { font-family: revert; }
 #augmented-ed :where(h1, h2, h3, h4, h5, h6) { font-family: revert; color: revert; }
 
