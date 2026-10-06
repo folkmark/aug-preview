@@ -214,7 +214,7 @@ button carries the word "Menu" ([DECISIONS.md](DECISIONS.md)).
 - [ ] The home page's hero plays when scrolled, and its copy is fully visible, not yet
       fading, when the hero first reaches AugmentED's bar; the closing blocks fall; clicking a
       step of the cycle wheel travels to it.
-- [ ] Who We Are shows 35 headshots in colour and 1 placeholder in five groups; each
+- [ ] Who We Are shows 36 headshots in colour in five groups; each
       "Read bio" (Leadership's five only) opens that person's page.
 - [ ] A member without a bio (e.g. `/team/tom-peterson/`) goes to Who We Are.
 - [ ] Ticking **Archived** on a member's AugmentED card takes their tile off Who We Are and

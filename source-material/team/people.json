@@ -979,18 +979,24 @@
       "location": null,
       "linkedin": null,
       "website": null,
-      "photo": null,
+      "photo": {
+        "master": "brandon-bodnar.webp",
+        "from": "direct",
+        "ref": "sent by Brendan, 6 October 2026, after a search of Drive, Gmail, Slack and the repository found none",
+        "approved": false,
+        "notes": "800x800 WebP, committed as received: no EXIF or location data. Its likely source is his LinkedIn profile picture (linkedin.com/in/bodnarbm).",
+        "upscale": 0.74
+      },
       "bioSource": {
         "from": "tracker",
         "trackerApproved": true
       },
       "form": null,
       "notes": null,
-      "actions": [
-        "[client] Send a headshot."
-      ],
+      "actions": [],
       "history": [
-        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/brandon-bodnar/ (6008fab)"
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/brandon-bodnar/ (6008fab)",
+        "2026-10-06 photo: none → brandon-bodnar.webp (Brendan)"
       ]
     },
     {
