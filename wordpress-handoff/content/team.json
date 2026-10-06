@@ -84,6 +84,42 @@
     ]
   },
   {
+    "slug": "jake-maguire",
+    "name": "Jake Maguire",
+    "group": "Strategy",
+    "role": "Senior Advisor",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/jake-maguire.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/jakemaguire"
+      }
+    ]
+  },
+  {
+    "slug": "ann-marie-guzzi",
+    "name": "Ann Marie Guzzi",
+    "group": "Strategy",
+    "role": "Strategy Advisor",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/ann-marie-guzzi.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/amguzzi/"
+      },
+      {
+        "label": "Website",
+        "url": "https://www.annmarieguzzi.com/"
+      }
+    ]
+  },
+  {
     "slug": "andrew-lan",
     "name": "Andrew Lan",
     "group": "Research Partners",
@@ -91,7 +127,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/andrew-lan.webp",
-    "bioUrl": "/team/andrew-lan/",
+    "bioUrl": null,
     "links": [
       {
         "label": "Website",
@@ -107,7 +143,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/ryan-baker.webp",
-    "bioUrl": "/team/ryan-baker/",
+    "bioUrl": null,
     "links": [
       {
         "label": "Website",
@@ -123,7 +159,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/angela-stewart.webp",
-    "bioUrl": "/team/angela-stewart/",
+    "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
@@ -143,7 +179,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/laura-allen.webp",
-    "bioUrl": "/team/laura-allen/",
+    "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
@@ -163,7 +199,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/blair-lehman.webp",
-    "bioUrl": "/team/blair-lehman/",
+    "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
@@ -183,7 +219,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/isa-peczuh.webp",
-    "bioUrl": "/team/isa-peczuh/",
+    "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
@@ -247,7 +283,7 @@
     "slug": "katie-butler",
     "name": "Katie Butler",
     "group": "Research Partners",
-    "role": null,
+    "role": "Ground Truth Coding Consultant",
     "affiliation": null,
     "location": null,
     "photo": "assets/team/katie-butler.webp",
@@ -260,6 +296,22 @@
     ]
   },
   {
+    "slug": "nicolle-desilva",
+    "name": "Nicolle DeSilva",
+    "group": "Research Partners",
+    "role": "Community Engagement Coordinator, University of Pittsburgh",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/nicolle-desilva.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/nicolle-desilva-457669b3/"
+      }
+    ]
+  },
+  {
     "slug": "alexandra-wiggins",
     "name": "Alexandra (Lexi) Wiggins",
     "group": "Education Fellows",
@@ -267,7 +319,7 @@
     "affiliation": "High Tech High Mesa",
     "location": "San Diego, CA",
     "photo": "assets/team/alexandra-wiggins.webp",
-    "bioUrl": "/team/alexandra-wiggins/",
+    "bioUrl": null,
     "links": [
       {
         "label": "Website",
@@ -283,7 +335,7 @@
     "affiliation": "High Tech High International",
     "location": "San Diego, CA",
     "photo": "assets/team/chris-mutter.webp",
-    "bioUrl": "/team/chris-mutter/",
+    "bioUrl": null,
     "links": [
       {
         "label": "Website",
@@ -347,7 +399,7 @@
     "affiliation": "Crosstown High School",
     "location": "Memphis, TN",
     "photo": "assets/team/nikki-wallace.webp",
-    "bioUrl": "/team/nikki-wallace/",
+    "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
@@ -363,7 +415,7 @@
     "affiliation": "Crosstown High School",
     "location": "Memphis, TN",
     "photo": "assets/team/danie-cowden.webp",
-    "bioUrl": "/team/danie-cowden/",
+    "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
@@ -379,7 +431,7 @@
     "affiliation": "Crosstown High School",
     "location": "Memphis, TN",
     "photo": "assets/team/joshua-sloan.webp",
-    "bioUrl": "/team/joshua-sloan/",
+    "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
@@ -395,7 +447,7 @@
     "affiliation": "Crosstown High School",
     "location": "Memphis, TN",
     "photo": "assets/team/mohammed-al-harthy.webp",
-    "bioUrl": "/team/mohammed-al-harthy/",
+    "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
@@ -411,7 +463,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/sarah-zaner.webp",
-    "bioUrl": "/team/sarah-zaner/",
+    "bioUrl": null,
     "links": [
       {
         "label": "Website",
@@ -427,7 +479,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/lisa-peterson.webp",
-    "bioUrl": "/team/lisa-peterson/",
+    "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
@@ -443,7 +495,7 @@
     "affiliation": null,
     "location": null,
     "photo": "assets/team/neil-sharma.webp",
-    "bioUrl": "/team/neil-sharma/",
+    "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
@@ -475,7 +527,7 @@
     "affiliation": null,
     "location": null,
     "photo": null,
-    "bioUrl": "/team/brandon-bodnar/",
+    "bioUrl": null,
     "links": []
   },
   {
@@ -498,7 +550,7 @@
     "slug": "tom-keefe",
     "name": "Tom Keefe",
     "group": "Technology and Design Partners",
-    "role": null,
+    "role": "Engineering Consultant",
     "affiliation": null,
     "location": null,
     "photo": "assets/team/tom-keefe.webp",
@@ -514,7 +566,7 @@
     "slug": "allison-rapoport",
     "name": "Allison Rapoport",
     "group": "Technology and Design Partners",
-    "role": null,
+    "role": "Engineering Consultant",
     "affiliation": null,
     "location": null,
     "photo": "assets/team/allison-rapoport.webp",
