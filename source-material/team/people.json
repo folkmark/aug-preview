@@ -461,9 +461,9 @@
         "from": "form",
         "ref": "https://drive.google.com/open?id=1MiZwORsglGY-d42vXSG4xD0Ry9GLrpdr",
         "approved": false,
-        "upscale": 1.21,
-        "edgesExtended": "left 1%, right 1%",
-        "notes": "The form upload as submitted (28 Jul). A passport-style photo, cut across the chest and 18% in from both shoulders. The framing enlarges it 1.20x with the eye line 6% lower, so it reaches the bottom of the tile (THE REACH in tools/cutout-headshots.py); reaching the sides would take more than its limit, so they still fade. The crown sits 3% below the tile's top rather than 4%, the eye line having been lowered as far as it may go (THE HEADROOM in tools/cutout-headshots.py). Its EXIF block, which carried a GPS position, was removed on 6 October 2026; the image data is untouched."
+        "upscale": 1.06,
+        "notes": "The form upload as submitted (28 Jul). A passport-style photo, cut across the chest and 18% in from both shoulders. The framing enlarges it 1.20x with the eye line 6% lower, so it reaches the bottom of the tile (THE REACH in tools/cutout-headshots.py); reaching the sides would take more than its limit, so they still fade. The crown sits 3% below the tile's top rather than 4%, the eye line having been lowered as far as it may go (THE HEADROOM in tools/cutout-headshots.py). Its EXIF block, which carried a GPS position, was removed on 6 October 2026; the image data is untouched.",
+        "edgesFaded": "right 7%"
       },
       "form": {
         "submitted": "2026-07-28 23:08:32",
@@ -477,12 +477,14 @@
       },
       "notes": null,
       "actions": [
-        "[joan] Optional: a looser headshot that shows the shoulders. The passport photo is cut 18% in from both sides, so the tile is enlarged 1.54x to avoid a fade; a looser photo would return it to the shared framing."
+        "[joan] Optional: a looser headshot that shows the shoulders. The passport photo is cut 18% in from both sides, so the tile is enlarged 1.35x (chosen from a sheet of steps) and still fades a little at the right shoulder; a looser photo would return it to the shared framing."
       ],
       "history": [
         "2026-09-24 status: — → on_site (32a0c09)",
         "2026-09-25 title: — → Graduate Student, University of Minnesota (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)",
-        "2026-10-06 headshot: sides no longer fade; face enlarged 1.54x and eye line 18% lower, past the shared limit, by the client's choice (THE EXCEPTIONS in tools/cutout-headshots.py) (Brendan)"
+        "2026-10-06 headshot: sides no longer fade; face enlarged 1.54x and eye line 18% lower, past the shared limit, by the client's choice (THE EXCEPTIONS in tools/cutout-headshots.py) (Brendan)",
+        "2026-10-06 headshot: enlargement undone (it read as a giant close-up); back to the shared framing, sides fading (Brendan)",
+        "2026-10-06 headshot: a fixed 1.35x, eye line 12% lower, chosen from a sheet of steps between 1.20x and 1.54x; a trace of fade at the right shoulder (Brendan)"
       ]
     },
     {
@@ -977,18 +979,24 @@
       "location": null,
       "linkedin": null,
       "website": null,
-      "photo": null,
+      "photo": {
+        "master": "brandon-bodnar.webp",
+        "from": "direct",
+        "ref": "sent by Brendan, 6 October 2026, after a search of Drive, Gmail, Slack and the repository found none",
+        "approved": false,
+        "notes": "800x800 WebP, committed as received: no EXIF or location data. Its likely source is his LinkedIn profile picture (linkedin.com/in/bodnarbm).",
+        "upscale": 0.74
+      },
       "bioSource": {
         "from": "tracker",
         "trackerApproved": true
       },
       "form": null,
       "notes": null,
-      "actions": [
-        "[client] Send a headshot."
-      ],
+      "actions": [],
       "history": [
-        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/brandon-bodnar/ (6008fab)"
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/brandon-bodnar/ (6008fab)",
+        "2026-10-06 photo: none → brandon-bodnar.webp (Brendan)"
       ]
     },
     {

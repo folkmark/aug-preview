@@ -167,7 +167,7 @@ index.html ──tools/export-static.mjs──▶ pages/ (+ states.json)
 [What the plugin does](#what-the-plugin-does).
 
 **Assembled:** `node tools/build-wp-plugin.mjs --assemble dist [--zip]` copies the plugin and
-exactly the files in `ship.json` — 362 files, 22.5 MB — into `dist/augmented-ed/`. The
+exactly the files in `ship.json` — 363 files, 22.5 MB — into `dist/augmented-ed/`. The
 hero ships only frames 276–417, the ones it plays.
 
 **Checked:**
@@ -778,7 +778,7 @@ active.
 
 **Who We Are and the bio pages** (full criteria in [`sections/leadership.md`](sections/leadership.md)):
 
-- [ ] 35 headshots in colour and 1 placeholder square in `#e9eef4`, in the five groups
+- [ ] 36 headshots in colour, in the five groups
       (Leadership, Strategy, Research Partners, Education Fellows, Technology and Design
       Partners) and the order of `content/team.json`; the people without a title show no
       empty line.

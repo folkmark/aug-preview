@@ -145,13 +145,16 @@ between them use the whole of REACH_DROP, and the report says so.
 THE EXCEPTIONS are three photographs too tight for any of this, each enlarged past the limit
 because the client chose a larger face over a fade (October 2026), with the trade shown on a
 sheet beside a normally framed tile:
-- Byungyeon's passport photo cuts the shoulders 18% in from both sides: 1.54x, with the eye
-  line 18% lower so the tile does not cut off his hair.
 - Nicolle's selfie cuts through her hair at the left, which THE CROP clears at 1.35x.
 - Ryan's is cut at the hairline and across the chest: 1.55x. A 1.29x framing that grounded
   him by stretching reached his jaw, which is not a trade this makes on someone's face;
   enlarging stretches nothing. (Filling the tile this way was declined once, before the
   fades were weighed against it.)
+- Byungyeon's passport photo cuts the shoulders 18% in from both sides. Removing the fade
+  took 1.54x, which in a passport photo read as a giant close-up, so his is fixed at the step
+  the client picked from a sheet running from 1.20x to 1.54x: 1.35x, with the eye line 12%
+  lower (THE HEADROOM's doing, so the tile keeps his hair). A trace of fade stays on his right
+  shoulder.
 Each is listed in ENLARGED, and a looser photograph makes its entry unnecessary.
 
 THE EDGE FADE is what is left: wherever a photograph's own edge still cuts through the
@@ -159,8 +162,8 @@ person, the figure fades to nothing over EDGE_FADE as it approaches that cut. Th
 measured from the cut itself — the stretch of the border the matte actually touches — not
 from the whole edge, so a photo cut at the shoulder does not also fade the cheek above it.
 Before the stretch and the reach, nine photos faded like this, and they looked different
-from everyone else. Since October 2026 none does: Allison's is cropped, and Byungyeon's,
-Nicolle's and Ryan's are THE EXCEPTIONS. Before that, two shared fades were tried to hide
+from everyone else. Since October 2026 only a trace of Byungyeon's right shoulder does:
+Allison's is cropped, and his, Nicolle's and Ryan's are THE EXCEPTIONS. Before that, two shared fades were tried to hide
 the fading few, and both went:
 - A single vignette tuned so every one of those cuts fell where it had already faded
   out. Ryan's chest and Byungyeon's shoulders force it to finish just below everybody's
@@ -215,10 +218,12 @@ HEADROOM = 0.04   # THE HEADROOM: the least room between the crown and the tile'
 # 6 October 2026), because the fade these photographs otherwise need was judged worse than a
 # face larger than everyone else's. Each replaces REACH_ZOOM, and REACH_DROP where given,
 # for that person, and the reach and the headroom still take the least that removes the fade
-# and keeps the crown in. Byungyeon's needs the lower eye line too: enlarged 1.54x with it
-# held at 6%, the tile cut 8% off the top of his hair. Remove an entry when a looser
-# photograph arrives: it will not need it.
-ENLARGED = {'byungyeon-yun': {'zoom': 1.6, 'drop': 0.2}, 'nicolle-desilva': {'zoom': 1.4}, 'ryan-baker': {'zoom': 1.6}}
+# and keeps the crown in. 'fixed' instead sets the enlargement outright, for a photograph
+# where the least that removes the fade is too much: Byungyeon's needed 1.54x, which turned
+# his passport photo into a giant close-up the client called ridiculous, so his is the step
+# the client picked from a sheet of them, 1.35x, which leaves a trace of fade on his right
+# shoulder. Remove an entry when a looser photograph arrives: it will not need it.
+ENLARGED = {'byungyeon-yun': {'fixed': 1.35, 'drop': 0.2}, 'nicolle-desilva': {'zoom': 1.4}, 'ryan-baker': {'zoom': 1.6}}
 
 
 def pictured():
@@ -313,7 +318,8 @@ def frame(slug):
     if found is None:
         sys.exit(f'{slug}: no face found on the matte')
     (fx, fy, fw, fh), eye_y, how = found
-    s = FACE * T / fh
+    fixed = ENLARGED.get(slug, {}).get('fixed')
+    s = FACE * T / fh * (fixed or 1)
     eye = EYE
 
     # Which edges of the photo the person runs into. A side the person meets above the chin
@@ -359,7 +365,7 @@ def frame(slug):
         for _ in range(30):
             lo, hi = (lo, (lo + hi) / 2) if ok((lo + hi) / 2) else ((lo + hi) / 2, hi)
         return hi
-    limit = ENLARGED.get(slug, {}).get('zoom', REACH_ZOOM)
+    limit = 1.0 if fixed else ENLARGED.get(slug, {}).get('zoom', REACH_ZOOM)
     drop_limit = ENLARGED.get(slug, {}).get('drop', REACH_DROP)
     zoom_at = lambda t: 1 + (limit - 1) * t
 
@@ -546,12 +552,12 @@ def main():
               f"{reach:16}{r['headroom']:>5.0%}  {pct(r['cuts']):22}{pct(r['extended']):30}{r['lift']:.3f}")
         if r['face_kept'] < 0.95:
             warn.append(f"{s} ({r['face_kept']:.0%})")
-        if r['unreached']:
-            loose.append(f"{s} ({', '.join(r['unreached'])})")
+        if [k for k in r['unreached'] if k in r['cuts']]:
+            loose.append(f"{s} ({', '.join(k for k in r['unreached'] if k in r['cuts'])})")
         if [k for k in r['not_shoulder'] if k not in r['cropped'] and k in r['cuts']]:
             beside.append(f"{s} ({', '.join(k for k in r['not_shoulder'] if k not in r['cropped'] and k in r['cuts'])})")
         if s in ENLARGED:
-            enlarged.append(f"{s} ({r['zoom']:.2f}x)")
+            enlarged.append(f"{s} ({ENLARGED[s].get('fixed') or r['zoom']:.2f}x{', fixed' if ENLARGED[s].get('fixed') else ''})")
         if r['headroom'] < HEADROOM - 0.0005:
             crowded.append(f"{s} ({r['headroom']:.1%})")
     if loose:

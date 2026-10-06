@@ -126,8 +126,9 @@ framing is what makes photographs by thirty-odd different photographers read as 
 it is already done. They are 6–36 KB each. A photograph that stops a little short of where
 the framing wants it is stretched or enlarged within limits. Three photographs too tight for
 those limits (Byungyeon Yun's, Nicolle DeSilva's and Ryan Baker's) are enlarged further, by
-the client's choice, rather than fade where the photo ends; no tile fades today. All of it is
-baked into the file, not an effect to reproduce.
+the client's choice, rather than fade where the photo ends; Byungyeon's, at a size chosen to
+stay close to everyone else's, keeps a trace of fade at his right shoulder. All of it is baked
+into the file, not an effect to reproduce.
 
 They are made in two steps, and the split is on purpose. `tools/cutout-headshots.py`
 does the slow part once — a matting model, face and eye detection, the framing — and
@@ -152,7 +153,7 @@ handed on is wrong.
 its headshot regex on the literal `<img src="`. React preserves author attribute order for
 everything except `style`, so writing `<img class="shot" src="…">` in `index.html` takes
 every headshot to `null` — with a green build. There is an assertion for this (`the roster
-has 35 headshots on the page, parsed 0`), so it fails loudly now; before it existed it did
+has 36 headshots on the page, parsed 0`), so it fails loudly now; before it existed it did
 not. The tiles are written by `tools/build-team.mjs`, which always puts `src` first.
 
 **2. The link text starts with exactly "Read bio".** The exporter finds each bio page by
