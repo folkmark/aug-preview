@@ -6,10 +6,6 @@
       "bios": true
     },
     {
-      "key": "strategy",
-      "name": "Strategy, Finance, and Operations Partners"
-    },
-    {
       "key": "research-partners",
       "name": "Research Partners"
     },
@@ -20,6 +16,10 @@
     {
       "key": "technology-and-design-partners",
       "name": "Technology and Design Partners"
+    },
+    {
+      "key": "strategy",
+      "name": "Strategy, Finance, and Operations Partners"
     }
   ],
   "tags": {
