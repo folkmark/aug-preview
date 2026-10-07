@@ -6,11 +6,16 @@ AERDF's header and footer stay, with AugmentED's navigation as a bar beneath the
 Assessment for Good's pages do — puts the AugmentED team into AERDF's existing **Team**
 post type, and connects the Follow form to HubSpot.
 
-This page describes version **1.1.1**. The whole procedure takes about an hour on each
-environment, plus the HubSpot set-up in step 3.
+This page describes version **1.1.2**. The whole procedure takes about an hour on each
+environment, plus AERDF's HubSpot set-up in step 3.
 
 **Questions, at any step:** Brendan, [brendan@folkmark.com](mailto:brendan@folkmark.com) —
 the build, the plugin, the pages and the team list.
+
+**HubSpot is AERDF's.** AugmentED has not created, changed or tested anything in AERDF's
+HubSpot, and has no access to it. The contact property, the form, its settings and the test
+contact in step 3 are for someone at AERDF with HubSpot access. Brendan can say what the
+plugin sends and what its messages mean, but not how AERDF's HubSpot is set up.
 
 ## Before you start
 
@@ -20,8 +25,9 @@ lists every open decision with a default and an owner; these three block launch:
 1. **The address** — where the pages live (the plugin's default is `/augmented/`, which today
    redirects to `/opportunities/advanced-fellows/augmented/`), and what happens to that
    existing page.
-2. **The HubSpot form** — someone with access to AERDF's HubSpot creates the form the Follow
-   page submits to. [Step 3](#3-connect-the-follow-form) says exactly what it needs.
+2. **The HubSpot form** — AERDF's to create, by someone with access to AERDF's HubSpot.
+   Nothing exists there for AugmentED yet. [Step 3](#3-connect-the-follow-form) says exactly
+   what the form needs.
 3. **The Avenir licence** — the plugin serves its own Avenir font files; confirm AERDF's
    licence covers them.
 
@@ -32,6 +38,8 @@ HubSpot form. Publishing (step 6) needs all three.
 
 - Administrator access to WordPress on WP Engine **staging** and **production**, and to the
   WP Engine User Portal (for backups and caches).
+- For step 3, someone at AERDF who can create contact properties and forms in AERDF's
+  HubSpot (portal 20910033).
 - The zip, `augmented-ed-plugin.zip`, from Brendan, with its SHA-256. Check it before
   installing: `shasum -a 256 augmented-ed-plugin.zip` (macOS, Linux) or
   `certutil -hashfile augmented-ed-plugin.zip SHA256` (Windows) must print the same value.
@@ -55,7 +63,7 @@ WP Engine User Portal → the environment → Backups → Back up now.
 Plugins → **Add Plugin** ("Add New Plugin" in older WordPress) → **Upload Plugin** → choose
 `augmented-ed-plugin.zip` → **Install Now** → **Activate Plugin**.
 
-Check the Plugins screen says **AugmentED 1.1.1**.
+Check the Plugins screen says **AugmentED 1.1.2**.
 
 The zip is about 22 MB, because it carries every image and animation frame the pages use. If
 WordPress answers "The link you followed has expired." or "The uploaded file exceeds the
@@ -82,7 +90,8 @@ doubled.
 
 ### 3. Connect the Follow form
 
-**In AERDF's HubSpot** (someone with HubSpot access):
+**In AERDF's HubSpot** (someone at AERDF who can create properties and forms; none of
+this exists yet):
 
 1. Create the contact property the form's last question writes to: a **Dropdown select**
    contact property, label "Which best describes you?", internal name `augmented_persona`,
@@ -118,6 +127,11 @@ app token) as they are unless [DECISIONS.md](DECISIONS.md) says otherwise.
 **The test submission creates a real contact** with your WordPress name and email, and it
 starts whatever HubSpot workflow the form feeds. Staging and production submit to the same
 real form, so delete the test contact in HubSpot afterwards.
+
+**This is the plugin's first submission to AERDF's HubSpot.** The plugin's call has been tested
+only against a stand-in that answers the way HubSpot's API is documented to. If HubSpot refuses
+the test, the screen shows HubSpot's own message. First check the form ID, the internal names
+in the table above, and that CAPTCHA is off. Then send Brendan the message.
 
 ### 4. Optional: AERDF's job-title field
 
@@ -221,7 +235,9 @@ button carries the word "Menu" ([DECISIONS.md](DECISIONS.md)).
       sends their page to Who We Are; unticking it brings them back.
 - [ ] Sherry Lachman's and Caitlin Mills's AERDF pages are unchanged, apart from a Yoast
       meta description where theirs was empty.
-- [ ] The Follow form's test submission reaches HubSpot, and a real one from the page does.
+- [ ] The Follow form's test submission reaches AERDF's HubSpot, and so does a real one from
+      the page: someone with HubSpot access sees each contact arrive with every field filled
+      in, then deletes it.
 - [ ] AERDF's header, footer and every other page look exactly as before. The one expected
       change: the `/team/` archive and search now list the AugmentED people too
       ([DECISIONS.md](DECISIONS.md)).

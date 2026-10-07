@@ -18,7 +18,9 @@ destination decisions are theirs, and anything about how the site is built is mi
 - **The team goes into AERDF's existing `team` post type**, in an "AugmentED Team" category,
   not a new type. Two of them (Sherry Lachman, Caitlin Mills) are already there and are
   only attached.
-- **The Follow form submits to AERDF's HubSpot** through the plugin, on the server.
+- **The Follow form submits to AERDF's HubSpot** through the plugin, on the server. The
+  HubSpot side (a contact property and a form) is AERDF's to create. AugmentED has not
+  touched AERDF's HubSpot, and the plugin's call has been tested only against a stand-in.
 - **Its page-shaped half is generated from the site itself** (`tools/build-wp-plugin.mjs`), so
   it cannot drift from the site; CI fails if it does.
 - **It has been verified against aerdf.org**: installed into WordPress with a stand-in AERDF
@@ -668,7 +670,8 @@ The site's form never submitted anywhere. The plugin's does:
     ten minutes: five per visitor address, and fifty per connecting address, which a forged
     `CF-Connecting-IP` header cannot change. There is no nonce, because WP Engine's page
     cache would make it stale.
-- **What AERDF's HubSpot form needs:** exactly these fields and CAPTCHA off.
+- **What AERDF's HubSpot form needs:** exactly these fields and CAPTCHA off. AERDF creates
+  it; nothing exists in AERDF's HubSpot for AugmentED yet.
   [START-HERE step 3](START-HERE.md#3-connect-the-follow-form) lists them.
 - **2027:** HubSpot ends support for its v1–v3 APIs in September 2027. The submission call is
   one class, `Augmented_ED_HubSpot`, which already accepts a private-app token.
@@ -796,7 +799,7 @@ active.
 
 - [ ] All 72 reveal blocks become visible; none is stranded at `opacity: 0`.
 - [ ] "Send test submission" (Settings → AugmentED) is accepted, and a submission from the
-      page arrives in HubSpot.
+      page arrives in AERDF's HubSpot (checked by someone at AERDF with HubSpot access).
 - [ ] Fonts self-hosted, WOFF2 only; Avenir license confirmation on file.
 - [ ] The plugin's `assets/` excluded from image optimisation; the hero's manifest returns 200.
 - [ ] AERDF's header, footer and every other page are exactly as before.

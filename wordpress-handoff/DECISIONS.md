@@ -23,8 +23,12 @@ working default. Brendan is AugmentED's side of the build: [brendan@folkmark.com
 - `/team/` cannot be the address of Who We Are: it is the archive of AERDF's team post type.
 - The pages link to each other by template, so any address works and can change later.
 
-### The HubSpot form — AERDF's HubSpot owner, with AugmentED
+### The HubSpot form — AERDF's HubSpot owner
 
+- **All of it is AERDF's.** AugmentED has not created, configured or tested anything in
+  AERDF's HubSpot, and has no access to it. The persona property, the form, CAPTCHA, the
+  list or workflow, and the contacts are AERDF's to set up and own. The plugin's half is
+  the HubSpot fields in Settings → AugmentED (START-HERE step 3).
 - **Default:** submissions are refused (with a polite message) until a portal and form are
   set in Settings → AugmentED.
 - Which list or workflow the form feeds, and who owns the resulting contacts.
@@ -36,7 +40,8 @@ working default. Brendan is AugmentED's side of the build: [brendan@folkmark.com
 - **2027:** HubSpot ends support for its v1–v3 APIs in September 2027, and the endpoint used
   today is v3. HubSpot publishes the per-endpoint replacements in March 2027; the change is
   one class in the plugin (`includes/follow.php`, `Augmented_ED_HubSpot`), and it may need a
-  private-app token, which Settings already accepts.
+  private-app token, which Settings already accepts. Only AERDF can create that token in its
+  HubSpot.
 
 ### The Avenir licence — AERDF
 

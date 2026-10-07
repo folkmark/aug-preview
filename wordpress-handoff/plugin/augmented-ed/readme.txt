@@ -2,7 +2,7 @@
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: Proprietary
 
 The AugmentED pages, team and Follow form, drawn inside the site's own theme.
@@ -28,8 +28,9 @@ Take a backup point first (on WP Engine: User Portal → Backups → Back up now
    Install Now → Activate Plugin.
 2. Tools → AugmentED team → "Create the pages as drafts" (or give five pages the AugmentED
    templates yourself).
-3. Settings → AugmentED → Portal ID, Form ID, Privacy policy URL → Save Changes → "Send
-   test submission".
+3. Once AERDF has created the HubSpot form (START-HERE step 3; AugmentED has set up
+   nothing in HubSpot): Settings → AugmentED → Portal ID, Form ID, Privacy policy URL →
+   Save Changes → "Send test submission".
 4. Tools → AugmentED team → Dry run, then Import.
 5. Review and publish the five pages; on production, in the same sitting as the import.
 
@@ -38,6 +39,12 @@ wordpress-handoff/START-HERE.md in the AugmentED repository:
 https://github.com/folkmark/aug-preview/blob/main/wordpress-handoff/START-HERE.md
 
 == Changelog ==
+
+= 1.1.2 =
+* Docs: the HubSpot set-up is AERDF's alone; AugmentED has not set up or tested anything
+  in AERDF's HubSpot.
+* Team: Ryan Baker has a new headshot. Nothing of it fades; his hair is cut straight on the
+  right where the photograph ends. Run the import after updating.
 
 = 1.1.1 =
 * The Follow form's rate limit also counts by the connecting address, which a forged

@@ -127,8 +127,9 @@ it is already done. They are 6–36 KB each. A photograph that stops a little sh
 the framing wants it is stretched or enlarged within limits. Three photographs too tight for
 those limits (Byungyeon Yun's, Nicolle DeSilva's and Ryan Baker's) are enlarged further, by
 the client's choice, rather than fade where the photo ends; Byungyeon's, at a size chosen to
-stay close to everyone else's, keeps a trace of fade at his right shoulder. All of it is baked
-into the file, not an effect to reproduce.
+stay close to everyone else's, keeps a trace of fade at his right shoulder, and Ryan's is cut
+straight on the right, where his photograph ends, rather than faded. All of it is baked into
+the file, not an effect to reproduce.
 
 They are made in two steps, and the split is on purpose. `tools/cutout-headshots.py`
 does the slow part once — a matting model, face and eye detection, the framing — and

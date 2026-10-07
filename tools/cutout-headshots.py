@@ -146,10 +146,15 @@ THE EXCEPTIONS are three photographs too tight for any of this, each enlarged pa
 because the client chose a larger face over a fade (October 2026), with the trade shown on a
 sheet beside a normally framed tile:
 - Nicolle's selfie cuts through her hair at the left, which THE CROP clears at 1.35x.
-- Ryan's is cut at the hairline and across the chest: 1.55x. A 1.29x framing that grounded
-  him by stretching reached his jaw, which is not a trade this makes on someone's face;
-  enlarging stretches nothing. (Filling the tile this way was declined once, before the
-  fades were weighed against it.)
+- Ryan's, from CIRCLS, is cut at the crown, through his hair on the right, and across the
+  chest below the chin: 1.40x, with the eye line 6% lower, grounds him. The cut through his
+  hair is above the chin and too far in to crop off (that took 2.11x, with the top of his
+  head off the tile), so his photograph's edges are left hard rather than faded ('hard'):
+  the client would rather see his hair sliced on the right than any part of him fade
+  (October 2026). The bottom edge lands on the tile's own, so only the right shows.
+  (His previous photograph, from Adelaide, was cut at the hairline and the chest and took
+  1.55x; a 1.29x framing that grounded it by stretching reached his jaw, which is not a
+  trade this makes on someone's face.)
 - Byungyeon's passport photo cuts the shoulders 18% in from both sides. Removing the fade
   took 1.54x, which in a passport photo read as a giant close-up, so his is fixed at the step
   the client picked from a sheet running from 1.20x to 1.54x: 1.35x, with the eye line 12%
@@ -163,7 +168,8 @@ measured from the cut itself — the stretch of the border the matte actually to
 from the whole edge, so a photo cut at the shoulder does not also fade the cheek above it.
 Before the stretch and the reach, nine photos faded like this, and they looked different
 from everyone else. Since October 2026 only a trace of Byungyeon's right shoulder does:
-Allison's is cropped, and his, Nicolle's and Ryan's are THE EXCEPTIONS. Before that, two shared fades were tried to hide
+Allison's is cropped, his and Nicolle's are THE EXCEPTIONS, and Ryan's edges are cut
+hard instead (see THE EXCEPTIONS). Before that, two shared fades were tried to hide
 the fading few, and both went:
 - A single vignette tuned so every one of those cuts fell where it had already faded
   out. Ryan's chest and Byungyeon's shoulders force it to finish just below everybody's
@@ -222,8 +228,12 @@ HEADROOM = 0.04   # THE HEADROOM: the least room between the crown and the tile'
 # where the least that removes the fade is too much: Byungyeon's needed 1.54x, which turned
 # his passport photo into a giant close-up the client called ridiculous, so his is the step
 # the client picked from a sheet of them, 1.35x, which leaves a trace of fade on his right
-# shoulder. Remove an entry when a looser photograph arrives: it will not need it.
-ENLARGED = {'byungyeon-yun': {'fixed': 1.35, 'drop': 0.2}, 'nicolle-desilva': {'zoom': 1.4}, 'ryan-baker': {'zoom': 1.6}}
+# shoulder. 'hard' leaves every edge the photograph cuts the person at as a hard edge, with
+# no fade: Ryan's is cut through his hair on the right, and the client would rather it look
+# sliced than have any of him fade. Remove an entry when a looser photograph arrives: it will
+# not need it.
+ENLARGED = {'byungyeon-yun': {'fixed': 1.35, 'drop': 0.2}, 'nicolle-desilva': {'zoom': 1.4},
+            'ryan-baker': {'zoom': 1.6, 'hard': True}}
 
 
 def pictured():
@@ -482,7 +492,8 @@ def frame(slug):
                 cut[span[hit], at] = True
             depth[k] = (at if k in ('top', 'left') else T - 1 - at) / T
     fade = np.ones((T, T), np.float32)
-    if cut.any():
+    hard = bool(ENLARGED.get(slug, {}).get('hard'))  # THE EXCEPTIONS: cut, never faded
+    if cut.any() and not hard:
         import cv2
         t = np.clip(cv2.distanceTransform((~cut).astype(np.uint8), cv2.DIST_L2, 5) / (EDGE_FADE * T), 0, 1)
         fade = t * t * (3 - 2 * t)
@@ -508,7 +519,7 @@ def frame(slug):
     Image.fromarray(out, 'RGBA').save(os.path.join(OUT, slug + '.webp'), lossless=True, quality=100, method=6, exact=False)
     return {
         'source': f'{W}x{H}', 'face_px': round(fh), 'eye_line': how, 'scale': round(s * 512 / T, 2),
-        'cuts': depth, 'extended': extended, 'face_kept': round(face_kept, 3), 'white_point': round(p), 'lift': round(lift, 3),
+        'cuts': {} if hard else depth, 'hard': depth if hard else {}, 'extended': extended, 'face_kept': round(face_kept, 3), 'white_point': round(p), 'lift': round(lift, 3),
         **reach,
     }
 
@@ -537,7 +548,7 @@ def main():
         for s in todo:
             print(f'matting {s}', flush=True)
             subprocess.run([sys.executable, __file__, f'--matte={s}'], check=True)
-    warn, loose, beside, crowded, enlarged = [], [], [], [], []
+    warn, loose, beside, crowded, enlarged, sliced = [], [], [], [], [], []
     # scale is against the 512 the tile ships at, so anything over 1 is a photograph being
     # enlarged; "reach" is the enlargement of the face and lowering of the eye line, by THE
     # REACH and THE HEADROOM; "room" is the headroom above the crown;
@@ -558,6 +569,8 @@ def main():
             beside.append(f"{s} ({', '.join(k for k in r['not_shoulder'] if k not in r['cropped'] and k in r['cuts'])})")
         if s in ENLARGED:
             enlarged.append(f"{s} ({ENLARGED[s].get('fixed') or r['zoom']:.2f}x{', fixed' if ENLARGED[s].get('fixed') else ''})")
+        if r['hard']:
+            sliced.append(f"{s} ({pct(r['hard'])})")
         if r['headroom'] < HEADROOM - 0.0005:
             crowded.append(f"{s} ({r['headroom']:.1%})")
     if loose:
@@ -566,6 +579,8 @@ def main():
         print(f'\nmet above the chin and too far in to crop off, so left to the fade: {", ".join(beside)}.')
     if enlarged:
         print(f'\nenlarged past the shared limit by the client\'s choice (THE EXCEPTIONS): {", ".join(enlarged)}.')
+    if sliced:
+        print(f'\ncut hard where the photograph ends, not faded, by the client\'s choice (THE EXCEPTIONS): {", ".join(sliced)}.')
     if crowded:
         print(f'\nless than {HEADROOM:.0%} above the crown, the lowering having reached its limit: {", ".join(crowded)}.')
     if warn:
