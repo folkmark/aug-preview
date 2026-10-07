@@ -6,7 +6,7 @@ AERDF's header and footer stay, with AugmentED's navigation as a bar beneath the
 Assessment for Good's pages do — puts the AugmentED team into AERDF's existing **Team**
 post type, and connects the Follow form to HubSpot.
 
-This page describes version **1.1.1**. The whole procedure takes about an hour on each
+This page describes version **1.1.2**. The whole procedure takes about an hour on each
 environment, plus the HubSpot set-up in step 3.
 
 **Questions, at any step:** Brendan, [brendan@folkmark.com](mailto:brendan@folkmark.com) —
@@ -55,7 +55,7 @@ WP Engine User Portal → the environment → Backups → Back up now.
 Plugins → **Add Plugin** ("Add New Plugin" in older WordPress) → **Upload Plugin** → choose
 `augmented-ed-plugin.zip` → **Install Now** → **Activate Plugin**.
 
-Check the Plugins screen says **AugmentED 1.1.1**.
+Check the Plugins screen says **AugmentED 1.1.2**.
 
 The zip is about 22 MB, because it carries every image and animation frame the pages use. If
 WordPress answers "The link you followed has expired." or "The uploaded file exceeds the

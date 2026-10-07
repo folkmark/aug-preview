@@ -223,11 +223,11 @@
       "photo": {
         "master": "ryan-baker.jpg",
         "from": "institution",
-        "ref": "researchers.adelaide.edu.au /sites/default/files/profile-images/37136.jpeg (540x540)",
+        "ref": "circls.org /wp-content/uploads/2022/03/RyanBaker.jpeg (488x631)",
         "approved": false,
-        "upscale": 0.94,
-        "notes": "His Adelaide University researcher profile, the file behind its 860x860 \"profile_large\" rendition (which is an upscale of this). The same shoot as the 190x213 he had before, cropped tighter at the hair and the chest but with his face at about three times the pixels. The file carries less detail than its size: halving it loses almost nothing, so it was itself enlarged or smoothed somewhere. It still fades at the bottom, the left and the top, like the copy before it: every public copy found (his own page, Adelaide, UTS, IIIT) is this crop, so a looser original is the only fix. Kept under the shared framing rather than filling the tile, by Brendan, 6 October 2026.",
-        "edgesExtended": "bottom 1%"
+        "upscale": 0.85,
+        "notes": "His photograph on CIRCLS (the NSF Center for Integrative Research in Computing and Learning Sciences), uploaded in March 2022; sent by Brendan, 7 October 2026, to replace the Adelaide University profile photo. It has more pixels on his face than any copy before it, so the tile is a reduction rather than an enlargement, but it is cropped tighter still: at the crown, through his hair on the right, and across the chest. 1.40x and an eye line 6% lower ground him. The cut through his hair cannot be cropped off short of 2.11x, so at Brendan's choice his photograph's edges are cut hard rather than faded ('hard' in THE EXCEPTIONS, tools/cutout-headshots.py): his hair ends in a straight edge on the right, and nothing of him fades.",
+        "edgesExtended": "left 2%"
       },
       "bioSource": {
         "from": "tracker",
@@ -236,12 +236,13 @@
       "form": null,
       "notes": null,
       "actions": [
-        "[joan] Optional: a looser headshot that shows his shoulders. His photo is cropped at the hair and chest, so the tile is enlarged 1.55x to avoid a fade; a looser photo would return it to the shared framing."
+        "[joan] Optional: a looser headshot that shows his shoulders and the whole of his hair. His photo is cropped at the crown, the right and the chest, so the tile is enlarged 1.40x and his hair is cut straight on the right; a looser photo would return it to the shared framing."
       ],
       "history": [
         "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/ryan-baker/ (6008fab)",
         "2026-10-06 headshot: 190x213 from the Bio tracking sheet → 540x540 from his Adelaide University profile (fixing the fade, Sherry's request)",
-        "2026-10-06 headshot: no longer fades; face enlarged 1.55x, past the shared limit, by the client's choice (THE EXCEPTIONS in tools/cutout-headshots.py) (Brendan)"
+        "2026-10-06 headshot: no longer fades; face enlarged 1.55x, past the shared limit, by the client's choice (THE EXCEPTIONS in tools/cutout-headshots.py) (Brendan)",
+        "2026-10-07 headshot: 540x540 from his Adelaide University profile → 488x631 from CIRCLS; 1.40x, edges cut hard rather than faded (THE EXCEPTIONS), by the client's choice (Brendan)"
       ]
     },
     {
