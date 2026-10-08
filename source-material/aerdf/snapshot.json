@@ -1,0 +1,47 @@
+{
+  "source": "https://aerdf.org/opportunities/advanced-fellows/augmented/",
+  "taken": "2026-10-08T15:26:20.143Z",
+  "bodyClass": "wp-singular page-template-default page page-id-11371 page-child parent-pageid-10703 wp-theme-sessionwise-starter-master non-logged-in elementor-default elementor-kit-1734 elementor-page elementor-page-11371",
+  "logos": {
+    "logo-header": "https://storage.googleapis.com/aerdf-assets/2023/05/29878795-aerdf_logo_full_color_rgb_h_tagline.webp",
+    "logo-footer": "https://storage.googleapis.com/aerdf-assets/2023/05/1878e476-aerdf_logo_white_rgb_tagline_curves.webp"
+  },
+  "stylesheets": [
+    "https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap",
+    "https://aerdf.org/wp-content/themes/sessionwise-starter-master/og-css2.css",
+    "https://aerdf.org/wp-content/themes/sessionwise-starter-master/og-css1.css?v1",
+    "inline",
+    "https://aerdf.org/wp-content/plugins/custom-twitter-feeds/vendor/smashballoon/framework/Packages/Blocks/css/sb-elementor.css?ver=1.0.0",
+    "https://aerdf.org/wp-content/plugins/custom-twitter-feeds/css/ctf-styles.min.css?ver=2.10.0",
+    "inline",
+    "inline",
+    "inline",
+    "https://aerdf.org/wp-content/plugins/jet-engine/assets/css/frontend.css?ver=3.8.13.1",
+    "inline",
+    "https://aerdf.org/wp-content/plugins/google-language-translator/css/style.css?ver=7.0.1",
+    "https://aerdf.org/wp-content/plugins/google-language-translator/css/toolbar.css?ver=7.0.1",
+    "https://aerdf.org/wp-content/uploads/useanyfont/uaf.css?ver=1787258384",
+    "https://aerdf.org/wp-content/themes/sessionwise-starter-master/dist/css/bundle.css?ver=1778678931",
+    "https://aerdf.org/wp-content/plugins/lazy-load-for-videos/public/css/lazyload-shared.css?ver=2.18.11",
+    "inline",
+    "https://aerdf.org/wp-content/plugins/elementor/assets/css/frontend.min.css?ver=4.3.4",
+    "https://aerdf.org/wp-content/uploads/elementor/css/post-1734.css?ver=1791472095",
+    "https://aerdf.org/wp-content/plugins/elementor/assets/css/widget-heading.min.css?ver=4.3.4",
+    "https://aerdf.org/wp-content/plugins/elementor/assets/css/widget-divider.min.css?ver=4.3.4",
+    "https://aerdf.org/wp-content/plugins/elementor/assets/css/widget-image.min.css?ver=4.3.4",
+    "https://aerdf.org/wp-content/plugins/elementor/assets/css/widget-social-icons.min.css?ver=4.3.4",
+    "https://aerdf.org/wp-content/plugins/elementor/assets/css/conditionals/apple-webkit.min.css?ver=4.3.4",
+    "https://aerdf.org/wp-content/uploads/elementor/css/post-11371.css?ver=1791472542",
+    "inline",
+    "inline",
+    "inline",
+    "inline",
+    "inline",
+    "inline"
+  ],
+  "rules": {
+    "in": 6320,
+    "kept": 193
+  },
+  "fontFaces": 20
+}

@@ -13,6 +13,7 @@ which are licensed files and are not in the repository at all.
 | `image-sources/team-cutout/` | Each person on the page, lifted off their background and framed by one rule for all of them, as a 768px RGBA WebP. Written by `tools/cutout-headshots.py` and committed, because making them takes a 973 MB matting model that is not in the repository; the tool's header says where to fetch it. | `tools/encode-images.mjs` |
 | `image-sources/icons/` | The three home-page illustration plates and the four co-design cycle node renders. | `tools/encode-images.mjs` |
 | `image-sources/schools/` | The three co-design workshop photographs on the home page. | `tools/encode-images.mjs` |
+| `aerdf/` | AERDF's header and footer markup, as a snapshot of a public aerdf.org page with every script stripped, and where and when it was taken. Written by `tools/snapshot-aerdf.mjs`; its CSS, fonts and logos are in `assets/aerdf/`. Used only for the `/aerdf/` preview. | `tools/build-site.mjs` |
 | `brand-logos/PNG/AugmentED_Logo_Color_Horiz.png` | The colour horizontal lockup from the logo kit AERDF supplied, the one that carries "supported by aerdf". It becomes the share card, `assets/logo/og-card.png`. The site's two SVG logos are the kit's colour SVGs copied across unchanged. | `tools/encode-images.mjs` |
 
 ## The licensed photography on The Challenge and Our Approach

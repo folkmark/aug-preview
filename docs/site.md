@@ -335,6 +335,32 @@ are small static pages that `tools/build-site.mjs` generates from
 the runtime. `source-material/bios/README.md` has the format and the rule for when a
 page is built.
 
+### The aerdf.org preview, `/aerdf/`
+
+Every page is built a second time under `/aerdf/` — `/aerdf/`, `/aerdf/team/`,
+`/aerdf/team/raquel-romano/` and so on — the way the WordPress plugin will draw it on
+aerdf.org: AERDF's alert bar and header on top, AugmentED's header as the program bar
+under them (it pins once AERDF's header has scrolled away), and AERDF's footer in place
+of AugmentED's. It is a picture of the handoff for the people deciding on it, built from
+this site, not from the plugin. The pages are `noindex` and keep their canonical link to
+the page they copy.
+
+AERDF's half is a committed snapshot of a real aerdf.org page:
+`source-material/aerdf/` holds the markup, `assets/aerdf/` the CSS, fonts and logos it
+needs. Nothing of AERDF's runs on the preview: its trackers and scripts are stripped, and
+its HubSpot newsletter form is replaced by a note, so no sign-up reaches AERDF. When
+AERDF's header or footer changes, refresh it:
+
+```sh
+node tools/snapshot-aerdf.mjs        # reads aerdf.org; never run by CI
+node tools/build-site.mjs _site
+```
+
+The header and footer are drawn in shadow roots, so neither site's CSS reaches the other,
+which is what the plugin's scoping does on aerdf.org. The tool's header comment explains
+the two things that needed handling for that; the build step is "The aerdf.org preview" in
+`tools/build-site.mjs`.
+
 ## Building
 
 ```sh

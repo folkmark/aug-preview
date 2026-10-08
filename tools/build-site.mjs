@@ -554,9 +554,12 @@ ${ld ? `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\
   /* Keyboard access, as the SPA's page styles have it (index.html, "Keyboard access"):
      the skip link, a ring-free <main> as its target, and scroll-padding while a keyboard
      focus shows, so a control focused while moving backwards never scrolls under the
-     sticky header. */
-  .skip-link { position: absolute; left: var(--page-gutter); top: 0; z-index: 1000; transform: translateY(-120%); padding: var(--space-3) var(--space-4); background: var(--surface-page); color: var(--text-body); font-weight: var(--font-weight-semibold); text-decoration: underline; border-radius: var(--radius-button, 0.5rem); }
-  .skip-link:focus { transform: translateY(var(--space-3)); outline: 2px solid var(--brand-accent); outline-offset: 2px; }
+     sticky header. The skip link is hidden by clipping, as there, not by being moved above
+     its box: under a host's header (the /aerdf/ preview, aerdf.org) a link moved up sits in
+     plain view over that header. */
+  .skip-link { position: absolute; left: var(--page-gutter); top: var(--space-3); z-index: 1000; padding: var(--space-3) var(--space-4); background: var(--surface-page); color: var(--text-body); font-weight: var(--font-weight-semibold); text-decoration: underline; border-radius: var(--radius-button, 0.5rem); }
+  .skip-link:not(:focus) { clip-path: inset(50%); }
+  .skip-link:focus { outline: 2px solid var(--brand-accent); outline-offset: 2px; }
   main[tabindex="-1"] { scroll-margin-top: var(--header-h); }
   main[tabindex="-1"]:focus { outline: none; }
   html:has(:focus-visible) { scroll-padding-top: calc(var(--header-h) + var(--space-2, 0.5rem)); }
@@ -657,6 +660,63 @@ if (bios.length) console.log(`  bios: ${bios.map((b) => `team/${b.slug}/`).join(
 const notFound = publish(home)
   .replace('<head>', `<head>\n<script>window.__siteBase = ${JSON.stringify(basePath)};</script>`);
 fs.writeFileSync(path.join(outDir, '404.html'), notFound);
+
+// ---------------------------------------------------------------- the aerdf.org preview
+
+// /aerdf/ is every page again, the way the WordPress plugin will draw it on aerdf.org:
+// AERDF's alert bar and header on top, AugmentED's header as the program bar under them,
+// and AERDF's footer in place of AugmentED's. It is a picture of the handoff for the people
+// deciding on it, built from this site rather than from the plugin (which is paused): the
+// plugin's layout comes down to the same few things, and they are all here.
+//   - AERDF's half is a committed snapshot (tools/snapshot-aerdf.mjs), drawn in shadow roots
+//     so neither site's CSS reaches the other — what the plugin's scoping and host.css do.
+//   - The header is already sticky at the top, so under AERDF's header it is the program
+//     bar: it sits below AERDF's header and pins once that has scrolled away, and every
+//     sticky stage still pins under its 96px, as --header-h says. assets/aerdf/chrome.js
+//     measures --hero-lead, the one offset the hero needs under a host header.
+//   - On a phone the menu button carries the word "Menu", the plugin's default for sitting
+//     under AERDF's own menu button (DECISIONS.md, "Two menus on a phone").
+// The pages share /assets/ and route under /aerdf/ by themselves (readRoute() in index.html
+// takes the base from the address). They are noindex, and keep their canonical link to the
+// page they copy, so nothing here competes with the real preview in search.
+const aerdfBuilt = [];
+const AERDF_SRC = path.join(root, 'source-material/aerdf');
+if (fs.existsSync(path.join(AERDF_SRC, 'snapshot.json'))) {
+  const snap = JSON.parse(fs.readFileSync(path.join(AERDF_SRC, 'snapshot.json'), 'utf8'));
+  const fragment = (name) => fs.readFileSync(path.join(AERDF_SRC, name), 'utf8')
+    .replace(/^<!--[\s\S]*?-->\n/, '')
+    .replace(/(["'])assets\/aerdf\//g, `$1${basePath}assets/aerdf/`);
+  const chrome = (inner) => `<div data-aerdf-chrome><template shadowrootmode="open"><link rel="stylesheet" href="${basePath}assets/aerdf/chrome.css"><div class="aerdf-body ${escapeAttr(snap.bodyClass)}">${inner}</div></template></div>`;
+  const top = chrome(fragment('chrome-top.html'));
+  const bottom = chrome(fragment('chrome-bottom.html'));
+  const taken = snap.taken.slice(0, 10);
+  const routeRe = new RegExp(`href="${basePath}((?:${PAGES.map((p) => p.slug).join('|')})/(?:[a-z0-9-]+/)?)?"`, 'g');
+  const css = `<style id="aerdf-preview">
+  /* AERDF's footer replaces AugmentED's, as on aerdf.org. AERDF's own is in a shadow root,
+     out of this rule's reach. */
+  footer { display: none !important; }
+  /* "Menu" beside the program bar's menu button (DECISIONS.md, "Two menus on a phone"). */
+  header button[aria-controls="site-menu"], .bio-menu summary { position: relative; overflow: visible; }
+  header button[aria-controls="site-menu"]::before, .bio-menu summary::before {
+    content: "Menu"; position: absolute; right: 100%; top: 50%; transform: translateY(-50%); margin-right: var(--space-3);
+    font-family: var(--font-body); font-size: var(--text-small); font-weight: var(--font-weight-semibold); line-height: 1; white-space: nowrap;
+  }
+  .aerdf-preview-label { position: fixed; left: 12px; bottom: 12px; z-index: 2000; padding: 6px 10px; border-radius: 999px; background: rgba(17, 24, 39, 0.86); color: #fff; font: 600 12px/1.2 system-ui, sans-serif; text-decoration: none; }
+  .aerdf-preview-label:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+</style>`;
+  const aerdf = (html, rel) => html
+    .replace(routeRe, `href="${basePath}aerdf/$1"`)
+    .replace(/<meta name="robots"[^>]*>\n?/g, '')
+    .replace('</head>', `<meta name="robots" content="noindex">\n<link rel="stylesheet" href="${basePath}assets/aerdf/fonts.css">\n${css}\n<script src="${basePath}assets/aerdf/chrome.js" defer></script>\n</head>`)
+    .replace(/<body([^>]*)>/, `<body$1>\n${top}`)
+    .replace('</body>', `${bottom}\n<a class="aerdf-preview-label" href="${basePath}${rel}">Preview: as on aerdf.org (snapshot ${taken}) · see the AugmentED site</a>\n</body>`);
+  for (const rel of ['', ...PAGES.map((p) => `${p.slug}/`), ...bios.map((b) => `team/${b.slug}/`)]) {
+    const from = path.join(outDir, rel, 'index.html');
+    fs.mkdirSync(path.join(outDir, 'aerdf', rel), { recursive: true });
+    fs.writeFileSync(path.join(outDir, 'aerdf', rel, 'index.html'), aerdf(fs.readFileSync(from, 'utf8'), rel));
+    aerdfBuilt.push(`aerdf/${rel}index.html`);
+  }
+}
 
 // ---------------------------------------------------------------- developer handoff
 
@@ -800,7 +860,7 @@ function checkFile(rel) {
 }
 
 const built = ['index.html', '404.html', ...PAGES.map((p) => `${p.slug}/index.html`),
-  ...bios.map((b) => `team/${b.slug}/index.html`), `${HANDOFF_SLUG}/index.html`];
+  ...bios.map((b) => `team/${b.slug}/index.html`), `${HANDOFF_SLUG}/index.html`, ...aerdfBuilt];
 built.forEach(checkFile);
 
 for (const need of ['.nojekyll', 'support.js', '_ds', 'assets']) {
