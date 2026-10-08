@@ -6,7 +6,7 @@ AERDF's header and footer stay, with AugmentED's navigation as a bar beneath the
 Assessment for Good's pages do — puts the AugmentED team into AERDF's existing **Team**
 post type, and connects the Follow form to HubSpot.
 
-This page describes version **1.1.3**. The whole procedure takes about an hour on each
+This page describes version **1.1.4**. The whole procedure takes about an hour on each
 environment, plus AERDF's HubSpot set-up in step 3.
 
 **Questions, at any step:** Brendan, [brendan@folkmark.com](mailto:brendan@folkmark.com) —
@@ -63,7 +63,7 @@ WP Engine User Portal → the environment → Backups → Back up now.
 Plugins → **Add Plugin** ("Add New Plugin" in older WordPress) → **Upload Plugin** → choose
 `augmented-ed-plugin.zip` → **Install Now** → **Activate Plugin**.
 
-Check the Plugins screen says **AugmentED 1.1.3**.
+Check the Plugins screen says **AugmentED 1.1.4**.
 
 The zip is about 22 MB, because it carries every image and animation frame the pages use. If
 WordPress answers "The link you followed has expired." or "The uploaded file exceeds the
@@ -242,6 +242,10 @@ button carries the word "Menu" ([DECISIONS.md](DECISIONS.md)).
 - [ ] AERDF's header, footer and every other page look exactly as before. The one expected
       change: the `/team/` archive and search now list the AugmentED people too
       ([DECISIONS.md](DECISIONS.md)).
+- [ ] Pasting a published AugmentED page's address into LinkedIn's
+      [Post Inspector](https://www.linkedin.com/post-inspector/) shows that page's own share
+      card: its headline beside a photograph. A page with a Social image set in Yoast shows
+      that instead.
 - [ ] Nothing shows over AERDF's header until you press Tab: the first Tab on an AugmentED
       page shows "Skip to content" in AugmentED's bar.
 - [ ] Settings → AugmentED shows every line of its status panel as done, and

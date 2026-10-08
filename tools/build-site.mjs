@@ -20,6 +20,7 @@ import { unserved, readManifest, heroFrames, fallingFrames } from './lib/sequenc
 import { renderMarkdown, handoffPage } from './lib/handoff-page.mjs';
 import { readBios as readBioFiles, lede as bioLede, staticHelper, bioBody, BIO_PROFILE_CSS, BIO_PROFILE_DESKTOP_CSS } from './lib/bio-page.mjs';
 import { readRoster, checkTeam, statusOf } from './lib/team.mjs';
+import { CARDS, bioCards, ogPath } from './build-og.mjs';
 
 const root = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
 const outDir = path.resolve(root, process.argv[2] || '_site');
@@ -57,12 +58,23 @@ const COPY_DIRS = ['assets', '_ds'];
 
 const escapeAttr = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
-// Rewrite the head of a copy so each page carries its own title and description
-// rather than inheriting the home page's.
-function retitle(html, { title, description }) {
+// Each page's share card (tools/build-og.mjs draws them), by route slug. A page with no
+// card is a build failure here rather than a page that quietly shares the home page's.
+const card = (key) => {
+  const c = CARDS.find((x) => x.key === key);
+  if (!c) throw new Error(`no share card for ${key} in tools/build-og.mjs`);
+  return c;
+};
+
+// Rewrite the head of a copy so each page carries its own title, description and share
+// card rather than inheriting the home page's.
+function retitle(html, { slug, title, description }) {
   const t = escapeAttr(title);
   const d = escapeAttr(description);
+  const c = card(slug);
   return html
+    .replace(/(<meta (?:property="og:image"|name="twitter:image") content=")[^"]*(">)/g, `$1${ogPath(c.key)}$2`)
+    .replace(/(<meta property="og:image:alt" content=")[^"]*(">)/, `$1${escapeAttr(c.alt)}$2`)
     .replace(/<title>[\s\S]*?<\/title>/, `<title>${t}</title>`)
     .replace(/(<meta name="description" content=")[^"]*(">)/, `$1${d}$2`)
     .replace(/(<meta property="og:title" content=")[^"]*(">)/, `$1${t}$2`)
@@ -121,7 +133,7 @@ const ORIGIN = CNAME ? `https://${CNAME}` : '';
 if (!ORIGIN) console.log('::warning::no CNAME — og:image stays a path, and the bio pages ship without canonical, og:url or structured data');
 
 // og:image and twitter:image as absolute URLs. absolutise() leaves them root-relative
-// (/assets/logo/og-card.png). A browser can resolve that against the page; a link
+// (/assets/og/challenge.jpg). A browser can resolve that against the page; a link
 // unfurler reads the tag on its own, and the Open Graph protocol defines og:image as a
 // URL, so a path is at best tolerated. The share card added in September went out as
 // a path on every page. Runs after absolutise(), which is what puts the base in it.
@@ -429,6 +441,13 @@ function bioPage(b) {
   // but the bracketed part is neither, so it is left out of this split.
   const [first, ...rest] = b.name.replace(/\s*\([^)]*\)/g, '').split(' ');
   const nav = [['challenge', 'The Challenge'], ['approach', 'Our Approach'], ['team', 'Who We Are']];
+  // The person's own share card. Every bio this builds has one (build-og draws a card for
+  // each linked bio, by the same rule); the logo card is the fallback only for a bio added
+  // without re-running it, and build-og --check reports that.
+  const own = bioCards().find((c) => c.key === `team/${b.slug}`);
+  const share = own && fs.existsSync(path.join(root, ogPath(own.key)))
+    ? { image: ogPath(own.key), type: 'image/jpeg', alt: own.alt }
+    : { image: 'assets/logo/og-card.png', type: 'image/png', alt: 'augment^ed, supported by AERDF' };
 
   // ProfilePage structured data. Google's documentation lists "an employee page on a
   // company website" as a page this type is for: one person, affiliated with the site.
@@ -473,12 +492,13 @@ ${url ? `<link rel="canonical" href="${url}">\n` : ''}<meta property="og:type" c
 <meta property="og:title" content="${esc(b.name)} | AugmentED">
 <meta property="og:description" content="${desc}">
 ${url ? `<meta property="og:url" content="${url}">\n` : ''}<meta property="profile:first_name" content="${esc(first)}">
-${rest.length ? `<meta property="profile:last_name" content="${esc(rest.join(' '))}">\n` : ''}<meta property="og:image" content="assets/logo/og-card.png">
+${rest.length ? `<meta property="profile:last_name" content="${esc(rest.join(' '))}">\n` : ''}<meta property="og:image" content="${share.image}">
+<meta property="og:image:type" content="${share.type}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="augment^ed, supported by AERDF">
+<meta property="og:image:alt" content="${esc(share.alt)}">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="assets/logo/og-card.png">
+<meta name="twitter:image" content="${share.image}">
 <link rel="icon" href="assets/logo/logo-icon.png" type="image/png" sizes="150x150">
 <link rel="apple-touch-icon" href="assets/logo/logo-icon.png">
 <meta name="theme-color" content="#fdfcfa">

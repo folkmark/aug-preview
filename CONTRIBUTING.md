@@ -122,6 +122,7 @@ and that half goes stale silently unless the chain is re-run:
 
 ```sh
 npm i --no-save playwright@1.63.0 linkedom@0.18.13 postcss@8.5.28 postcss-selector-parser@7.1.6 pixelmatch@7.2.0 pngjs@7.0.0 axe-core@4.13.0 html-validate@11.16.0
+node tools/build-og.mjs                                         # after a headline, photo or Leadership change
 node tools/export-static.mjs && node tools/export-content.mjs   # after any index.html change
 node tools/build-wp-plugin.mjs                                   # writes plugin/augmented-ed/generated/
 node tools/build-wp-plugin.mjs --assemble dist && node tools/verify-wp-plugin.mjs [--live]

@@ -1308,6 +1308,50 @@
   "repo": "assets/logo/logo-horiz.svg"
  },
  {
+  "plugin": "assets/logo/og-card.png",
+  "repo": "assets/logo/og-card.png"
+ },
+ {
+  "plugin": "assets/og/approach.jpg",
+  "repo": "assets/og/approach.jpg"
+ },
+ {
+  "plugin": "assets/og/challenge.jpg",
+  "repo": "assets/og/challenge.jpg"
+ },
+ {
+  "plugin": "assets/og/follow.jpg",
+  "repo": "assets/og/follow.jpg"
+ },
+ {
+  "plugin": "assets/og/home.jpg",
+  "repo": "assets/og/home.jpg"
+ },
+ {
+  "plugin": "assets/og/team.jpg",
+  "repo": "assets/og/team.jpg"
+ },
+ {
+  "plugin": "assets/og/team/abby-petre.jpg",
+  "repo": "assets/og/team/abby-petre.jpg"
+ },
+ {
+  "plugin": "assets/og/team/caitlin-mills.jpg",
+  "repo": "assets/og/team/caitlin-mills.jpg"
+ },
+ {
+  "plugin": "assets/og/team/jenny-bradbury.jpg",
+  "repo": "assets/og/team/jenny-bradbury.jpg"
+ },
+ {
+  "plugin": "assets/og/team/raquel-romano.jpg",
+  "repo": "assets/og/team/raquel-romano.jpg"
+ },
+ {
+  "plugin": "assets/og/team/sherry-lachman.jpg",
+  "repo": "assets/og/team/sherry-lachman.jpg"
+ },
+ {
   "plugin": "assets/team/aarav-kalkar.webp",
   "repo": "assets/team/aarav-kalkar.webp"
  },

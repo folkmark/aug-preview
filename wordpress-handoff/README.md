@@ -692,6 +692,13 @@ pages as drafts" makes the pages (only where empty; also exported as `content/pa
 Each bio page's description is its bio's first sentence, the same cut the site's bio pages
 use, written into Yoast by the import (only where empty).
 
+Each page and each Leadership bio page has its own share card, the picture shown when a link
+is pasted into Slack, LinkedIn, email or a message: 1200×630 JPEGs in `assets/og/`, drawn by
+`tools/build-og.mjs` from the site's own type, colours and photographs. The plugin hands Yoast
+the card only when the page has no image of its own, so a Social image set in Yoast wins
+(`includes/share.php`). A bio card carries the person's name and role as they were when the
+plugin was built.
+
 ### Redirects
 
 - **On aerdf.org, the preview site's old slugs** (`/the-challenge/` and the rest) **never
