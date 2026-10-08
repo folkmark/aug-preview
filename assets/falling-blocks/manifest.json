@@ -1,0 +1,35 @@
+{
+  "frames": 48,
+  "first": 1,
+  "pad": 4,
+  "stem": "fb",
+  "ext": "webp",
+  "layers": [
+    "bottom",
+    "top"
+  ],
+  "master": {
+    "w": 2560,
+    "h": 3840
+  },
+  "encoder": {
+    "quality": 82,
+    "alphaQuality": 100,
+    "effort": 6,
+    "smartSubsample": true
+  },
+  "widths": [
+    {
+      "w": 1440,
+      "h": 2160,
+      "files": 96,
+      "bytes": 3416346
+    },
+    {
+      "w": 720,
+      "h": 1080,
+      "files": 96,
+      "bytes": 1483680
+    }
+  ]
+}

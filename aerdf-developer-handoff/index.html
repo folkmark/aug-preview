@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Installing AugmentED on aerdf.org</title>
+<style>
+  :root { color-scheme: light dark; --bg:#fff; --fg:#1b1b1b; --muted:#5a5a5a; --line:#d9d9d9; --code:#f1f1f1; --link:#0b4fb3; --note:#fff7e0; --noteline:#e3c15a; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#161616; --fg:#ececec; --muted:#a9a9a9; --line:#383838; --code:#242424; --link:#8ab4ff; --note:#2b2512; --noteline:#7a6522; } }
+  html { scroll-padding-top: 1rem; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  main { max-width:50rem; margin:0 auto; padding:1.5rem 1rem 4rem; }
+  h1 { font-size:1.9rem; line-height:1.2; margin:.2rem 0 1rem; }
+  h2 { font-size:1.5rem; margin:2.5rem 0 .5rem; padding-top:1rem; border-top:1px solid var(--line); }
+  h3 { font-size:1.2rem; margin:1.8rem 0 .4rem; }
+  h4, h5 { font-size:1.05rem; margin:1.4rem 0 .3rem; }
+  a { color:var(--link); }
+  pre { background:var(--code); padding:.8rem 1rem; border-radius:6px; overflow-x:auto; }
+  pre code { padding:0; background:none; overflow-wrap:normal; white-space:pre; }
+  code { background:var(--code); padding:.1em .35em; border-radius:4px; font:.9em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; overflow-wrap:anywhere; }
+  ul, ol { padding-left:1.4rem; }
+  li { margin:.3rem 0; }
+  li.task { list-style:none; margin-left:-1.4rem; }
+  .tw { overflow-x:auto; margin:1rem 0; }
+  table { border-collapse:collapse; min-width:100%; font-size:.95rem; }
+  th, td { border:1px solid var(--line); padding:.45rem .6rem; text-align:left; vertical-align:top; }
+  th { background:var(--code); }
+  .note { background:var(--note); border:1px solid var(--noteline); border-radius:6px; padding:.8rem 1rem; margin:1rem 0 1.5rem; }
+  .note p { margin:.3rem 0; }
+  nav.toc ul { list-style:none; padding:0; }
+  .skip { position:absolute; left:-999px; } .skip:focus { left:1rem; top:1rem; background:var(--bg); padding:.5rem; }
+</style>
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+<main id="content">
+<h1>Installing AugmentED on aerdf.org</h1>
+<div class="note"><p>Brendan sends you the plugin zip directly; it isn't on this page.</p><p>This page is just for you: it isn't linked from the site or shown in search results.</p></div>
+<nav class="toc" aria-label="On this page"><ul><li><a href="#before-you-start">Before you start</a></li><li><a href="#install">Install</a></li><li><a href="#a-few-things-to-avoid">A few things to avoid</a></li><li><a href="#if-something-looks-wrong">If something looks wrong</a></li><li><a href="#later-on">Later on</a></li></ul></nav>
+<section id="part-install">
+<p>Hello, and thank you for taking this on.</p>
+<p>The whole AugmentED site comes to you as <strong>one WordPress plugin</strong>. There's nothing to build: you install it, click a couple of buttons, and the five AugmentED pages appear inside aerdf.org's own theme, with AERDF's header and footer and AugmentED's navigation as a bar just beneath them, the way Assessment for Good's pages work. The plugin also adds the AugmentED team to AERDF's existing Team post type and connects the Follow form to HubSpot.</p>
+<p>Set aside about an hour on each environment. This page describes plugin version <strong>1.1.6</strong>.</p>
+<p>If anything is unclear or looks wrong at any point, please just ask Brendan at <a href="mailto:brendan@folkmark.com">brendan@folkmark.com</a>. No question is too small.</p>
+<h2 id="before-you-start">Before you start</h2>
+<p><strong>What you'll need:</strong></p>
+<ul><li>Administrator access to WordPress on WP Engine <strong>staging</strong> and <strong>production</strong>, and to the WP Engine User Portal (for backups and clearing caches).</li><li>The plugin zip, which Brendan sends you along with a SHA-256 checksum. To check the zip arrived intact, run <code>shasum -a 256 &lt;the zip&gt;</code> (macOS, Linux) or <code>certutil -hashfile &lt;the zip&gt; SHA256</code> (Windows); it should print the same value.</li><li>For step 3 only, someone at AERDF who can create contact properties and forms in AERDF's HubSpot (portal 20910033).</li></ul>
+<p><strong>Two things to confirm with AERDF before you publish.</strong> You can install on staging and work through steps 1, 2 and 5 while these are being sorted out:</p>
+<ol><li><strong>The address.</strong> The pages go at <code>/augmented/</code> by default. That address currently redirects to the existing AugmentED page under Opportunities, so AERDF should decide what happens to that page once the new one is live.</li><li><strong>The HubSpot form</strong>, which someone at AERDF creates (step 3 says exactly what it needs).</li></ol>
+<p><strong>A few habits that will keep this painless:</strong></p>
+<ul><li>Do everything on <strong>staging first</strong>, then repeat it on <strong>production</strong>. Please don't use WP Engine's Copy Environment to move staging onto production: it would replace production's database, including anything AERDF has published since.</li><li>Take a backup point before you begin on each environment: WP Engine User Portal → the environment → Backups → <strong>Back up now</strong>.</li></ul>
+<h2 id="install">Install</h2>
+<h3 id="1-upload-and-activate">1. Upload and activate</h3>
+<p>Plugins → <strong>Add Plugin</strong> → <strong>Upload Plugin</strong> → choose the zip → <strong>Install Now</strong> → <strong>Activate Plugin</strong>. The Plugins screen should now show <strong>AugmentED 1.1.6</strong>.</p>
+<p>The zip is about 22 MB because it carries every image and animation frame. If WordPress says &quot;The link you followed has expired&quot; or mentions <code>upload_max_filesize</code>, the zip is just larger than the server's upload limit. Unzip it, copy the <code>augmented-ed/</code> folder into <code>wp-content/plugins/</code> over SFTP, and activate it from the Plugins screen. Or, with WP-CLI: <code>wp plugin install /path/to/the.zip --activate</code>.</p>
+<h3 id="2-create-the-pages">2. Create the pages</h3>
+<p>Tools → <strong>AugmentED team</strong> → <strong>Create the pages as drafts</strong>.</p>
+<p>Activating the plugin doesn't create any pages on its own, so this button is the step that makes them. You'll get five drafts, each already set to its AugmentED template: &quot;AugmentED&quot; at <code>/augmented/</code>, with The Challenge, Our Approach, Who We Are and Follow Our Work underneath. Their Yoast titles and descriptions are filled in for you.</p>
+<p>Drafts aren't public, so nothing changes on the live site yet. You're welcome to rename or move the pages: they link to each other by template, not by address.</p>
+<h3 id="3-connect-the-follow-form">3. Connect the Follow form</h3>
+<p><strong>In AERDF's HubSpot.</strong> This part is for someone at AERDF with HubSpot access. AugmentED doesn't have access to AERDF's HubSpot, so none of this exists yet:</p>
+<ol><li>Create a <strong>Dropdown select</strong> contact property: label &quot;Which best describes you?&quot;, internal name <code>augmented_persona</code>, with these options (label → internal value): Educator → <code>educator</code>, Researcher → <code>researcher</code>, Engineer → <code>engineer</code>, Administrator → <code>administrator</code>, Non-profit professional → <code>nonprofit</code>, Company executive → <code>executive</code>, Funder → <code>funder</code>, Journalist → <code>journalist</code>, Other → <code>other</code>.</li><li>Create a form with these fields:</li></ol>
+<p>| Field | HubSpot property | Required | |---|---|---| | First name | <code>firstname</code> | yes | | Last name | <code>lastname</code> | yes | | Email | <code>email</code> | yes | | Contact number | <code>phone</code> | no | | Tell us more | <code>message</code> | yes | | Which best describes you? | <code>augmented_persona</code> | no |</p>
+<ol><li><strong>Turn CAPTCHA off on that form.</strong> HubSpot refuses every submission sent from a server to a form with CAPTCHA on. The plugin has its own spam protection instead.</li><li>Copy the form's ID: the long ID with dashes in the address bar while the form is open in HubSpot's editor.</li></ol>
+<p><strong>In WordPress:</strong> Settings → <strong>AugmentED</strong> → fill in <strong>Portal ID</strong> (20910033), <strong>Form ID</strong>, and <strong>Privacy policy URL</strong> (<code>https://aerdf.org/termsofuse/</code>) → <strong>Save Changes</strong> → <strong>Send test submission</strong>. You can leave the other fields as they are.</p>
+<p>The test sends one real submission with your WordPress name and email, so it creates a real contact in HubSpot. Please delete it there afterwards. If HubSpot refuses the test, the screen shows HubSpot's own message: check the form ID, the internal names above, and that CAPTCHA is off, and if it still won't go through, send Brendan the message.</p>
+<h3 id="4-optional-aerdfs-job-title-field">4. Optional: AERDF's job-title field</h3>
+<p>AERDF's own team pages show a job title from a custom field. If you'd like the AugmentED people's AERDF pages to show their titles too, pick that field under Settings → AugmentED → <strong>AERDF's job-title field</strong> before importing the team, and the import will fill it in wherever it's empty.</p>
+<p>To find the field: Elementor → Templates → Theme Builder → the single template for team members → the job-title widget's dynamic tag. <strong>If you're not sure, leave it at &quot;(none)&quot;.</strong> The Who We Are page shows everyone's role either way.</p>
+<h3 id="5-import-the-team">5. Import the team</h3>
+<p>Tools → <strong>AugmentED team</strong> → <strong>Dry run</strong> first. It changes nothing and tells you what the import will do. You should see:</p>
+<ul><li><strong>6 categories</strong> to create: &quot;AugmentED Team&quot; and one for each Who We Are group;</li><li><strong>34 people to create</strong> and <strong>2 to attach</strong>. The two are Sherry Lachman and Caitlin Mills, who are already on AERDF's team. Attaching only adds the AugmentED details; their existing AERDF pages, titles, bios and photos stay exactly as they are;</li><li><strong>6 absent</strong>: people who have left AugmentED's team. They're skipped on purpose.</li></ul>
+<p>If the dry run stops because a name already belongs to a different AERDF team post: when it's the same person, type their slug under <strong>Attach</strong> and run the dry run again; when it's someone else with the same name, please email Brendan the slug rather than attaching them.</p>
+<p>Then click <strong>Import</strong>. You can run it again any time: it only changes what changed, never deletes anything, and never overwrites edits made in WordPress.</p>
+<p><strong>On production, import right before you publish (step 6).</strong> New people are published as soon as the import runs, so doing steps 5 and 6 in one sitting keeps their pages from appearing before the AugmentED pages they link to. (Or set <strong>New people are → Drafts</strong> and publish them in step 6.)</p>
+<p>Each person is an ordinary Team post you can edit. Their <strong>AugmentED card</strong> box holds what Who We Are shows. To take someone off the page without deleting them, tick <strong>Archived</strong> on their card.</p>
+<h3 id="6-review-publish-purge">6. Review, publish, purge</h3>
+<ol><li>Preview the five draft pages.</li><li>Check nothing else claims <code>/augmented/</code>. A rule in Redirection, Yoast's redirects or WP Engine's redirect rules would keep sending visitors away from the new page, so remove any you find.</li><li>Apply AERDF's decision about the existing AugmentED page under Opportunities.</li><li>Publish the five pages (and the team, if you imported them as drafts: Team → filter by the &quot;AugmentED Team&quot; category → select all → Bulk actions → Edit → Status: Published).</li><li>Clear the caches: <strong>WP Engine → Caching → Clear all caches</strong> in wp-admin, and Cloudflare's too if it caches pages.</li></ol>
+<h3 id="7-check-it">7. Check it</h3>
+<p>Please check these in a <strong>private window, logged out</strong>, which is what visitors see:</p>
+<ul><li class="task"><span aria-hidden="true">☐</span> The five pages match <a href="https://augmented2.folkmark.com" target="_blank" rel="noopener">the AugmentED site</a>, with AERDF's header and footer in place of AugmentED's. (On phones, AugmentED's menu button says &quot;Menu&quot; so it isn't confused with AERDF's. That's intended.)</li><li class="task"><span aria-hidden="true">☐</span> On the home page, the hero animation plays as you scroll, the blocks fall near the end, and clicking a step of the cycle wheel moves to it.</li><li class="task"><span aria-hidden="true">☐</span> Who We Are shows everyone's photos in five groups, and each &quot;Read bio&quot; (Leadership only) opens that person's page.</li><li class="task"><span aria-hidden="true">☐</span> Sherry Lachman's and Caitlin Mills's AERDF pages look as they did before.</li><li class="task"><span aria-hidden="true">☐</span> A test submission from the Follow page reaches AERDF's HubSpot with every field filled in. Delete it afterwards.</li><li class="task"><span aria-hidden="true">☐</span> With AERDF's cookie banner and accessibility widget open, nothing covers AugmentED's bar, its menu or the form, and the form still sends.</li><li class="task"><span aria-hidden="true">☐</span> The rest of aerdf.org looks exactly as before. (The <code>/team/</code> archive and search will now include the AugmentED people too. That's expected.)</li><li class="task"><span aria-hidden="true">☐</span> Settings → AugmentED shows every line of its status panel as done.</li></ul>
+<p>That's it. When everything is ticked, please let Brendan know which environment, the date and who checked it. Thank you!</p>
+<h2 id="a-few-things-to-avoid">A few things to avoid</h2>
+<ul><li><strong>Please don't open the AugmentED pages in Elementor.</strong> The plugin draws the whole page, and an Elementor layout would replace it. (If it happens, &quot;Back to WordPress Editor&quot; on the edit screen puts it right.)</li><li><strong>Please don't duplicate an AugmentED page.</strong> A copy carries the same template, and the pages' links can end up pointing at the wrong one.</li><li><strong>Please keep image optimisers away from the plugin's folder</strong> (Smush, EWWW, ShortPixel, Cloudflare Polish, WP Engine's Page Speed Boost). The animations look for their frames by exact filename.</li></ul>
+<h2 id="if-something-looks-wrong">If something looks wrong</h2>
+<div class="tw"><table><thead><tr><th>You see</th><th>Why</th><th>What to do</th></tr></thead><tbody><tr><td>No AugmentED pages under Pages</td><td>Activating doesn't create them.</td><td>Tools → AugmentED team → <strong>Create the pages as drafts</strong>.</td></tr><tr><td>A page's address shows a 404</td><td>It's still a draft.</td><td>Preview it from the Pages list, or publish it.</td></tr><tr><td>A &quot;Read bio&quot; link shows a 404</td><td>WordPress hasn't refreshed its addresses.</td><td>Settings → Permalinks → <strong>Save Changes</strong>, changing nothing.</td></tr><tr><td><code>/augmented/</code> still goes to the old page</td><td>A redirect rule or a cache.</td><td>Step 6, items 2 and 5.</td></tr><tr><td>Who We Are is an empty page at <code>/team/</code></td><td>It was published while the AugmentED page was a draft, and lost its parent (fixed in 1.1.6; Settings → AugmentED flags it). <code>/team/</code> is the Team archive.</td><td>Edit Who We Are → Page Attributes → Parent → <strong>AugmentED</strong> → Update.</td></tr><tr><td>Amber warnings in Settings → AugmentED</td><td>Something isn't done yet.</td><td>Work down the list it shows.</td></tr></tbody></table></div>
+<h2 id="later-on">Later on</h2>
+<p><strong>Updating.</strong> When Brendan sends a new version: take a backup point, upload the new zip the same way (WordPress offers <strong>Replace current with uploaded</strong>), and clear the caches. If Settings → AugmentED says the update includes team changes, run the Dry run and Import again. Please keep every zip you're sent; the previous one is how you go back.</p>
+<p><strong>Going back.</strong> To undo an update, upload the previous zip the same way. For anything bigger, restore the backup point from the WP Engine User Portal.</p>
+<p><strong>After launch, the site is AERDF's.</strong> You're free to keep using the plugin as it is, ask AugmentED for changes, or rebuild the pages however suits you. If you ever want the details behind the plugin, they're in <a href="https://github.com/folkmark/aug-preview/blob/main/wordpress-handoff/README.md" target="_blank" rel="noopener">the handoff README</a>.</p>
+</section>
+</main>
+</body>
+</html>
