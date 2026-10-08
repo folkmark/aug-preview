@@ -179,6 +179,73 @@ the team was imported under 1.0.0, sixteen people outside Leadership still hold 
 post content, and a post with content still draws "Read bio" — clear those posts' content by
 hand; the import never empties a post.
 
+## If you want to change it or rebuild it
+
+The plugin is built from a public repository, [folkmark/aug-preview](https://github.com/folkmark/aug-preview),
+branch `main`. You do not need it to install; you need it to change anything. There are two
+different things you might mean.
+
+### A. Rebuild the plugin zip, or change the plugin
+
+You need Node (version 22 is what the build runs on), `zip`, and PHP 8 (for the syntax check). This produces the same
+zip AugmentED sends, from a clean clone:
+
+```
+git clone https://github.com/folkmark/aug-preview.git
+cd aug-preview
+npm i --no-save playwright@1.63.0 linkedom@0.18.13 postcss@8.5.28 postcss-selector-parser@7.1.6 pixelmatch@7.2.0 pngjs@7.0.0 axe-core@4.13.0 html-validate@11.16.0
+node tools/build-wp-plugin.mjs --check
+node tools/build-wp-plugin.mjs --assemble dist --zip
+```
+
+The result is `dist/augmented-ed.zip`, about 22 MB. Name every package in the one `npm i`
+line: `--no-save` removes anything you leave out of the same call. The line above also covers
+the checks below, so you do not need a second install.
+
+To prove a build works, `node tools/verify-wp-plugin.mjs` installs it into a throwaway
+WordPress and runs about eighty checks (pages against the site pixel for pixel, the team import, the
+bio pages, the menu, the Follow form through to a stand-in HubSpot). It needs PHP 8 and
+Chromium, and downloads WordPress the first time. Its report and screenshots land in
+`.wp-verify/report/`. Nothing in it needs the original artwork: every image the plugin ships
+is already committed.
+
+What you may edit, and what you may not:
+
+- **Yours to change:** `augmented-ed.php`, `includes/`, `js/`, and `css/host.css` under
+  `wordpress-handoff/plugin/augmented-ed/`. This is the runtime: the importer, the form's
+  HubSpot relay, the offsets under AERDF's header. Edit it, then run the two build
+  commands above. When you release a change, raise the version in `augmented-ed.php` (twice:
+  the header and `AUGMENTED_ED_VERSION`) and in `readme.txt` (`Stable tag` and the changelog).
+- **Never by hand:** everything under `generated/`. It is output, rewritten from the site on
+  every build, and the build fails if it has been edited. To change what a page looks like or
+  says, the change is made to the site (`index.html` and the files it uses) and then
+  exported (`node tools/export-static.mjs && node tools/export-content.mjs`, which needs
+  Chromium), not to the plugin. That is AugmentED's side of the work; ask rather than
+  patching `generated/`.
+- **`css/host.css` is for measured leaks only.** Add to it only what
+  `node tools/verify-wp-plugin.mjs --live` reports against real aerdf.org pages, never
+  speculatively, and never `all: revert`.
+
+**Your changes do not carry over by themselves.** When AugmentED sends the next zip, installing
+it replaces your copy. Either send your change back (a pull request against `main`, or the diff)
+so it is in the next build, or agree with AugmentED that your copy becomes the source and
+the zip stops coming from them. Tell us which; do not leave it unsaid.
+
+### B. Rebuild the site natively in WordPress instead of using the plugin
+
+It can be done, and the repository carries what it takes: the exported pages
+(`wordpress-handoff/pages/`), their content as data (`wordpress-handoff/content/`), a build spec
+for each animated section (`wordpress-handoff/sections/`), and
+[the handoff README](https://github.com/folkmark/aug-preview/blob/main/wordpress-handoff/README.md),
+which has the measured behaviour, the rules every component must keep and a native-rebuild
+procedure for each. We recommend against it unless AERDF needs the pages inside its own page
+builder, for three reasons: the hero, the falling blocks and the cycle wheel are scroll-driven and
+were tuned against real measurements, which is the expensive part to redo; a native copy stops
+following the site, where the plugin is regenerated from it; and AugmentED's team and
+Follow form are already wired in the plugin. If you do go this way, tell AugmentED first, and
+deactivate the plugin before the native pages go live so the two do not both claim the same
+pages.
+
 ## Acceptance
 
 Logged out and logged in, and with the AccessiBe widget on:

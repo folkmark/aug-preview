@@ -9,9 +9,9 @@
 // out of search results and navigation; it does not make it private.
 //
 // The renderer is the small subset those two files use — headings, paragraphs, flat ordered,
-// unordered and task lists, pipe tables, `code`, **bold**, *italic* and links — and nothing
-// more. A file that grows past it should fail loudly here rather than render wrongly, so an
-// unsupported construct (a fenced block, nested list, blockquote or raw HTML) throws.
+// unordered and task lists, pipe tables, fenced code blocks, `code`, **bold**, *italic* and
+// links — and nothing more. A file that grows past it should fail loudly here rather than
+// render wrongly, so an unsupported construct (a nested list, blockquote or raw HTML) throws.
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -59,6 +59,15 @@ export function renderMarkdown(md, { prefix = '', link = (u) => u } = {}) {
   };
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
+    if (/^```/.test(line)) {
+      flush();
+      const code = [];
+      i++;
+      while (i < lines.length && !/^```/.test(lines[i])) code.push(lines[i++]);
+      if (i >= lines.length) throw new Error('handoff-page: unterminated code block');
+      out.push(`<pre><code>${esc(code.join('\n'))}</code></pre>`);
+      continue;
+    }
     if (/^\s*```/.test(line) || /^>/.test(line) || /^\s*<[a-z!/]/i.test(line)) {
       throw new Error(`handoff-page: unsupported Markdown on line ${i + 1}: ${line}`);
     }
@@ -135,6 +144,8 @@ export function handoffPage({ title, intro, sections, toc }) {
   h3 { font-size:1.2rem; margin:1.8rem 0 .4rem; }
   h4, h5 { font-size:1.05rem; margin:1.4rem 0 .3rem; }
   a { color:var(--link); }
+  pre { background:var(--code); padding:.8rem 1rem; border-radius:6px; overflow-x:auto; }
+  pre code { padding:0; background:none; overflow-wrap:normal; white-space:pre; }
   code { background:var(--code); padding:.1em .35em; border-radius:4px; font:.9em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; overflow-wrap:anywhere; }
   ul, ol { padding-left:1.4rem; }
   li { margin:.3rem 0; }
