@@ -1,0 +1,83 @@
+{
+  "pages": {
+    "home": {
+      "image": "og/home.jpg",
+      "type": "image/jpeg",
+      "width": 1200,
+      "height": 630,
+      "alt": "AugmentED: we treat AI in education as a science, not a gold rush. A bridge of blocks spanning a server rack and a school desk."
+    },
+    "challenge": {
+      "image": "og/challenge.jpg",
+      "type": "image/jpeg",
+      "width": 1200,
+      "height": 630,
+      "alt": "The Challenge: the gap between what AI can do and what students need. Two students writing by hand at a classroom desk."
+    },
+    "approach": {
+      "image": "og/approach.jpg",
+      "type": "image/jpeg",
+      "width": 1200,
+      "height": 630,
+      "alt": "Our Approach: we start by asking what teachers and students need. A teacher working with three students at a table."
+    },
+    "team": {
+      "image": "og/team.jpg",
+      "type": "image/jpeg",
+      "width": 1200,
+      "height": 630,
+      "alt": "Who We Are: educators, researchers, and engineers as equal partners. Headshots of the AugmentED leadership team."
+    },
+    "follow": {
+      "image": "og/follow.jpg",
+      "type": "image/jpeg",
+      "width": 1200,
+      "height": 630,
+      "alt": "Follow Our Work: stay in the loop. Educators gathered at a wall of sticky notes."
+    }
+  },
+  "bios": {
+    "abby-petre": {
+      "image": "og/team/abby-petre.jpg",
+      "type": "image/jpeg",
+      "width": 1200,
+      "height": 630,
+      "alt": "Abby (Csaba) Petre, Head of Engineering, AugmentED"
+    },
+    "caitlin-mills": {
+      "image": "og/team/caitlin-mills.jpg",
+      "type": "image/jpeg",
+      "width": 1200,
+      "height": 630,
+      "alt": "Caitlin Mills, Co-Founder & Chief of Research and Impact, AugmentED"
+    },
+    "jenny-bradbury": {
+      "image": "og/team/jenny-bradbury.jpg",
+      "type": "image/jpeg",
+      "width": 1200,
+      "height": 630,
+      "alt": "Jenny Bradbury, Vice President of Education Innovation and Partnerships, AugmentED"
+    },
+    "raquel-romano": {
+      "image": "og/team/raquel-romano.jpg",
+      "type": "image/jpeg",
+      "width": 1200,
+      "height": 630,
+      "alt": "Raquel Romano, Chief Technology Officer, AugmentED"
+    },
+    "sherry-lachman": {
+      "image": "og/team/sherry-lachman.jpg",
+      "type": "image/jpeg",
+      "width": 1200,
+      "height": 630,
+      "alt": "Sherry Lachman, Founder & Executive Director, AugmentED"
+    }
+  },
+  "fallback": {
+    "image": "logo/og-card.png",
+    "type": "image/png",
+    "width": 1200,
+    "height": 630,
+    "alt": "augment^ed, supported by AERDF"
+  }
+}

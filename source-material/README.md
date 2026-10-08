@@ -16,28 +16,37 @@ which are licensed files and are not in the repository at all.
 | `aerdf/` | AERDF's header and footer markup, as a snapshot of a public aerdf.org page with every script stripped, and where and when it was taken. Written by `tools/snapshot-aerdf.mjs`; its CSS, fonts and logos are in `assets/aerdf/`. Used only for the `/aerdf/` preview. | `tools/build-site.mjs` |
 | `brand-logos/PNG/AugmentED_Logo_Color_Horiz.png` | The colour horizontal lockup from the logo kit AERDF supplied, the one that carries "supported by aerdf". It becomes the share card, `assets/logo/og-card.png`. The site's two SVG logos are the kit's colour SVGs copied across unchanged. | `tools/encode-images.mjs` |
 
-## The Shutterstock originals
+## The licensed photography on The Challenge and Our Approach
 
-The seven portrait photographs on The Challenge and Our Approach are licensed Shutterstock
-photography, downloaded under Folkmark's subscription. The licence does not allow the
-files to be shared as files, so the full-resolution originals are not committed. The
-encoder reads them from `image-sources/stock-photos-aug/large/`, which is git-ignored:
-download them there from Folkmark's Shutterstock account (licence history), by asset ID,
-keeping the ID as the filename (`shutterstock_<id>.jpg`).
+Seven portrait photographs, two sources, both licensed, and the licences do not allow the
+files to be shared as files, so no full-resolution original is committed. The encoder reads
+them from two git-ignored directories under `image-sources/stock-photos-aug/`.
+
+**Shutterstock** (Folkmark's subscription), read from `large/`: download by asset ID from the
+licence history and keep the ID as the filename (`shutterstock_<id>.jpg`).
 
 | Asset ID | Becomes |
 | --- | --- |
 | 2763377205 | `images/student-notebook` |
-| 2176735867 | `images/engineers-screens` |
-| 1136122199 | `images/teacher-two-students` |
-| 2670025731 | `images/define-the-role` |
-| 2354739045 | `images/build-capabilities` |
-| 2129383421 | `images/codesign-tools` |
-| 2757155555 | `images/test-in-classrooms` |
+| 2129383421 | `images/codesign-tools` (a 4144x4144 square from the top of the frame) |
 
-Without them the encoder skips those fourteen jobs (two tiers each) and re-encodes
-everything else; the encoded files under `assets/images/` are committed and are what the
-site and the plugin use.
+**Getty Images** (licensed by AERDF, October 2026), read from `getty-licensed/`. These are
+*not* the originals: each is the original already cut to the box it ships in and downsized
+to 2,000-2,700 px, named by Getty ID (`<id>.jpg`), because the framing was chosen by the
+client in the photo review file (a crop saved as fractions of the original, which can be
+re-applied to the licensed full-resolution file). The jobs therefore carry no `crop`.
+
+| Getty ID | Becomes | Box |
+| --- | --- | --- |
+| 2222113845 | `images/engineers-screens` | 1:1 |
+| 1324921324 | `images/teacher-two-students` | 4:5 |
+| 1044232206 | `images/define-the-role` | 4:5 |
+| 1469940271 | `images/build-capabilities` | 11:10 |
+| 1440718884 | `images/test-in-classrooms` | 4:5 |
+
+Without them the encoder skips those jobs (two tiers each) and re-encodes everything else;
+the encoded files under `assets/images/` are committed and are what the site and the plugin
+use. The other Shutterstock frames for the five Getty slots are no longer read.
 
 The Avenir LT Pro OTFs sit beside the WOFF2 they produce, in
 `_ds/augmented-design-system-*/assets/fonts/`, which is where `tools/encode-fonts.mjs` looks

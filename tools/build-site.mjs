@@ -17,8 +17,10 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { unserved, readManifest, heroFrames, fallingFrames } from './lib/sequences.mjs';
+import { renderMarkdown, handoffPage, slug } from './lib/handoff-page.mjs';
 import { readBios as readBioFiles, lede as bioLede, staticHelper, bioBody, BIO_PROFILE_CSS, BIO_PROFILE_DESKTOP_CSS } from './lib/bio-page.mjs';
 import { readRoster, checkTeam, statusOf } from './lib/team.mjs';
+import { CARDS, bioCards, ogPath } from './build-og.mjs';
 
 const root = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
 const outDir = path.resolve(root, process.argv[2] || '_site');
@@ -56,12 +58,23 @@ const COPY_DIRS = ['assets', '_ds'];
 
 const escapeAttr = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
-// Rewrite the head of a copy so each page carries its own title and description
-// rather than inheriting the home page's.
-function retitle(html, { title, description }) {
+// Each page's share card (tools/build-og.mjs draws them), by route slug. A page with no
+// card is a build failure here rather than a page that quietly shares the home page's.
+const card = (key) => {
+  const c = CARDS.find((x) => x.key === key);
+  if (!c) throw new Error(`no share card for ${key} in tools/build-og.mjs`);
+  return c;
+};
+
+// Rewrite the head of a copy so each page carries its own title, description and share
+// card rather than inheriting the home page's.
+function retitle(html, { slug, title, description }) {
   const t = escapeAttr(title);
   const d = escapeAttr(description);
+  const c = card(slug);
   return html
+    .replace(/(<meta (?:property="og:image"|name="twitter:image") content=")[^"]*(">)/g, `$1${ogPath(c.key)}$2`)
+    .replace(/(<meta property="og:image:alt" content=")[^"]*(">)/, `$1${escapeAttr(c.alt)}$2`)
     .replace(/<title>[\s\S]*?<\/title>/, `<title>${t}</title>`)
     .replace(/(<meta name="description" content=")[^"]*(">)/, `$1${d}$2`)
     .replace(/(<meta property="og:title" content=")[^"]*(">)/, `$1${t}$2`)
@@ -120,7 +133,7 @@ const ORIGIN = CNAME ? `https://${CNAME}` : '';
 if (!ORIGIN) console.log('::warning::no CNAME — og:image stays a path, and the bio pages ship without canonical, og:url or structured data');
 
 // og:image and twitter:image as absolute URLs. absolutise() leaves them root-relative
-// (/assets/logo/og-card.png). A browser can resolve that against the page; a link
+// (/assets/og/challenge.jpg). A browser can resolve that against the page; a link
 // unfurler reads the tag on its own, and the Open Graph protocol defines og:image as a
 // URL, so a path is at best tolerated. The share card added in September went out as
 // a path on every page. Runs after absolutise(), which is what puts the base in it.
@@ -428,6 +441,13 @@ function bioPage(b) {
   // but the bracketed part is neither, so it is left out of this split.
   const [first, ...rest] = b.name.replace(/\s*\([^)]*\)/g, '').split(' ');
   const nav = [['challenge', 'The Challenge'], ['approach', 'Our Approach'], ['team', 'Who We Are']];
+  // The person's own share card. Every bio this builds has one (build-og draws a card for
+  // each linked bio, by the same rule); the logo card is the fallback only for a bio added
+  // without re-running it, and build-og --check reports that.
+  const own = bioCards().find((c) => c.key === `team/${b.slug}`);
+  const share = own && fs.existsSync(path.join(root, ogPath(own.key)))
+    ? { image: ogPath(own.key), type: 'image/jpeg', alt: own.alt }
+    : { image: 'assets/logo/og-card.png', type: 'image/png', alt: 'augment^ed, supported by AERDF' };
 
   // ProfilePage structured data. Google's documentation lists "an employee page on a
   // company website" as a page this type is for: one person, affiliated with the site.
@@ -472,12 +492,13 @@ ${url ? `<link rel="canonical" href="${url}">\n` : ''}<meta property="og:type" c
 <meta property="og:title" content="${esc(b.name)} | AugmentED">
 <meta property="og:description" content="${desc}">
 ${url ? `<meta property="og:url" content="${url}">\n` : ''}<meta property="profile:first_name" content="${esc(first)}">
-${rest.length ? `<meta property="profile:last_name" content="${esc(rest.join(' '))}">\n` : ''}<meta property="og:image" content="assets/logo/og-card.png">
+${rest.length ? `<meta property="profile:last_name" content="${esc(rest.join(' '))}">\n` : ''}<meta property="og:image" content="${share.image}">
+<meta property="og:image:type" content="${share.type}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="augment^ed, supported by AERDF">
+<meta property="og:image:alt" content="${esc(share.alt)}">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="assets/logo/og-card.png">
+<meta name="twitter:image" content="${share.image}">
 <link rel="icon" href="assets/logo/logo-icon.png" type="image/png" sizes="150x150">
 <link rel="apple-touch-icon" href="assets/logo/logo-icon.png">
 <meta name="theme-color" content="#fdfcfa">
@@ -697,8 +718,47 @@ if (fs.existsSync(path.join(AERDF_SRC, 'snapshot.json'))) {
   }
 }
 
+// ---------------------------------------------------------------- developer handoff
+
+// An unlinked, noindex page for the developer who installs the WordPress plugin: START-HERE.md
+// alone, so they can be sent an address instead of attachments. Since October 2026 it is only
+// the install and what they need to know, written warmly; AERDF's decisions (DECISIONS.md) and
+// the reference behind the install (README.md, "Behind the install guide") stay in the
+// repository and are linked, not carried. Built from that one file, not from index.html, so
+// tools/export-static.mjs and the plugin made from it never contain it, and it is left out of
+// the sitemap below on purpose. The plugin zip is not served here (it carries the licensed
+// Avenir files; CLAUDE.md). See lib/handoff-page.mjs.
+const HANDOFF_SLUG = 'aerdf-developer-handoff';
+const handoffDir = path.join(root, 'wordpress-handoff');
+const GH = 'https://github.com/folkmark/aug-preview/blob/main/wordpress-handoff/';
+// Links to the other handoff files go to GitHub; START-HERE's own anchors keep GitHub's form
+// (no prefix), so a link to "START-HERE.md#3-connect-the-follow-form" lands here.
+const handoffLink = (u) => {
+  const [file, hash] = u.split('#');
+  if (file === 'START-HERE.md') return hash ? `#${hash}` : '#content';
+  if (/^[A-Z-]+\.md$/.test(file)) return `${GH}${file}${hash ? `#${hash}` : ''}`;
+  return u;
+};
+const startHere = fs.readFileSync(path.join(handoffDir, 'START-HERE.md'), 'utf8');
+fs.mkdirSync(path.join(outDir, HANDOFF_SLUG), { recursive: true });
+fs.writeFileSync(
+  path.join(outDir, HANDOFF_SLUG, 'index.html'),
+  handoffPage({
+    title: 'Installing AugmentED on aerdf.org',
+    intro:
+      '<p>Brendan sends you the plugin zip directly; it isn\'t on this page.</p>' +
+      '<p>This page is just for you: it isn\'t linked from the site or shown in search results.</p>',
+    // The guide's own sections, in its order: someone coming back after launch is looking
+    // for "Later on" or "If something looks wrong", not scrolling for it.
+    toc: [...startHere.matchAll(/^## (.+)$/gm)].map((m) => ({ id: slug(m[1]), label: m[1] })),
+    // The file's own H1 repeats the page title, so it is dropped here.
+    sections: [`<section id="part-install">\n${renderMarkdown(startHere.replace(/^# .*\n/, ''), { link: handoffLink, shift: 0 })}\n</section>`],
+  })
+);
+
 // robots.txt and sitemap.xml: every page a reader can land on — the root, the four
-// routes and the bios — and none of the moved-slug stubs, which are noindex redirects.
+// routes and the bios — and none of the moved-slug stubs, which are noindex redirects,
+// nor the developer handoff page above.
 // Only with a CNAME, for the reason locate() gives; a sitemap of paths is not a sitemap.
 if (ORIGIN) {
   const urls = ['', ...PAGES.map((p) => p.slug + '/'), ...bios.map((b) => `team/${b.slug}/`)].map((rel) => `${ORIGIN}${basePath}${rel}`);
@@ -800,7 +860,7 @@ function checkFile(rel) {
 }
 
 const built = ['index.html', '404.html', ...PAGES.map((p) => `${p.slug}/index.html`),
-  ...bios.map((b) => `team/${b.slug}/index.html`), ...aerdfBuilt];
+  ...bios.map((b) => `team/${b.slug}/index.html`), `${HANDOFF_SLUG}/index.html`, ...aerdfBuilt];
 built.forEach(checkFile);
 
 for (const need of ['.nojekyll', 'support.js', '_ds', 'assets']) {
