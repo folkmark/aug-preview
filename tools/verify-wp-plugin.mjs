@@ -199,7 +199,11 @@ export function startServers() {
   // PHP's built-in server runs WordPress, behind a small Node server that serves every real
   // file itself. Left to serve the images too, PHP's workers stall writing a large file to a
   // connection the browser has already closed, and a few of those stop the whole site.
-  const php = spawn('php', ['-S', `127.0.0.1:${PHP_PORT}`, '-t', WP, path.join(WP, 'router.php')], { stdio: ['ignore', 'ignore', 'pipe'], env: { ...process.env, PHP_CLI_SERVER_WORKERS: '4' } });
+  // Its access log goes to a file, never to a pipe: the server writes a line per request to
+  // stderr, nothing read the pipe it once had, and when the suite outgrew the pipe's 64 KB
+  // every worker blocked mid-write, so the form's rate-limit posts hung (October 2026).
+  const phpLog = fs.openSync(path.join(V, 'php-server.log'), 'w');
+  const php = spawn('php', ['-S', `127.0.0.1:${PHP_PORT}`, '-t', WP, path.join(WP, 'router.php')], { stdio: ['ignore', phpLog, phpLog], env: { ...process.env, PHP_CLI_SERVER_WORKERS: '4' } });
   const FILE_MIME = { '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.woff': 'font/woff', '.gif': 'image/gif', '.ico': 'image/x-icon', '.xsl': 'text/xsl' };
   const front = http.createServer((req, res) => {
     const rel = decodeURIComponent(req.url.split('?')[0]);
