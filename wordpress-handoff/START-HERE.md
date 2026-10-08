@@ -179,11 +179,30 @@ the team was imported under 1.0.0, sixteen people outside Leadership still hold 
 post content, and a post with content still draws "Read bio" — clear those posts' content by
 hand; the import never empties a post.
 
-## If you want to change it or rebuild it
+## Who changes what
+
+AugmentED keeps sending the plugin, so there is one source for the pages and the two of you
+need to agree where changes go.
+
+| Change | Who | How |
+|---|---|---|
+| Page copy, images, layout, design | AugmentED (Brendan), or AERDF's developer through the repository | Ask AugmentED, who sends a new zip you upload, or make the change in the repository and send a pull request. |
+| The team: a person's role, bio, links, photo, or taking them off the page | Either | Edit that person's Team post in WordPress (the **AugmentED card** box). The import never overwrites a card edited in WordPress. |
+| HubSpot form, the pages' addresses, the privacy link, Permalinks | AERDF's developer | Settings → **AugmentED**, and the Pages screen. |
+| The plugin's code (`includes/`, `js/`, `css/host.css`) | Either | See below. |
+
+**Please do not edit the plugin's files on the server.** The next zip replaces them, and the
+change is lost. If something on aerdf.org needs fixing before the next zip can arrive, fix it
+there, then send AugmentED the same change (a pull request or the diff) so it is in the next
+build. Nothing in the pages' own files (`generated/`) should be edited at all; see below.
+
+## Only if you want to change or rebuild the plugin yourself
+
+You do not need any of this to install the plugin, or to keep installing the zips AugmentED
+sends. It is here for a developer who wants to rebuild the zip or change the code.
 
 The plugin is built from a public repository, [folkmark/aug-preview](https://github.com/folkmark/aug-preview),
-branch `main`. You do not need it to install; you need it to change anything. There are two
-different things you might mean.
+branch `main`. You need it to change anything. There are two different things you might mean.
 
 ### A. Rebuild the plugin zip, or change the plugin
 
@@ -226,10 +245,10 @@ What you may edit, and what you may not:
   `node tools/verify-wp-plugin.mjs --live` reports against real aerdf.org pages, never
   speculatively, and never `all: revert`.
 
-**Your changes do not carry over by themselves.** When AugmentED sends the next zip, installing
-it replaces your copy. Either send your change back (a pull request against `main`, or the diff)
-so it is in the next build, or agree with AugmentED that your copy becomes the source and
-the zip stops coming from them. Tell us which; do not leave it unsaid.
+**Your changes do not carry over by themselves.** Installing AugmentED's next zip replaces your
+copy. Send your change back (a pull request against `main`, or the diff) so it is in the next
+build, or agree with AugmentED that your copy becomes the source and the zip stops coming from
+them. Tell us which; do not leave it unsaid.
 
 ### B. Rebuild the site natively in WordPress instead of using the plugin
 
