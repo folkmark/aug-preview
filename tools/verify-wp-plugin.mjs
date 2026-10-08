@@ -96,6 +96,11 @@ export function setup() {
   fs.writeFileSync(path.join(WP, 'wp-content/mu-plugins/aug-verify.php'), `<?php
 add_filter( 'augmented_ed_hubspot_endpoint', function () { return 'http://127.0.0.1:${MOCK_PORT}/submit'; } );
 add_filter( 'http_request_host_is_external', '__return_true' );
+// What WP-Stateless's cache-busting does on aerdf.org: a random prefix on every name that passes
+// through sanitize_file_name(). Before 1.1.5 the plugin looked its headshots up through that
+// filter and found none of them on AERDF's dev site; with this always on, every headshot check
+// below fails if anything goes back to doing so.
+add_filter( 'sanitize_file_name', function ( $f ) { return substr( md5( $f . microtime() ), 0, 8 ) . '-' . $f; } );
 `);
   fs.writeFileSync(path.join(WP, 'wp-config.php'), `<?php
 define( 'DB_NAME', 'wp' ); define( 'DB_USER', '' ); define( 'DB_PASSWORD', '' ); define( 'DB_HOST', '' );
@@ -659,6 +664,27 @@ export async function checks() {
     wp('post', 'update', homeId, '--post_status=publish');
     check('share: a Social image set in Yoast takes priority over the card', chosen.image === 'https://example.com/chosen.jpg' && !/assets\/og\//.test(chosen.image), chosen.image);
     await c.close();
+  }
+
+  // 9b. Parent menus (includes/templates.php). WordPress lists only published pages as
+  // parents, and the AugmentED home starts as a draft, so before 1.1.6 saving Who We Are in the
+  // classic editor or Quick Edit submitted "(no parent)" and moved it to /team/ — aerdf.org's
+  // team archive, an empty page. Found on AERDF's dev site. With the home a draft, its edit
+  // screen must still offer and select it, Quick Edit must list drafts, and a page whose
+  // address opens something else must show in the status panel.
+  {
+    const idOf = (k) => wp('post', 'list', '--post_type=page', '--meta_key=_wp_page_template', `--meta_value=augmented-ed/${k}.php`, '--post_status=any', '--field=ID').split('\n')[0];
+    const home = idOf('home');
+    const team = idOf('team');
+    wp('post', 'update', home, '--post_status=draft');
+    const box = wp('--context=admin', 'eval', `require_once ABSPATH . 'wp-admin/includes/admin.php'; require_once ABSPATH . 'wp-admin/includes/meta-boxes.php'; ob_start(); page_attributes_meta_box( get_post( ${team} ) ); echo ob_get_clean();`);
+    const quick = wp('--context=admin', 'eval', `echo wp_json_encode( apply_filters( 'quick_edit_dropdown_pages_args', array( 'post_status' => 'publish' ), false ) );`);
+    wp('post', 'update', home, '--post_status=publish');
+    check('parent menus: a draft AugmentED home stays the selected parent, on the edit screen and in Quick Edit', new RegExp(`value="${home}"[^>]*selected`).test(box) && /"draft"/.test(quick), quick);
+    wp('post', 'update', team, '--post_parent=0');
+    const panel = wp('--context=admin', 'eval', `require_once ABSPATH . 'wp-admin/includes/admin.php'; ob_start(); augmented_ed_status_panel(); echo ob_get_clean();`);
+    wp('post', 'update', team, `--post_parent=${home}`);
+    check('status: a published page whose address opens something else (Who We Are at /team/) is flagged', /opens something else/.test(panel) && /\/team\//.test(panel));
   }
 
   // 10. Archiving from WordPress: the Archived box in the AugmentED card, ticked and unticked

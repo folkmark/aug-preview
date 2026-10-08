@@ -8,7 +8,7 @@ aerdf.org's own theme, with AERDF's header and footer and AugmentED's navigation
 beneath them, the way Assessment for Good's pages work. The plugin also adds the AugmentED
 team to AERDF's existing Team post type and connects the Follow form to HubSpot.
 
-Set aside about an hour on each environment. This page describes plugin version **1.1.4**.
+Set aside about an hour on each environment. This page describes plugin version **1.1.6**.
 
 If anything is unclear or looks wrong at any point, please just ask Brendan at
 [brendan@folkmark.com](mailto:brendan@folkmark.com). No question is too small.
@@ -46,7 +46,7 @@ through steps 1, 2 and 5 while these are being sorted out:
 ### 1. Upload and activate
 
 Plugins → **Add Plugin** → **Upload Plugin** → choose the zip → **Install Now** → **Activate
-Plugin**. The Plugins screen should now show **AugmentED 1.1.4**.
+Plugin**. The Plugins screen should now show **AugmentED 1.1.6**.
 
 The zip is about 22 MB because it carries every image and animation frame. If WordPress says
 "The link you followed has expired" or mentions `upload_max_filesize`, the zip is just larger
@@ -192,6 +192,7 @@ who checked it. Thank you!
 | A page's address shows a 404 | It's still a draft. | Preview it from the Pages list, or publish it. |
 | A "Read bio" link shows a 404 | WordPress hasn't refreshed its addresses. | Settings → Permalinks → **Save Changes**, changing nothing. |
 | `/augmented/` still goes to the old page | A redirect rule or a cache. | Step 6, items 2 and 5. |
+| Who We Are is an empty page at `/team/` | It was published while the AugmentED page was a draft, and lost its parent (fixed in 1.1.6; Settings → AugmentED flags it). `/team/` is the Team archive. | Edit Who We Are → Page Attributes → Parent → **AugmentED** → Update. |
 | Amber warnings in Settings → AugmentED | Something isn't done yet. | Work down the list it shows. |
 
 ## Later on

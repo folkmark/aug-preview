@@ -2,7 +2,7 @@
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.1.4
+Stable tag: 1.1.6
 License: Proprietary
 
 The AugmentED pages, team and Follow form, drawn inside the site's own theme.
@@ -39,6 +39,20 @@ wordpress-handoff/START-HERE.md in the AugmentED repository:
 https://github.com/folkmark/aug-preview/blob/main/wordpress-handoff/START-HERE.md
 
 == Changelog ==
+
+= 1.1.6 =
+* Publishing a page no longer moves it out from under the AugmentED page. WordPress's Parent
+  menus (classic editor, Quick Edit) list only published pages, so while "AugmentED" was still a
+  draft, saving one of its pages set it to "(no parent)": Who We Are moved to /team/, which is
+  the Team archive, and showed as an empty page. The draft AugmentED page now stays listed and
+  selected there. Settings -> AugmentED also warns about any page whose address opens something
+  else. If Who We Are was already published this way, set its Parent back to AugmentED.
+
+= 1.1.5 =
+* Who We Are: the bundled headshots show again on sites that rename files on upload (WP-Stateless's
+  cache-busting does, on aerdf.org). The plugin was looking up each photo through WordPress's
+  upload-filename filter, which added a random prefix and missed every file; it now checks the
+  name directly. Nothing to re-import: the photos appear as soon as the update is installed.
 
 = 1.1.4 =
 * Share cards: each AugmentED page, and each Leadership bio page, now has its own picture when

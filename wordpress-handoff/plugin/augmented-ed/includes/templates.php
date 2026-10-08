@@ -24,6 +24,46 @@ add_filter(
 );
 
 /**
+ * Keep a draft AugmentED home in the Parent menus, so publishing a page under it cannot
+ * silently move that page to the top level.
+ *
+ * WordPress lists only published pages as possible parents, in the classic editor's Page
+ * Attributes box and in Quick Edit. "Create the pages as drafts" makes four pages whose
+ * parent, the AugmentED home, is itself a draft, so on either screen the menu shows "(no
+ * parent)", and saving submits that. Who We Are, published that way, became a top-level page
+ * at /team/, which is aerdf.org's team archive: an empty page under AERDF's header. Found by
+ * AERDF's developer on their dev site (classic editor), October 2026, and reproduced here.
+ *
+ * Drafts are added only where it matters: on the edit screen of a page that uses an
+ * AugmentED template, and in Quick Edit while the AugmentED home is unpublished. Every other
+ * Parent menu on the site is left as WordPress draws it.
+ */
+const AUGMENTED_ED_PARENT_STATI = array( 'publish', 'future', 'draft', 'pending', 'private' );
+
+add_filter(
+	'page_attributes_dropdown_pages_args',
+	function ( $args, $post ) {
+		if ( $post instanceof WP_Post && str_starts_with( (string) get_page_template_slug( $post ), 'augmented-ed/' ) ) {
+			$args['post_status'] = AUGMENTED_ED_PARENT_STATI;
+		}
+		return $args;
+	},
+	10,
+	2
+);
+
+add_filter(
+	'quick_edit_dropdown_pages_args',
+	function ( $args ) {
+		$published = augmented_ed_template_pages();
+		if ( empty( $published['home'] ) ) {
+			$args['post_status'] = AUGMENTED_ED_PARENT_STATI;
+		}
+		return $args;
+	}
+);
+
+/**
  * The AugmentED template the current request is drawn with, or null.
  *
  * One of the five page keys, or 'bio' for an AugmentED team member's single page. Everything
