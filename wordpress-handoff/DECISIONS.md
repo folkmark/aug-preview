@@ -1,6 +1,6 @@
 # AugmentED on aerdf.org — decisions for AERDF
 
-What AERDF needs to decide. The first three block launch. The rest have a default that ships
+What AERDF needs to decide. The first two block launch. The rest have a default that ships
 if nobody decides, and each default is safe to keep. AugmentED's own design decisions are
 settled and are not listed here; they are in [the handoff README](README.md#decisions).
 
@@ -28,11 +28,6 @@ settled and are not listed here; they are in [the handoff README](README.md#deci
 - **Decide** which list or workflow the form feeds, and who owns the contacts. The consent
   sentence ("I agree to the privacy policy"), the persona property name and an optional
   subscription type can be changed in Settings → AugmentED.
-
-### The Avenir licence — AERDF
-
-- The plugin serves its own Avenir LT Pro files, as the AugmentED site does. **Confirm**
-  AERDF's licence covers them, and record who confirmed it.
 
 ## With a default
 

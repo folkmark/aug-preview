@@ -8,8 +8,8 @@ so the pages on aerdf.org are the same pages.
 ## Putting AugmentED on aerdf.org
 
 **Start at [`wordpress-handoff/START-HERE.md`](wordpress-handoff/START-HERE.md).** You
-install one plugin; you do not rebuild any pages. START-HERE is the whole procedure: what to
-decide first, the install, the checks, how to roll back, and who to ask.
+install one plugin; you do not rebuild any pages. START-HERE is the install, written for AERDF's developer: what
+to confirm first, the steps, the checks, and who to ask.
 
 - **The zip** comes from AugmentED. It is built by this repository's CI (the `plugin` job of
   the "Publish site to gh-pages" workflow), and START-HERE says which version it describes.
