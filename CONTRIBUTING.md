@@ -26,7 +26,9 @@ were once removed from `gh-pages` by hand, and the first automated publish put t
 
 Nothing else is at risk: the build copies only `assets/`, `_ds/`, `support.js` and
 `CNAME` beside the pages it writes, so `tools/`, `docs/`, `wordpress-handoff/` and
-`source-material/` never reach `_site`. Build locally to see exactly what will go out:
+`source-material/` never reach `_site`. (The `/aerdf/` preview inlines AERDF's header and
+footer markup from `source-material/aerdf/` into its pages; that snapshot is of
+aerdf.org's public pages, with every script stripped. `docs/site.md` has the details.) Build locally to see exactly what will go out:
 
 ```sh
 node tools/build-site.mjs _site        # fails on any reference the artifact cannot satisfy
