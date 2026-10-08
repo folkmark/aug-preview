@@ -210,41 +210,43 @@ const JOBS = [
   { in: 'stock-photos-aug/large/shutterstock_2763377205.jpg', out: 'images/student-notebook-m.webp', width: 800,  crop: [2661, 0, 5104, 6336], grade: [0.933, 1, 1] },
 
   // Programmers at a long shared desk, one of them looking across at a neighbour, for the
-  // row about the layer in between. Getty 2222113845. This and the four after it are
+  // row about the layer in between. SQUARE, not 4:5: the client widened the frame to take in
+  // the whole row of them, and 1:1 is as wide as the column holds (see its <img> in
+  // index.html, which moves with this). Getty 2222113845. This and the four after it are
   // licensed Getty photography, read from stock-photos-aug/getty-licensed/, which is
   // git-ignored: the licence does not let a public repository offer the full-resolution
   // file, so only the encoded WebP below is committed, and a clean checkout skips these
   // ten jobs and keeps the committed output. Each source there is already cut to the box
-  // it ships in (exactly 4:5, or 1:1 for Build the capabilities), so the jobs carry no
+  // it ships in (exactly 4:5, 1:1 for Engineers screens, 11:10 for Build the capabilities), so the jobs carry no
   // `crop`: the framing was chosen in the client's review file, not here. To re-encode,
   // put the licensed originals' crops back at those paths.
-  // Measured +9 on mean(R) - mean(B), the bottom of the band, and its white point sat at
-  // 247, so it takes only the +1.3% lift to 250.
-  { in: 'stock-photos-aug/getty-licensed/2222113845.jpg', out: 'images/engineers-screens.webp',   width: 1264, grade: [1.013, 1.013, 1.013] },
-  { in: 'stock-photos-aug/getty-licensed/2222113845.jpg', out: 'images/engineers-screens-m.webp', width: 800, grade: [1.013, 1.013, 1.013] },
+  // Measured +7 on mean(R) - mean(B), under the band, with a white point of 246: +1.6% lift
+  // and blue down to land +17.
+  { in: 'stock-photos-aug/getty-licensed/2222113845.jpg', out: 'images/engineers-screens.webp',   width: 1264, grade: [1.016, 1.016, 0.925] },
+  { in: 'stock-photos-aug/getty-licensed/2222113845.jpg', out: 'images/engineers-screens-m.webp', width: 800, grade: [1.016, 1.016, 0.925] },
 
   // A student at her desk, a hand to her forehead over an open textbook, for the row about
   // what the backlash would cost. Getty 1324921324 (the alternate, 1324921320, was not
-  // chosen). The darkest and coolest of the five: R-B +4.5 with a white point of 224, so it
-  // takes the full +8% lift (the cap; it still only reaches 240) and blue down to land +17.
-  { in: 'stock-photos-aug/getty-licensed/1324921324.jpg', out: 'images/teacher-two-students.webp',   width: 1264, grade: [1.08, 1.08, 0.967] },
-  { in: 'stock-photos-aug/getty-licensed/1324921324.jpg', out: 'images/teacher-two-students-m.webp', width: 800, grade: [1.08, 1.08, 0.967] },
+  // chosen). The darkest and coolest of the five: R-B +5 with a white point of 231, so it
+  // takes the full +8% lift (the cap; it still only reaches 247) and blue down to land +17.
+  { in: 'stock-photos-aug/getty-licensed/1324921324.jpg', out: 'images/teacher-two-students.webp',   width: 1264, grade: [1.08, 1.08, 0.972] },
+  { in: 'stock-photos-aug/getty-licensed/1324921324.jpg', out: 'images/teacher-two-students-m.webp', width: 800, grade: [1.08, 1.08, 0.972] },
 
   // A teacher leaning over three women at a table in a laboratory classroom, a whiteboard of
-  // formulae behind them, for Define the role. Getty 1044232206, framed tighter than the
-  // full frame (the client's zoom) so the group fills the box. R-B +20 and a white point of
+  // formulae behind them, for Define the role. Getty 1044232206, the full height of
+  // the frame, 4:5 around the three of them and the teacher. R-B +16 and a white point of
   // 254: inside the band, so no grade.
   { in: 'stock-photos-aug/getty-licensed/1044232206.jpg', out: 'images/define-the-role.webp',   width: 1264 },
   { in: 'stock-photos-aug/getty-licensed/1044232206.jpg', out: 'images/define-the-role-m.webp', width: 800 },
 
   // A teacher in a yellow dress talking with a group of sixth-form students, for Build the
-  // capabilities. Getty 1469940271. THIS ONE IS SQUARE, not 4:5: the client asked for the
-  // frame wide enough to take in the whole group, and a square is as much of it as the
-  // column holds. The aspect-ratio on its <img> in index.html moves with this — change one
-  // and the other. Graded from +6 to +17 by pulling blue down; its white point was 251, so
-  // no lift.
-  { in: 'stock-photos-aug/getty-licensed/1469940271.jpg', out: 'images/build-capabilities.webp',   width: 1264, grade: [1, 1, 0.915] },
-  { in: 'stock-photos-aug/getty-licensed/1469940271.jpg', out: 'images/build-capabilities-m.webp', width: 800, grade: [1, 1, 0.915] },
+  // capabilities. Getty 1469940271. THIS ONE IS 11:10, not 4:5: the client asked for the
+  // frame wide enough to take in more of the group, and this is as wide as the column
+  // holds. The source is 6010x5464 of the 8192x5464 original, exactly 1.1, and the
+  // aspect-ratio on its <img> in index.html moves with it — change one and the other.
+  // Graded from +3 to +17 by pulling blue down; its white point was 251, so no lift.
+  { in: 'stock-photos-aug/getty-licensed/1469940271.jpg', out: 'images/build-capabilities.webp',   width: 1264, grade: [1, 1, 0.91] },
+  { in: 'stock-photos-aug/getty-licensed/1469940271.jpg', out: 'images/build-capabilities-m.webp', width: 800, grade: [1, 1, 0.91] },
 
   // Five colleagues behind a glass wall of sticky notes, adding to it from the far side, for
   // Co-design the tools. 4144x5588, bottom-anchored on all 444px of slack, which is
@@ -256,18 +258,22 @@ const JOBS = [
   // is written to keep them apart for a screen reader too. If you re-crop either one,
   // re-read the other.
   //
-  // Graded from +7 to +17. Its white point was already at 255 so it takes no lift, only
-  // blue down. It replaced a 7680x4050 frame of a table spread with printed material
+  // SQUARE since 8 October 2026 (the client's review): the crop below is the top of the
+  // 4:5 one cut to 4144x4144, so the frame loses its bottom fifth. The aspect-ratio on its
+  // <img> in index.html moves with this.
+  //
+  // Graded from +5 to +17 on the square (it was +7 on the 4:5). Its white point is 255 so it
+  // takes no lift, only blue down. It replaced a 7680x4050 frame of a table spread with printed material
   // (shutterstock_2380531861, still in large/ if it is ever wanted back).
-  { in: 'stock-photos-aug/large/shutterstock_2129383421.jpg', out: 'images/codesign-tools.webp',   width: 1264, crop: [0, 444, 4144, 5144], grade: [1, 1, 0.932] },
-  { in: 'stock-photos-aug/large/shutterstock_2129383421.jpg', out: 'images/codesign-tools-m.webp', width: 800,  crop: [0, 444, 4144, 5144], grade: [1, 1, 0.932] },
+  { in: 'stock-photos-aug/large/shutterstock_2129383421.jpg', out: 'images/codesign-tools.webp',   width: 1264, crop: [0, 1444, 4144, 4144], grade: [1, 1, 0.915] },
+  { in: 'stock-photos-aug/large/shutterstock_2129383421.jpg', out: 'images/codesign-tools-m.webp', width: 800,  crop: [0, 1444, 4144, 4144], grade: [1, 1, 0.915] },
 
   // A teacher leaning over a student at a laptop, both smiling at the screen, for Test,
-  // learn, begin again. Getty 1440718884, framed on the two of them (the client's zoom).
-  // The warmest of the five at +32: cooled to +20 by pulling red down, the 12-point cap
+  // learn, begin again. Getty 1440718884, 4:5 on the two of them at the
+  // full height of the frame. The warmest of the five at +27: cooled to +17 by pulling red down, the 12-point cap
   // binding from above as it does on student-notebook.
-  { in: 'stock-photos-aug/getty-licensed/1440718884.jpg', out: 'images/test-in-classrooms.webp',   width: 1264, grade: [0.925, 1, 1] },
-  { in: 'stock-photos-aug/getty-licensed/1440718884.jpg', out: 'images/test-in-classrooms-m.webp', width: 800, grade: [0.925, 1, 1] },
+  { in: 'stock-photos-aug/getty-licensed/1440718884.jpg', out: 'images/test-in-classrooms.webp',   width: 1264, grade: [0.945, 1, 1] },
+  { in: 'stock-photos-aug/getty-licensed/1440718884.jpg', out: 'images/test-in-classrooms-m.webp', width: 800, grade: [0.945, 1, 1] },
 
   // The three co-design action shots in the Our Current Work row, one school each. 1080
   // is set off the card, which is the narrowest photographic box on the site: 351 CSS px
