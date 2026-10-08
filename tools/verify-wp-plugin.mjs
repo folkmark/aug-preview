@@ -636,6 +636,28 @@ export async function checks() {
     const sm = await (await p.request.get(BASE + '/team-sitemap.xml')).text();
     check('sitemap: the members without a bio are left out', sm.includes('/team/raquel-romano/') && !sm.includes('/team/tom-peterson/'), sm.length ? '' : 'no sitemap');
     check('sitemap: archived members are left out', !sm.includes(`/team/${TEAM.archived[0].slug}/`));
+    // Share cards (includes/share.php). Without them Yoast found no image on any of these
+    // pages and fell back to the site's default; each must now name its own, and it must load.
+    const og = async (u) => {
+      const h = await (await p.request.get(BASE + u)).text();
+      return { image: (h.match(/<meta property="og:image" content="([^"]+)"/) || [])[1] || '', alt: (h.match(/<meta property="og:image:alt" content="([^"]+)"/) || [])[1] || '' };
+    };
+    const cards = [];
+    for (const [key, url] of [...PAGES, ['team/raquel-romano', '/team/raquel-romano/']]) {
+      const o = await og(url);
+      const got = o.image ? await p.request.get(o.image) : null;
+      cards.push({ key, ok: new RegExp(`augmented-ed/assets/og/${key}\\.jpg`).test(o.image) && Boolean(o.alt) && got?.status() === 200 && /image\/jpeg/.test(got.headers()['content-type'] || ''), image: o.image });
+    }
+    check('share: every page and the bio page name their own card, with alt text, and it loads', cards.every((x) => x.ok), JSON.stringify(cards.filter((x) => !x.ok)));
+    // A Social image set on the page in Yoast is the editor's choice, and must win.
+    // Through `post update`, not `post meta`: Yoast rebuilds its record of a page on save, so
+    // a bare meta write would not reach the head at all.
+    const homeId = wp('post', 'list', '--post_type=page', '--meta_key=_wp_page_template', '--meta_value=augmented-ed/home.php', '--field=ID').split('\n')[0];
+    wp('post', 'update', homeId, '--meta_input={"_yoast_wpseo_opengraph-image":"https://example.com/chosen.jpg"}');
+    const chosen = await og('/augmented/');
+    wp('post', 'meta', 'delete', homeId, '_yoast_wpseo_opengraph-image');
+    wp('post', 'update', homeId, '--post_status=publish');
+    check('share: a Social image set in Yoast takes priority over the card', chosen.image === 'https://example.com/chosen.jpg' && !/assets\/og\//.test(chosen.image), chosen.image);
     await c.close();
   }
 

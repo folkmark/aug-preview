@@ -6,21 +6,16 @@ AERDF's header and footer stay, with AugmentED's navigation as a bar beneath the
 Assessment for Good's pages do — puts the AugmentED team into AERDF's existing **Team**
 post type, and connects the Follow form to HubSpot.
 
-This page describes version **1.1.2**. The whole procedure takes about an hour on each
+This page describes version **1.1.4**. The whole procedure takes about an hour on each
 environment, plus AERDF's HubSpot set-up in step 3.
 
-**Questions, at any step:** Brendan, [brendan@folkmark.com](mailto:brendan@folkmark.com) —
-the build, the plugin, the pages and the team list.
-
-**HubSpot is AERDF's.** AugmentED has not created, changed or tested anything in AERDF's
-HubSpot, and has no access to it. The contact property, the form, its settings and the test
-contact in step 3 are for someone at AERDF with HubSpot access. Brendan can say what the
-plugin sends and what its messages mean, but not how AERDF's HubSpot is set up.
+**Questions:** Brendan, [brendan@folkmark.com](mailto:brendan@folkmark.com), about the
+plugin, the pages and the team list.
 
 ## Before you start
 
-**Three things need an answer from someone other than you.** [DECISIONS.md](DECISIONS.md)
-lists every open decision with a default and an owner; these three block launch:
+**Three things need an answer from someone other than you** before launch
+([decisions](DECISIONS.md) has the detail, and the smaller decisions that have defaults):
 
 1. **The address** — where the pages live (the plugin's default is `/augmented/`, which today
    redirects to `/opportunities/advanced-fellows/augmented/`), and what happens to that
@@ -40,11 +35,9 @@ HubSpot form. Publishing (step 6) needs all three.
   WP Engine User Portal (for backups and caches).
 - For step 3, someone at AERDF who can create contact properties and forms in AERDF's
   HubSpot (portal 20910033).
-- The zip, `augmented-ed-plugin.zip`, from Brendan, with its SHA-256. Check it before
-  installing: `shasum -a 256 augmented-ed-plugin.zip` (macOS, Linux) or
-  `certutil -hashfile augmented-ed-plugin.zip SHA256` (Windows) must print the same value.
-  Install only a zip he sends: the repository's CI also builds zips from unmerged changes,
-  and every one of them reports the same version.
+- The plugin zip from Brendan, with its SHA-256. Check it before installing:
+  `shasum -a 256 <the zip>` (macOS, Linux) or `certutil -hashfile <the zip> SHA256`
+  (Windows) must print the same value. Install only a zip he sends.
 - WordPress 6.5 or later and PHP 8.0 or later. The plugin is tested on both of those floors
   and on WordPress 7.1 with PHP 8.4.
 
@@ -61,20 +54,21 @@ WP Engine User Portal → the environment → Backups → Back up now.
 ### 1. Upload and activate
 
 Plugins → **Add Plugin** ("Add New Plugin" in older WordPress) → **Upload Plugin** → choose
-`augmented-ed-plugin.zip` → **Install Now** → **Activate Plugin**.
+the zip → **Install Now** → **Activate Plugin**.
 
-Check the Plugins screen says **AugmentED 1.1.2**.
+Check the Plugins screen says **AugmentED 1.1.4**.
 
 The zip is about 22 MB, because it carries every image and animation frame the pages use. If
 WordPress answers "The link you followed has expired." or "The uploaded file exceeds the
 upload_max_filesize directive in php.ini.", the zip is over PHP's upload limit (Media → Add
 New shows the "Maximum upload file size"). Then unzip it and copy the `augmented-ed/` folder
 into `wp-content/plugins/` over SFTP and activate it on the Plugins screen, or copy the zip to
-the server and run `wp plugin install /path/to/augmented-ed-plugin.zip --activate`.
+the server and run `wp plugin install /path/to/the.zip --activate`.
 
 ### 2. Create the pages
 
-Tools → **AugmentED team** → **Create the pages as drafts**.
+Tools → **AugmentED team** → **Create the pages as drafts**. Activating the plugin creates
+none: Pages → All Pages stays empty of AugmentED until you click this.
 
 That makes five draft pages, each with its AugmentED template — "AugmentED" at
 `/augmented/`, and The Challenge, Our Approach, Who We Are and Follow Our Work under it —
@@ -90,8 +84,8 @@ doubled.
 
 ### 3. Connect the Follow form
 
-**In AERDF's HubSpot** (someone at AERDF who can create properties and forms; none of
-this exists yet):
+**In AERDF's HubSpot.** This part is for someone at AERDF with HubSpot access. AugmentED has
+no access to AERDF's HubSpot and has set up nothing there, so none of this exists yet:
 
 1. Create the contact property the form's last question writes to: a **Dropdown select**
    contact property, label "Which best describes you?", internal name `augmented_persona`,
@@ -122,7 +116,7 @@ and **Privacy policy URL** (AERDF's is its Terms of Use & Privacy Policy page,
 real submission as you and shows HubSpot's answer.
 
 Leave the other fields (Persona property, Consent sentence, Subscription type ID, Private
-app token) as they are unless [DECISIONS.md](DECISIONS.md) says otherwise.
+app token) as they are unless AERDF has decided otherwise ([decisions](DECISIONS.md)).
 
 **The test submission creates a real contact** with your WordPress name and email, and it
 starts whatever HubSpot workflow the form feeds. Staging and production submit to the same
@@ -218,10 +212,9 @@ caches), then logged in. With the cookie banner accepted and then declined, and 
 AccessiBe widget open, nothing should cover AugmentED's bar, its menu or the form, and the
 form should still send.
 
-The reference site is the AugmentED site as it stands on `main`, and the zip Brendan sends is
-built from the same commit (`generated/build.json` in the plugin names it). Expected
-differences: AERDF's header and footer in place of AugmentED's, and on phones the bar's menu
-button carries the word "Menu" ([DECISIONS.md](DECISIONS.md)).
+Compare against [the AugmentED site](https://augmented2.folkmark.com). Expected
+differences: AERDF's header and footer in place of AugmentED's, and on phones the AugmentED
+bar's menu button carries the word "Menu", so it can't be confused with AERDF's.
 
 - [ ] The five pages match [the reference site](https://augmented2.folkmark.com) below
       AERDF's header, at 360, 768, 1440 and 1920 px wide.
@@ -239,16 +232,19 @@ button carries the word "Menu" ([DECISIONS.md](DECISIONS.md)).
       the page: someone with HubSpot access sees each contact arrive with every field filled
       in, then deletes it.
 - [ ] AERDF's header, footer and every other page look exactly as before. The one expected
-      change: the `/team/` archive and search now list the AugmentED people too
-      ([DECISIONS.md](DECISIONS.md)).
+      change: the `/team/` archive and search now list the AugmentED people too.
+- [ ] Pasting a published AugmentED page's address into LinkedIn's
+      [Post Inspector](https://www.linkedin.com/post-inspector/) shows that page's own share
+      card: its headline beside a photograph. A page with a Social image set in Yoast shows
+      that instead.
 - [ ] Nothing shows over AERDF's header until you press Tab: the first Tab on an AugmentED
       page shows "Skip to content" in AugmentED's bar.
 - [ ] Settings → AugmentED shows every line of its status panel as done, and
       `wp augmented-ed team status` (WP-CLI) lists one published page per template and the
       team in five groups.
 
-When every box is ticked, email Brendan the environment, the date, the plugin version and
-who checked it.
+When every box is ticked, tell Brendan which environment, the date, the plugin version and
+who checked it, so AugmentED knows what is live.
 
 ## Don't
 
@@ -262,9 +258,39 @@ who checked it.
 - **Don't upload any of the plugin's images to the media library**, or point an image or
   asset optimiser (EWWW, Smush, ShortPixel, Cloudflare Polish, WP Engine's Page Speed Boost)
   at the plugin's folder. The animations address their frames by exact filename.
-- **Don't edit anything under `generated/`.** It is rebuilt from the AugmentED site on every
-  update.
+- **If you keep installing zips from AugmentED, don't edit anything under `generated/`.** It is
+  rebuilt from the AugmentED site on every update, so your edit would be overwritten. If you have
+  stopped taking their zips, it is ordinary code: see [After launch](#after-launch-it-is-yours).
 - **Don't copy staging onto production** with WP Engine's Copy Environment. Install on each.
+
+## After launch: it is yours
+
+The plugin is the quick way to get the AugmentED pages live on aerdf.org. What you do next is
+your call, and none of it depends on AugmentED, or on the repository, staying involved.
+
+1. **Leave it as it is.** It is one self-contained plugin and needs no upkeep of its own, though
+   a big change to WordPress, PHP or AERDF's theme could need it revisited. Keep a copy of the
+   zip you installed.
+2. **Ask AugmentED for changes.** AugmentED can update the site and send a new zip, which you
+   upload over the old one. That is a courtesy, not a service level: do not build a process
+   that cannot work without it.
+3. **Edit the plugin in place and treat it as your own code.** The pages are ordinary PHP files
+   (`plugin/augmented-ed/generated/templates/`), with the page copy in them as plain HTML, and
+   the rest is the runtime you can read and change. Every note in this document that says
+   "don't edit `generated/`" is for people who keep regenerating from AugmentED's repository.
+   If you are not, ignore it. The one cost: a later zip from AugmentED replaces your edits, so
+   once you start editing, stop installing their zips, or merge by hand.
+4. **Rebuild it however you like.** Elementor, a theme, anything. The plugin is not a
+   dependency of the content: the copy, images and specs are in the repository. See
+   [rebuilding it your own way](#b-rebuild-the-site-natively-in-wordpress-instead-of-using-the-plugin).
+
+What can be changed with no code at all:
+
+| Change | Where |
+|---|---|
+| The team: a person's role, bio, links, photo, or taking them off the page | Their Team post in WordPress (the **AugmentED card** box). The import never overwrites a card edited in WordPress. |
+| The HubSpot form, the pages' addresses, the privacy link | Settings → **AugmentED**, and the Pages screen. |
+| Page copy, images, layout | Code (option 3), or a new zip (option 2). They are not editable in the WordPress editor. |
 
 ## Updating
 
@@ -278,14 +304,6 @@ who checked it.
 5. Purge the caches.
 
 Keep every zip you are sent: the previous one is how you roll an update back.
-
-**Only if 1.0.0 was ever installed and its team imported** (skip this on a first install):
-1.1.0 gave bios to Leadership alone, and the import never empties a post, so sixteen people
-outside Leadership still hold their bio as post content and still draw "Read bio". Clear
-the content of these team posts by hand: `alexandra-wiggins`, `andrew-lan`,
-`angela-stewart`, `blair-lehman`, `brandon-bodnar`, `chris-mutter`, `danie-cowden`,
-`isa-peczuh`, `joshua-sloan`, `laura-allen`, `lisa-peterson`, `mohammed-al-harthy`,
-`neil-sharma`, `nikki-wallace`, `ryan-baker`, `sarah-zaner`.
 
 ## Rolling back
 
@@ -332,13 +350,74 @@ most visitors). Instead:
 A bot caught by the first two is told it succeeded, and nothing is sent to HubSpot. A
 visitor over the limit is asked to try again in a few minutes.
 
-## Verification
+## Trying it on a blank WordPress
 
-`tools/verify-wp-plugin.mjs` in the repository installs the assembled plugin into a fresh
-WordPress with a stand-in AERDF theme (and AERDF's real stylesheets), follows the steps
-above, and checks every page against the site it was generated from — layout, computed
-styles and pixels at four widths — plus the components, the offsets logged in and out, the
-reveal, the menu, the headshots, the form end to end through the relay, the bio pages and
-redirects, and that nothing reaches AERDF's header or footer. With `--live` it renders the
-plugin's pages inside real aerdf.org pages. The plugin's own README (`plugin/augmented-ed/`)
-and [README.md](README.md) explain how it is built.
+You do not need AERDF's site to see the plugin work. Any new WordPress 6.5+ (PHP 8.0+) will do —
+[Local](https://localwp.com) is the easiest way to get one on a laptop; WordPress Playground
+(playground.wordpress.net) works for a quick look but forgets everything when the tab closes.
+
+1. **Upload and activate** the zip ([step 1](#1-upload-and-activate)). If the upload is refused
+   for size, unzip it into `wp-content/plugins/` yourself and activate it from the Plugins screen.
+2. **Switch on the test stand-in for the team.** A blank site has no `team` post type, and the
+   import has nothing to import into. Settings → **AugmentED** → tick the testing box → Save.
+   The box only appears outside production; if it doesn't, or the tick won't stick, add
+   `define( 'AUGMENTED_ED_TEAM_SHIM', true );` to `wp-config.php` above the line that says
+   "That's all, stop editing!". Never switch this on at aerdf.org.
+3. **Set Settings → Permalinks to "Post name"** and save. On the default "Plain" setting the
+   pages only open by their `?page_id=` addresses, and the `/augmented/…` and `/team/…`
+   addresses used throughout this document do not exist.
+4. **Create the pages** — Tools → AugmentED team → **Create the pages as drafts**
+   ([step 2](#2-create-the-pages)). Then do the **Dry run** and **Import**
+   ([step 5](#5-import-the-team)).
+5. **Preview, don't visit.** The pages are drafts, so their public addresses are a 404 until you
+   publish them. Pages → All Pages → hover a page → **Preview**.
+
+If something looks wrong:
+
+| You see | Because | Do |
+|---|---|---|
+| Pages → All Pages has no AugmentED pages | Installing the plugin creates none. | Tools → AugmentED team → **Create the pages as drafts**. Look for the green "Created: …" line. |
+| A page's address is a 404 on the site | It is still a draft. | Preview it from the Pages list, or publish it. |
+| The dry run says there is no "team" post type | The stand-in is off. | Step 2 above. |
+| A Leadership "Read bio" link is a 404 | WordPress has not learned the `/team/<name>/` address. | Settings → Permalinks → **Save Changes**, changing nothing. |
+| A member who is not in Leadership has no "Read bio" link, or their address goes to Who We Are | Only Leadership's five have a bio page; everyone else's redirects on purpose. | Test with Raquel Romano, Jenny Bradbury, Abby (Csaba) Petre, Sherry Lachman or Caitlin Mills. |
+| The dry run's numbers are not "34 create, 2 attach" | Those are the numbers for aerdf.org, where Sherry and Caitlin already exist. A blank site has no existing posts. | Nothing; read the dry run's own list. |
+| Settings → AugmentED shows amber warnings | It lists what is not done yet: a missing page, an unimported team, no HubSpot form. | Work down the list. |
+
+The Follow form needs a real HubSpot form ID ([step 3](#3-connect-the-follow-form)), so on a
+blank site only its own checks run (required fields, the spam defences).
+
+## Rebuilding from source
+
+Not needed to install the plugin or to edit it in place. The plugin is built from a public
+repository, [folkmark/aug-preview](https://github.com/folkmark/aug-preview), branch `main`.
+
+### A. Rebuild the plugin zip from its source
+
+You need Node (version 22 is what the build runs on), `zip`, and PHP 8 (for the syntax check). This produces the same
+zip AugmentED sends, from a clean clone:
+
+```
+git clone https://github.com/folkmark/aug-preview.git
+cd aug-preview
+npm i --no-save playwright@1.63.0 linkedom@0.18.13 postcss@8.5.28 postcss-selector-parser@7.1.6 pixelmatch@7.2.0 pngjs@7.0.0 axe-core@4.13.0 html-validate@11.16.0
+node tools/build-wp-plugin.mjs --check
+node tools/build-wp-plugin.mjs --assemble dist --zip
+```
+
+The result is `dist/augmented-ed.zip`. `node tools/verify-wp-plugin.mjs` then installs it
+into a throwaway WordPress and checks it against the site (it needs PHP 8 and Chromium).
+
+Before changing anything there, read
+[CONTRIBUTING.md](https://github.com/folkmark/aug-preview/blob/main/CONTRIBUTING.md): part
+of the plugin is generated from the site and must not be edited by hand, and every release
+needs a new version number.
+
+### B. Rebuild the site natively in WordPress instead of using the plugin
+
+It can be done: [the handoff README](https://github.com/folkmark/aug-preview/blob/main/wordpress-handoff/README.md)
+has the exported pages, the content as data, and a build spec for each animated section. We
+recommend against it unless AERDF needs the pages inside its page builder: the hero, the
+falling blocks and the cycle wheel are scroll-driven and were tuned against measurements,
+which is the expensive part to redo. If you do, deactivate the plugin before the native pages
+go live, so the two don't both claim the same pages.

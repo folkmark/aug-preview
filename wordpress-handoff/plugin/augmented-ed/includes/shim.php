@@ -23,6 +23,11 @@ add_action(
 	'init',
 	function () {
 		if ( ! augmented_ed_shim_wanted() || post_type_exists( augmented_ed_post_type() ) ) {
+			// Switched off, or the site has its own team type: forget that the rules were
+			// flushed, so switching the stand-in on again rebuilds them.
+			if ( get_option( 'augmented_ed_shim_flushed' ) ) {
+				delete_option( 'augmented_ed_shim_flushed' );
+			}
 			return;
 		}
 		register_post_type(
@@ -38,6 +43,15 @@ add_action(
 			)
 		);
 		$GLOBALS['augmented_ed_shim_active'] = true;
+		// WordPress caches its address rules, and the first run after this type appears has
+		// none for /team/<slug>/, so every bio page is a 404 until someone happens to save
+		// Settings → Permalinks. Rebuild them once, here, where the type has just been
+		// registered. A soft flush: it does not touch .htaccess. Not done on aerdf.org, which
+		// never reaches this line because its own team type exists.
+		if ( '1' !== (string) get_option( 'augmented_ed_shim_flushed' ) ) {
+			flush_rewrite_rules( false );
+			update_option( 'augmented_ed_shim_flushed', '1', false );
+		}
 	},
 	99
 );

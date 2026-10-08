@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       AugmentED
  * Description:       The AugmentED pages, team and Follow form, drawn inside AERDF's own theme: five page templates, AugmentED team members as team posts, bio pages, and a Follow form that submits to HubSpot.
- * Version:           1.1.2
+ * Version:           1.1.4
  * Requires at least: 6.5
  * Tested up to:      7.1
  * Requires PHP:      8.0
@@ -30,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const AUGMENTED_ED_VERSION = '1.1.2';
+const AUGMENTED_ED_VERSION = '1.1.4';
 const AUGMENTED_ED_FILE    = __FILE__;
 define( 'AUGMENTED_ED_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -91,6 +91,7 @@ require_once AUGMENTED_ED_DIR . 'includes/team.php';
 require_once AUGMENTED_ED_DIR . 'includes/importer.php';
 require_once AUGMENTED_ED_DIR . 'includes/follow.php';
 require_once AUGMENTED_ED_DIR . 'includes/shim.php';
+require_once AUGMENTED_ED_DIR . 'includes/share.php';
 
 if ( is_admin() ) {
 	require_once AUGMENTED_ED_DIR . 'includes/admin.php';

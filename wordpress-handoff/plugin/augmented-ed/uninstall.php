@@ -11,6 +11,6 @@
 
 defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
-foreach ( array( 'augmented_ed_settings', 'augmented_ed_template_pages', 'augmented_ed_import' ) as $option ) {
+foreach ( array( 'augmented_ed_settings', 'augmented_ed_template_pages', 'augmented_ed_import', 'augmented_ed_shim_flushed' ) as $option ) {
 	delete_option( $option );
 }

@@ -2,7 +2,7 @@
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.1.2
+Stable tag: 1.1.4
 License: Proprietary
 
 The AugmentED pages, team and Follow form, drawn inside the site's own theme.
@@ -39,6 +39,17 @@ wordpress-handoff/START-HERE.md in the AugmentED repository:
 https://github.com/folkmark/aug-preview/blob/main/wordpress-handoff/START-HERE.md
 
 == Changelog ==
+
+= 1.1.4 =
+* Share cards: each AugmentED page, and each Leadership bio page, now has its own picture when
+  a link to it is pasted into Slack, LinkedIn, email or a message, with the page's headline
+  and photograph. Before, these pages had none, and links showed AERDF's default picture.
+  A Social image set on a page in Yoast still takes priority.
+
+= 1.1.3 =
+* Test installs: switching on the stand-in team type now rebuilds WordPress's address rules
+  once, so the Leadership bio pages open without saving Settings -> Permalinks first. No
+  change on aerdf.org, which has its own team type.
 
 = 1.1.2 =
 * Docs: the HubSpot set-up is AERDF's alone; AugmentED has not set up or tested anything

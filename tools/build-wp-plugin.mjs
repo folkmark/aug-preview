@@ -38,6 +38,7 @@ import path from 'node:path';
 import os from 'node:os';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
+import { CARDS, bioCards, ogPath } from './build-og.mjs';
 import { fileURLToPath } from 'node:url';
 import { parseHTML } from 'linkedom';
 import { scopeCss, assertScoped } from './lib/css-scope.mjs';
@@ -777,6 +778,21 @@ files.set('data/pages.json', JSON.stringify(PAGES.map((p) => {
   return { key: p.key, label: p.label, title: m.title || '', description: m.description || '' };
 }), null, 2) + '\n');
 
+// The share cards (tools/build-og.mjs), for includes/share.php to hand to Yoast. The five
+// pages by template key, the bio pages by slug, and the logo card as the fallback for a bio
+// that has none. Paths are relative to the plugin's assets/, as augmented_ed_asset() takes.
+const shareOf = (c) => ({ image: ogPath(c.key).replace(/^assets\//, ''), type: 'image/jpeg', width: 1200, height: 630, alt: c.alt });
+const share = {
+  pages: Object.fromEntries(PAGES.map((p) => {
+    const c = CARDS.find((x) => x.key === p.key);
+    if (!c) fail(`no share card for the ${p.key} page in tools/build-og.mjs`);
+    return [p.key, c ? shareOf(c) : null];
+  })),
+  bios: Object.fromEntries(bioCards().filter((c) => fs.existsSync(path.join(root, ogPath(c.key)))).map((c) => [c.key.replace(/^team\//, ''), shareOf(c)])),
+  fallback: { image: 'logo/og-card.png', type: 'image/png', width: 1200, height: 630, alt: 'augment^ed, supported by AERDF' },
+};
+files.set('data/share.json', JSON.stringify(share, null, 2) + '\n');
+
 // ---------------------------------------------------------------- what ships
 
 const heroEl = homeDoc.querySelector('hero-bridge');
@@ -794,6 +810,7 @@ for (const js of ['hero-bridge', 'falling-blocks', 'cycle-wheel']) ship.set(`ass
 // Every bundled headshot, which the tile partial names by the photo key in the team data.
 for (const p of people.filter((x) => x.photo)) ship.set(`assets/team/${p.photo}.webp`, `assets/team/${p.photo}.webp`);
 ship.set('assets/icons/linkedin.svg', 'assets/icons/linkedin.svg');
+for (const v of [...Object.values(share.pages), ...Object.values(share.bios), share.fallback]) if (v) ship.set(`assets/${v.image}`, `assets/${v.image}`);
 for (const [repo, plugin] of fontsShipped) ship.set(plugin, repo);
 const deny = unserved();
 for (const [plugin, repo] of ship) {
