@@ -34,11 +34,11 @@ The zip is about 22 MB (it carries every image and animation frame the pages use
 upload is refused for size, copy the unzipped `augmented-ed/` folder into
 `wp-content/plugins/` over SFTP instead, or `wp plugin install augmented-ed-plugin.zip --activate`.
 
-Where the zip comes from: AugmentED sends it. It is built by the repository's CI (the
+Where the zip comes from: AugmentED sends it, and keep a copy of the one you install. It is built by the repository's CI (the
 `plugin` job of the "Publish site to gh-pages" workflow, artifact **augmented-ed-plugin**)
 on every pull request and every change to `main`; GitHub hands it over as
 `augmented-ed-plugin.zip`, with `augmented-ed/` at its root, which is what Upload Plugin
-expects. Check the version on the Plugins screen: this handoff describes **1.1.0**.
+expects. CI keeps each run's zip for 90 days only. Check the version on the Plugins screen: this handoff describes **1.1.0**.
 
 ### 2. Create the pages
 
@@ -165,13 +165,14 @@ blank site only its own checks run (required fields, the spam defences).
 - **Don't upload any of the plugin's images to the media library**, or point an image
   optimiser (EWWW, Smush, ShortPixel, Cloudflare Polish) at the plugin's folder. The
   animations address their frames by exact filename.
-- **Don't edit anything under `generated/`.** It is rebuilt from the AugmentED site on every
-  update.
+- **If you keep installing zips from AugmentED, don't edit anything under `generated/`.** It is
+  rebuilt from the AugmentED site on every update, so your edit would be overwritten. If you have
+  stopped taking their zips, it is ordinary code: see [After launch](#after-launch-it-is-yours).
 
 ## Updating
 
-Upload the new zip the same way; WordPress offers **Replace current with uploaded**. Re-run
-the import only if the team changed. Purge the caches afterwards.
+If you receive a new zip from AugmentED, upload it the same way; WordPress offers **Replace
+current with uploaded**. Re-run the import only if the team changed. Purge the caches afterwards.
 
 **From 1.0.0 to 1.1.0** (October 2026): the headshots are colour, the team has a fifth group
 (Strategy), and only Leadership has bios. Re-run the import for the new group and people. If
@@ -179,32 +180,45 @@ the team was imported under 1.0.0, sixteen people outside Leadership still hold 
 post content, and a post with content still draws "Read bio" — clear those posts' content by
 hand; the import never empties a post.
 
-## Who changes what
+## After launch: it is yours
 
-AugmentED keeps sending the plugin, so there is one source for the pages and the two of you
-need to agree where changes go.
+The plugin is the quick way to get the AugmentED pages live on aerdf.org. What you do next is
+your call, and none of it depends on AugmentED, or on the repository, staying involved.
 
-| Change | Who | How |
-|---|---|---|
-| Page copy, images, layout, design | AugmentED (Brendan), or AERDF's developer through the repository | Ask AugmentED, who sends a new zip you upload, or make the change in the repository and send a pull request. |
-| The team: a person's role, bio, links, photo, or taking them off the page | Either | Edit that person's Team post in WordPress (the **AugmentED card** box). The import never overwrites a card edited in WordPress. |
-| HubSpot form, the pages' addresses, the privacy link, Permalinks | AERDF's developer | Settings → **AugmentED**, and the Pages screen. |
-| The plugin's code (`includes/`, `js/`, `css/host.css`) | Either | See below. |
+1. **Leave it as it is.** It is one self-contained plugin and needs no upkeep of its own, though
+   a big change to WordPress, PHP or AERDF's theme could need it revisited. Keep a copy of the
+   zip you installed.
+2. **Ask AugmentED for changes.** AugmentED can update the site and send a new zip, which you
+   upload over the old one. That is a courtesy, not a service level: do not build a process
+   that cannot work without it.
+3. **Edit the plugin in place and treat it as your own code.** The pages are ordinary PHP files
+   (`plugin/augmented-ed/generated/templates/`), with the page copy in them as plain HTML, and
+   the rest is the runtime you can read and change. Every note in this document that says
+   "don't edit `generated/`" is for people who keep regenerating from AugmentED's repository.
+   If you are not, ignore it. The one cost: a later zip from AugmentED replaces your edits, so
+   once you start editing, stop installing their zips, or merge by hand.
+4. **Rebuild it however you like.** Elementor, a theme, anything. The plugin is not a
+   dependency of the content: the copy, images and specs are in the repository. See
+   [rebuilding it your own way](#b-rebuild-the-site-natively-in-wordpress-instead-of-using-the-plugin).
 
-**Please do not edit the plugin's files on the server.** The next zip replaces them, and the
-change is lost. If something on aerdf.org needs fixing before the next zip can arrive, fix it
-there, then send AugmentED the same change (a pull request or the diff) so it is in the next
-build. Nothing in the pages' own files (`generated/`) should be edited at all; see below.
+What can be changed with no code at all:
 
-## Only if you want to change or rebuild the plugin yourself
+| Change | Where |
+|---|---|
+| The team: a person's role, bio, links, photo, or taking them off the page | Their Team post in WordPress (the **AugmentED card** box). The import never overwrites a card edited in WordPress. |
+| The HubSpot form, the pages' addresses, the privacy link | Settings → **AugmentED**, and the Pages screen. |
+| Page copy, images, layout | Code (option 3), or a new zip (option 2). They are not editable in the WordPress editor. |
 
-You do not need any of this to install the plugin, or to keep installing the zips AugmentED
-sends. It is here for a developer who wants to rebuild the zip or change the code.
+## Only if you want to regenerate the plugin from its source
+
+You do not need any of this to install the plugin or to edit it in place. It is here for a
+developer who wants to rebuild the zip from the repository, so that the plugin keeps following
+the site's source.
 
 The plugin is built from a public repository, [folkmark/aug-preview](https://github.com/folkmark/aug-preview),
-branch `main`. You need it to change anything. There are two different things you might mean.
+branch `main`. There are two different things you might mean.
 
-### A. Rebuild the plugin zip, or change the plugin
+### A. Rebuild the plugin zip from its source
 
 You need Node (version 22 is what the build runs on), `zip`, and PHP 8 (for the syntax check). This produces the same
 zip AugmentED sends, from a clean clone:
@@ -235,20 +249,19 @@ What you may edit, and what you may not:
   HubSpot relay, the offsets under AERDF's header. Edit it, then run the two build
   commands above. When you release a change, raise the version in `augmented-ed.php` (twice:
   the header and `AUGMENTED_ED_VERSION`) and in `readme.txt` (`Stable tag` and the changelog).
-- **Never by hand:** everything under `generated/`. It is output, rewritten from the site on
+- **Not by hand, while you regenerate:** everything under `generated/`. It is output, rewritten from the site on
   every build, and the build fails if it has been edited. To change what a page looks like or
   says, the change is made to the site (`index.html` and the files it uses) and then
   exported (`node tools/export-static.mjs && node tools/export-content.mjs`, which needs
-  Chromium), not to the plugin. That is AugmentED's side of the work; ask rather than
-  patching `generated/`.
+  Chromium), not to the plugin. If you would rather edit the pages directly and
+  stop regenerating, that is option 3 under After launch.
 - **`css/host.css` is for measured leaks only.** Add to it only what
   `node tools/verify-wp-plugin.mjs --live` reports against real aerdf.org pages, never
   speculatively, and never `all: revert`.
 
-**Your changes do not carry over by themselves.** Installing AugmentED's next zip replaces your
-copy. Send your change back (a pull request against `main`, or the diff) so it is in the next
-build, or agree with AugmentED that your copy becomes the source and the zip stops coming from
-them. Tell us which; do not leave it unsaid.
+**Pick one source.** If you edit the plugin by hand and also install zips built from the repository,
+the zip replaces your edits. Either keep your changes in the repository (a fork is fine), or stop
+taking zips from it.
 
 ### B. Rebuild the site natively in WordPress instead of using the plugin
 
@@ -261,9 +274,8 @@ procedure for each. We recommend against it unless AERDF needs the pages inside 
 builder, for three reasons: the hero, the falling blocks and the cycle wheel are scroll-driven and
 were tuned against real measurements, which is the expensive part to redo; a native copy stops
 following the site, where the plugin is regenerated from it; and AugmentED's team and
-Follow form are already wired in the plugin. If you do go this way, tell AugmentED first, and
-deactivate the plugin before the native pages go live so the two do not both claim the same
-pages.
+Follow form are already wired in the plugin. If you do go this way, deactivate the
+plugin before the native pages go live so the two do not both claim the same pages.
 
 ## Acceptance
 

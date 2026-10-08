@@ -2,7 +2,8 @@
 
 Each decision the plugin cannot make for AERDF or AugmentED, with what it does until someone
 decides. **Owner** is who should decide. The first three block launch; the rest have a
-working default.
+working default. Where the owner is AugmentED, AugmentED may not be available to decide later:
+the default is what ships, and it is safe to keep.
 
 ## Blocking
 
@@ -45,20 +46,20 @@ working default.
 
 ## With a working default
 
-### Program bar on phones — Brendan
+### Program bar on phones — AugmentED
 
 - **Default:** it stays at the top while scrolling, as the AugmentED site's header does.
   Settings → AugmentED can make it scroll away with AERDF's header, as Assessment for Good's
   bar does on phones.
 
-### Two menus on a phone — Brendan
+### Two menus on a phone — AugmentED
 
 - AERDF's header has its own menu button, directly above AugmentED's.
 - **Default:** AugmentED's button carries a visible word, "Menu", beside its bars.
 - Alternatives: no word; a different word; no AugmentED menu on phones at all (the
   AugmentED pages would then only be reachable through AERDF's menu and in-page links).
 
-### The home page's first screen — Brendan
+### The home page's first screen — AugmentED
 
 - Under AERDF's alert bar and header, the AugmentED content starts 189px down on a laptop
   (185px on a phone), where the site's starts at 96px. The hero behaves as on the site once
@@ -124,7 +125,7 @@ working default.
 - The design system draws no focus state on inputs. The plugin adds a visible outline for
   keyboard focus on the form's fields and controls.
 
-### Preview-domain redirects — Brendan
+### Preview-domain redirects — AugmentED
 
 - `augmented2.folkmark.com` links are in circulation. Once the production address is live,
   point the preview domain at it. This is a DNS or GitHub Pages change, not a WordPress one.
@@ -135,10 +136,11 @@ working default.
   ("Who We Are | AugmentED", …) when the pages are created, and each bio's description is
   its first sentence. AERDF's usual title pattern can replace them in Yoast.
 
-### Delivering the zip — Brendan
+### Delivering the zip — AugmentED
 
 - **Default:** download the `augmented-ed-plugin` artifact from the repository's latest
-  workflow run and send it. Artifacts are kept 90 days from main.
+  workflow run and send it once. Artifacts are kept 90 days from main, so the copy AERDF
+  installs is the copy to keep.
 - The repository is public, so anyone signed in to GitHub can download those artifacts too.
   The Avenir files inside are already public in the repository (`_ds/`) and on the preview
   site, so this adds no exposure. If the licence says otherwise, it affects those as well.
