@@ -42,7 +42,8 @@ expects. Check the version on the Plugins screen: this handoff describes **1.1.0
 
 ### 2. Create the pages
 
-Tools → **AugmentED team** → **Create the pages as drafts**.
+Tools → **AugmentED team** → **Create the pages as drafts**. Activating the plugin creates
+none: Pages → All Pages stays empty of AugmentED until you click this.
 
 That makes five draft pages, each with its AugmentED template — "AugmentED" at
 `/augmented/`, and The Challenge, Our Approach, Who We Are and Follow Our Work under it —
@@ -119,6 +120,43 @@ the import again: it writes the roles where the field is empty.
 
 Preview the drafts, publish them, then purge WP Engine's cache (and Cloudflare's, if it
 caches pages). Add AugmentED to AERDF's own navigation if that has been decided.
+
+## Trying it on a blank WordPress
+
+You do not need AERDF's site to see the plugin work. Any new WordPress 6.5+ (PHP 8.0+) will do —
+[Local](https://localwp.com) is the easiest way to get one on a laptop; WordPress Playground
+(playground.wordpress.net) works for a quick look but forgets everything when the tab closes.
+
+1. **Upload and activate** the zip ([step 1](#1-upload-and-activate)). If the upload is refused
+   for size, unzip it into `wp-content/plugins/` yourself and activate it from the Plugins screen.
+2. **Switch on the test stand-in for the team.** A blank site has no `team` post type, and the
+   import has nothing to import into. Settings → **AugmentED** → tick the testing box → Save.
+   The box only appears outside production; if it doesn't, or the tick won't stick, add
+   `define( 'AUGMENTED_ED_TEAM_SHIM', true );` to `wp-config.php` above the line that says
+   "That's all, stop editing!". Never switch this on at aerdf.org.
+3. **Set Settings → Permalinks to "Post name"** and save. On the default "Plain" setting the
+   pages only open by their `?page_id=` addresses, and the `/augmented/…` and `/team/…`
+   addresses used throughout this document do not exist.
+4. **Create the pages** — Tools → AugmentED team → **Create the pages as drafts**
+   ([step 2](#2-create-the-pages)). Then do the **Dry run** and **Import**
+   ([step 3](#3-import-the-team)).
+5. **Preview, don't visit.** The pages are drafts, so their public addresses are a 404 until you
+   publish them. Pages → All Pages → hover a page → **Preview**.
+
+If something looks wrong:
+
+| You see | Because | Do |
+|---|---|---|
+| Pages → All Pages has no AugmentED pages | Installing the plugin creates none. | Tools → AugmentED team → **Create the pages as drafts**. Look for the green "Created: …" line. |
+| A page's address is a 404 on the site | It is still a draft. | Preview it from the Pages list, or publish it. |
+| The dry run says there is no "team" post type | The stand-in is off. | Step 2 above. |
+| A Leadership "Read bio" link is a 404 | WordPress had not yet learned the `/team/<name>/` address. Plugin 1.1.0 rebuilds its address rules when the stand-in is first switched on, so this should not happen; if it does, or you switched it on with an older copy, save Settings → Permalinks once. | Settings → Permalinks → **Save Changes**, changing nothing. |
+| A member who is not in Leadership has no "Read bio" link, or their address goes to Who We Are | Only Leadership's five have a bio page; everyone else's redirects on purpose. | Test with Raquel Romano, Jenny Bradbury, Abby (Csaba) Petre, Sherry Lachman or Caitlin Mills. |
+| The dry run's numbers are not "34 create, 2 attach" | Those are the numbers for aerdf.org, where Sherry and Caitlin already exist. A blank site has no existing posts. | Nothing; read the dry run's own list. |
+| Settings → AugmentED shows amber warnings | It lists what is not done yet: a missing page, an unimported team, no HubSpot form. | Work down the list. |
+
+The Follow form needs a real HubSpot form ID ([step 4](#4-connect-the-follow-form)), so on a
+blank site only its own checks run (required fields, the spam defences).
 
 ## Don't
 
