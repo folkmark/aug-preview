@@ -32,38 +32,6 @@
     ]
   },
   {
-    "slug": "raquel-romano",
-    "name": "Raquel Romano",
-    "group": "Leadership",
-    "role": "Chief Technology Officer",
-    "affiliation": null,
-    "location": null,
-    "photo": "assets/team/raquel-romano.webp",
-    "bioUrl": "/team/raquel-romano/",
-    "links": [
-      {
-        "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/romano/"
-      }
-    ]
-  },
-  {
-    "slug": "jenny-bradbury",
-    "name": "Jenny Bradbury",
-    "group": "Leadership",
-    "role": "Vice President of Education Innovation and Partnerships",
-    "affiliation": null,
-    "location": null,
-    "photo": "assets/team/jenny-bradbury.webp",
-    "bioUrl": "/team/jenny-bradbury/",
-    "links": [
-      {
-        "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/jennysbradbury/"
-      }
-    ]
-  },
-  {
     "slug": "abby-petre",
     "name": "Abby (Csaba) Petre",
     "group": "Leadership",
@@ -84,38 +52,50 @@
     ]
   },
   {
-    "slug": "jake-maguire",
-    "name": "Jake Maguire",
-    "group": "Strategy",
-    "role": "Senior Advisor",
+    "slug": "jenny-bradbury",
+    "name": "Jenny Bradbury",
+    "group": "Leadership",
+    "role": "Vice President of Education Innovation and Partnerships",
     "affiliation": null,
     "location": null,
-    "photo": "assets/team/jake-maguire.webp",
-    "bioUrl": null,
+    "photo": "assets/team/jenny-bradbury.webp",
+    "bioUrl": "/team/jenny-bradbury/",
     "links": [
       {
         "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/jakemaguire"
+        "url": "https://www.linkedin.com/in/jennysbradbury/"
       }
     ]
   },
   {
-    "slug": "ann-marie-guzzi",
-    "name": "Ann Marie Guzzi",
-    "group": "Strategy",
-    "role": "Strategy Advisor",
+    "slug": "raquel-romano",
+    "name": "Raquel Romano",
+    "group": "Leadership",
+    "role": "Chief Technology Officer",
     "affiliation": null,
     "location": null,
-    "photo": "assets/team/ann-marie-guzzi.webp",
+    "photo": "assets/team/raquel-romano.webp",
+    "bioUrl": "/team/raquel-romano/",
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/romano/"
+      }
+    ]
+  },
+  {
+    "slug": "aarav-kalkar",
+    "name": "Aarav Kalkar",
+    "group": "Research Partners",
+    "role": "Data Scientist",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/aarav-kalkar.webp",
     "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/amguzzi/"
-      },
-      {
-        "label": "Website",
-        "url": "https://www.annmarieguzzi.com/"
+        "url": "https://www.linkedin.com/in/aaravkalkar/"
       }
     ]
   },
@@ -132,22 +112,6 @@
       {
         "label": "Website",
         "url": "https://www.cics.umass.edu/about/directory/andrew-lan"
-      }
-    ]
-  },
-  {
-    "slug": "ryan-baker",
-    "name": "Ryan Baker",
-    "group": "Research Partners",
-    "role": "Professor of Artificial Intelligence and Education, Adelaide University",
-    "affiliation": null,
-    "location": null,
-    "photo": "assets/team/ryan-baker.webp",
-    "bioUrl": null,
-    "links": [
-      {
-        "label": "Website",
-        "url": "https://learninganalytics.upenn.edu/ryanbaker/"
       }
     ]
   },
@@ -172,26 +136,6 @@
     ]
   },
   {
-    "slug": "laura-allen",
-    "name": "Laura Allen",
-    "group": "Research Partners",
-    "role": "Associate Professor, University of Minnesota",
-    "affiliation": null,
-    "location": null,
-    "photo": "assets/team/laura-allen.webp",
-    "bioUrl": null,
-    "links": [
-      {
-        "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/laura-allen-37344528/"
-      },
-      {
-        "label": "Website",
-        "url": "https://edpsych.umn.edu/laura-allen"
-      }
-    ]
-  },
-  {
     "slug": "blair-lehman",
     "name": "Blair Lehman",
     "group": "Research Partners",
@@ -208,6 +152,22 @@
       {
         "label": "Website",
         "url": "https://sites.google.com/site/blairlehman/home"
+      }
+    ]
+  },
+  {
+    "slug": "byungyeon-yun",
+    "name": "Byungyeon Yun",
+    "group": "Research Partners",
+    "role": "Graduate Student, University of Minnesota",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/byungyeon-yun.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/byungyeon-yun-a6671b425/"
       }
     ]
   },
@@ -232,54 +192,6 @@
     ]
   },
   {
-    "slug": "aarav-kalkar",
-    "name": "Aarav Kalkar",
-    "group": "Research Partners",
-    "role": "Data Scientist",
-    "affiliation": null,
-    "location": null,
-    "photo": "assets/team/aarav-kalkar.webp",
-    "bioUrl": null,
-    "links": [
-      {
-        "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/aaravkalkar/"
-      }
-    ]
-  },
-  {
-    "slug": "byungyeon-yun",
-    "name": "Byungyeon Yun",
-    "group": "Research Partners",
-    "role": "Graduate Student, University of Minnesota",
-    "affiliation": null,
-    "location": null,
-    "photo": "assets/team/byungyeon-yun.webp",
-    "bioUrl": null,
-    "links": [
-      {
-        "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/byungyeon-yun-a6671b425/"
-      }
-    ]
-  },
-  {
-    "slug": "stephen-hutt",
-    "name": "Stephen Hutt",
-    "group": "Research Partners",
-    "role": "Assistant Professor, University of Minnesota",
-    "affiliation": null,
-    "location": null,
-    "photo": "assets/team/stephen-hutt.webp",
-    "bioUrl": null,
-    "links": [
-      {
-        "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/stephen-j-hutt/"
-      }
-    ]
-  },
-  {
     "slug": "katie-butler",
     "name": "Katie Butler",
     "group": "Research Partners",
@@ -292,6 +204,26 @@
       {
         "label": "LinkedIn",
         "url": "https://www.linkedin.com/in/katie-quinton-butler-1a9187125/"
+      }
+    ]
+  },
+  {
+    "slug": "laura-allen",
+    "name": "Laura Allen",
+    "group": "Research Partners",
+    "role": "Associate Professor, University of Minnesota",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/laura-allen.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/laura-allen-37344528/"
+      },
+      {
+        "label": "Website",
+        "url": "https://edpsych.umn.edu/laura-allen"
       }
     ]
   },
@@ -312,98 +244,34 @@
     ]
   },
   {
-    "slug": "alexandra-wiggins",
-    "name": "Alexandra (Lexi) Wiggins",
-    "group": "Education Fellows",
-    "role": "Humanities Teacher, 504 Coordinator",
-    "affiliation": "High Tech High Mesa",
-    "location": "San Diego, CA",
-    "photo": "assets/team/alexandra-wiggins.webp",
+    "slug": "ryan-baker",
+    "name": "Ryan Baker",
+    "group": "Research Partners",
+    "role": "Professor of Artificial Intelligence and Education, Adelaide University",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/ryan-baker.webp",
     "bioUrl": null,
     "links": [
       {
         "label": "Website",
-        "url": "https://www.hightechhigh.org/staff/alexandra-wiggins/"
+        "url": "https://learninganalytics.upenn.edu/ryanbaker/"
       }
     ]
   },
   {
-    "slug": "chris-mutter",
-    "name": "Chris Mutter",
-    "group": "Education Fellows",
-    "role": "Multimedia Teacher",
-    "affiliation": "High Tech High International",
-    "location": "San Diego, CA",
-    "photo": "assets/team/chris-mutter.webp",
-    "bioUrl": null,
-    "links": [
-      {
-        "label": "Website",
-        "url": "https://www.hightechhigh.org/staff/chris-mutter/"
-      }
-    ]
-  },
-  {
-    "slug": "christopher-hanks",
-    "name": "Christopher Hanks",
-    "group": "Education Fellows",
-    "role": "Principal on Special Assignment, Innovation Design",
-    "affiliation": "Grand Rapids Public Museum High School",
-    "location": "Grand Rapids, MI",
-    "photo": "assets/team/christopher-hanks.webp",
+    "slug": "stephen-hutt",
+    "name": "Stephen Hutt",
+    "group": "Research Partners",
+    "role": "Assistant Professor, University of Minnesota",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/stephen-hutt.webp",
     "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/christopher-hanks-4a0ba92b9/"
-      }
-    ]
-  },
-  {
-    "slug": "tom-peterson",
-    "name": "Tom Peterson",
-    "group": "Education Fellows",
-    "role": "Social Studies Teacher",
-    "affiliation": "Grand Rapids Public Museum High School",
-    "location": "Grand Rapids, MI",
-    "photo": "assets/team/tom-peterson.webp",
-    "bioUrl": null,
-    "links": [
-      {
-        "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/tom-peterson-25776477/"
-      }
-    ]
-  },
-  {
-    "slug": "ben-hoff",
-    "name": "Ben Hoff",
-    "group": "Education Fellows",
-    "role": "Science & Computer Science Teacher",
-    "affiliation": "Grand Rapids Public Museum High School",
-    "location": "Grand Rapids, MI",
-    "photo": "assets/team/ben-hoff.webp",
-    "bioUrl": null,
-    "links": [
-      {
-        "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/ben-hoff-240635272/"
-      }
-    ]
-  },
-  {
-    "slug": "nikki-wallace",
-    "name": "Nikki Wallace",
-    "group": "Education Fellows",
-    "role": "Science Teacher, Director of Research & Innovation",
-    "affiliation": "Crosstown High School",
-    "location": "Memphis, TN",
-    "photo": "assets/team/nikki-wallace.webp",
-    "bioUrl": null,
-    "links": [
-      {
-        "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/nikki-wallace-hmw/"
+        "url": "https://www.linkedin.com/in/stephen-j-hutt/"
       }
     ]
   },
@@ -456,18 +324,146 @@
     ]
   },
   {
-    "slug": "sarah-zaner",
-    "name": "Sarah Zaner",
-    "group": "Technology and Design Partners",
-    "role": "Co-founder, Bendable Labs",
-    "affiliation": null,
-    "location": null,
-    "photo": "assets/team/sarah-zaner.webp",
+    "slug": "nikki-wallace",
+    "name": "Nikki Wallace",
+    "group": "Education Fellows",
+    "role": "Science Teacher, Director of Research & Innovation",
+    "affiliation": "Crosstown High School",
+    "location": "Memphis, TN",
+    "photo": "assets/team/nikki-wallace.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/nikki-wallace-hmw/"
+      }
+    ]
+  },
+  {
+    "slug": "alexandra-wiggins",
+    "name": "Alexandra (Lexi) Wiggins",
+    "group": "Education Fellows",
+    "role": "Humanities Teacher, 504 Coordinator",
+    "affiliation": "High Tech High Mesa",
+    "location": "San Diego, CA",
+    "photo": "assets/team/alexandra-wiggins.webp",
     "bioUrl": null,
     "links": [
       {
         "label": "Website",
-        "url": "https://bendablelabs.com/who_we_are/sarah-zaner"
+        "url": "https://www.hightechhigh.org/staff/alexandra-wiggins/"
+      }
+    ]
+  },
+  {
+    "slug": "chris-mutter",
+    "name": "Chris Mutter",
+    "group": "Education Fellows",
+    "role": "Multimedia Teacher",
+    "affiliation": "High Tech High International",
+    "location": "San Diego, CA",
+    "photo": "assets/team/chris-mutter.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "Website",
+        "url": "https://www.hightechhigh.org/staff/chris-mutter/"
+      }
+    ]
+  },
+  {
+    "slug": "ben-hoff",
+    "name": "Ben Hoff",
+    "group": "Education Fellows",
+    "role": "Science & Computer Science Teacher",
+    "affiliation": "Grand Rapids Public Museum High School",
+    "location": "Grand Rapids, MI",
+    "photo": "assets/team/ben-hoff.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/ben-hoff-240635272/"
+      }
+    ]
+  },
+  {
+    "slug": "christopher-hanks",
+    "name": "Christopher Hanks",
+    "group": "Education Fellows",
+    "role": "Principal on Special Assignment, Innovation Design",
+    "affiliation": "Grand Rapids Public Museum High School",
+    "location": "Grand Rapids, MI",
+    "photo": "assets/team/christopher-hanks.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/christopher-hanks-4a0ba92b9/"
+      }
+    ]
+  },
+  {
+    "slug": "tom-peterson",
+    "name": "Tom Peterson",
+    "group": "Education Fellows",
+    "role": "Social Studies Teacher",
+    "affiliation": "Grand Rapids Public Museum High School",
+    "location": "Grand Rapids, MI",
+    "photo": "assets/team/tom-peterson.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/tom-peterson-25776477/"
+      }
+    ]
+  },
+  {
+    "slug": "allison-rapoport",
+    "name": "Allison Rapoport",
+    "group": "Technology and Design Partners",
+    "role": "Engineering Consultant",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/allison-rapoport.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/allison-rapoport"
+      }
+    ]
+  },
+  {
+    "slug": "brandon-bodnar",
+    "name": "Brandon Bodnar",
+    "group": "Technology and Design Partners",
+    "role": "Principal Engineer",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/brandon-bodnar.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/bodnarbm/"
+      }
+    ]
+  },
+  {
+    "slug": "joan-lee",
+    "name": "Joan Lee",
+    "group": "Technology and Design Partners",
+    "role": "Educational Consultant",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/joan-lee.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/about-joan-lee/"
       }
     ]
   },
@@ -504,31 +500,20 @@
     ]
   },
   {
-    "slug": "joan-lee",
-    "name": "Joan Lee",
+    "slug": "sarah-zaner",
+    "name": "Sarah Zaner",
     "group": "Technology and Design Partners",
-    "role": "Project Consultant & Manager",
+    "role": "Co-founder, Bendable Labs",
     "affiliation": null,
     "location": null,
-    "photo": "assets/team/joan-lee.webp",
+    "photo": "assets/team/sarah-zaner.webp",
     "bioUrl": null,
     "links": [
       {
-        "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/about-joan-lee/"
+        "label": "Website",
+        "url": "https://bendablelabs.com/who_we_are/sarah-zaner"
       }
     ]
-  },
-  {
-    "slug": "brandon-bodnar",
-    "name": "Brandon Bodnar",
-    "group": "Technology and Design Partners",
-    "role": "Principal Engineer",
-    "affiliation": null,
-    "location": null,
-    "photo": null,
-    "bioUrl": null,
-    "links": []
   },
   {
     "slug": "sonia-prusaitis",
@@ -563,18 +548,54 @@
     ]
   },
   {
-    "slug": "allison-rapoport",
-    "name": "Allison Rapoport",
-    "group": "Technology and Design Partners",
-    "role": "Engineering Consultant",
+    "slug": "ann-marie-guzzi",
+    "name": "Ann Marie Guzzi",
+    "group": "Strategy, Finance, and Operations Partners",
+    "role": "Strategy Advisor",
     "affiliation": null,
     "location": null,
-    "photo": "assets/team/allison-rapoport.webp",
+    "photo": "assets/team/ann-marie-guzzi.webp",
     "bioUrl": null,
     "links": [
       {
         "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/allison-rapoport"
+        "url": "https://www.linkedin.com/in/amguzzi/"
+      },
+      {
+        "label": "Website",
+        "url": "https://www.annmarieguzzi.com/"
+      }
+    ]
+  },
+  {
+    "slug": "chris-daniels",
+    "name": "Chris Daniels",
+    "group": "Strategy, Finance, and Operations Partners",
+    "role": "Finance Advisor",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/chris-daniels.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/christopherdaniels/"
+      }
+    ]
+  },
+  {
+    "slug": "jake-maguire",
+    "name": "Jake Maguire",
+    "group": "Strategy, Finance, and Operations Partners",
+    "role": "Senior Advisor",
+    "affiliation": null,
+    "location": null,
+    "photo": "assets/team/jake-maguire.webp",
+    "bioUrl": null,
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/jakemaguire"
       }
     ]
   }

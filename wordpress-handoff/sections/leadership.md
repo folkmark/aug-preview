@@ -1,14 +1,15 @@
 # The team bio pages — build spec
 
-Twenty-one pages, one for each person on the team who has a bio, at `/team/<slug>/`: the
-four leaders, and since late September 2026 seventeen of the partners and fellows. They are the
-only pages on this site that are **not** the single-page app. In WordPress each person is
-a post of aerdf.org's existing `team` post type, in an "AugmentED Team" category, and the
-plugin draws their page with `generated/templates/bio.php`, rendered from the same template
-as this site's bio pages (`tools/lib/bio-page.mjs`) — see Content in
-[the handoff README](../README.md#content).
-(This file is still called leadership.md because Leadership had the only pages when it
-was written, and other documents link to it by that name.)
+Five pages, one for each person in Leadership, at `/team/<slug>/` (from late September to
+October 2026 there were twenty-one, with partners and fellows; the client then asked for
+bios on Leadership alone). They are the only pages on this site that are **not** the
+single-page app. In WordPress each person is a post of aerdf.org's existing `team` post
+type, in an "AugmentED Team" category. The plugin draws the pages of Raquel Romano, Jenny
+Bradbury and Abby (Csaba) Petre with `generated/templates/bio.php`, rendered from the same
+template as this site's bio pages (`tools/lib/bio-page.mjs`) — see Content in
+[the handoff README](../README.md#content); Sherry Lachman and Caitlin Mills, who are also
+AERDF's leadership, keep AERDF's own pages. This file covers the whole Who We Are page, not
+only Leadership; it keeps its name because other documents link to it.
 
 **Audience.** You're rebuilding the Who We Are page, or adding a person to it. Read
 [the handoff README](../README.md) first for the rules shared by everything here.
@@ -29,7 +30,8 @@ handoff, it is dead.** The leadership group is a `.team-grid-3` like every other
 the page.
 
 What the change bought, measured at 1440: every headshot on the page renders at the same
-197x197, and the page went from carrying about 640 words of bio prose to four links.
+197x197, and the page went from carrying about 640 words of bio prose to four links (one
+per leader then; five today).
 
 ## 2. The content lives in one place
 
@@ -58,9 +60,9 @@ is all it takes to bring theirs back.
 
 ## 3. The card contract
 
-A card with a bio is an ordinary `.team-grid-3` tile plus a class, an id and a link. This is
-one of the leaders; a partner's or a fellow's is the same, with their muted lines and icon
-row where the tile already has them:
+A card with a bio is an ordinary `.team-grid-3` tile plus a class, an id and a link — today
+only Leadership's. This is one of them; any other group marked `"bios": true` would get the
+same, with its muted lines and icon row where the tile already has them:
 
 ```html
 <div class="bio-tile" data-reveal="" id="sherry-lachman" style="opacity:0;transition:…">
@@ -73,7 +75,7 @@ row where the tile already has them:
 ```
 
 The link is the design system's link button with a trailing `chevron_right`, the same
-"Read more ›" the papers use and every "Learn more ›" on the site. In WordPress that is
+"Open link ›" the papers use and every "Learn more ›" on the site. In WordPress that is
 whatever your theme renders for those; the point is that it is the same component, not
 a one-off.
 
@@ -100,12 +102,12 @@ nav's own links.
 | --- | --- | --- |
 | Photo, name, role and the space between are all clickable | The link's `::after` is `position:absolute; inset:0`, and `.bio-tile` is `position:relative` | One link per person and one tab stop, with a target the size of the card. This is the stretched-link pattern; do **not** wrap the card in an `<a>`, or a screen reader reads the whole card as the link's name. The cost is that text under the overlay cannot be selected. |
 | Icon links stay clickable | `.bio-tile a[aria-label] { position:relative; z-index:1 }` | Otherwise the overlay swallows Raquel's LinkedIn. |
-| Screen readers hear "Read bio of Sherry Lachman" | A `.visually-hidden` span after the visible words | Four identical "Read bio" links are ambiguous out of context. The visible words come first so speech-control users can say what they see (WCAG 2.5.3). **Not an `aria-label`**: the team grid styles every `.team-grid-3 a[aria-label]` as a 24px icon box (44px on touch), and it would shrink the link into one. |
+| Screen readers hear "Read bio of Sherry Lachman" | A `.visually-hidden` span after the visible words | Five identical "Read bio" links are ambiguous out of context. The visible words come first so speech-control users can say what they see (WCAG 2.5.3). **Not an `aria-label`**: the team grid styles every `.team-grid-3 a[aria-label]` as a 24px icon box (44px on touch), and it would shrink the link into one. |
 | Every "Read bio" in a row sits on one line | `.bio-tile` is a flex column; `.bio-cta` has `margin-top:auto` | Before this, the link followed the role line and any icon row, and sat at 320, 320, 340 and 344px down the four tiles. |
-| Hover | Link to 70% opacity (the site's `a:hover`); the photo or placeholder to `brightness(.92)` | The design system's two hover rules: links dim, hover goes darker. Until October 2026 a photo's colour also bloomed in over a duotone; the photos are colour at rest now, so that is gone. |
+| Hover | Link to 70% opacity (the site's `a:hover`); the photo to `brightness(.92)` | The design system's two hover rules: links dim, hover goes darker. Only a bio tile has a hover state, because only it is a link; the other tiles do not respond. Until October 2026 a photo's colour also bloomed in over a duotone; the photos are colour at rest now, so that is gone. |
 | Keyboard focus | 2px `--brand-accent` outline on the overlay, 6px offset | The design system has no focus ring and says to add one in that colour. Drawn on the overlay, it outlines the whole tile. |
 
-Measured at 1440: tile 197x363, link 94x38, four links on one line; clicks on the
+Measured at 1440 (6 October 2026): tile 197x407, link 94x38, all five links on one line; clicks on the
 photo, the name and the empty space all open the bio.
 
 ### Headshots
@@ -120,12 +122,14 @@ behind them. A person without a photo gets an empty square in the same `#e9eef4`
 empty tile and a photographed one sit on one colour.
 
 Do not re-crop them — no Media Library "crop to square", no theme `object-position`. The
-framing is what makes photographs by thirty different photographers read as one team, and
+framing is what makes photographs by thirty-odd different photographers read as one team, and
 it is already done. They are 6–36 KB each. A photograph that stops a little short of where
-the framing wants it is stretched or enlarged within limits; where it stops further in
-than that, the figure fades out where the photo ends (Ryan Baker's bottom, left and top, Byungyeon
-Yun's sides, and Nicolle DeSilva's and Allison Rapoport's left edges). That is baked into the
-file, not an effect to reproduce, and it goes away when a looser original replaces one.
+the framing wants it is stretched or enlarged within limits. Three photographs too tight for
+those limits (Byungyeon Yun's, Nicolle DeSilva's and Ryan Baker's) are enlarged further, by
+the client's choice, rather than fade where the photo ends; Byungyeon's, at a size chosen to
+stay close to everyone else's, keeps a trace of fade at his right shoulder, and Ryan's is cut
+straight on the right, where his photograph ends, rather than faded. All of it is baked into
+the file, not an effect to reproduce.
 
 They are made in two steps, and the split is on purpose. `tools/cutout-headshots.py`
 does the slow part once — a matting model, face and eye detection, the framing — and
@@ -150,7 +154,7 @@ handed on is wrong.
 its headshot regex on the literal `<img src="`. React preserves author attribute order for
 everything except `style`, so writing `<img class="shot" src="…">` in `index.html` takes
 every headshot to `null` — with a green build. There is an assertion for this (`the roster
-has 30 headshots on the page, parsed 0`), so it fails loudly now; before it existed it did
+has 36 headshots on the page, parsed 0`), so it fails loudly now; before it existed it did
 not. The tiles are written by `tools/build-team.mjs`, which always puts `src` first.
 
 **2. The link text starts with exactly "Read bio".** The exporter finds each bio page by
@@ -201,7 +205,7 @@ different site.
 | --- | --- | --- |
 | Portrait | Own column, 288px (`18rem`), larger than the 197px tile | Stacked, 192px (`12rem`) |
 | Text column | Up to `38rem`, 62–69 characters per line measured | Full width, about 45 characters |
-| No photo (Alexandra Wiggins, Chris Mutter, Brandon Bodnar) | One text column, not an empty square | Same |
+| No photo (nobody with a bio today) | One text column, not an empty square | Same |
 
 Everything aligns to the same `--container-xxl` edge as the logo. Above the layout is a
 "‹ Who We Are" link to `/team/`, whose chevron is `chevron_right` mirrored, because the
@@ -271,7 +275,8 @@ Build, then confirm at 1440, 992 and 400:
 - every card on the page is the same width, and each row's "Read bio" links share a line;
 - clicking the photo, name or the space between on a card with a bio opens their page;
 - Tab stops once per card with a bio;
-- every headshot is in colour at rest, and hovering one only darkens it slightly;
+- every headshot is in colour at rest; hovering a bio tile darkens its photo slightly, and
+  the other tiles do not respond;
 - a bio page's header and footer match `/team/`'s;
 - a bio page renders correctly **with JavaScript disabled**. That last one is the
   property that makes these pages portable, and it is easy to lose by reaching for the

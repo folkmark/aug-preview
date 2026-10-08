@@ -6,10 +6,6 @@
       "bios": true
     },
     {
-      "key": "strategy",
-      "name": "Strategy"
-    },
-    {
       "key": "research-partners",
       "name": "Research Partners"
     },
@@ -20,6 +16,10 @@
     {
       "key": "technology-and-design-partners",
       "name": "Technology and Design Partners"
+    },
+    {
+      "key": "strategy",
+      "name": "Strategy, Finance, and Operations Partners"
     }
   ],
   "tags": {
@@ -96,7 +96,7 @@
       "slug": "raquel-romano",
       "name": "Raquel Romano",
       "group": "leadership",
-      "order": 3,
+      "order": 5,
       "tags": [],
       "role": "Chief Technology Officer",
       "affiliation": null,
@@ -130,7 +130,9 @@
       "actions": [
         "[joan] Mark the published bio Approved in the tracker."
       ],
-      "history": []
+      "history": [
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
+      ]
     },
     {
       "id": 4,
@@ -179,7 +181,7 @@
       "slug": "andrew-lan",
       "name": "Andrew Lan",
       "group": "research-partners",
-      "order": 1,
+      "order": 2,
       "tags": [],
       "role": "Associate Professor of Computer Science, University of Massachusetts Amherst",
       "affiliation": null,
@@ -205,7 +207,8 @@
         "[joan] Send a larger original if one exists; the tile enlarges a 203px photo 2.4x, so it is soft."
       ],
       "history": [
-        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/andrew-lan/ (6008fab)"
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/andrew-lan/ (6008fab)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -213,7 +216,7 @@
       "slug": "ryan-baker",
       "name": "Ryan Baker",
       "group": "research-partners",
-      "order": 2,
+      "order": 10,
       "tags": [],
       "role": "Professor of Artificial Intelligence and Education, Adelaide University",
       "affiliation": null,
@@ -223,11 +226,11 @@
       "photo": {
         "master": "ryan-baker.jpg",
         "from": "institution",
-        "ref": "researchers.adelaide.edu.au /sites/default/files/profile-images/37136.jpeg (540x540)",
+        "ref": "circls.org /wp-content/uploads/2022/03/RyanBaker.jpeg (488x631)",
         "approved": false,
-        "upscale": 0.61,
-        "edgesFaded": "bottom 27%, left 13%, top 10%",
-        "notes": "His Adelaide University researcher profile, the file behind its 860x860 \"profile_large\" rendition (which is an upscale of this). The same shoot as the 190x213 he had before, cropped tighter at the hair and the chest but with his face at about three times the pixels. The file carries less detail than its size: halving it loses almost nothing, so it was itself enlarged or smoothed somewhere. It still fades at the bottom, the left and the top, like the copy before it: every public copy found (his own page, Adelaide, UTS, IIIT) is this crop, so a looser original is the only fix. Kept under the shared framing rather than filling the tile, by Brendan, 6 October 2026."
+        "upscale": 0.85,
+        "notes": "His photograph on CIRCLS (the NSF Center for Integrative Research in Computing and Learning Sciences), uploaded in March 2022; sent by Brendan, 7 October 2026, to replace the Adelaide University profile photo. It has more pixels on his face than any copy before it, so the tile is a reduction rather than an enlargement, but it is cropped tighter still: at the crown, through his hair on the right, and across the chest. 1.40x and an eye line 6% lower ground him. The cut through his hair cannot be cropped off short of 2.11x, so at Brendan's choice his photograph's edges are cut hard rather than faded ('hard' in THE EXCEPTIONS, tools/cutout-headshots.py): his hair ends in a straight edge on the right, and nothing of him fades.",
+        "edgesExtended": "left 2%"
       },
       "bioSource": {
         "from": "tracker",
@@ -236,11 +239,14 @@
       "form": null,
       "notes": null,
       "actions": [
-        "[joan] Ask Ryan for a looser headshot that shows his shoulders: his photo is cropped at the hair and chest, so his tile still fades (Sherry asked for the fade fixed, 6 October)."
+        "[joan] Optional: a looser headshot that shows his shoulders and the whole of his hair. His photo is cropped at the crown, the right and the chest, so the tile is enlarged 1.40x and his hair is cut straight on the right; a looser photo would return it to the shared framing."
       ],
       "history": [
         "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/ryan-baker/ (6008fab)",
-        "2026-10-06 headshot: 190x213 from the Bio tracking sheet → 540x540 from his Adelaide University profile (fixing the fade, Sherry's request)"
+        "2026-10-06 headshot: 190x213 from the Bio tracking sheet → 540x540 from his Adelaide University profile (fixing the fade, Sherry's request)",
+        "2026-10-06 headshot: no longer fades; face enlarged 1.55x, past the shared limit, by the client's choice (THE EXCEPTIONS in tools/cutout-headshots.py) (Brendan)",
+        "2026-10-07 headshot: 540x540 from his Adelaide University profile → 488x631 from CIRCLS; 1.40x, edges cut hard rather than faded (THE EXCEPTIONS), by the client's choice (Brendan)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -288,7 +294,7 @@
       "slug": "laura-allen",
       "name": "Laura Allen",
       "group": "research-partners",
-      "order": 4,
+      "order": 8,
       "tags": [],
       "role": "Associate Professor, University of Minnesota",
       "affiliation": null,
@@ -320,7 +326,8 @@
       "notes": null,
       "actions": [],
       "history": [
-        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/laura-allen/ (6008fab)"
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/laura-allen/ (6008fab)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -328,7 +335,7 @@
       "slug": "blair-lehman",
       "name": "Blair Lehman",
       "group": "research-partners",
-      "order": 5,
+      "order": 4,
       "tags": [],
       "role": "Senior Scientist, Brighter Research",
       "affiliation": null,
@@ -361,7 +368,8 @@
       "notes": null,
       "actions": [],
       "history": [
-        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/blair-lehman/ (6008fab)"
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/blair-lehman/ (6008fab)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -410,7 +418,7 @@
       "slug": "aarav-kalkar",
       "name": "Aarav Kalkar",
       "group": "research-partners",
-      "order": 7,
+      "order": 1,
       "tags": [],
       "role": "Data Scientist",
       "affiliation": null,
@@ -440,7 +448,8 @@
       "actions": [],
       "history": [
         "2026-09-24 status: — → on_site (32a0c09)",
-        "2026-09-25 title: — → Data Scientist (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
+        "2026-09-25 title: — → Data Scientist (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -448,7 +457,7 @@
       "slug": "byungyeon-yun",
       "name": "Byungyeon Yun",
       "group": "research-partners",
-      "order": 8,
+      "order": 5,
       "tags": [],
       "role": "Graduate Student, University of Minnesota",
       "affiliation": null,
@@ -460,10 +469,9 @@
         "from": "form",
         "ref": "https://drive.google.com/open?id=1MiZwORsglGY-d42vXSG4xD0Ry9GLrpdr",
         "approved": false,
-        "upscale": 0.95,
-        "edgesFaded": "left 12%, right 12%",
-        "edgesExtended": "bottom 3%",
-        "notes": "The form upload as submitted (28 Jul). A passport-style photo, cut across the chest and 18% in from both shoulders. The framing enlarges it 1.20x with the eye line 6% lower, so it reaches the bottom of the tile (THE REACH in tools/cutout-headshots.py); reaching the sides would take more than its limit, so they still fade. The crown sits 3% below the tile's top rather than 4%, the eye line having been lowered as far as it may go (THE HEADROOM in tools/cutout-headshots.py). Its EXIF block, which carried a GPS position, was removed on 6 October 2026; the image data is untouched."
+        "upscale": 1.06,
+        "notes": "The form upload as submitted (28 Jul). A passport-style photo, cut across the chest and 18% in from both shoulders. The framing enlarges it 1.20x with the eye line 6% lower, so it reaches the bottom of the tile (THE REACH in tools/cutout-headshots.py); reaching the sides would take more than its limit, so they still fade. The crown sits 3% below the tile's top rather than 4%, the eye line having been lowered as far as it may go (THE HEADROOM in tools/cutout-headshots.py). Its EXIF block, which carried a GPS position, was removed on 6 October 2026; the image data is untouched.",
+        "edgesFaded": "right 7%"
       },
       "form": {
         "submitted": "2026-07-28 23:08:32",
@@ -477,11 +485,15 @@
       },
       "notes": null,
       "actions": [
-        "[joan] Ask for a looser headshot that shows the shoulders: the passport photo is cut 18% in from both sides, so the tile fades there."
+        "[joan] Optional: a looser headshot that shows the shoulders. The passport photo is cut 18% in from both sides, so the tile is enlarged 1.35x (chosen from a sheet of steps) and still fades a little at the right shoulder; a looser photo would return it to the shared framing."
       ],
       "history": [
         "2026-09-24 status: — → on_site (32a0c09)",
-        "2026-09-25 title: — → Graduate Student, University of Minnesota (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
+        "2026-09-25 title: — → Graduate Student, University of Minnesota (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)",
+        "2026-10-06 headshot: sides no longer fade; face enlarged 1.54x and eye line 18% lower, past the shared limit, by the client's choice (THE EXCEPTIONS in tools/cutout-headshots.py) (Brendan)",
+        "2026-10-06 headshot: enlargement undone (it read as a giant close-up); back to the shared framing, sides fading (Brendan)",
+        "2026-10-06 headshot: a fixed 1.35x, eye line 12% lower, chosen from a sheet of steps between 1.20x and 1.54x; a trace of fade at the right shoulder (Brendan)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -489,7 +501,7 @@
       "slug": "stephen-hutt",
       "name": "Stephen Hutt",
       "group": "research-partners",
-      "order": 9,
+      "order": 11,
       "tags": [],
       "role": "Assistant Professor, University of Minnesota",
       "affiliation": null,
@@ -519,7 +531,8 @@
       "history": [
         "2026-09-24 status: — → on_site (32a0c09)",
         "2026-09-25 headshot: placeholder → form upload (44275f4)",
-        "2026-09-25 title: — → Assistant Professor, University of Minnesota (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
+        "2026-09-25 title: — → Assistant Professor, University of Minnesota (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -527,7 +540,7 @@
       "slug": "alexandra-wiggins",
       "name": "Alexandra (Lexi) Wiggins",
       "group": "education-fellows",
-      "order": 1,
+      "order": 5,
       "tags": [],
       "role": "Humanities Teacher, 504 Coordinator",
       "affiliation": "High Tech High Mesa",
@@ -561,7 +574,8 @@
       "history": [
         "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/alexandra-wiggins/ (6008fab)",
         "2026-09-25 full_name: Alexandra Wiggins → Alexandra (Lexi) Wiggins (daf7a21)",
-        "2026-09-25 headshot: placeholder → form upload (daf7a21)"
+        "2026-09-25 headshot: placeholder → form upload (daf7a21)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -569,7 +583,7 @@
       "slug": "chris-mutter",
       "name": "Chris Mutter",
       "group": "education-fellows",
-      "order": 2,
+      "order": 6,
       "tags": [],
       "role": "Multimedia Teacher",
       "affiliation": "High Tech High International",
@@ -578,11 +592,11 @@
       "website": "https://www.hightechhigh.org/staff/chris-mutter/",
       "photo": {
         "master": "chris-mutter.jpg",
-        "from": "form",
-        "ref": "https://drive.google.com/open?id=1uWQC7bUlY5fxN6AQt1v-3uyqrMl2X0ce",
+        "from": "direct",
+        "ref": "https://drive.google.com/open?id=1uppXhUlShUsD77NqugHRPjkrx3XSnCaW",
         "approved": false,
-        "upscale": 1.06,
-        "notes": "Sent through the website info form by Joan Lee on 25 September 2026, as received: 707x624 (\"Chris Mutter Headshot\"). Already toned almost to black and white (mean saturation 22/255), so the colour version on hover stays grey. Enlarged 1.06x at the tile size, which does not show."
+        "upscale": 0.85,
+        "notes": "A colour original, uploaded by Brendan to the form's Drive folder on 6 October 2026 (\"Chris Mutter Headshot.jpeg\"), as received: a 2993x4032 iPhone photograph, seated, full length, with no location data. It replaces the 707x624 near-black-and-white crop sent through the form on 25 September. Cut out at the shared framing with nothing faded or stretched; the crown sits 14% below the tile top, more than most, because the face box is small for his hair."
       },
       "bioSource": {
         "from": "tracker",
@@ -598,12 +612,13 @@
       },
       "notes": "The form (filled in by Joan Lee) gives LinkedIn as \"n/a\"; the tile keeps the High Tech High staff page as the website.",
       "actions": [
-        "[joan] Sign off the published bio (the tracker's fellows tab has no Approved column).",
-        "[joan] Optional: a colour original, so the hover shows colour like everyone else."
+        "[joan] Sign off the published bio (the tracker's fellows tab has no Approved column)."
       ],
       "history": [
         "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/chris-mutter/ (6008fab)",
-        "2026-10-06 headshot: placeholder → form upload (5f7a382)"
+        "2026-10-06 headshot: placeholder → form upload (5f7a382)",
+        "2026-10-06 headshot: 707x624 black and white (form) → 2993x4032 colour original (Drive)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -611,7 +626,7 @@
       "slug": "christopher-hanks",
       "name": "Christopher Hanks",
       "group": "education-fellows",
-      "order": 3,
+      "order": 8,
       "tags": [],
       "role": "Principal on Special Assignment, Innovation Design",
       "affiliation": "Grand Rapids Public Museum High School",
@@ -628,14 +643,16 @@
       "form": null,
       "notes": null,
       "actions": [],
-      "history": []
+      "history": [
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
+      ]
     },
     {
       "id": 17,
       "slug": "tom-peterson",
       "name": "Tom Peterson",
       "group": "education-fellows",
-      "order": 4,
+      "order": 9,
       "tags": [],
       "role": "Social Studies Teacher",
       "affiliation": "Grand Rapids Public Museum High School",
@@ -662,7 +679,8 @@
       "notes": "The form (filled in by Joan Lee) gives LinkedIn as \"N/A\"; the LinkedIn from her Bio tracking sheet stays on his tile (decided 2026-09-25).",
       "actions": [],
       "history": [
-        "2026-09-25 headshot: placeholder → form upload (daf7a21)"
+        "2026-09-25 headshot: placeholder → form upload (daf7a21)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -670,7 +688,7 @@
       "slug": "ben-hoff",
       "name": "Ben Hoff",
       "group": "education-fellows",
-      "order": 5,
+      "order": 7,
       "tags": [],
       "role": "Science & Computer Science Teacher",
       "affiliation": "Grand Rapids Public Museum High School",
@@ -688,14 +706,16 @@
       "form": null,
       "notes": null,
       "actions": [],
-      "history": []
+      "history": [
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
+      ]
     },
     {
       "id": 19,
       "slug": "nikki-wallace",
       "name": "Nikki Wallace",
       "group": "education-fellows",
-      "order": 6,
+      "order": 4,
       "tags": [],
       "role": "Science Teacher, Director of Research & Innovation",
       "affiliation": "Crosstown High School",
@@ -720,7 +740,8 @@
         "[joan] Sign off the published bio (the tracker's fellows tab has no Approved column)."
       ],
       "history": [
-        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/nikki-wallace/ (6008fab)"
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/nikki-wallace/ (6008fab)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -728,7 +749,7 @@
       "slug": "danie-cowden",
       "name": "Danie Cowden",
       "group": "education-fellows",
-      "order": 7,
+      "order": 1,
       "tags": [],
       "role": "STEM, Design, and Media Teacher",
       "affiliation": "Crosstown High School",
@@ -755,7 +776,8 @@
       ],
       "history": [
         "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/danie-cowden/ (6008fab)",
-        "2026-09-25 title: Photography, Digital Art & Design Teacher, CTE Coordinator → STEM, Design, and Media Teacher (44275f4)"
+        "2026-09-25 title: Photography, Digital Art & Design Teacher, CTE Coordinator → STEM, Design, and Media Teacher (44275f4)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -763,7 +785,7 @@
       "slug": "joshua-sloan",
       "name": "Joshua Sloan",
       "group": "education-fellows",
-      "order": 8,
+      "order": 2,
       "tags": [],
       "role": "Math Teacher, Math Department Lead",
       "affiliation": "Crosstown High School",
@@ -788,7 +810,8 @@
         "[joan] Sign off the published bio (the tracker's fellows tab has no Approved column)."
       ],
       "history": [
-        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/joshua-sloan/ (6008fab)"
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/joshua-sloan/ (6008fab)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -796,7 +819,7 @@
       "slug": "mohammed-al-harthy",
       "name": "Mohammed Al Harthy",
       "group": "education-fellows",
-      "order": 9,
+      "order": 3,
       "tags": [],
       "role": "Computer Science Teacher, 9th Grade Lead",
       "affiliation": "Crosstown High School",
@@ -821,7 +844,8 @@
         "[joan] Sign off the published bio (the tracker's fellows tab has no Approved column)."
       ],
       "history": [
-        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/mohammed-al-harthy/ (6008fab)"
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/mohammed-al-harthy/ (6008fab)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -829,7 +853,7 @@
       "slug": "sarah-zaner",
       "name": "Sarah Zaner",
       "group": "technology-and-design-partners",
-      "order": 1,
+      "order": 6,
       "tags": [],
       "role": "Co-founder, Bendable Labs",
       "affiliation": null,
@@ -853,7 +877,8 @@
       "notes": null,
       "actions": [],
       "history": [
-        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/sarah-zaner/ (6008fab)"
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/sarah-zaner/ (6008fab)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -861,7 +886,7 @@
       "slug": "lisa-peterson",
       "name": "Lisa Peterson",
       "group": "technology-and-design-partners",
-      "order": 2,
+      "order": 4,
       "tags": [],
       "role": "Product Design Consultant",
       "affiliation": null,
@@ -893,7 +918,8 @@
       "notes": null,
       "actions": [],
       "history": [
-        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/lisa-peterson/ (6008fab)"
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/lisa-peterson/ (6008fab)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -901,7 +927,7 @@
       "slug": "neil-sharma",
       "name": "Neil Sharma",
       "group": "technology-and-design-partners",
-      "order": 3,
+      "order": 5,
       "tags": [],
       "role": "Engineering Consultant",
       "affiliation": null,
@@ -924,7 +950,8 @@
       "notes": null,
       "actions": [],
       "history": [
-        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/neil-sharma/ (6008fab)"
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/neil-sharma/ (6008fab)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -932,9 +959,9 @@
       "slug": "joan-lee",
       "name": "Joan Lee",
       "group": "technology-and-design-partners",
-      "order": 4,
+      "order": 3,
       "tags": [],
-      "role": "Project Consultant & Manager",
+      "role": "Educational Consultant",
       "affiliation": null,
       "location": null,
       "linkedin": "https://www.linkedin.com/in/about-joan-lee/",
@@ -960,7 +987,9 @@
       "notes": null,
       "actions": [],
       "history": [
-        "2026-09-25 title: Project Manager → Project Consultant & Manager (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
+        "2026-09-25 title: Project Manager → Project Consultant & Manager (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)",
+        "2026-10-06 title: Project Consultant & Manager → Educational Consultant (Brendan)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -968,25 +997,33 @@
       "slug": "brandon-bodnar",
       "name": "Brandon Bodnar",
       "group": "technology-and-design-partners",
-      "order": 5,
+      "order": 2,
       "tags": [],
       "role": "Principal Engineer",
       "affiliation": null,
       "location": null,
-      "linkedin": null,
+      "linkedin": "https://www.linkedin.com/in/bodnarbm/",
       "website": null,
-      "photo": null,
+      "photo": {
+        "master": "brandon-bodnar.webp",
+        "from": "direct",
+        "ref": "sent by Brendan, 6 October 2026, after a search of Drive, Gmail, Slack and the repository found none",
+        "approved": false,
+        "notes": "800x800 WebP, committed as received: no EXIF or location data. Its likely source is his LinkedIn profile picture (linkedin.com/in/bodnarbm).",
+        "upscale": 0.74
+      },
       "bioSource": {
         "from": "tracker",
         "trackerApproved": true
       },
       "form": null,
       "notes": null,
-      "actions": [
-        "[client] Send a headshot."
-      ],
+      "actions": [],
       "history": [
-        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/brandon-bodnar/ (6008fab)"
+        "2026-09-24 bio_page: — → https://augmented2.folkmark.com/team/brandon-bodnar/ (6008fab)",
+        "2026-10-06 photo: none → brandon-bodnar.webp (Brendan)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)",
+        "2026-10-07 linkedin: — → https://www.linkedin.com/in/bodnarbm/ (Brendan)"
       ]
     },
     {
@@ -994,7 +1031,7 @@
       "slug": "sonia-prusaitis",
       "name": "Sonia Prusaitis",
       "group": "technology-and-design-partners",
-      "order": 6,
+      "order": 7,
       "tags": [],
       "role": "Program Manager",
       "affiliation": null,
@@ -1024,7 +1061,8 @@
       "actions": [],
       "history": [
         "2026-09-24 status: — → on_site (32a0c09)",
-        "2026-09-25 title: — → Program Manager (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
+        "2026-09-25 title: — → Program Manager (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -1032,7 +1070,7 @@
       "slug": "abby-petre",
       "name": "Abby (Csaba) Petre",
       "group": "leadership",
-      "order": 5,
+      "order": 3,
       "tags": [],
       "role": "Head of Engineering",
       "affiliation": null,
@@ -1071,7 +1109,8 @@
         "2026-09-25 full_name: Abby Petre → Abby (Csaba) Petre (44275f4)",
         "2026-09-25 title: — → Head of Engineering (44275f4)",
         "2026-09-25 bio_page: — → https://augmented2.folkmark.com/team/abby-petre/ (44275f4)",
-        "2026-09-25 group: technology-and-design-partners → leadership (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)"
+        "2026-09-25 group: technology-and-design-partners → leadership (Joan Lee, comments on the \"website Edits\" slides; c40c8f8)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -1079,7 +1118,7 @@
       "slug": "katie-butler",
       "name": "Katie Butler",
       "group": "research-partners",
-      "order": 10,
+      "order": 7,
       "tags": [],
       "role": "Ground Truth Coding Consultant",
       "affiliation": null,
@@ -1109,7 +1148,8 @@
       "actions": [],
       "history": [
         "2026-09-25 status: held → on_site; group: — → research-partners, confirmed by Brendan (daf7a21)",
-        "2026-10-06 role: — → Ground Truth Coding Consultant (Joan Lee, Slack, 6 October 2026)"
+        "2026-10-06 role: — → Ground Truth Coding Consultant (Joan Lee, Slack, 6 October 2026)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -1155,7 +1195,7 @@
       "slug": "allison-rapoport",
       "name": "Allison Rapoport",
       "group": "technology-and-design-partners",
-      "order": 9,
+      "order": 1,
       "tags": [],
       "role": "Engineering Consultant",
       "affiliation": null,
@@ -1167,8 +1207,7 @@
         "from": "form",
         "ref": "https://drive.google.com/open?id=16kOPcBQcItb99LDwUHyYYaJo_HDvRTwN",
         "approved": false,
-        "upscale": 0.38,
-        "edgesFaded": "left 6%",
+        "upscale": 0.44,
         "notes": "1273x1636, as received through the form on 24 September 2026. The photo's left edge carries the shoulder and hair of whoever stood alongside, which the matte keeps joined to the portrait, so that edge keeps its fade rather than being stretched (tools/cutout-headshots.py); a crop without them would be cleaner."
       },
       "form": {
@@ -1182,12 +1221,12 @@
         "detail": "1273×1636, usable; used since her group was confirmed on 2026-09-25"
       },
       "notes": "Submitted the website info form. Group confirmed by Brendan on 25 September 2026; no title yet, so the tile shows none.",
-      "actions": [
-        "[joan] Optional: a headshot without a neighbour at the left edge; the matte keeps their hair joined to hers, so that edge fades."
-      ],
+      "actions": [],
       "history": [
         "2026-09-25 status: held → on_site; group: — → technology-and-design-partners, confirmed by Brendan (daf7a21)",
-        "2026-10-06 role: — → Engineering Consultant (Joan Lee, Slack, 6 October 2026)"
+        "2026-10-06 role: — → Engineering Consultant (Joan Lee, Slack, 6 October 2026)",
+        "2026-10-06 headshot: left fade removed by THE CROP, face 1.14x (within the shared limit) (Brendan)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -1401,7 +1440,7 @@
       "slug": "ann-marie-guzzi",
       "name": "Ann Marie Guzzi",
       "group": "strategy",
-      "order": 2,
+      "order": 1,
       "tags": [],
       "role": "Strategy Advisor",
       "affiliation": null,
@@ -1429,7 +1468,8 @@
       "notes": "Owns the website info form (Dalmatian Ops).",
       "actions": [],
       "history": [
-        "2026-10-06 status: held → on_site; group: — → strategy; role: — → Strategy Advisor (Joan Lee, Slack, 6 October 2026)"
+        "2026-10-06 status: held → on_site; group: — → strategy; role: — → Strategy Advisor (Joan Lee, Slack, 6 October 2026)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -1437,7 +1477,7 @@
       "slug": "nicolle-desilva",
       "name": "Nicolle DeSilva",
       "group": "research-partners",
-      "order": 11,
+      "order": 9,
       "tags": [],
       "role": "Community Engagement Coordinator, University of Pittsburgh",
       "affiliation": null,
@@ -1449,9 +1489,7 @@
         "from": "form",
         "ref": "https://drive.google.com/open?id=1SijERZGU6rLMEXGHA9VFlsFLePCFa_ja",
         "approved": false,
-        "upscale": 0.26,
-        "edgesFaded": "left 6%",
-        "edgesExtended": "right 3%",
+        "upscale": 0.3,
         "notes": "Sent through the website info form on 30 September 2026: a 1775x2360 phone selfie (\"staff selfie\") against a bright window. Committed with its EXIF block removed (it carried the phone's GPS position); the image data is untouched. Enlarged 1.18x and lowered 4% (THE REACH) to ground it; her hair meets the selfie's left edge above the chin, so that edge fades."
       },
       "form": {
@@ -1467,7 +1505,9 @@
       "notes": "The form files her as \"Nicolle Desilva\"; her name field says \"Nicolle DeSilva\", which is kept. Title as Joan gave it (\"University of Pittsburgh Community Engagement Coordinator\"), in the Research Partners' \"Title, Organisation\" order (decided by Brendan, 2026-10-06).",
       "actions": [],
       "history": [
-        "2026-10-06 status: held → on_site; group: — → research-partners; role: — → Community Engagement Coordinator, University of Pittsburgh (Joan Lee, Slack, 6 October 2026)"
+        "2026-10-06 status: held → on_site; group: — → research-partners; role: — → Community Engagement Coordinator, University of Pittsburgh (Joan Lee, Slack, 6 October 2026)",
+        "2026-10-06 headshot: left fade removed; face enlarged 1.35x, past the shared limit, by the client's choice (THE EXCEPTIONS in tools/cutout-headshots.py) (Brendan)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     },
     {
@@ -1475,7 +1515,7 @@
       "slug": "jake-maguire",
       "name": "Jake Maguire",
       "group": "strategy",
-      "order": 1,
+      "order": 3,
       "tags": [],
       "role": "Senior Advisor",
       "affiliation": null,
@@ -1503,7 +1543,39 @@
       "notes": "Submitted by Joan Lee; the file is named \"Jacob Maguire\", the form says \"Jake Maguire\", which is kept.",
       "actions": [],
       "history": [
-        "2026-10-06 status: held → on_site; group: — → strategy; role: — → Senior Advisor (Joan Lee, Slack, 6 October 2026)"
+        "2026-10-06 status: held → on_site; group: — → strategy; role: — → Senior Advisor (Joan Lee, Slack, 6 October 2026)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
+      ]
+    },
+    {
+      "id": 42,
+      "slug": "chris-daniels",
+      "name": "Chris Daniels",
+      "group": "strategy",
+      "order": 2,
+      "tags": [],
+      "role": "Finance Advisor",
+      "affiliation": null,
+      "location": null,
+      "linkedin": "https://www.linkedin.com/in/christopherdaniels/",
+      "website": null,
+      "photo": {
+        "master": "chris-daniels.jpg",
+        "from": "direct",
+        "ref": "https://drive.google.com/open?id=1GBPtr7hUSnRAS-bagsUgZf6MWAuSZpqR",
+        "approved": false,
+        "upscale": 0.28,
+        "edgesExtended": "bottom 2%",
+        "notes": "Uploaded by Brendan to the form's Drive folder on 6 October 2026 (\"Chris Daniels\") as a 1975x2116 PNG, fully opaque and 5.1 MB; committed as a JPEG at quality 95 with full-resolution colour, which is visually the same at a twelfth of the weight. No location data."
+      },
+      "bioSource": null,
+      "form": null,
+      "notes": "In the Strategy group per Sherry (via Brendan, 6 October 2026). No form entry. Title from Brendan, 6 October 2026: Chris is a fractional CFO; the client asked for \"Financial Advisor\", and Brendan chose \"Finance Advisor\" so it does not read as selling insurance. LinkedIn from Brendan the same day.",
+      "actions": [],
+      "history": [
+        "2026-10-06 status: — → on_site; group: — → strategy (Brendan)",
+        "2026-10-06 title: — → Finance Advisor; linkedin added (Brendan)",
+        "2026-10-07 order: in Sherry's order for Who We Are (alphabetical by first name; Leadership and the Education Fellows as she listed them) (Sherry Lachman)"
       ]
     }
   ]

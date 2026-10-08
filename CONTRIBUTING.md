@@ -1,7 +1,8 @@
 # Contributing
 
-The AugmentED marketing site. `README.md` describes what the site is and how it is
-built; this file is about where work goes and what breaks quietly.
+The AugmentED site, and the WordPress plugin that carries it to aerdf.org. `README.md`
+says what each is and where to start; this file is about where work goes and what breaks
+quietly.
 
 ## Two branches, and they are not the same kind of thing
 
@@ -18,94 +19,52 @@ serves that branch. So a merge to `main` publishes, and anything committed to
 only, and nothing but `main` publishes.
 
 It follows that **what must not be published has to be kept out of `_site` by the
-build**, in `copyDir()` in `tools/build-site.mjs`, not stripped from the branch
+build**, through `unserved()` in `tools/lib/sequences.mjs`, not stripped from the branch
 afterwards. That is where the design system's dev files (`_adherence.oxlintrc.json`,
-`_ds_manifest.json`, `readme.md` under `_ds/*/`) and its `.otf` sources are left out,
-and the parked Approach scrub's code and frames while `<approach-scrub>` is off the
-page. `6599b09` once removed the dev files from `gh-pages` by hand; the first
-automated publish put them back.
+`_ds_manifest.json`, `readme.md` under `_ds/*/`) and its `.otf` sources are left out. They
+were once removed from `gh-pages` by hand, and the first automated publish put them back.
 
 Nothing else is at risk: the build copies only `assets/`, `_ds/`, `support.js` and
-`CNAME` beside the pages it writes, so `tools/`, `docs/`, `wordpress-handoff/` and the
-masters never reach `_site`. Build locally to see exactly what will go out:
+`CNAME` beside the pages it writes, so `tools/`, `docs/`, `wordpress-handoff/` and
+`source-material/` never reach `_site`. Build locally to see exactly what will go out:
 
 ```sh
 node tools/build-site.mjs _site        # fails on any reference the artifact cannot satisfy
 ```
 
-## The master renders are not gone, only untracked
+## What is not in the repository
 
-`.gitignore` excludes `/project/` and `/Falling Blocks/`, and `README.md` says the
-masters live on the designer's machine — my machine. That is true of the working tree and false
-of the history: they were tracked until `8e830fe` stripped them, and every one of
-them is still reachable.
-
-```sh
-git archive 98d0243 project/renders/full-desk-anim-webp project/renders/approach-desk | tar -x
-```
-
-`98d0243` holds the 590-frame WebP move archive (`anim_desk_76_00091…00680.webp`,
-2048x1432, q90 with lossless alpha) and the six lossless beat PNGs. That is
-everything `tools/encode-approach.mjs` needs, so the Approach sequence can be
-re-encoded from a clean checkout without anyone's laptop. Restore, run the encoder,
-then delete `project/` — it is 88 MB and must not be committed back.
-
-Do not conclude that a render is unavailable until you have looked in the history
-for it.
-
-## The Approach section
-
-**Parked.** `<approach-scrub>` has not been on the page since `e0ae9d6` (2026-08-20),
-and while it is off the page the build leaves its code and frames out of `_site`, so
-none of it is published. It stays in the repository for the shortened sequence meant to
-replace it. `wordpress-handoff/sections/approach.md` predates that day's retune and says
-so at the top; refresh it before mounting the component again. Everything below applies
-the moment it returns.
-
-The frames are addressed by string concatenation, so no build tool can see them.
-`assets/approach/manifest.json` is the contract: the encoder writes it, the page
-reads it, and `tools/build-site.mjs` checks every frame in every cut against disk.
-Change frames and the manifest together, never one alone.
-
-Frame numbers are **Blender** frame numbers, not indices, so a file, the marker in
-`docs/approach-render-map.md` and the manifest all name the same thing. The stride
-grid is anchored on the first beat and grown outward, so moving the in-point does
-not renumber the sequence.
-
-The section's height in `assets/approach.css` is its scroll budget, and the scrub
-divides that budget among the moves in proportion to the render frames each covers.
-Height and frame count are therefore one setting in two files: encode more frames
-without raising the height and the whole section plays faster.
-
-When any of this changes, these describe it and go stale silently:
-
-- `wordpress-handoff/sections/approach.md` — a build spec that restates the constants, the
-  maths and the byte totals so the section can be rebuilt in another stack. It is written
-  to be built from, so a stale number there becomes someone's wrong implementation.
-- `wordpress-handoff/README.md` — the asset inventory ("The assets") and the
-  per-component porting sections.
-- `README.md` — frame count and sequence weight.
-- `docs/approach-render-map.md` — describes the Blender render, so an encode change
-  does not touch it. Its frame numbers are the source of truth for the beats.
+- **The render masters.** The bulk renders behind the hero and the closing blocks are on
+  Brendan's machine. They were never committed, so they are not in the history either.
+  `tools/encode-hero-bridge.mjs` and `tools/encode-falling-blocks.mjs` print the path they
+  want when they are missing, and every frame they produce is committed under `assets/`.
+- **The Shutterstock originals** behind the seven photographs on The Challenge and Our
+  Approach. The licence does not allow sharing the files, so they are downloaded by asset ID
+  into a git-ignored folder when a re-crop is needed; `source-material/README.md` lists the
+  IDs.
+- **What left in October 2026**, when the repository was cut down to the site and the
+  handoff: the Webflow export, superseded frames and photographs, most of the logo kit,
+  and the parked Approach scrub (its component, 244 frames, encoder, render map and build
+  spec). All of it is in the history; `git log --all -- <path>` finds the commit that
+  removed each.
 
 ## Verifying a change in a browser
 
 The page's runtime fetches React, ReactDOM and Babel from unpkg and renders the
-`<x-dc>` block client-side. Wherever unpkg cannot be reached (offline, or on a locked-down
-network), the custom elements never mount, and `approach-scrub` reports `offsetHeight` 0 or
-is absent entirely.
-The same happens on the published artifact, so it is the environment, not a
-regression.
+`<x-dc>` block client-side. Wherever unpkg cannot be reached (offline, or on a
+locked-down network), the custom elements never mount and report `offsetHeight` 0 or are
+absent entirely. That is the environment, not a regression.
 
-Test the components directly instead: a minimal page with `assets/approach.css`,
-`assets/approach.js` and the `<approach-scrub>` block lifted out of `index.html`
-exercises the real code with the real markup and needs no runtime. Drive Chromium with
-Playwright and read the component's own state (`bounds`, `moves`, `bits`, `head`) rather than
-judging by screenshot alone.
+Test the components directly instead: a minimal page with a component's stylesheet and
+script from `assets/` and its block lifted out of `index.html` exercises the real code with
+the real markup and needs no runtime. Drive Chromium with Playwright and read the
+component's own state (`head`, `bits`) rather than judging by screenshot alone.
+`tools/verify-wp-plugin.mjs` and `tools/audit-a11y.mjs` do the same against the exported
+pages, which carry no runtime at all.
 
-Measure claims about smoothness rather than asserting them. Instrumenting `paint()`
-to count ticks where the wanted frame was not resident is a better answer to "is the
-budget big enough" than any amount of reasoning about it.
+Measure claims about smoothness rather than asserting them. Instrumenting `paint()` to
+count ticks where the wanted frame was not resident is a better answer to "is the budget
+big enough" than any amount of reasoning about it.
 
 ## The team is a roster, not markup
 
@@ -117,8 +76,9 @@ tiles in `index.html` from it (between marker comments in each `.team-grid-3`), 
 run `node tools/build-team.mjs`, and it prints what else to run.
 
 What is published follows the roster too. The headshot encodes exist only for people on the
-page, and `tools/encode-images.mjs` deletes any others. Bios of people off the page are kept
-in `source-material/bios/` and never built. Held people's photographs are not committed
+page, and `tools/encode-images.mjs` deletes any others. Bios of people off the page, and of
+everyone outside Leadership (the one group the roster marks `"bios": true`), are kept in
+`source-material/bios/` and never built. Held people's photographs are not committed
 (this repository is public); the roster records their Drive file ID instead.
 `source-material/team/README.md` has the fields.
 
@@ -175,6 +135,10 @@ together.
 - **The hand-written half** is `augmented-ed.php`, `includes/`, `js/` and `css/host.css`.
   `host.css` reverts only leaks measured on aerdf.org. Add to it only what `verify-wp-plugin.mjs
   --live` reports, never speculatively, and never `all: revert`.
+- **Every change AERDF will receive gets a version.** Raise it in `augmented-ed.php` (the
+  header and `AUGMENTED_ED_VERSION`) and in `readme.txt` (Stable tag, and a changelog entry
+  saying what changed for them), and say which version START-HERE describes. The Plugins
+  screen is how anyone at AERDF knows which build they have.
 - **Two site files carry plugin requirements.** `assets/hero-bridge.js` `settle()` measures from
   the pin, and the hero copy's fade in `index.html` starts at `--hero-lead`. Both are no-ops
   here and load-bearing under a host header.

@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- exported from 73a0ceddb5a9657c9955bb82155e1ebcaa71e14d+dirty by tools/export-static.mjs; index.html sha256 de296f0f8f41c0ed -->
+<!-- exported from 9507d9087a66588b494b8022f798f99522119673+dirty by tools/export-static.mjs; index.html sha256 8ba500ad64abb12e -->
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -78,11 +78,13 @@
   .team-grid-3 img, .team-grid-3 > div > div:first-child { margin-bottom: var(--space-4) !important; }
   .team-grid-3 a[aria-label] { width: var(--icon-size); height: var(--icon-size); align-items: center; justify-content: center; flex: 0 0 auto; }
   .team-grid-3 a[aria-label] > * { width: var(--icon-size) !important; height: var(--icon-size) !important; min-width: var(--icon-size) !important; min-height: var(--icon-size) !important; font-size: var(--icon-size) !important; line-height: var(--icon-size) !important; display: block !important; margin: 0 !important; }
-  /* THE BIO TILES. Every card whose person has a bio (21 of them, in all four groups)
-     links to a page of their own at /team/<slug>/, and the whole tile is that link:
+  /* THE BIO TILES. Every card whose person has a bio and whose group shows bios — only
+     Leadership's five, by the roster (linksBio in tools/lib/team.mjs; 21 tiles across
+     four groups until October 2026) — links to a page of their own at /team/<slug>/, and
+     the whole tile is that link:
      photo, name, role and the space between them. One link per person, one tab stop, a target the size of the card.
 
-     The link is the design system's link button, the same "Read more ›" the papers and
+     The link is the design system's link button, the same "Open link ›" the papers and
      every "Learn more ›" on the site use. It was a bare semibold "Read bio" in body ink
      with no underline and no glyph, the only text link on the site that was not the
      system's, and at 64x16 it read as a caption rather than something to click.
@@ -96,7 +98,7 @@
      Raquel's LinkedIn icon is lifted above it, or the overlay would swallow the click.
 
      THE NAME IN THE LINK is a .visually-hidden span, so a screen reader hears "Read bio
-     of Sherry Lachman" instead of four identical "Read bio"s. Not an aria-label: the
+     of Sherry Lachman" instead of five identical "Read bio"s. Not an aria-label: the
      rules just above style every .team-grid-3 a[aria-label] as a 24px icon box (44px on
      a coarse pointer), and an aria-label here would shrink the link into one.
 
@@ -264,7 +266,7 @@
        rather than a setting: --hb-entry-keep holds the desk's top edge above the fold,
        which is the binding one on a laptop, and --hb-max holds the drawn width to 1.8x the
        1600 cut, which is the binding one from 1920x1080 up. Measured, the entry lands
-       between 1.07 and 1.51 — see §The hero animation in README.md for the table.
+       between 1.07 and 1.51 — see §The hero animation in docs/site.md for the table.
 
        What it spends is the sides: content spans plate x 0.000-0.999, so anything above 1
        crops the rack's left edge and the desk's right. At 1.07 that is a kiss, at 1.35 it
@@ -639,9 +641,15 @@
 
      The skip link is the header's first stop and invisible until it has focus. On the
      WordPress plugin it moves into the program bar with the rest of the header, where
-     the generator points it at the page's own content. */
-  .skip-link { position: absolute; left: var(--page-gutter); top: 0; z-index: 1000; transform: translateY(-120%); padding: var(--space-3) var(--space-4); background: var(--surface-page); color: var(--text-body); font-weight: var(--font-weight-semibold); text-decoration: underline; border-radius: var(--radius-button, 0.5rem); }
-  .skip-link:focus { transform: translateY(var(--space-3)); outline: 2px solid var(--brand-accent); outline-offset: 2px; }
+     the generator points it at the page's own content. It is hidden by clipping, not by
+     being moved above its box: on aerdf.org the bar sits under AERDF's own header, and a
+     link moved 120% up sat in plain view over that header on every page (measured in an
+     install trial, October 2026). Clipped, it is invisible wherever the bar is. */
+  .skip-link { position: absolute; left: var(--page-gutter); top: var(--space-3); z-index: 1000; padding: var(--space-3) var(--space-4); background: var(--surface-page); color: var(--text-body); font-weight: var(--font-weight-semibold); text-decoration: underline; border-radius: var(--radius-button, 0.5rem); }
+  /* clip-path alone, at full size: it hides the link and takes it out of hit-testing, and
+     its box stays the size it is focused at, which is what the target-size check measures. */
+  .skip-link:not(:focus) { clip-path: inset(50%); }
+  .skip-link:focus { outline: 2px solid var(--brand-accent); outline-offset: 2px; }
   /* <main> takes focus on a page change and from the skip link, as a place to start
      reading from, not as a control, so it draws no ring; and it stops under the header
      when scrolled to, as the plugin's page div does from host.css's [id] rule. */

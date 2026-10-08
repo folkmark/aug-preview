@@ -83,8 +83,8 @@ hero-bridge {
      already names as the point where a 2048 cut starts to be worth cutting. Raising this
      without raising the cut just makes the entry soft, and this render has grille mesh,
      cable bundles and LED rows in it. Note also that the sequence masters are NOT in this
-     repository's history, only nine beat plates at 98d0243, so a bigger cut means new
-     renders rather than a re-encode. */
+     repository or its history, so a bigger cut means new renders rather than a
+     re-encode. */
   --hb-max: 2880px;
 
   /* HOW MUCH ROOM THE HOST'S COPY NEEDS, measured from under the header. It is the one

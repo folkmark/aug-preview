@@ -425,7 +425,8 @@ add_action(
 			'url'        => get_permalink(),
 			'mainEntity' => augmented_ed_person( get_queried_object() ),
 		);
-		echo '<script type="application/ld+json">' . wp_json_encode( $ld, JSON_UNESCAPED_SLASHES ) . "</script>\n";
+		// JSON_HEX_TAG: a "</script>" typed into a role or bio would otherwise end the block.
+		echo '<script type="application/ld+json">' . wp_json_encode( $ld, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG ) . "</script>\n";
 	}
 );
 

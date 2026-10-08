@@ -52,7 +52,10 @@ function augmented_ed_sanitize_settings( $in ) {
 	}
 	$out['hubspot_portal']    = preg_replace( '/[^0-9]/', '', $out['hubspot_portal'] );
 	$out['hubspot_form']      = preg_replace( '/[^0-9a-f-]/i', '', $out['hubspot_form'] );
-	$out['hubspot_token']     = isset( $in['hubspot_token'] ) ? sanitize_text_field( $in['hubspot_token'] ) : '';
+	// The token field is always shown empty (the page never prints a saved secret), so empty
+	// means "keep the saved one"; only the Remove box clears it.
+	$token                    = isset( $in['hubspot_token'] ) ? trim( sanitize_text_field( $in['hubspot_token'] ) ) : '';
+	$out['hubspot_token']     = ! empty( $in['hubspot_token_clear'] ) ? '' : ( '' !== $token ? $token : $out['hubspot_token'] );
 	$out['privacy_url']       = isset( $in['privacy_url'] ) ? esc_url_raw( $in['privacy_url'] ) : '';
 	$out['subscription_type'] = isset( $in['subscription_type'] ) ? preg_replace( '/[^0-9]/', '', $in['subscription_type'] ) : '';
 	$out['offset_px']         = isset( $in['offset_px'] ) && '' !== trim( $in['offset_px'] ) ? (string) (float) $in['offset_px'] : '';
@@ -79,12 +82,16 @@ function augmented_ed_settings_page() {
 	$s     = augmented_ed_settings();
 	$field = function ( $key, $label, $help = '', $type = 'text' ) use ( $s ) {
 		printf(
-			'<tr><th scope="row"><label for="aug-%1$s">%2$s</label></th><td><input class="regular-text" type="%5$s" id="aug-%1$s" name="augmented_ed_settings[%1$s]" value="%3$s"><p class="description">%4$s</p></td></tr>',
+			'<tr><th scope="row"><label for="aug-%1$s">%2$s</label></th><td><input class="regular-text" type="%5$s" id="aug-%1$s" name="augmented_ed_settings[%1$s]" value="%3$s"%6$s><p class="description">%4$s</p></td></tr>',
 			esc_attr( $key ),
 			esc_html( $label ),
-			esc_attr( (string) $s[ $key ] ),
+			// A saved secret is never printed back into the page, and "new-password" stops the
+			// browser filling in the admin's own WordPress password, which would then be saved
+			// and sent to HubSpot as the token.
+			esc_attr( 'password' === $type ? '' : (string) $s[ $key ] ),
 			wp_kses_post( $help ),
-			esc_attr( $type )
+			esc_attr( $type ),
+			'password' === $type ? ' autocomplete="new-password"' : ''
 		);
 	};
 	echo '<div class="wrap"><h1>AugmentED</h1>';
@@ -99,7 +106,13 @@ function augmented_ed_settings_page() {
 	$field( 'consent_text', 'Consent sentence', 'Shown beside the checkbox and sent to HubSpot as the consent text. Default: "I agree to the privacy policy".' );
 	$field( 'privacy_url', 'Privacy policy URL', 'Links the words "privacy policy" in the consent sentence.', 'url' );
 	$field( 'subscription_type', 'Subscription type ID', 'Optional. The HubSpot subscription type the consent opts into.' );
-	$field( 'hubspot_token', 'Private app token', 'Optional today. Uses HubSpot\'s authenticated endpoint; likely needed after HubSpot ends support for its v3 APIs in September 2027.', 'password' );
+	$field( 'hubspot_token', 'Private app token', 'Optional today. Uses HubSpot\'s authenticated endpoint; likely needed after HubSpot ends support for its v3 APIs in September 2027.' . ( '' !== $s['hubspot_token'] ? ' <strong>A token is saved.</strong> Leave this empty to keep it.' : '' ), 'password' );
+	if ( '' !== $s['hubspot_token'] ) {
+		printf(
+			'<tr><th scope="row"></th><td><label><input type="checkbox" name="augmented_ed_settings[hubspot_token_clear]" value="1"> %s</label></td></tr>',
+			esc_html__( 'Remove the saved token', 'augmented-ed' )
+		);
+	}
 	echo '</table>';
 
 	echo '<h2>' . esc_html__( 'Layout', 'augmented-ed' ) . '</h2><table class="form-table" role="presentation">';
@@ -155,14 +168,22 @@ function augmented_ed_status_panel() {
 	if ( ! $groups ) {
 		$rows[] = array( 'warning', __( 'Team', 'augmented-ed' ), __( 'Not imported yet (Tools → AugmentED team).', 'augmented-ed' ) );
 	} else {
+		// An update can change the team (a new title, a new person) without anyone reading the
+		// changelog, and nothing on the page would say so: the import records a fingerprint of
+		// the team data it ran from, and a different one here means this version has news.
+		$last = get_option( 'augmented_ed_import' );
+		$now  = augmented_ed_data( 'team' ) ? md5( (string) wp_json_encode( augmented_ed_data( 'team' ) ) ) : '';
+		if ( is_array( $last ) && ! empty( $last['source'] ) && $now !== $last['source'] ) {
+			$rows[] = array( 'warning', __( 'Team', 'augmented-ed' ), __( 'This version of the plugin has team changes the site does not have yet. Tools → AugmentED team → Dry run, then Import.', 'augmented-ed' ) );
+		}
 		$counts = augmented_ed_group_counts();
 		foreach ( $groups as $slug => $t ) {
 			$n      = $counts[ $slug ] ?? array( 'shown' => 0, 'archived' => 0 );
 			$rows[] = array(
 				'ok',
 				$t->name,
-				sprintf( _n( '%d person on the page', '%d people on the page', $n['shown'], 'augmented-ed' ), $n['shown'] )
-				. ( $n['archived'] ? ' ' . sprintf( __( '(%d archived)', 'augmented-ed' ), $n['archived'] ) : '' ),
+				sprintf( /* translators: %d: people shown on Who We Are. */ _n( '%d person on the page', '%d people on the page', $n['shown'], 'augmented-ed' ), $n['shown'] )
+				. ( $n['archived'] ? ' ' . sprintf( /* translators: %d: archived people. */ __( '(%d archived)', 'augmented-ed' ), $n['archived'] ) : '' ),
 			);
 		}
 	}
@@ -221,7 +242,7 @@ add_action(
 		printf(
 			'<div class="notice notice-%s"><p><strong>%s</strong> %s</p></div>',
 			$r['ok'] ? 'success' : 'error',
-			esc_html( $r['ok'] ? __( 'HubSpot accepted the test submission.', 'augmented-ed' ) : sprintf( __( 'HubSpot refused the test submission (%d).', 'augmented-ed' ), $r['status'] ) ),
+			esc_html( $r['ok'] ? __( 'HubSpot accepted the test submission.', 'augmented-ed' ) : sprintf( /* translators: %d: HubSpot's HTTP status code. */ __( 'HubSpot refused the test submission (%d).', 'augmented-ed' ), $r['status'] ) ),
 			esc_html( $r['message'] . ( $r['errors'] ? ' ' . wp_json_encode( $r['errors'] ) : '' ) )
 		);
 	}
@@ -240,7 +261,7 @@ function augmented_ed_tools_page() {
 
 	echo '<h2>' . esc_html__( '1. The pages', 'augmented-ed' ) . '</h2><p>' . esc_html__( 'Creates any of the five AugmentED pages that do not exist yet, as drafts, with their templates and Yoast titles: "AugmentED" at /augmented/, and The Challenge, Our Approach, Who We Are and Follow Our Work under it. Nothing is public until you publish them — and publishing /augmented/ replaces the redirect that address has today. Move or rename them freely; the links follow the templates.', 'augmented-ed' ) . '</p>';
 	if ( is_array( $created ) ) {
-		echo '<div class="notice notice-success inline"><p>' . esc_html( $created ? sprintf( __( 'Created: %s.', 'augmented-ed' ), implode( ', ', array_keys( $created ) ) ) : __( 'Every template already has a page; nothing was created.', 'augmented-ed' ) ) . '</p></div>';
+		echo '<div class="notice notice-success inline"><p>' . esc_html( $created ? sprintf( /* translators: %s: the pages created, comma-separated. */ __( 'Created: %s.', 'augmented-ed' ), implode( ', ', array_keys( $created ) ) ) : __( 'Every template already has a page; nothing was created.', 'augmented-ed' ) ) . '</p></div>';
 	}
 	echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 	wp_nonce_field( 'augmented_ed_create_pages' );
@@ -258,23 +279,31 @@ function augmented_ed_tools_page() {
 		)
 	) . '</p>';
 	if ( $last ) {
-		echo '<p>' . esc_html( sprintf( __( 'Last import: %1$s ago — %2$s.', 'augmented-ed' ), human_time_diff( $last['time'] ), implode( ', ', array_map( function ( $k, $v ) { return "$v $k"; }, array_keys( $last['counts'] ), $last['counts'] ) ) ) ) . '</p>';
+		echo '<p>' . esc_html( sprintf( /* translators: %1$s: time since, e.g. "2 hours"; %2$s: counts, e.g. "34 create, 2 attach". */ __( 'Last import: %1$s ago — %2$s.', 'augmented-ed' ), human_time_diff( $last['time'] ), implode( ', ', array_map( function ( $k, $v ) { return "$v $k"; }, array_keys( $last['counts'] ), $last['counts'] ) ) ) ) . '</p>';
 	}
 	echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 	wp_nonce_field( 'augmented_ed_import' );
 	$key = augmented_ed_settings()['title_meta_key'];
+	// After a dry run the form comes back as it was sent, so the Import that follows does what
+	// the dry run showed. It used to come back at its defaults: someone who chose Drafts, ran
+	// a dry run and then clicked Import published everyone.
+	$prev = is_array( $report ) && ! empty( $report['dry_run'] ) ? (array) ( $report['args'] ?? array() ) : array();
+	$prev = array_merge( array( 'status' => 'publish', 'attach' => '', 'overwrite_content' => false, 'force' => false ), $prev );
 	echo '<input type="hidden" name="action" value="augmented_ed_import"><table class="form-table" role="presentation">'
-		. '<tr><th scope="row">' . esc_html__( 'New people are', 'augmented-ed' ) . '</th><td><select name="status"><option value="publish">' . esc_html__( 'Published', 'augmented-ed' ) . '</option><option value="draft">' . esc_html__( 'Drafts', 'augmented-ed' ) . '</option></select></td></tr>'
-		. '<tr><th scope="row">' . esc_html__( 'Attach', 'augmented-ed' ) . '</th><td><input class="regular-text" name="attach" placeholder="slug-one, slug-two"><p class="description">' . esc_html__( 'Only if a dry run reports a slug that already exists and you have checked it is the same person.', 'augmented-ed' ) . '</p></td></tr>'
-		. '<tr><th scope="row">' . esc_html__( 'Options', 'augmented-ed' ) . '</th><td><label><input type="checkbox" name="overwrite_content" value="1"> ' . esc_html__( 'Replace existing posts\' content with the AugmentED bio', 'augmented-ed' ) . '</label><br><label><input type="checkbox" name="force" value="1"> ' . esc_html__( 'Update cards edited in WordPress since the last import', 'augmented-ed' ) . '</label>'
-		. ( $key ? '<br>' . esc_html( sprintf( __( 'Roles are also written to AERDF\'s "%s" field where it is empty.', 'augmented-ed' ), $key ) ) : '' ) . '</td></tr></table>';
+		. '<tr><th scope="row">' . esc_html__( 'New people are', 'augmented-ed' ) . '</th><td><select name="status"><option value="publish"' . selected( $prev['status'], 'publish', false ) . '>' . esc_html__( 'Published', 'augmented-ed' ) . '</option><option value="draft"' . selected( $prev['status'], 'draft', false ) . '>' . esc_html__( 'Drafts', 'augmented-ed' ) . '</option></select></td></tr>'
+		. '<tr><th scope="row">' . esc_html__( 'Attach', 'augmented-ed' ) . '</th><td><input class="regular-text" name="attach" placeholder="slug-one, slug-two" value="' . esc_attr( $prev['attach'] ) . '"><p class="description">' . esc_html__( 'Only if a dry run reports a slug that already exists and you have checked it is the same person. Separate several with commas.', 'augmented-ed' ) . '</p></td></tr>'
+		. '<tr><th scope="row">' . esc_html__( 'Options', 'augmented-ed' ) . '</th><td><label><input type="checkbox" name="overwrite_content" value="1"' . checked( $prev['overwrite_content'], true, false ) . '> ' . esc_html__( 'Replace existing posts\' content with the AugmentED bio', 'augmented-ed' ) . '</label><br><label><input type="checkbox" name="force" value="1"' . checked( $prev['force'], true, false ) . '> ' . esc_html__( 'Update cards edited in WordPress since the last import', 'augmented-ed' ) . '</label>'
+		. ( $key ? '<br>' . esc_html( sprintf( /* translators: %s: a post meta key. */ __( 'Roles are also written to AERDF\'s "%s" field where it is empty.', 'augmented-ed' ), $key ) ) : '' ) . '</td></tr></table>';
 	submit_button( __( 'Dry run', 'augmented-ed' ), 'secondary', 'dry_run', false );
 	echo ' ';
 	submit_button( __( 'Import', 'augmented-ed' ), 'primary', 'import', false );
 	echo '</form>';
 
 	if ( is_array( $report ) ) {
-		echo '<h2>' . esc_html( $report['dry_run'] ? __( 'Dry run — nothing was changed', 'augmented-ed' ) : __( 'Imported', 'augmented-ed' ) ) . '</h2>';
+		echo '<h2>' . esc_html( $report['dry_run'] ? __( 'Dry run — nothing was changed', 'augmented-ed' ) : ( $report['errors'] ? __( 'Nothing imported', 'augmented-ed' ) : __( 'Imported', 'augmented-ed' ) ) ) . '</h2>';
+		if ( $report['dry_run'] && ! $report['errors'] ) {
+			echo '<p>' . esc_html( 'draft' === $prev['status'] ? __( 'Import with the options above will create new people as drafts.', 'augmented-ed' ) : __( 'Import with the options above will create new people published.', 'augmented-ed' ) ) . '</p>';
+		}
 		foreach ( $report['errors'] as $e ) {
 			echo '<div class="notice notice-error inline"><p>' . esc_html( $e ) . '</p></div>';
 		}
@@ -310,6 +339,12 @@ add_action(
 				'title_meta_key'    => augmented_ed_settings()['title_meta_key'],
 				'force'             => ! empty( $_POST['force'] ),
 			)
+		);
+		$report['args'] = array(
+			'status'            => isset( $_POST['status'] ) && 'draft' === $_POST['status'] ? 'draft' : 'publish',
+			'attach'            => implode( ', ', $attach ),
+			'overwrite_content' => ! empty( $_POST['overwrite_content'] ),
+			'force'             => ! empty( $_POST['force'] ),
 		);
 		set_transient( 'augmented_ed_report_' . get_current_user_id(), $report, 600 );
 		wp_safe_redirect( admin_url( 'tools.php?page=augmented-ed-team' ) );
