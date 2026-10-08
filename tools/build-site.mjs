@@ -17,6 +17,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { unserved, readManifest, heroFrames, approachFrames, fallingFrames } from './lib/sequences.mjs';
+import { renderMarkdown, handoffPage } from './lib/handoff-page.mjs';
 import { readBios as readBioFiles, lede as bioLede, staticHelper, bioBody, BIO_PROFILE_CSS, BIO_PROFILE_DESKTOP_CSS } from './lib/bio-page.mjs';
 import { readRoster, checkTeam, statusOf } from './lib/team.mjs';
 
@@ -645,8 +646,41 @@ const notFound = publish(home)
   .replace('<head>', `<head>\n<script>window.__siteBase = ${JSON.stringify(basePath)};</script>`);
 fs.writeFileSync(path.join(outDir, '404.html'), notFound);
 
+// ---------------------------------------------------------------- developer handoff
+
+// An unlinked, noindex page for the developer who installs the WordPress plugin: START-HERE.md
+// and DECISIONS.md, so they can be sent an address instead of attachments. Built from those
+// two files alone — not from index.html — so tools/export-static.mjs and the plugin made from
+// it never contain it, and it is left out of the sitemap below on purpose. The plugin zip is
+// not served here (it carries the licensed Avenir files; CLAUDE.md). See lib/handoff-page.mjs.
+const HANDOFF_SLUG = 'aerdf-developer-handoff';
+const handoffDir = path.join(root, 'wordpress-handoff');
+const handoffLink = (u) =>
+  u === 'README.md' ? 'https://github.com/folkmark/aug-preview/blob/main/wordpress-handoff/README.md'
+  : u === 'DECISIONS.md' ? '#decisions'
+  : u;
+fs.mkdirSync(path.join(outDir, HANDOFF_SLUG), { recursive: true });
+fs.writeFileSync(
+  path.join(outDir, HANDOFF_SLUG, 'index.html'),
+  handoffPage({
+    title: 'AugmentED on aerdf.org: developer handoff',
+    intro:
+      '<p><strong>For the developer installing the AugmentED plugin on aerdf.org.</strong> This page is not linked from the site and is not indexed by search engines.</p>' +
+      '<p>The plugin zip (<code>augmented-ed.zip</code>) is <strong>not</strong> on this page. It includes licensed Avenir font files, so AugmentED sends it to you directly. Install it on WP Engine staging first.</p>',
+    toc: [
+      { id: 'part-install', label: 'Install' },
+      { id: 'decisions', label: 'Open decisions' },
+    ],
+    sections: [
+      `<section id="part-install">\n${renderMarkdown(fs.readFileSync(path.join(handoffDir, 'START-HERE.md'), 'utf8'), { link: handoffLink })}\n</section>`,
+      `<section id="decisions">\n${renderMarkdown(fs.readFileSync(path.join(handoffDir, 'DECISIONS.md'), 'utf8'), { prefix: 'd-', link: handoffLink })}\n</section>`,
+    ],
+  })
+);
+
 // robots.txt and sitemap.xml: every page a reader can land on — the root, the four
-// routes and the bios — and none of the moved-slug stubs, which are noindex redirects.
+// routes and the bios — and none of the moved-slug stubs, which are noindex redirects,
+// nor the developer handoff page above.
 // Only with a CNAME, for the reason locate() gives; a sitemap of paths is not a sitemap.
 if (ORIGIN) {
   const urls = ['', ...PAGES.map((p) => p.slug + '/'), ...bios.map((b) => `team/${b.slug}/`)].map((rel) => `${ORIGIN}${basePath}${rel}`);
@@ -770,7 +804,7 @@ function checkFile(rel) {
 }
 
 const built = ['index.html', '404.html', ...PAGES.map((p) => `${p.slug}/index.html`),
-  ...bios.map((b) => `team/${b.slug}/index.html`)];
+  ...bios.map((b) => `team/${b.slug}/index.html`), `${HANDOFF_SLUG}/index.html`];
 built.forEach(checkFile);
 
 for (const need of ['.nojekyll', 'support.js', '_ds', 'assets']) {
