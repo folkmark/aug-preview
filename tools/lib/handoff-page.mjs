@@ -1,14 +1,14 @@
-// The developer handoff page: wordpress-handoff/START-HERE.md and DECISIONS.md rendered as
-// one unlinked, noindex page, so the person installing the plugin on aerdf.org can be sent an
+// The developer handoff page: wordpress-handoff/START-HERE.md rendered as one unlinked,
+// noindex page, so the person installing the plugin on aerdf.org can be sent an
 // address instead of attachments.
 //
 // This is deliberately not part of the site. Nothing links to it, it is not in the sitemap,
-// and it is built from the two Markdown files alone, not from index.html — so the static
+// and it is built from that Markdown file alone, not from index.html — so the static
 // export (tools/export-static.mjs) and the WordPress plugin built from it never contain it.
-// It names no secret: both files are already public in this repository. "Unlinked" keeps it
+// It names no secret: the file is already public in this repository. "Unlinked" keeps it
 // out of search results and navigation; it does not make it private.
 //
-// The renderer is the small subset those two files use — headings, paragraphs, flat ordered,
+// The renderer is the small subset the handoff docs use — headings, paragraphs, flat ordered,
 // unordered and task lists (with one level of nesting), pipe tables, fenced code blocks,
 // `code`, **bold**, *italic* and links — and nothing more. A file that grows past it should
 // fail loudly here rather than render wrongly, so an unsupported construct (a deeper nested
@@ -43,7 +43,7 @@ function inline(src, link) {
 }
 
 /** Markdown (the subset above) to HTML. `prefix` namespaces heading ids; `link` rewrites hrefs. */
-export function renderMarkdown(md, { prefix = '', link = (u) => u } = {}) {
+export function renderMarkdown(md, { prefix = '', link = (u) => u, shift = 1 } = {}) {
   const lines = md.replace(/\r\n/g, '\n').split('\n');
   const out = [];
   const used = new Map();
@@ -77,8 +77,10 @@ export function renderMarkdown(md, { prefix = '', link = (u) => u } = {}) {
     if ((m = line.match(/^(#{1,4}) +(.*)$/))) {
       flush();
       const level = m[1].length;
-      // Each file's own H1 becomes the section heading, one level down from the page title.
-      const tag = `h${Math.min(level + 1, 5)}`;
+      // By default each file's own H1 becomes the section heading, one level down from the
+      // page title. A caller that drops the file's H1 (because the page title says the same)
+      // passes shift 0, so its "##" sections are the page's h2s and no level is skipped.
+      const tag = `h${Math.min(level + shift, 5)}`;
       out.push(`<${tag} id="${id(m[2])}">${inline(m[2], link)}</${tag}>`);
       continue;
     }
@@ -109,7 +111,7 @@ export function renderMarkdown(md, { prefix = '', link = (u) => u } = {}) {
         let subOrdered = false;
         i++;
         // Continuation lines are indented under the item. One level of nested list is
-        // allowed (START-HERE's "Rolling back" uses it); a list nested inside that throws.
+        // allowed; a list nested inside that throws.
         while (i < lines.length && /^ {2,}\S/.test(lines[i])) {
           const sm = lines[i].match(/^ {2,3}([-*]|\d+\.) +(.*)$/);
           if (sm) {

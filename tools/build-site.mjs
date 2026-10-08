@@ -661,43 +661,38 @@ fs.writeFileSync(path.join(outDir, '404.html'), notFound);
 // ---------------------------------------------------------------- developer handoff
 
 // An unlinked, noindex page for the developer who installs the WordPress plugin: START-HERE.md
-// and DECISIONS.md, so they can be sent an address instead of attachments. Built from those
-// two files alone — not from index.html — so tools/export-static.mjs and the plugin made from
-// it never contain it, and it is left out of the sitemap below on purpose. The plugin zip is
-// not served here (it carries the licensed Avenir files; CLAUDE.md). See lib/handoff-page.mjs.
+// alone, so they can be sent an address instead of attachments. Since October 2026 it is only
+// the install and what they need to know, written warmly; AERDF's decisions (DECISIONS.md) and
+// the reference behind the install (README.md, "Behind the install guide") stay in the
+// repository and are linked, not carried. Built from that one file, not from index.html, so
+// tools/export-static.mjs and the plugin made from it never contain it, and it is left out of
+// the sitemap below on purpose. The plugin zip is not served here (it carries the licensed
+// Avenir files; CLAUDE.md). See lib/handoff-page.mjs.
 const HANDOFF_SLUG = 'aerdf-developer-handoff';
 const handoffDir = path.join(root, 'wordpress-handoff');
-// Links between the two files become links within the page; the handoff README, which the
-// page does not carry, goes to GitHub. START-HERE's headings keep GitHub's anchors (no
-// prefix), so "START-HERE.md#3-connect-the-follow-form" lands on the same heading here.
+const GH = 'https://github.com/folkmark/aug-preview/blob/main/wordpress-handoff/';
+// Links to the other handoff files go to GitHub; START-HERE's own anchors keep GitHub's form
+// (no prefix), so a link to "START-HERE.md#3-connect-the-follow-form" lands here.
 const handoffLink = (u) => {
   const [file, hash] = u.split('#');
-  if (file === 'README.md') return `https://github.com/folkmark/aug-preview/blob/main/wordpress-handoff/README.md${hash ? `#${hash}` : ''}`;
-  if (file === 'DECISIONS.md') return hash ? `#d-${hash}` : '#decisions';
-  if (file === 'START-HERE.md') return hash ? `#${hash}` : '#part-install';
+  if (file === 'START-HERE.md') return hash ? `#${hash}` : '#content';
+  if (/^[A-Z-]+\.md$/.test(file)) return `${GH}${file}${hash ? `#${hash}` : ''}`;
   return u;
 };
-// The contents list is START-HERE's own sections, in its order, then the decisions: a
-// developer coming back to the page after launch is looking for Updating or Rolling back,
-// and two links ("Install", "Open decisions") made them scroll for it.
 const startHere = fs.readFileSync(path.join(handoffDir, 'START-HERE.md'), 'utf8');
-const handoffToc = [
-  ...[...startHere.matchAll(/^## (.+)$/gm)].map((m) => ({ id: slug(m[1]), label: m[1] })),
-  { id: 'decisions', label: 'Decisions for AERDF' },
-];
 fs.mkdirSync(path.join(outDir, HANDOFF_SLUG), { recursive: true });
 fs.writeFileSync(
   path.join(outDir, HANDOFF_SLUG, 'index.html'),
   handoffPage({
-    title: 'AugmentED on aerdf.org: developer handoff',
+    title: 'Installing AugmentED on aerdf.org',
     intro:
-      '<p><strong>For the developer installing the AugmentED plugin on aerdf.org.</strong> The plugin zip comes from AugmentED directly, not from this page, because it includes licensed fonts.</p>' +
-      '<p>This page is not linked from the site or indexed by search engines.</p>',
-    toc: handoffToc,
-    sections: [
-      `<section id="part-install">\n${renderMarkdown(startHere, { link: handoffLink })}\n</section>`,
-      `<section id="decisions">\n${renderMarkdown(fs.readFileSync(path.join(handoffDir, 'DECISIONS.md'), 'utf8'), { prefix: 'd-', link: handoffLink })}\n</section>`,
-    ],
+      '<p>Brendan sends you the plugin zip directly; it isn\'t on this page.</p>' +
+      '<p>This page is just for you: it isn\'t linked from the site or shown in search results.</p>',
+    // The guide's own sections, in its order: someone coming back after launch is looking
+    // for "Later on" or "If something looks wrong", not scrolling for it.
+    toc: [...startHere.matchAll(/^## (.+)$/gm)].map((m) => ({ id: slug(m[1]), label: m[1] })),
+    // The file's own H1 repeats the page title, so it is dropped here.
+    sections: [`<section id="part-install">\n${renderMarkdown(startHere.replace(/^# .*\n/, ''), { link: handoffLink, shift: 0 })}\n</section>`],
   })
 );
 
