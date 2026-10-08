@@ -8,7 +8,7 @@ aerdf.org's own theme, with AERDF's header and footer and AugmentED's navigation
 beneath them, the way Assessment for Good's pages work. The plugin also adds the AugmentED
 team to AERDF's existing Team post type and connects the Follow form to HubSpot.
 
-Set aside about an hour on each environment. This page describes plugin version **1.1.4**.
+Set aside about an hour on each environment. This page describes plugin version **1.1.5**.
 
 If anything is unclear or looks wrong at any point, please just ask Brendan at
 [brendan@folkmark.com](mailto:brendan@folkmark.com). No question is too small.
@@ -46,7 +46,7 @@ through steps 1, 2 and 5 while these are being sorted out:
 ### 1. Upload and activate
 
 Plugins → **Add Plugin** → **Upload Plugin** → choose the zip → **Install Now** → **Activate
-Plugin**. The Plugins screen should now show **AugmentED 1.1.4**.
+Plugin**. The Plugins screen should now show **AugmentED 1.1.5**.
 
 The zip is about 22 MB because it carries every image and animation frame. If WordPress says
 "The link you followed has expired" or mentions `upload_max_filesize`, the zip is just larger

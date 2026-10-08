@@ -143,10 +143,19 @@ function augmented_ed_serves_bio( $post ) {
 	return augmented_ed_is_member( $post ) && augmented_ed_has_bio( $post ) && ! augmented_ed_is_archived( $post ) && 'augmented' === augmented_ed_bio_mode( $post );
 }
 
-/** The bundled headshot for a member, as a URL into the plugin, or ''. */
+/**
+ * The bundled headshot for a member, as a URL into the plugin, or ''.
+ *
+ * The key is checked against the shape every bundled filename has (lowercase words joined by
+ * hyphens) rather than passed through sanitize_file_name(). That function is a filter, and it
+ * is for naming uploads: WP-Stateless's cache-busting, on aerdf.org, prefixes a random hash
+ * to whatever it returns ('abby-petre' became 'e00a1a6f-abby-petre'), so every lookup missed
+ * and Who We Are fell back to featured images. Reported by AERDF's developer on their dev
+ * site, October 2026; the plugin's harness now runs with a filter that does the same.
+ */
 function augmented_ed_bundled_photo( $post ) {
-	$photo = sanitize_file_name( (string) get_post_meta( $post->ID, 'augmented_ed_photo', true ) );
-	if ( '' === $photo ) {
+	$photo = (string) get_post_meta( $post->ID, 'augmented_ed_photo', true );
+	if ( ! preg_match( '/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $photo ) ) {
 		return '';
 	}
 	$rel = 'team/' . $photo . '.webp';

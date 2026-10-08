@@ -96,6 +96,11 @@ export function setup() {
   fs.writeFileSync(path.join(WP, 'wp-content/mu-plugins/aug-verify.php'), `<?php
 add_filter( 'augmented_ed_hubspot_endpoint', function () { return 'http://127.0.0.1:${MOCK_PORT}/submit'; } );
 add_filter( 'http_request_host_is_external', '__return_true' );
+// What WP-Stateless's cache-busting does on aerdf.org: a random prefix on every name that passes
+// through sanitize_file_name(). Before 1.1.5 the plugin looked its headshots up through that
+// filter and found none of them on AERDF's dev site; with this always on, every headshot check
+// below fails if anything goes back to doing so.
+add_filter( 'sanitize_file_name', function ( $f ) { return substr( md5( $f . microtime() ), 0, 8 ) . '-' . $f; } );
 `);
   fs.writeFileSync(path.join(WP, 'wp-config.php'), `<?php
 define( 'DB_NAME', 'wp' ); define( 'DB_USER', '' ); define( 'DB_PASSWORD', '' ); define( 'DB_HOST', '' );
