@@ -17,7 +17,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { unserved, readManifest, heroFrames, fallingFrames } from './lib/sequences.mjs';
-import { renderMarkdown, handoffPage } from './lib/handoff-page.mjs';
+import { renderMarkdown, handoffPage, slug } from './lib/handoff-page.mjs';
 import { readBios as readBioFiles, lede as bioLede, staticHelper, bioBody, BIO_PROFILE_CSS, BIO_PROFILE_DESKTOP_CSS } from './lib/bio-page.mjs';
 import { readRoster, checkTeam, statusOf } from './lib/team.mjs';
 import { CARDS, bioCards, ogPath } from './build-og.mjs';
@@ -667,24 +667,35 @@ fs.writeFileSync(path.join(outDir, '404.html'), notFound);
 // not served here (it carries the licensed Avenir files; CLAUDE.md). See lib/handoff-page.mjs.
 const HANDOFF_SLUG = 'aerdf-developer-handoff';
 const handoffDir = path.join(root, 'wordpress-handoff');
-const handoffLink = (u) =>
-  u === 'README.md' ? 'https://github.com/folkmark/aug-preview/blob/main/wordpress-handoff/README.md'
-  : u === 'DECISIONS.md' ? '#decisions'
-  : u;
+// Links between the two files become links within the page; the handoff README, which the
+// page does not carry, goes to GitHub. START-HERE's headings keep GitHub's anchors (no
+// prefix), so "START-HERE.md#3-connect-the-follow-form" lands on the same heading here.
+const handoffLink = (u) => {
+  const [file, hash] = u.split('#');
+  if (file === 'README.md') return `https://github.com/folkmark/aug-preview/blob/main/wordpress-handoff/README.md${hash ? `#${hash}` : ''}`;
+  if (file === 'DECISIONS.md') return hash ? `#d-${hash}` : '#decisions';
+  if (file === 'START-HERE.md') return hash ? `#${hash}` : '#part-install';
+  return u;
+};
+// The contents list is START-HERE's own sections, in its order, then the decisions: a
+// developer coming back to the page after launch is looking for Updating or Rolling back,
+// and two links ("Install", "Open decisions") made them scroll for it.
+const startHere = fs.readFileSync(path.join(handoffDir, 'START-HERE.md'), 'utf8');
+const handoffToc = [
+  ...[...startHere.matchAll(/^## (.+)$/gm)].map((m) => ({ id: slug(m[1]), label: m[1] })),
+  { id: 'decisions', label: 'Decisions for AERDF' },
+];
 fs.mkdirSync(path.join(outDir, HANDOFF_SLUG), { recursive: true });
 fs.writeFileSync(
   path.join(outDir, HANDOFF_SLUG, 'index.html'),
   handoffPage({
     title: 'AugmentED on aerdf.org: developer handoff',
     intro:
-      '<p><strong>For the developer installing the AugmentED plugin on aerdf.org.</strong> This page is not linked from the site and is not indexed by search engines.</p>' +
-      '<p>The plugin zip (<code>augmented-ed.zip</code>) is <strong>not</strong> on this page. It includes licensed Avenir font files, so AugmentED sends it to you directly. Install it on WP Engine staging first.</p>',
-    toc: [
-      { id: 'part-install', label: 'Install' },
-      { id: 'decisions', label: 'Open decisions' },
-    ],
+      '<p><strong>For the developer installing the AugmentED plugin on aerdf.org.</strong> The plugin zip comes from AugmentED directly, not from this page, because it includes licensed fonts.</p>' +
+      '<p>This page is not linked from the site or indexed by search engines.</p>',
+    toc: handoffToc,
     sections: [
-      `<section id="part-install">\n${renderMarkdown(fs.readFileSync(path.join(handoffDir, 'START-HERE.md'), 'utf8'), { link: handoffLink })}\n</section>`,
+      `<section id="part-install">\n${renderMarkdown(startHere, { link: handoffLink })}\n</section>`,
       `<section id="decisions">\n${renderMarkdown(fs.readFileSync(path.join(handoffDir, 'DECISIONS.md'), 'utf8'), { prefix: 'd-', link: handoffLink })}\n</section>`,
     ],
   })

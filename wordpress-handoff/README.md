@@ -71,9 +71,92 @@ bug, and I would like to hear about it.
 
 ## Decisions
 
-[DECISIONS.md](DECISIONS.md). Three block launch — the address (and what happens to the
-existing AugmentED page), the HubSpot form, and the Avenir licence — and the rest have
-working defaults.
+AERDF's are in [DECISIONS.md](DECISIONS.md), which the developer handoff page shows: three
+block launch (the address and the existing AugmentED page, the HubSpot form, the Avenir
+licence), and the rest have defaults. AugmentED's own are below. They are settled, and were
+taken off the developer's page in October 2026 because there is nothing in them for AERDF to
+do; the behaviour each describes is what the plugin ships.
+
+### AugmentED's own decisions
+
+#### Program bar on phones — AugmentED
+
+- **Default:** it stays at the top while scrolling, as the AugmentED site's header does.
+  Settings → AugmentED can make it scroll away with AERDF's header, as Assessment for Good's
+  bar does on phones.
+
+#### Two menus on a phone — AugmentED
+
+- AERDF's header has its own menu button, directly above AugmentED's.
+- **Default:** AugmentED's button carries a visible word, "Menu", beside its bars.
+- Alternatives: no word; a different word; no AugmentED menu on phones at all (the
+  AugmentED pages would then only be reachable through AERDF's menu and in-page links).
+
+#### The home page's first screen — AugmentED
+
+- Under AERDF's alert bar and header, the AugmentED content starts 189px down on a laptop
+  (185px on a phone), where the site's starts at 96px. The hero behaves as on the site once
+  AERDF's header has scrolled away: its geometry is measured from where it pins, and its
+  copy's fade waits for it.
+- The first screen before that scroll shows AERDF's header, the bar, and the hero's
+  headline, copy and buttons, with the desk below the fold. Screenshots are in the
+  verification report.
+
+#### Archived members — AugmentED, with AERDF
+
+- AugmentED's roster marks people who have left the page as **Archived**, instead of deleting
+  them. Six are archived today (four Education Fellows who left in September, two Technology
+  Partners who left in August); none was ever on aerdf.org, so the import only reports them
+  as absent.
+- **Default:** an archived team post stays published, off the Who We Are grid, with its page
+  redirected to Who We Are and left out of the sitemap. It still appears wherever AERDF
+  lists every team post (the `/team/` archive, search). To take one out of those too, set it
+  to Draft; the plugin never changes a post's status itself.
+- The tick box is plain post meta, not a WordPress tag or category, so there is no public
+  page listing who has been archived.
+
+#### Who edits the team after launch — AugmentED
+
+- **Default:** WordPress. Edits there are kept: the import skips any card edited since.
+- If the repository stays the source instead, re-run the import after each change (with
+  "Update cards edited in WordPress since the last import" ticked for cards also edited in
+  WordPress).
+- A person added in WordPress without a bundled headshot shows their featured image, or a
+  placeholder square.
+
+#### Required fields on the form — AugmentED
+
+- **Default:** first name, last name, email, message and consent, as the AugmentED site's
+  source intends. (The live site requires nothing: its framework drops the attribute.)
+- "Which best describes you?" defaults to Educator, as on the site.
+- The nine options stay in one column, as the site renders them. The site's source asks for
+  a responsive grid that its runtime never applied.
+
+#### Keyboard focus on the form — decided
+
+- The design system draws no focus state on inputs. The plugin adds a visible outline for
+  keyboard focus on the form's fields and controls.
+
+#### Preview-domain redirects — AugmentED
+
+- `augmented2.folkmark.com` links are in circulation. Once the production address is live,
+  point the preview domain at it. This is a DNS or GitHub Pages change, not a WordPress one.
+
+#### Delivering the zip — AugmentED
+
+- **Default:** download the `augmented-ed-plugin` artifact from the latest run of the
+  "Publish site to gh-pages" workflow **on `main`**, never from a pull request's run (those
+  build unmerged changes under the same version number). The run's summary gives the plugin
+  version, the commit and the zip's SHA-256: send the zip with the SHA-256, and say which
+  version START-HERE describes.
+- **Keep a copy of every zip sent.** Artifacts from `main` expire after 90 days, and the
+  previous zip is how AERDF rolls an update back.
+- The repository is public, so anyone signed in to GitHub can download those artifacts too.
+  The Avenir files inside are already public in the repository (`_ds/`) and on the preview
+  site, so this adds no exposure. If the licence says otherwise, it affects those as well.
+  The alternative is to drop the upload from CI and build the zip locally
+  (`node tools/build-wp-plugin.mjs --assemble dist --zip`, which writes
+  `dist/augmented-ed.zip`).
 
 ## The target environment: aerdf.org
 
@@ -183,7 +266,7 @@ hero ships only frames 276–417, the ones it plays.
   licensed Avenir files. This repository is public, though, so anyone signed in to GitHub can
   download a run's artifacts. That adds nothing to what the repository and the preview site
   already serve, since the same font files are committed under `_ds/`. See
-  [DECISIONS.md](DECISIONS.md#delivering-the-zip--brendan).
+  [Delivering the zip](#delivering-the-zip--augmented).
 
 ## How the plugin fits aerdf.org
 
