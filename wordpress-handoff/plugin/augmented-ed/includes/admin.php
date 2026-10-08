@@ -160,6 +160,18 @@ function augmented_ed_status_panel() {
 			$rows[] = array( 'warning', $label, __( 'No published page uses this template yet.', 'augmented-ed' ) );
 		} elseif ( count( $ids ) > 1 ) {
 			$rows[] = array( 'warning', $label, __( 'More than one published page uses this template; links go to the oldest.', 'augmented-ed' ) );
+		} elseif ( url_to_postid( get_permalink( $ids[0] ) ) !== (int) $ids[0] ) {
+			// The page is published but its address opens something else: a top-level Who We
+			// Are at /team/ is aerdf.org's team archive (see templates.php, the Parent menus).
+			$rows[] = array(
+				'warning',
+				$label,
+				sprintf(
+					/* translators: %s: the page's address. */
+					__( 'Its address, %s, opens something else. Edit the page and set Page Attributes → Parent to the AugmentED page.', 'augmented-ed' ),
+					'<code>' . esc_html( wp_make_link_relative( get_permalink( $ids[0] ) ) ) . '</code>'
+				),
+			);
 		} else {
 			$rows[] = array( 'ok', $label, '<a href="' . esc_url( get_permalink( $ids[0] ) ) . '">' . esc_html( get_permalink( $ids[0] ) ) . '</a>' );
 		}

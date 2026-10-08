@@ -666,6 +666,27 @@ export async function checks() {
     await c.close();
   }
 
+  // 9b. Parent menus (includes/templates.php). WordPress lists only published pages as
+  // parents, and the AugmentED home starts as a draft, so before 1.1.6 saving Who We Are in the
+  // classic editor or Quick Edit submitted "(no parent)" and moved it to /team/ — aerdf.org's
+  // team archive, an empty page. Found on AERDF's dev site. With the home a draft, its edit
+  // screen must still offer and select it, Quick Edit must list drafts, and a page whose
+  // address opens something else must show in the status panel.
+  {
+    const idOf = (k) => wp('post', 'list', '--post_type=page', '--meta_key=_wp_page_template', `--meta_value=augmented-ed/${k}.php`, '--post_status=any', '--field=ID').split('\n')[0];
+    const home = idOf('home');
+    const team = idOf('team');
+    wp('post', 'update', home, '--post_status=draft');
+    const box = wp('--context=admin', 'eval', `require_once ABSPATH . 'wp-admin/includes/admin.php'; require_once ABSPATH . 'wp-admin/includes/meta-boxes.php'; ob_start(); page_attributes_meta_box( get_post( ${team} ) ); echo ob_get_clean();`);
+    const quick = wp('--context=admin', 'eval', `echo wp_json_encode( apply_filters( 'quick_edit_dropdown_pages_args', array( 'post_status' => 'publish' ), false ) );`);
+    wp('post', 'update', home, '--post_status=publish');
+    check('parent menus: a draft AugmentED home stays the selected parent, on the edit screen and in Quick Edit', new RegExp(`value="${home}"[^>]*selected`).test(box) && /"draft"/.test(quick), quick);
+    wp('post', 'update', team, '--post_parent=0');
+    const panel = wp('--context=admin', 'eval', `require_once ABSPATH . 'wp-admin/includes/admin.php'; ob_start(); augmented_ed_status_panel(); echo ob_get_clean();`);
+    wp('post', 'update', team, `--post_parent=${home}`);
+    check('status: a published page whose address opens something else (Who We Are at /team/) is flagged', /opens something else/.test(panel) && /\/team\//.test(panel));
+  }
+
   // 10. Archiving from WordPress: the Archived box in the AugmentED card, ticked and unticked
   // by hand, as an AERDF editor would. Raquel Romano, because she has a bio (since October
   // 2026 only Leadership does, and Sherry and Caitlin keep AERDF's pages), so the redirect is
