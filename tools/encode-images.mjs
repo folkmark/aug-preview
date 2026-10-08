@@ -12,8 +12,8 @@
 // cuts each person out and frames them first, and the jobs here read its output — see
 // THE HEADSHOTS in the job list. Every target below is set from the box the image
 // actually occupies, at roughly three device pixels per CSS pixel, which is what a phone
-// at DPR 3 can resolve and no more. The approach frames have their own encoder,
-// tools/encode-approach.mjs.
+// at DPR 3 can resolve and no more. The hero and falling-block frames have their own
+// encoders.
 
 import path from 'node:path';
 import fs from 'node:fs';
@@ -22,8 +22,9 @@ import { readRoster, surfacedWithPhoto } from './lib/team.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 // Every source this reads is committed under source-material/image-sources — see that
-// directory's README — so the whole run works from a clean checkout with nothing
-// restored. The icons used to sit apart, under assets/icons-rigtest, which meant their
+// directory's README — except the seven Shutterstock originals, which the licence keeps
+// out of the repository; the README says how to fetch them. Without them the run
+// re-encodes everything else. The icons used to sit apart, under assets/icons-rigtest, which meant their
 // lossless plates were copied into the published site by tools/build-site.mjs and served
 // to nobody: assets/ ships wholesale, and no page has ever referenced a source plate.
 // A job whose source is absent is still skipped rather than killing the run, so a
@@ -53,39 +54,19 @@ const HEADSHOTS = onPage.map((slug) =>
   ({ in: `team-cutout/${slug}.webp`, out: `team/${slug}.webp`, width: 512, square: true, flatten: TILE_BACKGROUND }));
 
 const JOBS = [
-  // Full-width photography in a 3/2 box, sized for ~640 CSS px on desktop.
-  //
-  // NEITHER OF THESE IS ON THE SITE. Nothing references them — not index.html, not
-  // assets/*.js, not support.js, not the design system, not the built _site — and
-  // assets/ ships wholesale, so the two of them are 164 KB published and served to
-  // nobody. That is the same failure the icons note above describes, in a different
-  // directory. Checked with grep across every referencing file type, September 2026.
-  //
-  // They are kept and graded rather than dropped because dropping them is a content
-  // decision and not this file's to take: both are strong editorial frames, and if one
-  // is ever placed it should already match the rest. Whoever settles it either wires
-  // them into a page or deletes these two jobs and the two masters with them.
-  //
-  // They are also the low-key end of the set and are meant to be: classroom-morning is a
-  // dawn classroom at mean luminance 59, student-notes a library at 93, against a stock
-  // set that averages ~145. Neither is brightened — see THE GRADE above. classroom-morning
-  // takes the white-point lift only (it was inside the warmth band at +18 already), and
-  // student-notes, the warmest frame after student-notebook at +30, is cooled to +18 by
-  // pulling red down rather than lifting blue.
-  { in: 'images/classroom-morning.png', out: 'images/classroom-morning.webp', width: 1264, grade: [1.048, 1.048, 1.048] },
-  { in: 'images/student-notes.png',     out: 'images/student-notes.webp',     width: 1264, grade: [0.889, 1, 1] },
-
   // The seven portrait photographs on The Challenge and Our Approach, in a 4/5 box, two
   // tiers each.
   //
   // All seven are licensed Shutterstock photography, read straight from the full-resolution
-  // originals in stock-photos-aug/large/ and cropped by the box on each job.
+  // originals in stock-photos-aug/large/ and cropped by the box on each job. Those
+  // originals are not committed (the licence does not allow sharing the files), so that
+  // directory is git-ignored: source-material/README.md lists the asset IDs to download.
   //
   // Two of them were generated frames until September 2026: they arrived in the build
   // hotlinked to a generation CDN under a user-scoped path, at 1856x2304 and 6.4-9.2 MB
   // apiece, and that bucket is not a home for production images, so their masters were
-  // committed here rather than fetched. Those masters now sit in image-sources/unused/
-  // beside the superseded hero frames. Nothing in this set is generated or hotlinked any
+  // committed here rather than fetched. Those masters are in the repository's history,
+  // with the superseded hero frames. Nothing in this set is generated or hotlinked any
   // more, and the whole row can be re-framed from originals.
   //
   // Reading the stock frames from the original rather than from a cropped master is
@@ -119,8 +100,7 @@ const JOBS = [
   // then 320 at 800, 406 at 992, and a flat 600 from 1422 up, where the container caps.
   //
   // 1264 is 2.1x the 600px desktop box, and above the 1053 a 390px phone at DPR 3 asks
-  // for. (It is also what the two unreferenced 3/2 frames above ship at, but they are not
-  // in this grid and never were — do not read that as corroboration.) 800 is the
+  // for. 800 is the
   // smallest round width that still covers every DPR-1 viewport including the 719px peak,
   // and a 430px phone at DPR 2 (774).
   //
@@ -132,11 +112,15 @@ const JOBS = [
   // and 1264.
   //
   // --------------------------------------------------------------------------------
-  // THE GRADE. This applies to all twelve photographs this encoder writes into
+  // THE GRADE. This applies to all ten photographs this encoder writes into
   // assets/images/, not only the seven in this block, so it is written out once here.
   // --------------------------------------------------------------------------------
   //
-  // The twelve come from four places — two editorial stock frames, seven Shutterstock
+  // It was solved over twelve. Two of them, classroom-morning and student-notes, were
+  // never placed on a page and left the repository in October 2026; the measurements and
+  // targets below are the twelve's and were not re-solved for the ten.
+  //
+  // The twelve came from four places — two editorial stock frames, seven Shutterstock
   // selects, three phone snapshots from school visits — and they did not agree on white
   // balance. Measured over each one's shipped crop, mean(R) - mean(B) ran -17 to +37,
   // which is four visibly different renderings of white in one set. `grade` is the fix: a
@@ -157,9 +141,9 @@ const JOBS = [
   // MEAN LUMINANCE IS NOT A TARGET, and this is the decision most likely to be "fixed" by
   // someone later. It runs 59 to 163 across the twelve and that spread is content, not
   // exposure: classroom-morning measures 59 because it is a dawn classroom deliberately
-  // dark, student-notes 93 because it is a library at a warm low key. They are the two
-  // best photographs on the site and normalising them to the stock set's ~145 would
-  // destroy both. What a viewer reads as "the same light" is where the white point sits,
+  // dark, student-notes 93 because it is a library at a warm low key. Normalising them to
+  // the stock set's ~145 would have destroyed both, and the same holds for the darker
+  // frames that remain. What a viewer reads as "the same light" is where the white point sits,
   // not where the average sits, which is why the axis above is p99.8 and not the mean.
   //
   // Three implementation details that are load-bearing:
@@ -209,35 +193,44 @@ const JOBS = [
   { in: 'stock-photos-aug/large/shutterstock_2763377205.jpg', out: 'images/student-notebook.webp',   width: 1264, crop: [2661, 0, 5104, 6336], grade: [0.933, 1, 1] },
   { in: 'stock-photos-aug/large/shutterstock_2763377205.jpg', out: 'images/student-notebook-m.webp', width: 800,  crop: [2661, 0, 5104, 6336], grade: [0.933, 1, 1] },
 
-  // Two engineers at adjacent desks, one of them reading code off the monitor in front of
-  // him, for the row about the layer in between. 3333x5000 and portrait, so the box is the
-  // full width and all 862px of the vertical slack goes above it. Bottom-anchored fills the
-  // frame with the two of them and keeps the code on screen legible; anchoring at the top
-  // instead cedes a third of the box to a flat curtain and drops the saturation to 13.
-  // Measured +18 on mean(R) - mean(B) as it stands, inside the set's band, so no grade.
-  { in: 'stock-photos-aug/large/shutterstock_2176735867.jpg', out: 'images/engineers-screens.webp',   width: 1264, crop: [0, 862, 3333, 4138] },
-  { in: 'stock-photos-aug/large/shutterstock_2176735867.jpg', out: 'images/engineers-screens-m.webp', width: 800,  crop: [0, 862, 3333, 4138] },
+  // Programmers at a long shared desk, one of them looking across at a neighbour, for the
+  // row about the layer in between. SQUARE, not 4:5: the client widened the frame to take in
+  // the whole row of them, and 1:1 is as wide as the column holds (see its <img> in
+  // index.html, which moves with this). Getty 2222113845. This and the four after it are
+  // licensed Getty photography, read from stock-photos-aug/getty-licensed/, which is
+  // git-ignored: the licence does not let a public repository offer the full-resolution
+  // file, so only the encoded WebP below is committed, and a clean checkout skips these
+  // ten jobs and keeps the committed output. Each source there is already cut to the box
+  // it ships in (exactly 4:5, 1:1 for Engineers screens, 11:10 for Build the capabilities), so the jobs carry no
+  // `crop`: the framing was chosen in the client's review file, not here. To re-encode,
+  // put the licensed originals' crops back at those paths.
+  // Measured +7 on mean(R) - mean(B), under the band, with a white point of 246: +1.6% lift
+  // and blue down to land +17.
+  { in: 'stock-photos-aug/getty-licensed/2222113845.jpg', out: 'images/engineers-screens.webp',   width: 1264, grade: [1.016, 1.016, 0.925] },
+  { in: 'stock-photos-aug/getty-licensed/2222113845.jpg', out: 'images/engineers-screens-m.webp', width: 800, grade: [1.016, 1.016, 0.925] },
 
-  // A teacher leaning in over one student's textbook with another beside her, for the row
-  // about what the backlash would cost. 5153x3435; the box is set to keep the teacher whole
-  // — she is at the right edge of the frame — and both students with her.
-  { in: 'stock-photos-aug/large/shutterstock_1136122199.jpg', out: 'images/teacher-two-students.webp',   width: 1264, crop: [928, 0, 2767, 3435] },
-  { in: 'stock-photos-aug/large/shutterstock_1136122199.jpg', out: 'images/teacher-two-students-m.webp', width: 800,  crop: [928, 0, 2767, 3435] },
+  // A student at her desk, a hand to her forehead over an open textbook, for the row about
+  // what the backlash would cost. Getty 1324921324 (the alternate, 1324921320, was not
+  // chosen). The darkest and coolest of the five: R-B +5 with a white point of 231, so it
+  // takes the full +8% lift (the cap; it still only reaches 247) and blue down to land +17.
+  { in: 'stock-photos-aug/getty-licensed/1324921324.jpg', out: 'images/teacher-two-students.webp',   width: 1264, grade: [1.08, 1.08, 0.972] },
+  { in: 'stock-photos-aug/getty-licensed/1324921324.jpg', out: 'images/teacher-two-students-m.webp', width: 800, grade: [1.08, 1.08, 0.972] },
 
-  // Colleagues working a wall of sticky notes, for Define the role. 8869x5913; the box is
-  // on the man writing and the notes under his hand, keeping two of the group behind him.
-  { in: 'stock-photos-aug/large/shutterstock_2670025731.jpg', out: 'images/define-the-role.webp',   width: 1264, crop: [2483, 0, 4763, 5913] },
-  { in: 'stock-photos-aug/large/shutterstock_2670025731.jpg', out: 'images/define-the-role-m.webp', width: 800,  crop: [2483, 0, 4763, 5913] },
+  // A teacher leaning over three women at a table in a laboratory classroom, a whiteboard of
+  // formulae behind them, for Define the role. Getty 1044232206, the full height of
+  // the frame, 4:5 around the three of them and the teacher. R-B +16 and a white point of
+  // 254: inside the band, so no grade.
+  { in: 'stock-photos-aug/getty-licensed/1044232206.jpg', out: 'images/define-the-role.webp',   width: 1264 },
+  { in: 'stock-photos-aug/getty-licensed/1044232206.jpg', out: 'images/define-the-role-m.webp', width: 800 },
 
-  // Someone leaning in to point at a laptop for three colleagues round it, a chalkboard
-  // behind them, for Build the capabilities. 4480x6720; the box takes the middle of the
-  // 1159px of slack rather than either end — anchored at the top it carries a band of empty
-  // cream wall above the board, and at the bottom it trades that for foreground table
-  // clutter. The coolest Shutterstock frame in the set at +5, and its white point sat low
-  // at 239, so it takes both axes: +4.5% of lift and blue down to land +17. Measured on
-  // the encoded file, luminance 140 -> 145, saturation 21 -> 22, clipping 0.0% -> 0.1%.
-  { in: 'stock-photos-aug/large/shutterstock_2354739045.jpg', out: 'images/build-capabilities.webp',   width: 1264, crop: [0, 580, 4480, 5561], grade: [1.045, 1.045, 0.961] },
-  { in: 'stock-photos-aug/large/shutterstock_2354739045.jpg', out: 'images/build-capabilities-m.webp', width: 800,  crop: [0, 580, 4480, 5561], grade: [1.045, 1.045, 0.961] },
+  // A teacher in a yellow dress talking with a group of sixth-form students, for Build the
+  // capabilities. Getty 1469940271. THIS ONE IS 11:10, not 4:5: the client asked for the
+  // frame wide enough to take in more of the group, and this is as wide as the column
+  // holds. The source is 6010x5464 of the 8192x5464 original, exactly 1.1, and the
+  // aspect-ratio on its <img> in index.html moves with it — change one and the other.
+  // Graded from +3 to +17 by pulling blue down; its white point was 251, so no lift.
+  { in: 'stock-photos-aug/getty-licensed/1469940271.jpg', out: 'images/build-capabilities.webp',   width: 1264, grade: [1, 1, 0.91] },
+  { in: 'stock-photos-aug/getty-licensed/1469940271.jpg', out: 'images/build-capabilities-m.webp', width: 800, grade: [1, 1, 0.91] },
 
   // Five colleagues behind a glass wall of sticky notes, adding to it from the far side, for
   // Co-design the tools. 4144x5588, bottom-anchored on all 444px of slack, which is
@@ -249,17 +242,22 @@ const JOBS = [
   // is written to keep them apart for a screen reader too. If you re-crop either one,
   // re-read the other.
   //
-  // Graded from +7 to +17. Its white point was already at 255 so it takes no lift, only
-  // blue down. It replaced a 7680x4050 frame of a table spread with printed material
+  // SQUARE since 8 October 2026 (the client's review): the crop below is the top of the
+  // 4:5 one cut to 4144x4144, so the frame loses its bottom fifth. The aspect-ratio on its
+  // <img> in index.html moves with this.
+  //
+  // Graded from +5 to +17 on the square (it was +7 on the 4:5). Its white point is 255 so it
+  // takes no lift, only blue down. It replaced a 7680x4050 frame of a table spread with printed material
   // (shutterstock_2380531861, still in large/ if it is ever wanted back).
-  { in: 'stock-photos-aug/large/shutterstock_2129383421.jpg', out: 'images/codesign-tools.webp',   width: 1264, crop: [0, 444, 4144, 5144], grade: [1, 1, 0.932] },
-  { in: 'stock-photos-aug/large/shutterstock_2129383421.jpg', out: 'images/codesign-tools-m.webp', width: 800,  crop: [0, 444, 4144, 5144], grade: [1, 1, 0.932] },
+  { in: 'stock-photos-aug/large/shutterstock_2129383421.jpg', out: 'images/codesign-tools.webp',   width: 1264, crop: [0, 1444, 4144, 4144], grade: [1, 1, 0.915] },
+  { in: 'stock-photos-aug/large/shutterstock_2129383421.jpg', out: 'images/codesign-tools-m.webp', width: 800,  crop: [0, 1444, 4144, 4144], grade: [1, 1, 0.915] },
 
-  // A teacher between two students at a laptop, for Test, learn, begin again. 3952x5532 and
-  // the one portrait original here, so the crop is vertical and the only choice is which end
-  // to lose: the box sits on the bottom edge, trimming 626px of ceiling above their heads.
-  { in: 'stock-photos-aug/large/shutterstock_2757155555.jpg', out: 'images/test-in-classrooms.webp',   width: 1264, crop: [0, 626, 3952, 4906] },
-  { in: 'stock-photos-aug/large/shutterstock_2757155555.jpg', out: 'images/test-in-classrooms-m.webp', width: 800,  crop: [0, 626, 3952, 4906] },
+  // A teacher leaning over a student at a laptop, both smiling at the screen, for Test,
+  // learn, begin again. Getty 1440718884, 4:5 on the two of them at the
+  // full height of the frame. The warmest of the five at +27: cooled to +17 by pulling red down, the 12-point cap
+  // binding from above as it does on student-notebook.
+  { in: 'stock-photos-aug/getty-licensed/1440718884.jpg', out: 'images/test-in-classrooms.webp',   width: 1264, grade: [0.945, 1, 1] },
+  { in: 'stock-photos-aug/getty-licensed/1440718884.jpg', out: 'images/test-in-classrooms-m.webp', width: 800, grade: [0.945, 1, 1] },
 
   // The three co-design action shots in the Our Current Work row, one school each. 1080
   // is set off the card, which is the narrowest photographic box on the site: 351 CSS px
@@ -400,11 +398,9 @@ const JOBS = [
   // arm uses. That is 3.3x the one element a reader deliberately points at. The generosity
   // is free: 4.18 MB of plate becomes 50 KB for the set.
   //
-  // These live in assets/approach/ beside the arch frames, which is two families in one
-  // directory but is safe: tools/encode-approach.mjs only unlinks /^ap\d{4}m?\.webp$/, so
-  // re-encoding that sequence leaves these alone, and its manifest check walks the manifest
-  // to disk rather than the other way round. The name is the Blender render's, which is
-  // that directory's own convention.
+  // These live in assets/approach/, which held the Approach scrub's frames beside them
+  // until the scrub left the repository in October 2026. The path is in the plugin's
+  // templates and the site's markup, so it stayed. The name is the Blender render's.
   { in: 'icons/cyc01_role_0001.png',         out: 'approach/cyc01_role_0001.webp',         width: 320, alpha: true },
   { in: 'icons/cyc02_capabilities_0001.png', out: 'approach/cyc02_capabilities_0001.webp', width: 320, alpha: true },
   { in: 'icons/cyc03_applications_0002.png', out: 'approach/cyc03_applications_0002.webp', width: 320, alpha: true },
@@ -427,9 +423,9 @@ const JOBS = [
   // (og:image:width/height), which lets a scraper lay out the card before it has fetched it.
   //
   // The source reaches up out of image-sources/ into the brand kit, which no other job does.
-  // That is the lesser evil: source-material/brand-logos/ is the kit exactly as AERDF
-  // supplied it, and copying a lockup into image-sources/ to avoid one `../` would fork it —
-  // two files to keep in step, and no way to tell which is canonical. The colour horizontal
+  // That is the lesser evil: source-material/brand-logos/ keeps this one file of the kit
+  // exactly as AERDF supplied it, and copying it into image-sources/ to avoid one `../`
+  // would fork it — two files to keep in step, and no way to tell which is canonical. The colour horizontal
   // lockup is the one that carries "supported by aerdf", which is the variant the client
   // asked for by name.
   //
@@ -598,7 +594,7 @@ for (const dir of ['team']) {
 
 // Print the band THE GRADE above holds the photography to, measured off the files just
 // written rather than off the pipeline that wrote them. Every images/ output of this
-// encoder is one of the twelve photographs — the headshots go to team/, the plates to
+// encoder is one of the ten photographs — the headshots go to team/, the plates to
 // illustrations/ and approach/ — so no job needs to declare itself.
 //
 // Why print and not assert: each grade is a constant solved by hand against one master,

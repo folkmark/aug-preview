@@ -9,9 +9,10 @@
 // out of search results and navigation; it does not make it private.
 //
 // The renderer is the small subset those two files use — headings, paragraphs, flat ordered,
-// unordered and task lists, pipe tables, fenced code blocks, `code`, **bold**, *italic* and
-// links — and nothing more. A file that grows past it should fail loudly here rather than
-// render wrongly, so an unsupported construct (a nested list, blockquote or raw HTML) throws.
+// unordered and task lists (with one level of nesting), pipe tables, fenced code blocks,
+// `code`, **bold**, *italic* and links — and nothing more. A file that grows past it should
+// fail loudly here rather than render wrongly, so an unsupported construct (a deeper nested
+// list, a blockquote or raw HTML) throws.
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -104,15 +105,28 @@ export function renderMarkdown(md, { prefix = '', link = (u) => u } = {}) {
         const mm = lines[i].match(/^([-*]|\d+\.) +(.*)$/);
         if (!mm || /\d/.test(mm[1]) !== ordered) break;
         let text = mm[2];
+        const sub = [];
+        let subOrdered = false;
         i++;
-        // Continuation lines are indented under the item.
+        // Continuation lines are indented under the item. One level of nested list is
+        // allowed (START-HERE's "Rolling back" uses it); a list nested inside that throws.
         while (i < lines.length && /^ {2,}\S/.test(lines[i])) {
-          if (/^ {2,}([-*]|\d+\.) /.test(lines[i])) throw new Error(`handoff-page: nested list on line ${i + 1}`);
-          text += ' ' + lines[i].trim();
+          const sm = lines[i].match(/^ {2,3}([-*]|\d+\.) +(.*)$/);
+          if (sm) {
+            subOrdered = /\d/.test(sm[1]);
+            sub.push(sm[2]);
+          } else if (/^ {4,}([-*]|\d+\.) /.test(lines[i])) {
+            throw new Error(`handoff-page: list nested more than one level on line ${i + 1}`);
+          } else if (sub.length) {
+            sub[sub.length - 1] += ' ' + lines[i].trim();
+          } else {
+            text += ' ' + lines[i].trim();
+          }
           i++;
         }
+        const subHtml = sub.length ? `<${subOrdered ? 'ol' : 'ul'}>${sub.map((t) => `<li>${inline(t, link)}</li>`).join('')}</${subOrdered ? 'ol' : 'ul'}>` : '';
         const task = text.match(/^\[( |x)\] +(.*)$/);
-        items.push(task ? `<li class="task"><span aria-hidden="true">${task[1] === 'x' ? '☑' : '☐'}</span> ${inline(task[2], link)}</li>` : `<li>${inline(text, link)}</li>`);
+        items.push(task ? `<li class="task"><span aria-hidden="true">${task[1] === 'x' ? '☑' : '☐'}</span> ${inline(task[2], link)}${subHtml}</li>` : `<li>${inline(text, link)}${subHtml}</li>`);
       }
       i--;
       out.push(`<${ordered ? 'ol' : 'ul'}>${items.join('')}</${ordered ? 'ol' : 'ul'}>`);

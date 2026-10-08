@@ -16,7 +16,7 @@ import crypto from 'node:crypto';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { unserved, readManifest, heroFrames, approachFrames, fallingFrames } from './lib/sequences.mjs';
+import { unserved, readManifest, heroFrames, fallingFrames } from './lib/sequences.mjs';
 import { renderMarkdown, handoffPage } from './lib/handoff-page.mjs';
 import { readBios as readBioFiles, lede as bioLede, staticHelper, bioBody, BIO_PROFILE_CSS, BIO_PROFILE_DESKTOP_CSS } from './lib/bio-page.mjs';
 import { readRoster, checkTeam, statusOf } from './lib/team.mjs';
@@ -195,21 +195,13 @@ function locate(html, slug) {
 // published. A hand edit to gh-pages does not survive the next push.
 //
 // - The design system's dev files: its lint config, its component manifest and its
-//   readme. They were stripped from gh-pages by hand once (6599b09) and came back with
-//   the first automated publish, because nothing here knew to leave them out.
+//   readme. They were once stripped from gh-pages by hand and came back with the first
+//   automated publish, because nothing here knew to leave them out.
 // - Its .otf fonts, 538 KB. tokens/fonts.css loads only the .woff2 files; the .otf
 //   copies are the design system's source files, and nothing served names them.
-// - The Approach scrub, while it is parked. Its element left index.html in e0ae9d6;
-//   its code, stylesheet, manifest and 244 frames (10.8 MB) stayed in the repository
-//   for the shortened sequence meant to replace it, and kept being published with no
-//   page to load them. Keyed to the element rather than listed as dead, so mounting
-//   <approach-scrub> again ships its files again with no second edit here — and the
-//   reference check below then verifies every frame, as it did before. The four
-//   cyc0* thumbnails in assets/approach/ are the cycle wheel's, used on every page,
-//   and are not matched.
 //
-// The list itself (UNSERVED) is built next to the copy below, because whether the scrub
-// is mounted is read off index.html, which is not loaded yet at this point.
+// The list itself (UNSERVED) lives in tools/lib/sequences.mjs, which the WordPress
+// plugin's packager reads too.
 function copyDir(from, to) {
   fs.mkdirSync(to, { recursive: true });
   for (const entry of fs.readdirSync(from, { withFileTypes: true })) {
@@ -312,7 +304,7 @@ const problems = [];
 fs.writeFileSync(path.join(outDir, 'index.html'), publish(locate(home, '')));
 
 // See copyDir() for why each of these stays out of the build.
-const UNSERVED = unserved(home);
+const UNSERVED = unserved();
 for (const file of COPY_FILES) fs.copyFileSync(path.join(root, file), path.join(outDir, file));
 for (const dir of COPY_DIRS) copyDir(path.join(root, dir), path.join(outDir, dir));
 
@@ -700,15 +692,13 @@ fs.writeFileSync(path.join(outDir, '.nojekyll'), '');
 
 // The falling-block frames are addressed by string concatenation inside
 // assets/falling-blocks.js, from a base and a frame count the page carries as
-// attributes — so, exactly like the approach frames, no literal reference to any of
+// attributes — so, exactly like the hero's frames, no literal reference to any of
 // them exists for the src/href scan to find. The encoder writes a manifest beside the
 // frames recording what it actually produced; read it once here, and refsIn checks the
 // page against it and expands the cross product. Three ways to fail, all of them at
 // build time rather than in someone's browser: the manifest is missing, the page and
 // the manifest disagree, or a frame the pair of them promise is not on disk.
 const fallManifest = readManifest(root, 'assets/falling-blocks/manifest.json', 'tools/encode-falling-blocks.mjs', problems);
-
-const archManifest = readManifest(root, 'assets/approach/manifest.json', 'tools/encode-approach.mjs', problems);
 
 const heroManifest = readManifest(root, 'assets/hero-bridge/manifest.json', 'tools/encode-hero-bridge.mjs', problems);
 
@@ -727,7 +717,7 @@ function refsIn(html) {
     out.add(ORIGIN && m[1].startsWith(ORIGIN + '/') ? m[1].slice(ORIGIN.length) : m[1]);
   }
   // The hero frames are addressed by string concatenation inside assets/hero-bridge.js,
-  // the same way the other two sequences are, so nothing the scan above can see refers to
+  // the same way the falling-block frames are, so nothing the scan above can see refers to
   // any of them. Same cross product for the same reason: shipping one cut without the
   // other is the failure a phone hits and a desktop does not.
   //
@@ -745,26 +735,6 @@ function refsIn(html) {
     problems.push("the hero-bridge element is on the page but its manifest is unreadable");
   } else if (hero) {
     for (const r of heroFrames(hero[1], heroManifest, problems)) out.add(r);
-  }
-  // The approach frames are addressed by string concatenation inside
-  // assets/approach.js, from a base the page carries as an attribute and a frame list
-  // the encoder wrote to a manifest — so, exactly like the falling-blocks frames, no
-  // literal reference to any of them exists for the scan above to find. Check the cross
-  // product of every frame and every cut: shipping one cut without the other is the
-  // failure a phone would hit and a desktop would not, and a sequence that ships
-  // half-encoded has to fail here rather than 404 mid-scroll.
-  //
-  // The base is captured off the page rather than assumed, because absolutise() has
-  // rewritten it to whatever base this build was given.
-  // The scrub is not mounted at the moment — the home page carries a still where the
-  // arch used to be built, and the component is kept for the shortened sequence that
-  // replaces it. So its absence is not a fault; only a scrub on the page with no
-  // manifest behind it is.
-  const arch = html.match(/<approach-scrub\b([^>]*)>/);
-  if (arch && !archManifest) {
-    problems.push("the approach-scrub element is on the page but its manifest is unreadable");
-  } else if (arch) {
-    for (const r of approachFrames(arch[1], archManifest, problems)) out.add(r);
   }
   // The base is captured off the page rather than assumed, because absolutise() has
   // rewritten it to whatever base this build was given. This is also why the base has to

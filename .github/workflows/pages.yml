@@ -4,8 +4,8 @@ name: Publish site to gh-pages
 # GitHub Pages serves. tools/build-site.mjs assembles the artifact — a file per
 # page, the assets, .nojekyll, CNAME and a 404.html — and fails if the pages
 # reference anything the artifact does not contain. What is in the repository but not
-# served (the design system's dev files and .otf sources, the parked Approach scrub)
-# is left out there, in copyDir(), because this job publishes whatever _site holds.
+# served (the design system's dev files and .otf sources) is left out there, in
+# copyDir(), because this job publishes whatever _site holds.
 #
 # A second job, `plugin`, checks and packages the WordPress plugin
 # (wordpress-handoff/plugin/augmented-ed/). It runs beside the site build, never before
@@ -96,11 +96,33 @@ jobs:
         run: node tools/build-wp-plugin.mjs --assemble dist
 
       - name: Upload the plugin
+        id: upload
         uses: actions/upload-artifact@v4
         with:
           name: augmented-ed-plugin
           path: dist/
           retention-days: ${{ github.ref == 'refs/heads/main' && 90 || 14 }}
+
+      # What to record when a zip is sent to AERDF: which build it is, and the SHA-256 of
+      # the zip exactly as GitHub hands it over, so the copy kept after the artifact
+      # expires can be shown to be the same file.
+      - name: Summarise the plugin
+        env:
+          DIGEST: ${{ steps.upload.outputs.artifact-digest }}
+          REF: ${{ github.ref_name }}
+        run: |
+          version=$(sed -n 's/^ \* Version: *//p' wordpress-handoff/plugin/augmented-ed/augmented-ed.php)
+          {
+            echo "### augmented-ed-plugin.zip"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Plugin version | $version |"
+            echo "| Commit | \`$GITHUB_SHA\` ($REF) |"
+            echo "| SHA-256 of the zip | \`$DIGEST\` |"
+            echo ""
+            if [ "$REF" = "main" ]; then echo "Built from main: this is a zip that can go to AERDF."; else echo "Built from a pull request: do not send this zip to AERDF."; fi
+          } >> "$GITHUB_STEP_SUMMARY"
 
   # WCAG 2.2 AA over _site and wordpress-handoff/pages/ (see tools/audit-a11y.mjs for what
   # each check measures and why). Playwright's own Chromium, since the runner has none of

@@ -1,26 +1,60 @@
 # Source material
 
-Everything here is an *input* — nothing in this directory is served. It is kept in
-the repository so the site can be rebuilt, re-encoded and re-designed without
-anyone's laptop.
+Everything here is an *input*, and nothing in this directory is served. What is kept is
+what a tool reads; the rest left the repository in October 2026 and is in its history
+(`git log --all -- source-material/<path>` finds it), except the Shutterstock originals,
+which are licensed files and are not in the repository at all.
 
-| Path | What it is |
+| Path | What it is | Read by |
+| --- | --- | --- |
+| `team/` | The team roster, `people.json`: everyone the site knows about, on the page, held or archived, and the one place a team change starts. Its README has the fields. | `tools/build-team.mjs`, `tools/build-site.mjs`, `tools/build-wp-plugin.mjs`, `tools/export-content.mjs`, `tools/encode-images.mjs` |
+| `bios/` | One Markdown file per person with a bio. Only Leadership's are built into pages; the rest are kept, unbuilt. Its README has the format. | `tools/build-site.mjs`, `tools/build-wp-plugin.mjs` |
+| `image-sources/team/` | The headshots as received, one file per person who has been on the page. Which photograph each person has, where it came from and anything done to it is recorded against them in the roster. This repository is public, so photographs of people still waiting for a group stay in the form's Drive folder, recorded in the roster by file ID. | `tools/cutout-headshots.py` |
+| `image-sources/team-cutout/` | Each person on the page, lifted off their background and framed by one rule for all of them, as a 768px RGBA WebP. Written by `tools/cutout-headshots.py` and committed, because making them takes a 973 MB matting model that is not in the repository; the tool's header says where to fetch it. | `tools/encode-images.mjs` |
+| `image-sources/icons/` | The three home-page illustration plates and the four co-design cycle node renders. | `tools/encode-images.mjs` |
+| `image-sources/schools/` | The three co-design workshop photographs on the home page. | `tools/encode-images.mjs` |
+| `brand-logos/PNG/AugmentED_Logo_Color_Horiz.png` | The colour horizontal lockup from the logo kit AERDF supplied, the one that carries "supported by aerdf". It becomes the share card, `assets/logo/og-card.png`. The site's two SVG logos are the kit's colour SVGs copied across unchanged. | `tools/encode-images.mjs` |
+
+## The licensed photography on The Challenge and Our Approach
+
+Seven portrait photographs, two sources, both licensed, and the licences do not allow the
+files to be shared as files, so no full-resolution original is committed. The encoder reads
+them from two git-ignored directories under `image-sources/stock-photos-aug/`.
+
+**Shutterstock** (Folkmark's subscription), read from `large/`: download by asset ID from the
+licence history and keep the ID as the filename (`shutterstock_<id>.jpg`).
+
+| Asset ID | Becomes |
 | --- | --- |
-| `webflow-export/` | The original Webflow site as exported: `index.html`, `team.html`, `our-approach.html`, `the-challenge.html`, `get-involved.html`, their `css/` and `js/`, and `style-guide-*.html` — the rendered style guide. Also the brand explorations (`AugmentED_5alt.png`, `AugmentED_stain_v2_vs_approved.png`), the hero storyboard frames (`H0_f0001` … `H6c_f0672`), `AugmentED_Headshots/` at original resolution, and `0001-0680.mp4`. |
-| `team/` | The team roster, `people.json`: everyone the site knows about, on the page, held or archived, and the one place a team change starts. Its README has the fields. |
-| `image-sources/` | The originals `tools/encode-images.mjs` reads: `team/` (the headshots as received, which `tools/cutout-headshots.py` reads rather than the encoder, one file per person. Which photograph each person has, where it came from and anything done to it is recorded against them in the team roster, `source-material/team/people.json`; the rule for choosing between the "Website Bio tracking" sheet, the website info form and the subject's own institution is in the headshot comment in `tools/encode-images.mjs`. Masters are kept for people off the page too, but only for those who have been on it: this repository is public, so the photographs of people still waiting for a group stay in the form's Drive folder, recorded in the roster by file ID), `team-cutout/` (what the encoder's headshot jobs read: each person pictured on the page, lifted off their background and framed by one rule for all of them — the same face height, the same eye line, the shoulders running off the tile — as a 768px RGBA WebP with no colour treatment, which the encoder lays, in its own colour, on the tiles' light blue. Written by `tools/cutout-headshots.py` and committed, because making them takes a 973 MB matting model (BiRefNet-portrait) that is not in the repository and is not needed to re-encode; the tool's header says where to fetch it and pins its environment, and `--only=<slug>` rebuilds one person. They are derived files: a better photograph in `team/`, re-run through the tool, is the only way to improve a tile), `images/` (the two full-width 3/2 photographs, and since September 2026 nothing else — all seven of the 4/5 frames on The Challenge and Our Approach are now Shutterstock, read from `stock-photos-aug/large/` below. Note that neither 3/2 frame is referenced by any page: they encode and publish, and nothing links them. See the note on their jobs in the encoder), `icons/` (the three home-page illustration plates and the four co-design cycle node renders), `schools/` (the co-design action shots, including the second Museum High frame the page does not use), `blocks/` (the six wooden-block cut-outs), `unused/` (the six superseded home-hero frames, and the two generated 4/5 masters retired in September — `build-capabilities.png` and `engineers-screens.png`, which shipped in the design handover hotlinked to a CDN bucket and were committed here because that bucket is not a home for production assets) and `stock-photos-aug/` (the August Shutterstock selects, downloaded under Folkmark's unlimited subscription; they keep their Shutterstock asset IDs as filenames, in both the shortlist and the encoder, so a licence can be traced back to the download — the descriptive name lives on the encoder's output instead. The top level holds the web-sized comps to browse the shortlist by, and `large/` the full-resolution originals, 2266x3626 to 9504x6336, which are what `tools/encode-images.mjs` reads. Seven are in use, one per 4/5 frame, cropped by a measured box on each job: 2763377205, 2176735867, 1136122199, 2670025731, 2354739045, 2129383421 and 2757155555. Three of those, 2763377205, 2354739045 and 2129383421, also carry a `grade` — a per-channel multiplier that puts them on the same white balance and white point as the rest of the site's photography; the encoder's own comment, under THE GRADE, has the rule and the measurements. 2380531861 and 2218619397 were selected and not taken, 2380531861 having held the Co-design frame until 2129383421 replaced it). `unused-diagrams/` holds the co-design cycle SVGs the R&D wheel was drawn from. |
-| `brand-logos/` | The AugmentED logo kit as AERDF supplied it, in `EPS/`, `JPG/`, `PDF/`, `PNG/` and `SVG/`, plus `AugmentED_Brand_Guide_Page.pdf`. Eleven lockups: horizontal and vertical, each in colour, black, white and colour-with-white-text, and three standalone icons. Every wordmark lockup carries "supported by aerdf" — there is no variant without it, so a lockup that needs to omit it does not exist and must not be made by cropping one that does. No encoder reads this: the two the site ships, `assets/logo/logo-horiz.svg` and `logo-vert.svg`, are the colour SVGs copied across unchanged, because vector needs no encoding step. |
-| `scroll-world.js` | An early scroll experiment, kept for reference. |
+| 2763377205 | `images/student-notebook` |
+| 2129383421 | `images/codesign-tools` (a 4144x4144 square from the top of the frame) |
 
-The Avenir LT Pro OTFs used to live here too. They now sit beside the WOFF2 they
-produce, in `_ds/augmented-design-system-*/assets/fonts/`, which is where
-`tools/encode-fonts.mjs` looks for them. They are sources, not served files: the site build leaves every `.otf` out of what it publishes.
+**Getty Images** (licensed by AERDF, October 2026), read from `getty-licensed/`. These are
+*not* the originals: each is the original already cut to the box it ships in and downsized
+to 2,000-2,700 px, named by Getty ID (`<id>.jpg`), because the framing was chosen by the
+client in the photo review file (a crop saved as fractions of the original, which can be
+re-applied to the licensed full-resolution file). The jobs therefore carry no `crop`.
+
+| Getty ID | Becomes | Box |
+| --- | --- | --- |
+| 2222113845 | `images/engineers-screens` | 1:1 |
+| 1324921324 | `images/teacher-two-students` | 4:5 |
+| 1044232206 | `images/define-the-role` | 4:5 |
+| 1469940271 | `images/build-capabilities` | 11:10 |
+| 1440718884 | `images/test-in-classrooms` | 4:5 |
+
+Without them the encoder skips those jobs (two tiers each) and re-encodes everything else;
+the encoded files under `assets/images/` are committed and are what the site and the plugin
+use. The other Shutterstock frames for the five Getty slots are no longer read.
+
+The Avenir LT Pro OTFs sit beside the WOFF2 they produce, in
+`_ds/augmented-design-system-*/assets/fonts/`, which is where `tools/encode-fonts.mjs` looks
+for them. The site build leaves every `.otf` out of what it publishes.
 
 ## What is *not* here
 
-The bulk renders — Blender plates, 8K PNG sequences, the WebP frame archive — are
-not in the repository and never should be: they came to 604 MB, the site serves
-none of them, and every output they produce is committed under `assets/`. They live
-on my machine. `tools/encode-approach.mjs` and
-`tools/encode-falling-blocks.mjs` are the only things that need them, and each
-prints the path it wants if it is missing. See the README's restore table.
+The bulk renders (Blender plates, 8K PNG sequences, the WebP frame archives) are not in
+the repository and never were: the site serves none of them, and every output they produce
+is committed under `assets/`. They are on Brendan's machine. `tools/encode-hero-bridge.mjs`
+and `tools/encode-falling-blocks.mjs` are the only things that need them, and each prints
+the path it wants if it is missing.

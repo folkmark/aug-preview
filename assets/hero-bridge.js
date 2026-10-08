@@ -64,8 +64,12 @@
   var clamp01 = function (v) { return v < 0 ? 0 : v > 1 ? 1 : v; };
   var smooth = function (t) { var c = clamp01(t); return c * c * (3 - 2 * c); };
 
+  // approach.js, named here and below, was the Approach section's scrub. It was parked off
+  // the page in August 2026 and left the repository in October; `git log --
+  // assets/approach.js` finds it, and the reasoning borrowed from it stands on its own.
+  //
   // The scrub is linear, deliberately, and this is the one place to say why. approach.js
-  // runs on a glide() curve because that section alternates moves with reading holds and
+  // ran on a glide() curve because that section alternates moves with reading holds and
   // the moves have to feel like one speed across segments of different lengths. This is
   // one continuous assembly with nothing to synchronise against, so the honest mapping is
   // scroll to frame, one for one: the arch builds at exactly the rate the thumb moves.

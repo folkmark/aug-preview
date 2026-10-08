@@ -35,10 +35,11 @@
 //              was not before fails. Both halves matter. Measured on the text, not the box:
 //              the page root clips the falling blocks' plates sideways by design, and a
 //              collapsed wheel panel or screen-reader-only text hides nothing a reader was
-//              shown. And measured as a difference: the skip link sits above its clipping
-//              box until it has focus, so a single look reported it clipped whenever the
-//              focus walk before this check happened to end elsewhere — which it did on
-//              the CI runner and not locally (all 16 of run 36277825736's failures).
+//              shown. And measured as a difference: the skip link is hidden until it has
+//              focus (moved above its clipping box until October 2026, clipped since), so a
+//              single look reported it clipped whenever the focus walk before this check
+//              happened to end elsewhere — which it did on the CI runner and not locally
+//              (all 16 of run 36277825736's failures).
 //   imagery    1.4.3 where axe cannot look: text over the hero's plate and over the falling
 //              blocks. At several points in each sequence the box is screenshotted twice,
 //              with the text and with it transparent; the pixels that differ are the

@@ -3,19 +3,24 @@ node_modules/
 _site/
 .export-tmp/
 
-# Bulk render masters. These are inputs to tools/encode-approach.mjs and
+# Bulk render masters. These are inputs to tools/encode-hero-bridge.mjs and
 # tools/encode-falling-blocks.mjs, the site serves none of them, and every output
-# they produce is committed under assets/. They came to 604 MB — more than eight
-# times the rest of the repository put together — so they live on my machine
-# and are restored to these paths only when something needs re-encoding.
-#
-# Everything else that used to sit under project/ is now tracked, in
-# source-material/. See source-material/README.md.
+# they produce is committed under assets/. They run to hundreds of megabytes, so they
+# live on Brendan's machine and are restored to these paths only when something needs
+# re-encoding. See source-material/README.md.
 /project/
 /Falling Blocks/
-/desk render preview/
+
+# The Shutterstock originals the encoder reads. Licensed files, which the licence does
+# not allow to be shared as files, so never committed: see source-material/README.md.
+/source-material/image-sources/stock-photos-aug/
 
 # The assembled WordPress plugin (node tools/build-wp-plugin.mjs --assemble dist) and the
 # local WordPress the verification harness installs. Both are rebuilt from the repository.
 /dist/
 /.wp-verify/
+
+# Licensed Getty photography, already cropped to the page's boxes (see the note on the
+# first of these jobs in tools/encode-images.mjs). The licence does not let a public
+# repository offer the full-resolution file; only the encoded WebP under assets/ ships.
+/source-material/image-sources/stock-photos-aug/getty-licensed/

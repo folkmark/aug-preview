@@ -2,7 +2,7 @@
 
 Each decision the plugin cannot make for AERDF or AugmentED, with what it does until someone
 decides. **Owner** is who should decide. The first three block launch; the rest have a
-working default. Where the owner is AugmentED, AugmentED may not be available to decide later:
+working default. Brendan is AugmentED's side of the build: [brendan@folkmark.com](mailto:brendan@folkmark.com). If nobody is available to decide later,
 the default is what ships, and it is safe to keep.
 
 ## Blocking
@@ -13,16 +13,23 @@ the default is what ships, and it is safe to keep.
   `/augmented/challenge/`, `/augmented/approach/`, `/augmented/team/`,
   `/augmented/follow/`. That is where "Create the pages as drafts" puts them.
 - Today `/augmented/` redirects to the existing AugmentED page,
-  `/opportunities/advanced-fellows/augmented/` (page 11371), which WordPress does because the
-  page once had that slug. Publishing a page at `/augmented/` replaces that redirect.
+  `/opportunities/advanced-fellows/augmented/` (page 11371). WordPress does that on its own:
+  an address with no page of its own is sent to the page whose slug matches, and that page's
+  slug is `augmented` (checked 2026-10-06: a 301 with `x-redirect-by: WordPress`, not a
+  Redirection rule). Publishing a page at `/augmented/` gives that address a page of its
+  own, and the redirect stops.
 - Decide whether page 11371 stays (and links to the new pages), is redirected to
   `/augmented/` (a Redirection rule, source `/opportunities/advanced-fellows/augmented/`), or
-  is unpublished.
+  is unpublished. **Until decided:** it stays exactly as it is.
 - `/team/` cannot be the address of Who We Are: it is the archive of AERDF's team post type.
 - The pages link to each other by template, so any address works and can change later.
 
-### The HubSpot form — AERDF's HubSpot owner, with AugmentED
+### The HubSpot form — AERDF's HubSpot owner
 
+- **All of it is AERDF's.** AugmentED has not created, configured or tested anything in
+  AERDF's HubSpot, and has no access to it. The persona property, the form, CAPTCHA, the
+  list or workflow, and the contacts are AERDF's to set up and own. The plugin's half is
+  the HubSpot fields in Settings → AugmentED (START-HERE step 3).
 - **Default:** submissions are refused (with a polite message) until a portal and form are
   set in Settings → AugmentED.
 - Which list or workflow the form feeds, and who owns the resulting contacts.
@@ -34,7 +41,8 @@ the default is what ships, and it is safe to keep.
 - **2027:** HubSpot ends support for its v1–v3 APIs in September 2027, and the endpoint used
   today is v3. HubSpot publishes the per-endpoint replacements in March 2027; the change is
   one class in the plugin (`includes/follow.php`, `Augmented_ED_HubSpot`), and it may need a
-  private-app token, which Settings already accepts.
+  private-app token, which Settings already accepts. Only AERDF can create that token in its
+  HubSpot.
 
 ### The Avenir licence — AERDF
 
@@ -82,7 +90,8 @@ the default is what ships, and it is safe to keep.
 ### New team members: published or draft — AERDF web team
 
 - **Default:** published, as other programmes' members are. The import can create them as
-  drafts instead.
+  drafts instead. Either way, on production the import runs straight before the pages are
+  published (START-HERE step 5), so the people are not live before the pages they link to.
 - They appear wherever AERDF lists all team posts — the `/team/` archive, search, the team
   sitemap — like every other programme's members, and in a new category archive at
   `/category/augmented-team/`. AERDF's own team listings (Our Team) filter by their own
@@ -104,11 +113,30 @@ the default is what ships, and it is safe to keep.
 - The tick box is plain post meta, not a WordPress tag or category, so there is no public
   page listing who has been archived.
 
+### AERDF's job-title field — AERDF web team
+
+- AERDF's team pages show a job title from a field of AERDF's own (an ACF or JetEngine field
+  on the Team type), which the plugin cannot identify from outside.
+- **Default:** none. The Who We Are grid shows AugmentED's roles either way; the AugmentED
+  people's own AERDF team pages (where they have one) show no title.
+- To fill it, pick the field under Settings → AugmentED → "AERDF's job-title field" before
+  importing. The import then writes each role there, only where it is empty. START-HERE
+  step 4 says how to find the field.
+
+### AugmentED in AERDF's navigation — AERDF web team
+
+- **Default:** the plugin adds nothing to AERDF's menus. The AugmentED pages reach each
+  other through the program bar under AERDF's header, and the rest of aerdf.org reaches
+  them through whatever links to `/augmented/` (and through the existing AugmentED page, if
+  it is kept and links on).
+- Decide whether AERDF's own navigation links to the AugmentED home, and where.
+
 ### Who edits the team after launch — AugmentED
 
 - **Default:** WordPress. Edits there are kept: the import skips any card edited since.
 - If the repository stays the source instead, re-run the import after each change (with
-  Force for cards also edited in WordPress).
+  "Update cards edited in WordPress since the last import" ticked for cards also edited in
+  WordPress).
 - A person added in WordPress without a bundled headshot shows their featured image, or a
   placeholder square.
 
@@ -138,11 +166,16 @@ the default is what ships, and it is safe to keep.
 
 ### Delivering the zip — AugmentED
 
-- **Default:** download the `augmented-ed-plugin` artifact from the repository's latest
-  workflow run and send it once. Artifacts are kept 90 days from main, so the copy AERDF
-  installs is the copy to keep.
+- **Default:** download the `augmented-ed-plugin` artifact from the latest run of the
+  "Publish site to gh-pages" workflow **on `main`**, never from a pull request's run (those
+  build unmerged changes under the same version number). The run's summary gives the plugin
+  version, the commit and the zip's SHA-256: send the zip with the SHA-256, and say which
+  version START-HERE describes.
+- **Keep a copy of every zip sent.** Artifacts from `main` expire after 90 days, and the
+  previous zip is how AERDF rolls an update back.
 - The repository is public, so anyone signed in to GitHub can download those artifacts too.
   The Avenir files inside are already public in the repository (`_ds/`) and on the preview
   site, so this adds no exposure. If the licence says otherwise, it affects those as well.
   The alternative is to drop the upload from CI and build the zip locally
-  (`node tools/build-wp-plugin.mjs --assemble dist --zip`).
+  (`node tools/build-wp-plugin.mjs --assemble dist --zip`, which writes
+  `dist/augmented-ed.zip`).

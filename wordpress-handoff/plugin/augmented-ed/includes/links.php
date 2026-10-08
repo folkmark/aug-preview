@@ -102,7 +102,18 @@ function augmented_ed_url( $key ) {
  * their frames by exact filename, and WP-Stateless on aerdf.org moves every upload to
  * Google Cloud Storage under a URL they could not construct. Plugin files are left where
  * they are.
+ *
+ * A file's URL carries ?ver= its modification time, as the stylesheets and scripts do
+ * (augmented_ed_version()). aerdf.org serves plugin files with "Cache-Control: public,
+ * max-age=31536000", a year (measured 2026-10-06), so without it a headshot replaced under
+ * the same name — Chris Mutter's colour photo in 1.1.0 was exactly that — would stay the
+ * old picture for returning visitors whatever was purged. An update rewrites every file,
+ * so every URL changes once per update. A directory (the components' base, ending in "/")
+ * gets no query, because the components append frame names to it; the frames are the one
+ * thing an update cannot re-version, so a re-encoded sequence should ship under new names.
  */
 function augmented_ed_asset( $rel ) {
-	return plugins_url( 'assets/' . ltrim( $rel, '/' ), AUGMENTED_ED_FILE );
+	$rel = ltrim( $rel, '/' );
+	$url = plugins_url( 'assets/' . $rel, AUGMENTED_ED_FILE );
+	return '' === $rel || '/' === substr( $rel, -1 ) ? $url : add_query_arg( 'ver', augmented_ed_version( 'assets/' . $rel ), $url );
 }

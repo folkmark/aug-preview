@@ -1,7 +1,8 @@
 # augmented-ed — maintainer notes
 
-For installing the plugin, read [`../../START-HERE.md`](../../START-HERE.md). This is for
-whoever changes it.
+For installing the plugin, read
+[START-HERE](https://github.com/folkmark/aug-preview/blob/main/wordpress-handoff/START-HERE.md)
+(`wordpress-handoff/START-HERE.md` in the repository). This is for whoever changes it.
 
 ## Two halves
 

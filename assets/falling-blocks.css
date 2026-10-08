@@ -11,8 +11,8 @@ falling-blocks {
   --fb-halo: transparent;
   /* Which encoded width this viewport scrubs. The element reads this back at boot and
      on every media-query flip, so the breakpoint that changes the page's layout is
-     also the one that picks the file — the same arrangement approach-scrub uses for
-     its cuts, and for the same reason: a second copy of the breakpoint in JS is free
+     also the one that picks the file — the same arrangement the Approach scrub used
+     for its cuts, and for the same reason: a second copy of the breakpoint in JS is free
      to drift from this one.
 
      The values name directories that exist under the element's base

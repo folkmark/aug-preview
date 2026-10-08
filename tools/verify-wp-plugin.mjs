@@ -59,7 +59,7 @@ const DOWNLOADS = {
 // so a roster change moves the expectations with it.
 const TEAM = JSON.parse(fs.readFileSync(path.join(root, 'wordpress-handoff/plugin/augmented-ed/generated/data/team.json'), 'utf8'));
 const E = { people: TEAM.people.length, attach: TEAM.existing.length, create: TEAM.people.length - TEAM.existing.length, archived: TEAM.archived.length };
-// The import's closing line ("Success: Dry run: 2 attach, 30 create, 6 absent") as a map.
+// The import's closing line ("Success: Dry run: 2 attach, 34 create, 6 absent") as a map.
 const countsOf = (out) => Object.fromEntries([...(out.trim().split('\n').pop() || '').matchAll(/(\d+) ([a-z]+)/g)].map((m) => [m[2], +m[1]]));
 const sameCounts = (a, b) => JSON.stringify(Object.entries(a).sort()) === JSON.stringify(Object.entries(b).filter(([, v]) => v).sort());
 const sh = (cmd, a, opts = {}) => execFileSync(cmd, a, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], ...opts });
@@ -529,6 +529,9 @@ export async function checks() {
     const shot = await tile.evaluate((i) => ({ src: i.currentSrc, w: i.naturalWidth }));
     const srcs = await p.evaluate(() => [...document.querySelectorAll('.team-grid-3 img[src*="assets/team/"]')].map((i) => i.getAttribute('src')));
     check('team: every headshot is the plugin\'s own file, and one draws at 512', shot.w === 512 && srcs.length > 0 && srcs.every((s) => s.includes('/wp-content/plugins/augmented-ed/assets/team/')), `${JSON.stringify(shot)}, ${srcs.length} tiles`);
+    // aerdf.org gives plugin files a year's browser cache, so a headshot replaced under the
+    // same name only reaches a returning visitor if its URL changes: see augmented_ed_asset().
+    check('team: every headshot URL carries ?ver=', srcs.every((s) => /\.webp\?ver=\d+$/.test(s)), srcs.find((s) => !/\?ver=\d+$/.test(s)) || '');
     await c.close();
     const t = await newCtx({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } });
     const q = await t.newPage();
@@ -539,6 +542,7 @@ export async function checks() {
     // Team grid vs export, element for element, with URLs normalised.
     const norm = `(() => [...document.querySelectorAll('.team-grid-3 > div')].map((t) => t.outerHTML
       .replace(/https?:\\/\\/[^"]*?\\/assets\\//g, 'A/').replace(/\\.\\.\\/\\.\\.\\/assets\\//g, 'A/')
+      .replace(/\\?ver=\\d+/g, '')
       .replace(/href="[^"]*\\/team\\/([a-z0-9-]+)\\/"/g, 'href="T/$1"').replace(/opacity: 0;\\s*/g, '').replace(/\\s+/g, ' ').replace(/ data-aug-shown=""/g, '').replace(/ "/g, '"')))()`;
     const gotTiles = await q.evaluate(norm);
     await q.goto(`http://127.0.0.1:${STATIC_PORT}/wordpress-handoff/pages/team.html`, { waitUntil: 'load' });
@@ -663,6 +667,69 @@ export async function checks() {
     const onTiles = await tileCount();
     const onDry = countsOf(wp('augmented-ed', 'team', 'import', '--dry-run'));
     check('archived in WordPress: unticking brings them back, and the import sees nothing to change', onTiles === E.people && onDry.unchanged === E.people, `${onTiles} tiles; ${JSON.stringify(onDry)}`);
+    await c.close();
+  }
+
+  // 11. The relay's rate limit, sent straight at admin-post.php as a script would. A request
+  // that reaches the server without passing through Cloudflare can put anything in
+  // CF-Connecting-IP; before 1.1.1 a new made-up address per request was never limited.
+  {
+    const post = (ip) => fetch(BASE + '/wp-admin/admin-post.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json', 'CF-Connecting-IP': ip },
+      body: new URLSearchParams({ action: 'augmented_ed_follow', aug_website: '', aug_elapsed: '5000', firstname: 'Rate', lastname: 'Limit', email: 'rate@example.com', message: 'Counting.', consent: '1' }),
+    }).then((r) => r.status);
+    wp('transient', 'delete', '--all');
+    const same = [];
+    for (let i = 0; i < 6; i++) same.push(await post('198.51.100.7'));
+    check('form: one visitor address is limited to five sends in ten minutes', same.slice(0, 5).every((x) => x === 200) && same[5] === 429, same.join(','));
+    wp('transient', 'delete', '--all');
+    const forged = [];
+    for (let i = 0; i < 51; i++) forged.push(await post(`203.0.113.${i + 1}`));
+    check('form: a new forged CF-Connecting-IP per request is still limited, at fifty per connecting address', forged.slice(0, 50).every((x) => x === 200) && forged[50] === 429, `${forged.filter((x) => x === 200).length} accepted, then ${forged[50]}`);
+    wp('transient', 'delete', '--all');
+  }
+
+  // 12. The settings page never prints the HubSpot token back, keeps it when the field is left
+  // empty, and keeps the browser from filling the admin's own password into it.
+  {
+    const settings = JSON.parse(wp('option', 'get', 'augmented_ed_settings', '--format=json'));
+    wp('option', 'update', 'augmented_ed_settings', JSON.stringify({ ...settings, hubspot_token: 'pat-test-0123456789' }), '--format=json');
+    const c = await newCtx();
+    const p = await c.newPage();
+    await p.goto(BASE + '/wp-login.php');
+    await p.fill('#user_login', 'admin'); await p.fill('#user_pass', 'admin'); await p.click('#wp-submit');
+    await p.waitForLoadState('load');
+    await p.goto(BASE + '/wp-admin/options-general.php?page=augmented-ed', { waitUntil: 'load' });
+    const html = await p.content();
+    const field = await p.evaluate(() => { const i = document.getElementById('aug-hubspot_token'); return i && { value: i.value, autocomplete: i.getAttribute('autocomplete') }; });
+    check('settings: a saved HubSpot token is never printed into the page', !html.includes('pat-test-0123456789') && field?.value === '' && field?.autocomplete === 'new-password', JSON.stringify(field));
+    await Promise.all([p.waitForNavigation({ waitUntil: 'load' }), p.click('form[action="options.php"] [type="submit"]')]);
+    const kept = JSON.parse(wp('option', 'get', 'augmented_ed_settings', '--format=json')).hubspot_token;
+    check('settings: saving with the token field empty keeps the saved token', kept === 'pat-test-0123456789', kept ? 'kept' : 'lost');
+    wp('option', 'update', 'augmented_ed_settings', JSON.stringify(settings), '--format=json');
+    // An update with team changes says so: the import's fingerprint of the team data it ran
+    // from no longer matches the version installed.
+    const imp = JSON.parse(wp('option', 'get', 'augmented_ed_import', '--format=json'));
+    wp('option', 'update', 'augmented_ed_import', JSON.stringify({ ...imp, source: 'a-different-version' }), '--format=json');
+    await p.goto(BASE + '/wp-admin/options-general.php?page=augmented-ed', { waitUntil: 'load' });
+    const news = /has team changes the site does not have yet/.test(await p.content());
+    wp('option', 'update', 'augmented_ed_import', JSON.stringify(imp), '--format=json');
+    await p.goto(BASE + '/wp-admin/options-general.php?page=augmented-ed', { waitUntil: 'load' });
+    const quiet = !/has team changes the site does not have yet/.test(await p.content());
+    check('settings: the status panel says when this version has team changes the site lacks, and only then', news && quiet, JSON.stringify({ news, quiet }));
+    // A dry run hands its options back to the Import that follows it.
+    await p.goto(BASE + '/wp-admin/tools.php?page=augmented-ed-team', { waitUntil: 'load' });
+    await p.selectOption('select[name="status"]', 'draft');
+    await p.check('input[name="force"]');
+    await Promise.all([p.waitForNavigation({ waitUntil: 'load' }), p.click('input[name="dry_run"]')]);
+    const kept2 = await p.evaluate(() => ({ status: document.querySelector('select[name="status"]').value, force: document.querySelector('input[name="force"]').checked, said: /as drafts/.test(document.body.innerText) }));
+    check('import: a dry run keeps its options for the Import, and says it will create drafts', kept2.status === 'draft' && kept2.force && kept2.said, JSON.stringify(kept2));
+    // The block editor, where the classic editor's notice never showed.
+    const home = wp('post', 'list', '--post_type=page', '--meta_key=_wp_page_template', '--meta_value=augmented-ed/home.php', '--field=ID').split('\n')[0];
+    await p.goto(`${BASE}/wp-admin/post.php?post=${home}&action=edit`, { waitUntil: 'load' });
+    const notice = await p.waitForFunction(() => /drawn by the AugmentED plugin/.test(document.body.innerText), null, { timeout: 30000 }).then(() => true).catch(() => false);
+    check('editor: an AugmentED page says it is drawn by the plugin, in the block editor too', notice);
     await c.close();
   }
 
