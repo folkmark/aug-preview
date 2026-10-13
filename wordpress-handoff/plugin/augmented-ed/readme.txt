@@ -2,7 +2,7 @@
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.1.7
+Stable tag: 1.1.8
 License: Proprietary
 
 The AugmentED pages, team and Follow form, drawn inside the site's own theme.
@@ -39,6 +39,14 @@ wordpress-handoff/START-HERE.md in the AugmentED repository:
 https://github.com/folkmark/aug-preview/blob/main/wordpress-handoff/START-HERE.md
 
 == Changelog ==
+
+= 1.1.8 =
+* A sign-up is no longer refused when the HubSpot form disagrees with the website's (a missing
+  field, a dropdown without one of the website's values, a field HubSpot requires that the
+  website does not): it is kept under Tools -> Follow sign-ups, the visitor is thanked, and
+  the list marks it "not sent". Only errors the visitor can fix, such as an invalid email
+  address, are sent back to them.
+* Backslashes in a sign-up's message are kept.
 
 = 1.1.7 =
 * Follow sign-ups are kept in WordPress. Each one is saved under Tools -> Follow sign-ups
