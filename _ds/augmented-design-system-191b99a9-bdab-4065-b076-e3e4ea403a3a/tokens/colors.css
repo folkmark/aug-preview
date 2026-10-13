@@ -1,0 +1,58 @@
+/* AugmentED palette — verbatim from the source export (DESIGN.md / globals.css).
+   Neutral + two chromatic ramps: St Tropaz (blue) and Ecru White (warm paper). */
+:root {
+  --color-white: #ffffff;
+  --color-neutral-lightest: #f2f2f2;
+  --color-neutral-lighter: #d9d9d9;
+  --color-neutral-light: #b3b3b4;
+  --color-neutral: #808183;
+  --color-neutral-dark: #4d4f52;
+  --color-neutral-darker: #1b1d20;
+  --color-neutral-darkest: #020408;
+
+  --color-st-tropaz-lightest: #e9eef4;
+  --color-st-tropaz-lighter: #d3ddea;
+  --color-st-tropaz-light: #6689b7;
+  --color-st-tropaz: #255799;
+  --color-st-tropaz-dark: #1d457a;
+  --color-st-tropaz-darker: #0e223d;
+  --color-st-tropaz-darkest: #0b1a2d;
+
+  --color-ecru-white-lightest: #fefdfc;
+  --color-ecru-white-lighter: #fdfcfa;
+  --color-ecru-white-light: #f8f5ee;
+  --color-ecru-white: #f6f2e8;
+  --color-ecru-white-dark: #c4c1b9;
+  --color-ecru-white-darker: #62605c;
+  --color-ecru-white-darkest: #494845;
+
+  /* Transparency ramps — the only way overlays, hairlines and glass surfaces are built. */
+  --color-white-5: color-mix(in srgb, var(--color-white), transparent 95%);
+  --color-white-10: color-mix(in srgb, var(--color-white), transparent 90%);
+  --color-white-15: color-mix(in srgb, var(--color-white), transparent 85%);
+  --color-white-20: color-mix(in srgb, var(--color-white), transparent 80%);
+  --color-white-30: color-mix(in srgb, var(--color-white), transparent 70%);
+  --color-white-40: color-mix(in srgb, var(--color-white), transparent 60%);
+  --color-white-50: color-mix(in srgb, var(--color-white), transparent 50%);
+  --color-white-60: color-mix(in srgb, var(--color-white), transparent 40%);
+
+  --color-neutral-darkest-5: color-mix(in srgb, var(--color-neutral-darkest), transparent 95%);
+  --color-neutral-darkest-10: color-mix(in srgb, var(--color-neutral-darkest), transparent 90%);
+  --color-neutral-darkest-15: color-mix(in srgb, var(--color-neutral-darkest), transparent 85%);
+  --color-neutral-darkest-20: color-mix(in srgb, var(--color-neutral-darkest), transparent 80%);
+  --color-neutral-darkest-30: color-mix(in srgb, var(--color-neutral-darkest), transparent 70%);
+  --color-neutral-darkest-40: color-mix(in srgb, var(--color-neutral-darkest), transparent 60%);
+  --color-neutral-darkest-50: color-mix(in srgb, var(--color-neutral-darkest), transparent 50%);
+  --color-neutral-darkest-60: color-mix(in srgb, var(--color-neutral-darkest), transparent 40%);
+
+  /* Semantic aliases. Prefer these in product code; sections override them per scheme. */
+  --brand-accent: var(--color-st-tropaz);
+  --brand-accent-hover: var(--color-st-tropaz-dark);
+  --text-body: var(--color-neutral-darkest);
+  --text-muted: var(--color-neutral-darkest-60);
+  --text-inverse: var(--color-white);
+  --surface-page: var(--color-ecru-white-lighter);
+  --surface-card: var(--color-ecru-white-lightest);
+  --surface-dark: var(--color-st-tropaz-darkest);
+  --border-hairline: var(--color-neutral-darkest-15);
+}

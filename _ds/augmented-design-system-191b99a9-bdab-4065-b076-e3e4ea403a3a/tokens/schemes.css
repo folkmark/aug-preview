@@ -1,0 +1,52 @@
+/* Color schemes. Every section carries exactly one scheme class; children inherit
+   text, foreground, border and button colors from it. Never invent new schemes. */
+.scheme-1 {
+  --color-scheme-background: var(--color-ecru-white-lighter);
+  --color-scheme-foreground: var(--color-ecru-white-lightest);
+  --color-scheme-text: var(--color-neutral-darkest);
+  --color-scheme-accent: var(--color-st-tropaz);
+  --color-scheme-border: var(--color-neutral-darkest-15);
+  --color-scheme-btn-text: var(--color-white);
+  background-color: var(--color-scheme-background);
+  color: var(--color-scheme-text);
+}
+
+.scheme-2 {
+  --color-scheme-background: var(--color-st-tropaz-darkest);
+  --color-scheme-foreground: var(--color-st-tropaz-darker);
+  --color-scheme-text: var(--color-white);
+  --color-scheme-accent: var(--color-white);
+  --color-scheme-border: var(--color-white-20);
+  --color-scheme-btn-text: var(--color-neutral-darkest);
+  background-color: var(--color-scheme-background);
+  color: var(--color-scheme-text);
+}
+
+.scheme-3 {
+  --color-scheme-background: var(--color-st-tropaz-darker);
+  --color-scheme-foreground: var(--color-st-tropaz-darkest);
+  --color-scheme-text: var(--color-white);
+  --color-scheme-accent: var(--color-white);
+  --color-scheme-border: var(--color-white-20);
+  --color-scheme-btn-text: var(--color-neutral-darkest);
+  background-color: var(--color-scheme-background);
+  color: var(--color-scheme-text);
+}
+
+.scheme-4 {
+  --color-scheme-background: var(--color-neutral-lighter);
+  --color-scheme-foreground: var(--color-neutral-lightest);
+  --color-scheme-text: var(--color-neutral-darkest);
+  --color-scheme-accent: var(--color-st-tropaz);
+  --color-scheme-border: var(--color-neutral-darkest-15);
+  --color-scheme-btn-text: var(--color-white);
+  background-color: var(--color-scheme-background);
+  color: var(--color-scheme-text);
+}
+
+/* `.alternate` marks a dark-on-light inversion for form controls and badges nested
+   inside a dark scheme (the source's @custom-variant alternate). */
+.alternate {
+  --color-scheme-text: var(--color-white);
+  --color-scheme-border: var(--color-white-20);
+}
