@@ -2,7 +2,7 @@
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.1.6
+Stable tag: 1.1.8
 License: Proprietary
 
 The AugmentED pages, team and Follow form, drawn inside the site's own theme.
@@ -39,6 +39,29 @@ wordpress-handoff/START-HERE.md in the AugmentED repository:
 https://github.com/folkmark/aug-preview/blob/main/wordpress-handoff/START-HERE.md
 
 == Changelog ==
+
+= 1.1.8 =
+* A sign-up is no longer refused when the HubSpot form disagrees with the website's (a missing
+  field, a dropdown without one of the website's values, a field HubSpot requires that the
+  website does not): it is kept under Tools -> Follow sign-ups, the visitor is thanked, and
+  the list marks it "not sent". Only errors the visitor can fix, such as an invalid email
+  address, are sent back to them.
+* Backslashes in a sign-up's message are kept.
+* Follow: "Which best describes you?" has the eight options of AERDF's HubSpot form
+  (1ccff25c-9c05-413f-b002-17efc961dde7), and sends HubSpot's own values for them ("Nonprofit
+  Executive" now one option, where the page had "Non-profit professional" and "Company
+  executive"). Enter that form's ID in Settings -> AugmentED.
+
+= 1.1.7 =
+* Follow sign-ups are kept in WordPress. Each one is saved under Tools -> Follow sign-ups
+  (administrators only) before it is sent to HubSpot, so a sign-up is no longer lost when
+  HubSpot is not set up yet or refuses the form; the visitor is thanked, and the list shows
+  whether HubSpot has it. Download them as CSV from that screen. Optional: Settings ->
+  AugmentED -> "Email each sign-up to" sends a notification for each one. They answer
+  WordPress's Export / Erase Personal Data tools by email address.
+* The Challenge: the first photograph is the one the AugmentED team chose, students working
+  together at a classroom table, credited under it as its licence requires.
+* Home: the three Recent Research links read "Read the research paper".
 
 = 1.1.6 =
 * Publishing a page no longer moves it out from under the AugmentED page. WordPress's Parent

@@ -58,6 +58,7 @@ function augmented_ed_sanitize_settings( $in ) {
 	$out['hubspot_token']     = ! empty( $in['hubspot_token_clear'] ) ? '' : ( '' !== $token ? $token : $out['hubspot_token'] );
 	$out['privacy_url']       = isset( $in['privacy_url'] ) ? esc_url_raw( $in['privacy_url'] ) : '';
 	$out['subscription_type'] = isset( $in['subscription_type'] ) ? preg_replace( '/[^0-9]/', '', $in['subscription_type'] ) : '';
+	$out['notify_email']      = isset( $in['notify_email'] ) ? implode( ', ', array_filter( array_map( 'sanitize_email', preg_split( '/[\s,;]+/', (string) $in['notify_email'] ) ) ) ) : '';
 	$out['offset_px']         = isset( $in['offset_px'] ) && '' !== trim( $in['offset_px'] ) ? (string) (float) $in['offset_px'] : '';
 	$out['mobile_sticky']     = empty( $in['mobile_sticky'] ) ? 0 : 1;
 	$out['team_shim']         = empty( $in['team_shim'] ) || 'production' === wp_get_environment_type() ? 0 : 1;
@@ -102,10 +103,11 @@ function augmented_ed_settings_page() {
 	echo '<h2>' . esc_html__( 'The Follow form → HubSpot', 'augmented-ed' ) . '</h2><table class="form-table" role="presentation">';
 	$field( 'hubspot_portal', 'Portal ID', 'AERDF\'s HubSpot account number (20910033 on aerdf.org today).' );
 	$field( 'hubspot_form', 'Form ID', 'The GUID of the HubSpot form that receives submissions. Create it with exactly these fields — firstname, lastname, email, phone, message, and the "which describes you" property named below — and with <strong>CAPTCHA off</strong>: HubSpot rejects every API submission to a form with CAPTCHA on. The plugin has its own spam defences.' );
-	$field( 'hubspot_persona', 'Persona property', 'The HubSpot contact property for "Which best describes you?" (internal name). Its options must include: educator, researcher, engineer, administrator, nonprofit, executive, funder, journalist, other.' );
+	$field( 'hubspot_persona', 'Persona property', 'The HubSpot contact property for "Which best describes you?" (internal name). Its options\' internal values must include: Educator, Researcher, Engineer, Administrator, Nonprofit Executive, Funder, Journalist, Other.' );
 	$field( 'consent_text', 'Consent sentence', 'Shown beside the checkbox and sent to HubSpot as the consent text. Default: "I agree to the privacy policy".' );
 	$field( 'privacy_url', 'Privacy policy URL', 'Links the words "privacy policy" in the consent sentence.', 'url' );
 	$field( 'subscription_type', 'Subscription type ID', 'Optional. The HubSpot subscription type the consent opts into.' );
+	$field( 'notify_email', 'Email each sign-up to', 'Optional. One or more addresses, separated by commas. Each sign-up is also kept under Tools → Follow sign-ups, whether or not HubSpot is connected.' );
 	$field( 'hubspot_token', 'Private app token', 'Optional today. Uses HubSpot\'s authenticated endpoint; likely needed after HubSpot ends support for its v3 APIs in September 2027.' . ( '' !== $s['hubspot_token'] ? ' <strong>A token is saved.</strong> Leave this empty to keep it.' : '' ), 'password' );
 	if ( '' !== $s['hubspot_token'] ) {
 		printf(
@@ -200,9 +202,10 @@ function augmented_ed_status_panel() {
 		}
 	}
 	$s        = augmented_ed_settings();
+	$kept     = '<a href="' . esc_url( admin_url( 'edit.php?post_type=' . AUGMENTED_ED_SIGNUP ) ) . '">' . esc_html__( 'Tools → Follow sign-ups', 'augmented-ed' ) . '</a>';
 	$rows[]   = '' !== $s['hubspot_portal'] && '' !== $s['hubspot_form']
-		? array( 'ok', __( 'Follow form', 'augmented-ed' ), __( 'Connected to HubSpot. Use "Send test submission" below to prove it.', 'augmented-ed' ) )
-		: array( 'warning', __( 'Follow form', 'augmented-ed' ), __( 'Not connected: submissions are refused until a HubSpot portal and form are set below.', 'augmented-ed' ) );
+		? array( 'ok', __( 'Follow form', 'augmented-ed' ), __( 'Connected to HubSpot. Use "Send test submission" below to prove it.', 'augmented-ed' ) . ' ' . sprintf( /* translators: %s: link to the sign-ups list. */ __( 'Every sign-up is also kept in %s.', 'augmented-ed' ), $kept ) )
+		: array( 'warning', __( 'Follow form', 'augmented-ed' ), sprintf( /* translators: %s: link to the sign-ups list. */ __( 'Not connected to HubSpot yet. Sign-ups are kept in %s until it is, but none reach HubSpot: set a portal and form below.', 'augmented-ed' ), $kept ) );
 	$assets   = is_readable( AUGMENTED_ED_DIR . 'assets/hero-bridge.js' );
 	$rows[]   = $assets ? array( 'ok', __( 'Assets', 'augmented-ed' ), __( 'Present.', 'augmented-ed' ) ) : array( 'warning', __( 'Assets', 'augmented-ed' ), __( 'assets/ is missing — install the assembled zip, not the repository folder.', 'augmented-ed' ) );
 	echo '<h2>' . esc_html__( 'Status', 'augmented-ed' ) . '</h2><table class="widefat striped" style="max-width:60rem"><tbody>';
@@ -227,7 +230,7 @@ add_action(
 				$names['lastname']  => $user->last_name ? $user->last_name : 'Test',
 				$names['email']     => $user->user_email,
 				$names['message']   => 'Test submission from the AugmentED WordPress plugin.',
-				$names['persona']   => 'other',
+				$names['persona']   => augmented_ed_hubspot_persona( 'other' ),
 			),
 			array(
 				'pageUri'  => augmented_ed_url( 'follow' ),

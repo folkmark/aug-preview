@@ -283,6 +283,25 @@ const FIELD_NAMES = {
   'Tell us more': { name: 'message', autocomplete: 'off' },
 };
 
+// "Which best describes you?": the page's value (a slug, because it is also part of each
+// radio's id) => the option's internal value in AERDF's HubSpot form, which is what the relay
+// sends. Read from that form's own definition (forms.hsforms.com/embed/v4/render-definition/
+// 20910033/1ccff25c-9c05-413f-b002-17efc961dde7, October 2026), whose values are its labels,
+// "Nonprofit Executive" one option. The page's options were cut to match that form rather than
+// the other way round. A radio in index.html with no entry here fails the build: HubSpot
+// refuses a value its dropdown lacks (VALUE_NOT_IN_FIELD_DEFINITION), so an unmapped option
+// would be a sign-up that never reaches it.
+const HUBSPOT_PERSONAS = {
+  educator: 'Educator',
+  researcher: 'Researcher',
+  engineer: 'Engineer',
+  administrator: 'Administrator',
+  'nonprofit-executive': 'Nonprofit Executive',
+  funder: 'Funder',
+  journalist: 'Journalist',
+  other: 'Other',
+};
+
 let formSpec = null;
 function followForm(document) {
   const form = document.querySelector('form');
@@ -293,7 +312,7 @@ function followForm(document) {
   formSpec = {
     fields: [
       ...Object.entries(FIELD_NAMES).map(([label, f]) => ({ name: f.name, label, required: !!fields.find((x) => x.label === label)?.required })),
-      { name: 'persona', label: 'Which best describes you?', required: false, options: personas.map((v) => ({ value: v, label: '' })) },
+      { name: 'persona', label: 'Which best describes you?', required: false, options: personas.map((v) => ({ value: v, label: '', hubspot: HUBSPOT_PERSONAS[v] ?? null })) },
       { name: 'consent', label: 'Consent', required: !!fields.find((x) => x.kind === 'Checkbox')?.required },
     ],
     default_persona: def || '',
@@ -338,7 +357,9 @@ function followForm(document) {
   // :focus-visible on the input drive the rest (the state CSS below).
   const rest = (el) => el.getAttribute('style');
   const radios = [...form.querySelectorAll('button[role="radio"]')];
-  if (radios.length !== personas.length || personas.length !== 9) fail(`follow form: ${radios.length} radios in the export, ${personas.length} values in index.html, expected 9`);
+  const expected = Object.keys(HUBSPOT_PERSONAS).length;
+  if (radios.length !== personas.length || personas.length !== expected) fail(`follow form: ${radios.length} radios in the export, ${personas.length} values in index.html, expected ${expected}`);
+  for (const v of personas) if (!HUBSPOT_PERSONAS[v]) fail(`follow form: "${v}" has no HubSpot value in HUBSPOT_PERSONAS (tools/build-wp-plugin.mjs)`);
   const restRadio = radios.find((r) => r.getAttribute('aria-checked') === 'false');
   const question = form.querySelector('[role="radiogroup"]')?.previousElementSibling;
   if (question) { question.setAttribute('id', 'aug-f-persona-q'); form.querySelector('[role="radiogroup"]').setAttribute('aria-labelledby', 'aug-f-persona-q'); }

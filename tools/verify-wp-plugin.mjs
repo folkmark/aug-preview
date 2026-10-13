@@ -101,6 +101,8 @@ add_filter( 'http_request_host_is_external', '__return_true' );
 // filter and found none of them on AERDF's dev site; with this always on, every headshot check
 // below fails if anything goes back to doing so.
 add_filter( 'sanitize_file_name', function ( $f ) { return substr( md5( $f . microtime() ), 0, 8 ) . '-' . $f; } );
+// Mail is caught, not sent: each wp_mail() lands in an option the sign-up checks read.
+add_filter( 'pre_wp_mail', function ( $r, $a ) { $all = get_option( 'aug_verify_mail', array() ); $all[] = $a; update_option( 'aug_verify_mail', $all, false ); return true; }, 10, 2 );
 `);
   fs.writeFileSync(path.join(WP, 'wp-config.php'), `<?php
 define( 'DB_NAME', 'wp' ); define( 'DB_USER', '' ); define( 'DB_PASSWORD', '' ); define( 'DB_HOST', '' );
@@ -142,7 +144,7 @@ require __DIR__ . '/index.php';
   seed('caitlin-mills', 'Caitlin Mills', '<p>AERDF\'s own bio of Caitlin.</p>', ['leadership']);
   seed('aamer-alam', 'Aamer Alam', '<p>Someone from another AERDF programme.</p>', ['council-of-advisors']);
   wp('post', 'create', '--post_type=page', '--post_status=publish', '--post_title=About AERDF', '--post_name=about', '--post_content=<p>A plain AERDF page.</p>');
-  wp('option', 'update', 'augmented_ed_settings', JSON.stringify({ hubspot_portal: '20910033', hubspot_form: '00000000-0000-4000-8000-000000000000', privacy_url: `${BASE}/about/` }), '--format=json');
+  wp('option', 'update', 'augmented_ed_settings', JSON.stringify({ hubspot_portal: '20910033', hubspot_form: '00000000-0000-4000-8000-000000000000', privacy_url: `${BASE}/about/`, notify_email: 'team@example.com, not-an-address' }), '--format=json');
 
   // The developer's steps, as START-HERE gives them.
   wp('eval', 'augmented_ed_create_pages();');
@@ -585,7 +587,7 @@ export async function checks() {
     await p.waitForFunction(() => /Thank/.test(document.querySelector('[data-aug-follow-status]').textContent), null, { timeout: 10000 }).catch(() => {});
     const sent = mockRef.requests[mockRef.requests.length - 1]?.json;
     const f = Object.fromEntries((sent?.fields || []).map((x) => [x.name, x.value]));
-    check('form: the relay sends HubSpot the fields, from a visitor whose clock is an hour fast', f.firstname === 'Ada' && f.lastname === 'Lovelace' && f.email === 'ada@example.com' && f.phone === '555 0100' && f.message === 'Testing the relay.' && f.augmented_persona === 'researcher', JSON.stringify(f));
+    check('form: the relay sends HubSpot the fields, from a visitor whose clock is an hour fast', f.firstname === 'Ada' && f.lastname === 'Lovelace' && f.email === 'ada@example.com' && f.phone === '555 0100' && f.message === 'Testing the relay.' && f.augmented_persona === 'Researcher', JSON.stringify(f));
     check('form: consent and page context are sent', sent?.legalConsentOptions?.consent?.consentToProcess === true && /\/augmented\/follow\//.test(sent?.context?.pageUri || ''), JSON.stringify({ c: sent?.legalConsentOptions, ctx: sent?.context }));
     const said = await p.textContent('[data-aug-follow-status]');
     check('form: the visitor is thanked in place', /Thank/.test(said), said);
@@ -623,6 +625,67 @@ export async function checks() {
     await Promise.all([q.waitForNavigation(), q.click('button[type="submit"]')]);
     check('form: without script it posts, redirects back and says so', q.url().includes('aug_follow=ok') && mockRef.requests.length === k + 1 && /Thank/.test(await q.textContent('#aug-follow-status')), q.url());
     await n.close();
+  }
+
+  // 8b. Every sign-up is kept in WordPress too (1.1.7): before then a sign-up HubSpot did not
+  // take — no form set yet, HubSpot down — was refused and lost. The records, what HubSpot made
+  // of each, the notification, the CSV, and the privacy tools.
+  {
+    const signups = () => JSON.parse(wp('post', 'list', '--post_type=augmented_ed_signup', '--post_status=private', '--fields=ID,post_title', '--format=json'));
+    const meta = (id, k) => wp('post', 'meta', 'get', String(id), '_augmented_ed_' + k);
+    const byEmail = (e) => signups().filter((r) => meta(r.ID, 'email') === e);
+    const ada = byEmail('ada@example.com')[0];
+    check('sign-ups: a sign-up HubSpot took is kept, with every field and its consent', ada && ada.post_title === 'Ada Lovelace' && meta(ada.ID, 'phone') === '555 0100' && meta(ada.ID, 'persona') === 'researcher' && meta(ada.ID, 'message') === 'Testing the relay.' && meta(ada.ID, 'consent') === 'I agree to the privacy policy' && meta(ada.ID, 'hubspot') === 'sent', JSON.stringify(ada));
+    check('sign-ups: one HubSpot refused for a field the visitor can fix is not kept', byEmail('ada@example.org').length === 0, `${byEmail('ada@example.org').length} kept`);
+    check('sign-ups: the bot that was thanked is not kept', byEmail('bot@example.com').length === 0);
+    const mail = JSON.parse(wp('option', 'get', 'aug_verify_mail', '--format=json') || '[]');
+    const m = mail.find((x) => /Ada Lovelace/.test(x.subject));
+    check('sign-ups: each is emailed to the valid addresses in Settings, replying to the visitor', m && JSON.stringify(m.to) === JSON.stringify(['team@example.com']) && /Reply-To: ada@example\.com/.test(JSON.stringify(m.headers)) && /Researcher/.test(m.message) && /Testing the relay\./.test(m.message), JSON.stringify(m && { to: m.to, headers: m.headers }));
+    // HubSpot not set up, as on aerdf.org at launch: thanked, kept, marked not sent.
+    const settings = JSON.parse(wp('option', 'get', 'augmented_ed_settings', '--format=json'));
+    wp('option', 'update', 'augmented_ed_settings', JSON.stringify({ ...settings, hubspot_form: '' }), '--format=json');
+    const sentBefore = mockRef.requests.length;
+    const r = await fetch(BASE + '/wp-admin/admin-post.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json', 'CF-Connecting-IP': '192.0.2.50' },
+      body: new URLSearchParams({ action: 'augmented_ed_follow', aug_website: '', aug_elapsed: '5000', firstname: 'Katherine', lastname: 'Johnson', email: 'kj@example.com', message: 'No HubSpot yet. Saved at C:\\signups\\kj.txt', consent: '1' }),
+    });
+    const body = await r.json().catch(() => ({}));
+    const kj = byEmail('kj@example.com')[0];
+    check('sign-ups: with no HubSpot form set, the visitor is thanked and the sign-up kept, marked not sent', r.status === 200 && body.ok === true && kj && meta(kj.ID, 'hubspot') === 'not sent' && meta(kj.ID, 'message') === 'No HubSpot yet. Saved at C:\\signups\\kj.txt' && mockRef.requests.length === sentBefore, `${r.status} ${JSON.stringify(body)} ${kj ? meta(kj.ID, 'hubspot') : 'not kept'}`);
+    wp('option', 'update', 'augmented_ed_settings', JSON.stringify(settings), '--format=json');
+    // A HubSpot form that disagrees with ours — here a dropdown without our value, as AERDF's
+    // first one did — is HubSpot's problem, not the visitor's: thanked, kept, marked not sent.
+    mockRef.reply = { status: 400, body: { status: 'error', message: 'The request is not valid', errors: [{ message: "Error in 'fields.augmented_persona'. Value 'educator' not in field definition", errorType: 'VALUE_NOT_IN_FIELD_DEFINITION' }] } };
+    const r2 = await fetch(BASE + '/wp-admin/admin-post.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json', 'CF-Connecting-IP': '192.0.2.51' },
+      body: new URLSearchParams({ action: 'augmented_ed_follow', aug_website: '', aug_elapsed: '5000', firstname: 'Dorothy', lastname: 'Vaughan', email: 'dv@example.com', message: 'Mismatched form.', persona: 'educator', consent: '1' }),
+    });
+    mockRef.reply = null;
+    const body2 = await r2.json().catch(() => ({}));
+    const dv = byEmail('dv@example.com')[0];
+    check('sign-ups: a HubSpot form missing one of our dropdown values does not cost the sign-up', r2.status === 200 && body2.ok === true && dv && meta(dv.ID, 'hubspot') === 'not sent', `${r2.status} ${JSON.stringify(body2)} ${dv ? meta(dv.ID, 'hubspot') : 'not kept'}`);
+    // The list and the CSV, as an administrator. The login's own navigation is awaited: going
+    // straight on to the list can beat the auth cookie and land back on wp-login.php.
+    const c = await newCtx();
+    const p = await c.newPage();
+    await p.goto(BASE + '/wp-login.php');
+    await p.fill('#user_login', 'admin'); await p.fill('#user_pass', 'admin');
+    await Promise.all([p.waitForURL(/\/wp-admin\//), p.click('#wp-submit')]);
+    await p.goto(BASE + '/wp-admin/edit.php?post_type=augmented_ed_signup', { waitUntil: 'load' });
+    const listed = await p.evaluate(() => [...document.querySelectorAll('#the-list tr')].map((tr) => tr.textContent.replace(/\s+/g, ' ')));
+    check('sign-ups: Tools → Follow sign-ups lists them, with email and whether HubSpot has them', listed.some((t) => /Ada Lovelace/.test(t) && /ada@example\.com/.test(t) && /Researcher/.test(t) && /sent/.test(t)) && listed.some((t) => /Katherine Johnson/.test(t) && /not sent/.test(t)) && !(await p.$('.page-title-action')), listed.slice(0, 3).join(' | '));
+    const href = await p.getAttribute('a[href*="augmented_ed_signups_csv"]', 'href');
+    const csv = href ? await (await p.request.get(href)).text() : '';
+    check('sign-ups: the CSV has a header and every sign-up', /First name/.test(csv) && /Ada/.test(csv) && /kj@example\.com/.test(csv), csv.split('\n').slice(0, 2).join(' / '));
+    const anon = await fetch(BASE + '/wp-admin/admin-post.php?action=augmented_ed_signups_csv');
+    check('sign-ups: the CSV is not served to a visitor', !/kj@example\.com/.test(await anon.text()));
+    await c.close();
+    // WordPress's own privacy tools find them by email, and erase them.
+    const exported = wp('eval', "$e = apply_filters( 'wp_privacy_personal_data_exporters', array() ); echo wp_json_encode( call_user_func( $e['augmented-ed-signups']['callback'], 'kj@example.com', 1 ) );");
+    const erased = wp('eval', "$e = apply_filters( 'wp_privacy_personal_data_erasers', array() ); echo wp_json_encode( call_user_func( $e['augmented-ed-signups']['callback'], 'kj@example.com', 1 ) );");
+    check('sign-ups: Export / Erase Personal Data find and remove one person\'s', /No HubSpot yet\./.test(exported) && JSON.parse(erased).items_removed === true && byEmail('kj@example.com').length === 0, erased);
   }
 
   // 9. Bio pages.
