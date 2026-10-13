@@ -587,7 +587,7 @@ export async function checks() {
     await p.waitForFunction(() => /Thank/.test(document.querySelector('[data-aug-follow-status]').textContent), null, { timeout: 10000 }).catch(() => {});
     const sent = mockRef.requests[mockRef.requests.length - 1]?.json;
     const f = Object.fromEntries((sent?.fields || []).map((x) => [x.name, x.value]));
-    check('form: the relay sends HubSpot the fields, from a visitor whose clock is an hour fast', f.firstname === 'Ada' && f.lastname === 'Lovelace' && f.email === 'ada@example.com' && f.phone === '555 0100' && f.message === 'Testing the relay.' && f.augmented_persona === 'researcher', JSON.stringify(f));
+    check('form: the relay sends HubSpot the fields, from a visitor whose clock is an hour fast', f.firstname === 'Ada' && f.lastname === 'Lovelace' && f.email === 'ada@example.com' && f.phone === '555 0100' && f.message === 'Testing the relay.' && f.augmented_persona === 'Researcher', JSON.stringify(f));
     check('form: consent and page context are sent', sent?.legalConsentOptions?.consent?.consentToProcess === true && /\/augmented\/follow\//.test(sent?.context?.pageUri || ''), JSON.stringify({ c: sent?.legalConsentOptions, ctx: sent?.context }));
     const said = await p.textContent('[data-aug-follow-status]');
     check('form: the visitor is thanked in place', /Thank/.test(said), said);

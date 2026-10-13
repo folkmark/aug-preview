@@ -103,7 +103,7 @@ function augmented_ed_settings_page() {
 	echo '<h2>' . esc_html__( 'The Follow form → HubSpot', 'augmented-ed' ) . '</h2><table class="form-table" role="presentation">';
 	$field( 'hubspot_portal', 'Portal ID', 'AERDF\'s HubSpot account number (20910033 on aerdf.org today).' );
 	$field( 'hubspot_form', 'Form ID', 'The GUID of the HubSpot form that receives submissions. Create it with exactly these fields — firstname, lastname, email, phone, message, and the "which describes you" property named below — and with <strong>CAPTCHA off</strong>: HubSpot rejects every API submission to a form with CAPTCHA on. The plugin has its own spam defences.' );
-	$field( 'hubspot_persona', 'Persona property', 'The HubSpot contact property for "Which best describes you?" (internal name). Its options must include: educator, researcher, engineer, administrator, nonprofit, executive, funder, journalist, other.' );
+	$field( 'hubspot_persona', 'Persona property', 'The HubSpot contact property for "Which best describes you?" (internal name). Its options\' internal values must include: Educator, Researcher, Engineer, Administrator, Nonprofit Executive, Funder, Journalist, Other.' );
 	$field( 'consent_text', 'Consent sentence', 'Shown beside the checkbox and sent to HubSpot as the consent text. Default: "I agree to the privacy policy".' );
 	$field( 'privacy_url', 'Privacy policy URL', 'Links the words "privacy policy" in the consent sentence.', 'url' );
 	$field( 'subscription_type', 'Subscription type ID', 'Optional. The HubSpot subscription type the consent opts into.' );
@@ -230,7 +230,7 @@ add_action(
 				$names['lastname']  => $user->last_name ? $user->last_name : 'Test',
 				$names['email']     => $user->user_email,
 				$names['message']   => 'Test submission from the AugmentED WordPress plugin.',
-				$names['persona']   => 'other',
+				$names['persona']   => augmented_ed_hubspot_persona( 'other' ),
 			),
 			array(
 				'pageUri'  => augmented_ed_url( 'follow' ),

@@ -133,6 +133,22 @@ function augmented_ed_hubspot_names() {
 	);
 }
 
+/**
+ * A persona as AERDF's HubSpot form names it: the page sends a slug ("nonprofit-executive"),
+ * HubSpot's dropdown holds its label ("Nonprofit Executive"). The pairs are in
+ * generated/data/form.json, from HUBSPOT_PERSONAS in tools/build-wp-plugin.mjs.
+ */
+function augmented_ed_hubspot_persona( $value ) {
+	foreach ( (array) ( augmented_ed_data( 'form' )['fields'] ?? array() ) as $f ) {
+		foreach ( 'persona' === $f['name'] ? (array) ( $f['options'] ?? array() ) : array() as $o ) {
+			if ( ( $o['value'] ?? '' ) === $value && ! empty( $o['hubspot'] ) ) {
+				return (string) $o['hubspot'];
+			}
+		}
+	}
+	return (string) $value;
+}
+
 /** The consent sentence as plain text, and as HTML with the privacy policy linked. */
 function augmented_ed_consent_text() {
 	$s = augmented_ed_settings();
@@ -269,7 +285,7 @@ function augmented_ed_follow_handle() {
 	$fields = array();
 	foreach ( $names as $ours => $theirs ) {
 		if ( isset( $values[ $ours ] ) && '' !== $theirs ) {
-			$fields[ $theirs ] = $values[ $ours ];
+			$fields[ $theirs ] = 'persona' === $ours ? augmented_ed_hubspot_persona( $values[ $ours ] ) : $values[ $ours ];
 		}
 	}
 	$result = Augmented_ED_HubSpot::submit(

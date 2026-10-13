@@ -32,39 +32,43 @@
       "options": [
         {
           "value": "educator",
-          "label": "Educator"
+          "label": "Educator",
+          "hubspot": "Educator"
         },
         {
           "value": "researcher",
-          "label": "Researcher"
+          "label": "Researcher",
+          "hubspot": "Researcher"
         },
         {
           "value": "engineer",
-          "label": "Engineer"
+          "label": "Engineer",
+          "hubspot": "Engineer"
         },
         {
           "value": "administrator",
-          "label": "Administrator"
+          "label": "Administrator",
+          "hubspot": "Administrator"
         },
         {
-          "value": "nonprofit",
-          "label": "Non-profit professional"
-        },
-        {
-          "value": "executive",
-          "label": "Company executive"
+          "value": "nonprofit-executive",
+          "label": "Nonprofit executive",
+          "hubspot": "Nonprofit Executive"
         },
         {
           "value": "funder",
-          "label": "Funder"
+          "label": "Funder",
+          "hubspot": "Funder"
         },
         {
           "value": "journalist",
-          "label": "Journalist"
+          "label": "Journalist",
+          "hubspot": "Journalist"
         },
         {
           "value": "other",
-          "label": "Other"
+          "label": "Other",
+          "hubspot": "Other"
         }
       ]
     },

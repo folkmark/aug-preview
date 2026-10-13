@@ -22,8 +22,6 @@ If anything is unclear or looks wrong at any point, please just ask Brendan at
 - The plugin zip, which Brendan sends you along with a SHA-256 checksum. To check the zip
   arrived intact, run `shasum -a 256 <the zip>` (macOS, Linux) or
   `certutil -hashfile <the zip> SHA256` (Windows); it should print the same value.
-- For step 3 only, someone at AERDF who can create contact properties and forms in AERDF's
-  HubSpot (portal 20910033).
 
 **Two things to confirm with AERDF before you publish.** You can install on staging and work
 through steps 1, 2 and 5 while these are being sorted out:
@@ -31,7 +29,7 @@ through steps 1, 2 and 5 while these are being sorted out:
 1. **The address.** The pages go at `/augmented/` by default. That address currently redirects
    to the existing AugmentED page under Opportunities, so AERDF should decide what happens to
    that page once the new one is live.
-2. **The HubSpot form**, which someone at AERDF creates (step 3 says exactly what it needs).
+2. **The HubSpot form.** It exists now (step 3 has its ID); it only needs CAPTCHA confirmed off.
 
 **A few habits that will keep this painless:**
 
@@ -68,31 +66,28 @@ the pages: they link to each other by template, not by address.
 
 ### 3. Connect the Follow form
 
-**In AERDF's HubSpot.** This part is for someone at AERDF with HubSpot access. AugmentED doesn't
-have access to AERDF's HubSpot, so none of this exists yet:
+**In AERDF's HubSpot.** This part is already done: AERDF's HubSpot team set up the form in
+October 2026, and its ID is `1ccff25c-9c05-413f-b002-17efc961dde7`. The website was matched to
+it. For reference, or if it ever needs re-creating, it has:
 
-1. Create a **Dropdown select** contact property: label "Which best describes you?", internal
-   name `augmented_persona`, with these options (label → internal value): Educator →
-   `educator`, Researcher → `researcher`, Engineer → `engineer`, Administrator →
-   `administrator`, Non-profit professional → `nonprofit`, Company executive → `executive`,
-   Funder → `funder`, Journalist → `journalist`, Other → `other`.
-2. Create a form with these fields:
+1. A **Dropdown select** contact property: label "Which best describes you?", internal name
+   `augmented_persona`, with these options, whose internal values are their labels: Educator,
+   Researcher, Engineer, Administrator, Nonprofit Executive, Funder, Journalist, Other.
+2. A form with these fields:
 
    | Field | HubSpot property | Required |
    |---|---|---|
    | First name | `firstname` | yes |
    | Last name | `lastname` | yes |
    | Email | `email` | yes |
-   | Contact number | `phone` | no |
-   | Tell us more | `message` | yes |
-   | Which best describes you? | `augmented_persona` | no |
+   | Phone number | `phone` | no |
+   | Message | `message` | no |
+   | Which best describes you? | `augmented_persona` | yes |
 
-3. **Turn CAPTCHA off on that form.** HubSpot refuses every submission sent from a server to a
+3. **CAPTCHA off on that form.** HubSpot refuses every submission sent from a server to a
    form with CAPTCHA on. The plugin has its own spam protection instead.
-4. Copy the form's ID: the long ID with dashes in the address bar while the form is open in
-   HubSpot's editor.
 
-**In WordPress:** Settings → **AugmentED** → fill in **Portal ID** (20910033), **Form ID**, and
+**In WordPress:** Settings → **AugmentED** → fill in **Portal ID** (20910033), **Form ID** (`1ccff25c-9c05-413f-b002-17efc961dde7`), and
 **Privacy policy URL** (`https://aerdf.org/termsofuse/`) → **Save Changes** → **Send test
 submission**. You can leave the other fields as they are, except perhaps **Email each sign-up
 to**: an address there (the AugmentED team's, say) gets an email for every sign-up.
