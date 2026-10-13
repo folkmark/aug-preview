@@ -6,6 +6,9 @@
  * site, AERDF's own pages may link to them, and deleting a plugin is not a decision to
  * delete people. They stay, and a reinstall picks them up where they were.
  *
+ * The Follow sign-ups (includes/signups.php) stay for the same reason: they are people's
+ * details AERDF holds, not plugin state. Tools → Erase Personal Data removes one person's.
+ *
  * @package AugmentED
  */
 

@@ -75,6 +75,9 @@ export const CARDS = [
     key: 'challenge',
     eyebrow: 'The Challenge',
     title: 'The gap between what AI can do and what students need.',
+    // Not the page's own first photograph. That is precalc-table since October 2026, and its
+    // licence (CC BY-NC) holds only with the credit beside it, which a share card has no room
+    // for; student-notebook is a Shutterstock licence that asks for none.
     photo: 'assets/images/student-notebook.webp',
     position: '62% 40%',
     alt: 'The Challenge: the gap between what AI can do and what students need. Two students writing by hand at a classroom desk.',

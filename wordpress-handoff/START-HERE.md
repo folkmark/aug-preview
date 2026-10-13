@@ -8,7 +8,7 @@ aerdf.org's own theme, with AERDF's header and footer and AugmentED's navigation
 beneath them, the way Assessment for Good's pages work. The plugin also adds the AugmentED
 team to AERDF's existing Team post type and connects the Follow form to HubSpot.
 
-Set aside about an hour on each environment. This page describes plugin version **1.1.6**.
+Set aside about an hour on each environment. This page describes plugin version **1.1.7**.
 
 If anything is unclear or looks wrong at any point, please just ask Brendan at
 [brendan@folkmark.com](mailto:brendan@folkmark.com). No question is too small.
@@ -46,7 +46,7 @@ through steps 1, 2 and 5 while these are being sorted out:
 ### 1. Upload and activate
 
 Plugins → **Add Plugin** → **Upload Plugin** → choose the zip → **Install Now** → **Activate
-Plugin**. The Plugins screen should now show **AugmentED 1.1.6**.
+Plugin**. The Plugins screen should now show **AugmentED 1.1.7**.
 
 The zip is about 22 MB because it carries every image and animation frame. If WordPress says
 "The link you followed has expired" or mentions `upload_max_filesize`, the zip is just larger
@@ -94,7 +94,11 @@ have access to AERDF's HubSpot, so none of this exists yet:
 
 **In WordPress:** Settings → **AugmentED** → fill in **Portal ID** (20910033), **Form ID**, and
 **Privacy policy URL** (`https://aerdf.org/termsofuse/`) → **Save Changes** → **Send test
-submission**. You can leave the other fields as they are.
+submission**. You can leave the other fields as they are, except perhaps **Email each sign-up
+to**: an address there (the AugmentED team's, say) gets an email for every sign-up.
+
+Every sign-up is also kept in WordPress under Tools → **Follow sign-ups**, with a CSV download,
+so none are lost while HubSpot is still being set up. The list shows which ones HubSpot has.
 
 The test sends one real submission with your WordPress name and email, so it creates a real
 contact in HubSpot. Please delete it there afterwards. If HubSpot refuses the test, the screen
@@ -163,7 +167,7 @@ Please check these in a **private window, logged out**, which is what visitors s
       only) opens that person's page.
 - [ ] Sherry Lachman's and Caitlin Mills's AERDF pages look as they did before.
 - [ ] A test submission from the Follow page reaches AERDF's HubSpot with every field filled
-      in. Delete it afterwards.
+      in, and appears under Tools → Follow sign-ups. Delete it from both afterwards.
 - [ ] With AERDF's cookie banner and accessibility widget open, nothing covers AugmentED's
       bar, its menu or the form, and the form still sends.
 - [ ] The rest of aerdf.org looks exactly as before. (The `/team/` archive and search will now

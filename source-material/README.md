@@ -18,16 +18,16 @@ which are licensed files and are not in the repository at all.
 
 ## The licensed photography on The Challenge and Our Approach
 
-Seven portrait photographs, two sources, both licensed, and the licences do not allow the
+Eight photographs from three sources, all licensed. The two paid licences do not allow the
 files to be shared as files, so no full-resolution original is committed. The encoder reads
-them from two git-ignored directories under `image-sources/stock-photos-aug/`.
+them from three git-ignored directories under `image-sources/stock-photos-aug/`.
 
 **Shutterstock** (Folkmark's subscription), read from `large/`: download by asset ID from the
 licence history and keep the ID as the filename (`shutterstock_<id>.jpg`).
 
 | Asset ID | Becomes |
 | --- | --- |
-| 2763377205 | `images/student-notebook` |
+| 2763377205 | `images/student-notebook` (the Challenge share card only, since October 2026) |
 | 2129383421 | `images/codesign-tools` (a 4144x4144 square from the top of the frame) |
 
 **Getty Images** (licensed by AERDF, October 2026), read from `getty-licensed/`. These are
@@ -43,6 +43,15 @@ re-applied to the licensed full-resolution file). The jobs therefore carry no `c
 | 1044232206 | `images/define-the-role` | 4:5 |
 | 1469940271 | `images/build-capabilities` | 11:10 |
 | 1440718884 | `images/test-in-classrooms` | 4:5 |
+
+**EDUimages** (All4Ed, CC BY-NC 4.0, chosen by the client in October 2026), read from
+`eduimages/`: download the original from images.all4ed.org and keep its file name. Its
+licence is open but conditional on the credit, which the page carries in a figcaption under
+the photo; keep the two together.
+
+| File | Becomes | Box | Credit |
+| --- | --- | --- | --- |
+| `AMERICANED_UCLACOMM_015.jpg` | `images/precalc-table` (first row of The Challenge) | 1:1 | Photo by Allison Shelley for EDUimages |
 
 Without them the encoder skips those jobs (two tiers each) and re-encodes everything else;
 the encoded files under `assets/images/` are committed and are what the site and the plugin

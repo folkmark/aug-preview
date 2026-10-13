@@ -75,7 +75,7 @@ same, with its muted lines and icon row where the tile already has them:
 ```
 
 The link is the design system's link button with a trailing `chevron_right`, the same
-"Open link ›" the papers use and every "Learn more ›" on the site. In WordPress that is
+"Read the research paper ›" the papers use and every "Learn more ›" on the site. In WordPress that is
 whatever your theme renders for those; the point is that it is the same component, not
 a one-off.
 

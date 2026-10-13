@@ -13,6 +13,9 @@
  * - A visitor with an ad blocker that stops api.hsforms.com still gets through, and a
  *   visitor with no JavaScript gets a real form post and a real answer.
  *
+ * Since 1.1.7 each valid sign-up is also saved in WordPress before HubSpot is asked, and a
+ * saved one is thanked even when HubSpot is not set up or refuses it: see includes/signups.php.
+ *
  * The form posts to admin-post.php. With script, js/follow-form.js sends the same POST with
  * Accept: application/json and shows the answer in place; without, this answers with a 303
  * back to the page and a status in the query string.
@@ -259,6 +262,9 @@ function augmented_ed_follow_handle() {
 		$respond( 'invalid', array( 'fields' => array_values( array_unique( $bad ) ) ) );
 	}
 
+	// Saved before HubSpot is asked, so nothing HubSpot does can lose it (includes/signups.php).
+	$signup = augmented_ed_signup_store( $values );
+
 	$names  = augmented_ed_hubspot_names();
 	$fields = array();
 	foreach ( $names as $ours => $theirs ) {
@@ -278,9 +284,22 @@ function augmented_ed_follow_handle() {
 	if ( ! $result['ok'] ) {
 		// Logged for whoever maintains the site; the visitor gets the generic message.
 		error_log( 'AugmentED Follow form: HubSpot said ' . $result['status'] . ' ' . $result['message'] . ' ' . wp_json_encode( $result['errors'] ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
-		$ours = array_search( key( $result['errors'] ), $names, true );
-		$respond( $result['errors'] ? 'invalid' : 'error', $ours ? array( 'fields' => array( $ours ) ) : array() );
+		// An error the visitor can fix (HubSpot found their email invalid, say) goes back to the
+		// field, and the saved copy goes with it: they will send it again, corrected, and the
+		// list should not hold the bad one too. FIELD_NOT_IN_FORM_DEFINITION is not theirs to
+		// fix (AERDF's form lacks one of our fields), so it is treated like HubSpot being down.
+		$fixable = array_diff( $result['errors'], array( 'FIELD_NOT_IN_FORM_DEFINITION' ) );
+		if ( $fixable || ! $signup ) {
+			if ( $signup ) {
+				wp_delete_post( $signup, true );
+			}
+			$ours = array_search( key( $fixable ), $names, true );
+			$respond( $fixable ? 'invalid' : 'error', $ours ? array( 'fields' => array( $ours ) ) : array() );
+		}
 	}
+	// Saved, so thanked, whether or not HubSpot has it yet; the record says which.
+	augmented_ed_signup_hubspot( $signup, $result );
+	augmented_ed_signup_notify( $signup );
 	$respond( 'ok' );
 	// phpcs:enable
 }

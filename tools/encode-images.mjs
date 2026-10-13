@@ -184,8 +184,24 @@ const JOBS = [
   // into this directory is one export setting away from putting it back, and nothing else
   // would tell you.
 
-  // Two students writing by hand, for the row about the skills built without AI. 9504x6336;
-  // the box holds both of them and the paper, and drops the empty desks to the left.
+  // Students working through their textbooks at a shared table, for the row about the skills
+  // built without AI. Chosen by the client in the "website Edits" deck (October 2026) to
+  // replace student-notebook in that row. EDUimages AMERICANED_UCLACOMM_015, "Photo by
+  // Allison Shelley for EDUimages", CC BY-NC 4.0: the licence is conditional on the credit,
+  // which is why its <img> in index.html sits in a <figure> with a figcaption, and why the
+  // Challenge share card does not use it (a card has nowhere to carry the credit). Read from
+  // stock-photos-aug/eduimages/, git-ignored with the rest of the stock sources; download it
+  // from images.all4ed.org by that file name. 5760x3840, landscape, so SQUARE rather than
+  // the row's old 4:5: 4:5 cannot hold the three students at the front table, and 1:1 is the
+  // box engineers-screens already uses on the same page. The box is the right two-thirds of
+  // the frame: all three at the table, the teacher at the board behind them. Measured +17
+  // on R-B, inside the band, so no warmth correction; white point 246, so the +1.5% lift.
+  { in: 'stock-photos-aug/eduimages/AMERICANED_UCLACOMM_015.jpg', out: 'images/precalc-table.webp',   width: 1264, crop: [1920, 0, 3840, 3840], grade: [1.015, 1.015, 1.015] },
+  { in: 'stock-photos-aug/eduimages/AMERICANED_UCLACOMM_015.jpg', out: 'images/precalc-table-m.webp', width: 800,  crop: [1920, 0, 3840, 3840], grade: [1.015, 1.015, 1.015] },
+
+  // Two students writing by hand. On no page since October 2026 (precalc-table took its
+  // row); kept because it is the Challenge share card's photograph — see tools/build-og.mjs.
+  // 9504x6336; the box holds both of them and the paper, and drops the empty desks to the left.
   // The warmest frame in the set at +37, and the only one the 12-point cap binds on from
   // above: cooled to +25, the top of the band, rather than all the way to +17. Its golden
   // late-afternoon light is the reason the frame was picked and taking it to the median
