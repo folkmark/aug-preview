@@ -286,9 +286,13 @@ function augmented_ed_follow_handle() {
 		error_log( 'AugmentED Follow form: HubSpot said ' . $result['status'] . ' ' . $result['message'] . ' ' . wp_json_encode( $result['errors'] ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
 		// An error the visitor can fix (HubSpot found their email invalid, say) goes back to the
 		// field, and the saved copy goes with it: they will send it again, corrected, and the
-		// list should not hold the bad one too. FIELD_NOT_IN_FORM_DEFINITION is not theirs to
-		// fix (AERDF's form lacks one of our fields), so it is treated like HubSpot being down.
-		$fixable = array_diff( $result['errors'], array( 'FIELD_NOT_IN_FORM_DEFINITION' ) );
+		// list should not hold the bad one too. Only these types are theirs to fix. Every other
+		// field error is the HubSpot form disagreeing with ours — a field it lacks
+		// (FIELD_NOT_IN_FORM_DEFINITION), a dropdown value it does not have
+		// (VALUE_NOT_IN_FIELD_DEFINITION), a field it requires that this form does not
+		// (REQUIRED_FIELD) — and is treated like HubSpot being down: kept and thanked. AERDF's
+		// first HubSpot form, October 2026, had all three of the last kind waiting to happen.
+		$fixable = array_intersect( $result['errors'], array( 'INVALID_EMAIL', 'BLOCKED_EMAIL', 'BLOCKED_FREE_EMAIL_DOMAIN', 'INVALID_NUMBER', 'INPUT_TOO_LARGE' ) );
 		if ( $fixable || ! $signup ) {
 			if ( $signup ) {
 				wp_delete_post( $signup, true );

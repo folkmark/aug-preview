@@ -107,12 +107,17 @@ function augmented_ed_signup_store( $values ) {
 	}
 	// The sentence they agreed to, as it read when they agreed: the setting can change later.
 	$meta['_augmented_ed_consent'] = ! empty( $values['consent'] ) ? augmented_ed_consent_text() : '';
+	// Slashed because wp_insert_post() and the meta API unslash what they are given, and the
+	// form handler has already unslashed $_POST: without this a backslash a visitor typed
+	// ("C:\path") would be stripped from their message.
 	$id = wp_insert_post(
-		array(
-			'post_type'   => AUGMENTED_ED_SIGNUP,
-			'post_status' => 'private',
-			'post_title'  => trim( ( $values['firstname'] ?? '' ) . ' ' . ( $values['lastname'] ?? '' ) ),
-			'meta_input'  => $meta,
+		wp_slash(
+			array(
+				'post_type'   => AUGMENTED_ED_SIGNUP,
+				'post_status' => 'private',
+				'post_title'  => trim( ( $values['firstname'] ?? '' ) . ' ' . ( $values['lastname'] ?? '' ) ),
+				'meta_input'  => $meta,
+			)
 		),
 		true
 	);
@@ -125,7 +130,7 @@ function augmented_ed_signup_hubspot( $id, $result ) {
 		return;
 	}
 	update_post_meta( $id, '_augmented_ed_hubspot', $result['ok'] ? 'sent' : 'not sent' );
-	update_post_meta( $id, '_augmented_ed_hubspot_note', $result['ok'] ? '' : trim( $result['status'] . ' ' . $result['message'] ) );
+	update_post_meta( $id, '_augmented_ed_hubspot_note', wp_slash( $result['ok'] ? '' : trim( $result['status'] . ' ' . $result['message'] ) ) );
 }
 
 /** The persona's label as the visitor saw it, from the form's own options. */

@@ -648,18 +648,31 @@ export async function checks() {
     const r = await fetch(BASE + '/wp-admin/admin-post.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json', 'CF-Connecting-IP': '192.0.2.50' },
-      body: new URLSearchParams({ action: 'augmented_ed_follow', aug_website: '', aug_elapsed: '5000', firstname: 'Katherine', lastname: 'Johnson', email: 'kj@example.com', message: 'No HubSpot yet.', consent: '1' }),
+      body: new URLSearchParams({ action: 'augmented_ed_follow', aug_website: '', aug_elapsed: '5000', firstname: 'Katherine', lastname: 'Johnson', email: 'kj@example.com', message: 'No HubSpot yet. Saved at C:\\signups\\kj.txt', consent: '1' }),
     });
     const body = await r.json().catch(() => ({}));
     const kj = byEmail('kj@example.com')[0];
-    check('sign-ups: with no HubSpot form set, the visitor is thanked and the sign-up kept, marked not sent', r.status === 200 && body.ok === true && kj && meta(kj.ID, 'hubspot') === 'not sent' && mockRef.requests.length === sentBefore, `${r.status} ${JSON.stringify(body)} ${kj ? meta(kj.ID, 'hubspot') : 'not kept'}`);
+    check('sign-ups: with no HubSpot form set, the visitor is thanked and the sign-up kept, marked not sent', r.status === 200 && body.ok === true && kj && meta(kj.ID, 'hubspot') === 'not sent' && meta(kj.ID, 'message') === 'No HubSpot yet. Saved at C:\\signups\\kj.txt' && mockRef.requests.length === sentBefore, `${r.status} ${JSON.stringify(body)} ${kj ? meta(kj.ID, 'hubspot') : 'not kept'}`);
     wp('option', 'update', 'augmented_ed_settings', JSON.stringify(settings), '--format=json');
-    // The list and the CSV, as an administrator.
+    // A HubSpot form that disagrees with ours — here a dropdown without our value, as AERDF's
+    // first one did — is HubSpot's problem, not the visitor's: thanked, kept, marked not sent.
+    mockRef.reply = { status: 400, body: { status: 'error', message: 'The request is not valid', errors: [{ message: "Error in 'fields.augmented_persona'. Value 'educator' not in field definition", errorType: 'VALUE_NOT_IN_FIELD_DEFINITION' }] } };
+    const r2 = await fetch(BASE + '/wp-admin/admin-post.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json', 'CF-Connecting-IP': '192.0.2.51' },
+      body: new URLSearchParams({ action: 'augmented_ed_follow', aug_website: '', aug_elapsed: '5000', firstname: 'Dorothy', lastname: 'Vaughan', email: 'dv@example.com', message: 'Mismatched form.', persona: 'educator', consent: '1' }),
+    });
+    mockRef.reply = null;
+    const body2 = await r2.json().catch(() => ({}));
+    const dv = byEmail('dv@example.com')[0];
+    check('sign-ups: a HubSpot form missing one of our dropdown values does not cost the sign-up', r2.status === 200 && body2.ok === true && dv && meta(dv.ID, 'hubspot') === 'not sent', `${r2.status} ${JSON.stringify(body2)} ${dv ? meta(dv.ID, 'hubspot') : 'not kept'}`);
+    // The list and the CSV, as an administrator. The login's own navigation is awaited: going
+    // straight on to the list can beat the auth cookie and land back on wp-login.php.
     const c = await newCtx();
     const p = await c.newPage();
     await p.goto(BASE + '/wp-login.php');
-    await p.fill('#user_login', 'admin'); await p.fill('#user_pass', 'admin'); await p.click('#wp-submit');
-    await p.waitForLoadState('load');
+    await p.fill('#user_login', 'admin'); await p.fill('#user_pass', 'admin');
+    await Promise.all([p.waitForURL(/\/wp-admin\//), p.click('#wp-submit')]);
     await p.goto(BASE + '/wp-admin/edit.php?post_type=augmented_ed_signup', { waitUntil: 'load' });
     const listed = await p.evaluate(() => [...document.querySelectorAll('#the-list tr')].map((tr) => tr.textContent.replace(/\s+/g, ' ')));
     check('sign-ups: Tools → Follow sign-ups lists them, with email and whether HubSpot has them', listed.some((t) => /Ada Lovelace/.test(t) && /ada@example\.com/.test(t) && /Researcher/.test(t) && /sent/.test(t)) && listed.some((t) => /Katherine Johnson/.test(t) && /not sent/.test(t)) && !(await p.$('.page-title-action')), listed.slice(0, 3).join(' | '));
